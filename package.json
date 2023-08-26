@@ -1,0 +1,28 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "axios": "^1.1.2",
+        "laravel-vite-plugin": "^0.8.0",
+        "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "@emotion/react": "^11.11.1",
+        "@emotion/styled": "^11.11.0",
+        "@mui/icons-material": "^5.14.6",
+        "@mui/material": "^5.14.6",
+        "@mui/styles": "^5.14.6",
+        "@vitejs/plugin-react": "^4.0.4",
+        "animate.css": "^4.1.1",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-material-ui-form-validator": "^3.0.1",
+        "react-router-dom": "^6.15.0",
+        "react-spring": "^9.7.2",
+        "sass": "^1.66.1"
+    }
+}

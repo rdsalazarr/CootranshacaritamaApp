@@ -1,0 +1,285 @@
+$drawerWidth      : 15em;
+$drawerWidthSmall : 3em;
+$menu   : #fafafa;
+$gris   : #717171;
+
+$colorBlanco: var(--colorBlanco);
+$verdeClaro : var(--verdeClaro);
+$verdeOscuro: var(--verdeOscuro);
+$grisClaro  : var(--grisClaro);
+$grisOscuro : var(--grisOscuro);
+
+body{
+    background-color: #fafafaad;
+}
+.nav {
+  transition: width 0.3s, left 0.3s;
+  position: fixed;
+  z-index: 3;
+  width: $drawerWidth;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  box-shadow: inset -1px 0 0 #e5e5e5;
+  transform: translate3d(0 , 0 , 0);
+  border-left: 1px solid #dcdcdc;
+  .toolbarIcon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
+    .accionMenu {
+      text-align: right;
+      margin: 0 auto;
+      display: block;
+      width: 100%;
+      padding: 0;
+    }
+  }
+  > div{
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    background-color: $menu;
+    .imgFoot{
+      position: fixed;
+      background: white;
+      bottom: 0;
+      width: 100%;
+      height: 3.7em;
+      transition: all 0.3s, left 0.3s;
+      text-align: center;
+      box-shadow: 1px 0px 4px -1px rgb(0 0 0 / 20%), -1px 0px 0px 0px rgb(0 0 0 / 14%), 0px 0px 0px 0px rgb(0 0 0 / 12%);
+      img{
+        width: 85%;
+        padding-top: 5px;
+      }
+    }
+    .imgFoot.hidden{
+      opacity: 0;
+      transition: all 0.3s, left 0.3s;
+    }
+  }
+}
+
+.nav.navClose {
+  width: $drawerWidthSmall;
+  transition: width 0.3s, left 0.3s;
+}
+.component {
+  margin-left: 15em;
+  transition: padding 0.3s ;  
+  transition: all 0.3s, left 0.3s;
+}
+
+.component.componentClose {
+  margin-left: 3em;
+  transition: all 0.3s, left 0.3s;
+}
+
+.itemMenu{
+  display: flex;
+  align-items: end;
+  text-decoration: none;
+  color: #333;  
+  transition: all .5s ease-in-out;
+  &:hover{
+    transition: all .5s ease-in-out;  
+  }
+  .pr10{
+    padding-right: 8px;
+  }
+  >div{
+    width: 100%;
+  }
+}
+.itemMenu.active{
+  border-left: 5px solid $verdeOscuro;
+  background-color: #e9e9e9;
+  > div{
+    > div{
+      padding-left: 1.6em;
+    }
+  }  
+}
+
+.containerAdmin{
+  width: 96%;
+  margin: auto;
+}
+
+.inputGeneral{
+  width: 100%;
+}
+
+.modal{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .big{
+    width: 80%;
+    background-color: $colorBlanco ;
+    min-height: 80vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 1em;
+    max-height: 80vh;
+  }
+}
+
+.inputFile{
+  display: flex;
+  .buttonFile{
+    margin: 0;
+    flex: 1;
+  }
+  .nameFile{
+    border-bottom: 1px solid #949494;
+    flex: 0 80%;
+    margin-left: 0.5em;
+    padding: 10px 1em;
+  }
+}
+
+.container{
+  padding: 1em;
+}
+
+.containerMine{
+  width: 70%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.subtitleGenera{
+  text-align: justify;
+  margin: 0; 
+  p{
+    color :#484848
+  }
+}
+
+.iconLupa{
+  background: red;
+  bottom: 1px;
+  color: #fff;
+  padding: .2em;
+  position: absolute;
+  right: 0;
+}
+
+.frm-division{       
+  min-height: 20px;   
+  max-height: 100px;
+  color: #FDFDFD;
+  margin-top: 4px;
+  text-align: Center;
+  background-color: $verdeOscuro; 
+  padding: 1px;
+  font-weight: 700;
+  text-shadow: -0.03px 0.03px #1a1a19, -1px 1px #282625;
+}
+
+.frm-texto{
+  width: 100%;
+}
+
+.frm-texto, label{
+  line-height: 18px;
+  display: block;
+  font-weight: 600;
+  flex: 1;
+  color: $grisOscuro;
+}
+
+.frm-texto, span{
+  line-height: 20px;
+  display: block;
+  font-weight: 300;
+}
+
+.icon-add{
+  text-align: right;
+  width: 98%;
+  margin-bottom: 1em;
+}
+
+.iconoMenu{
+  padding: 0;
+  height: 3.6em;
+  display: 'flex';
+  align-items: center;
+  justify-content: right;
+}
+
+.tachado{
+  text-decoration:line-through; 
+  background-color: $grisClaro;
+}
+
+.titleMenu{
+    text-align: center;
+    position: relative;
+    width: 100%;
+    span {
+      background: $verdeOscuro;
+      color: $colorBlanco !important ;
+      position: relative;
+      display: block;
+      font-size: 1.1em;
+      padding: 2.5px 5px;
+      text-shadow: 0 0.01em 0.05em #505050;
+      transition: all 0.3s, left 0.3s;
+      height: 1.2em;
+    }
+    span.hidden{
+      opacity: 0;
+      height: 0em;
+      transition: all 0.3s, left 0.3s;
+    }
+    h3{
+      margin: 0;
+      position: relative;
+      display: block;
+      color: $verdeOscuro;
+      text-shadow : 0 0.01em 0.05em #505050;
+      font-size: 1.2em
+    }
+  }
+
+  @font-face {
+    font-family: 'Material Icons';
+     font-style: normal;
+     font-weight: 400;
+     src: url(../fonts/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+ }
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;   
+  -webkit-font-smoothing: antialiased;
+  color: $verdeOscuro;
+}
+
+/*md*/
+@media (max-width: 768px) { 
+  .containerAdmin{
+     width: 94%;
+  }
+}
+
+/*xs*/
+@media (max-width: 576px) {
+  .containerAdmin{
+    width: 92%;
+  }
+}

@@ -1,0 +1,27 @@
+body{
+    --colorBlanco: #fdfdfd;
+    --verdeClaro: #80C900; 
+    --verdeOscuro: #44ac34;
+    --grisClaro: #cdcdcd;
+    --grisOscuro: #868686;
+    background-color: #f8f9fa;
+    color: #868686;
+    font-weight: 400;
+    font-family: "Roboto", Helvetica, Arial, sans-serif;
+    margin: 0 auto;
+    padding: 0; 
+    overflow-x: hidden;  
+}
+
+.container{
+    width: 80%;
+    margin: auto;
+}
+
+.inputGeneral{
+    width: 100%;
+}
+
+.paddingFrm{
+    padding: 5px;
+}

@@ -1,0 +1,265 @@
+$colorBlanco: var(--colorBlanco);
+$verdeClaro : var(--verdeClaro);
+$verdeOscuro: var(--verdeOscuro);
+$grisClaro  : var(--grisClaro);
+$grisOscuro : var(--grisOscuro);
+
+p{
+    text-align: justify;
+}
+
+h6 {
+    font-family: 'Oswald';
+    color: $verdeClaro;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.btnEvaluacion{
+    margin: 0.375rem;
+    text-transform: uppercase;
+    padding: 0.84rem 2.14rem;
+    width: 60%;
+    font-size: 1.2em;
+    font-family: 'Open Sans', sans-serif;
+    color: $colorBlanco;
+    background: $verdeOscuro;
+    border-radius: 20px 45px 45px 4px;
+    font-weight: 700;
+    text-align: center;
+    border: 1px solid transparent; 
+    display: inline-block;
+    vertical-align: middle;
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0,0,0,0);
+    text-decoration: none;
+    transition: all .5s ease-in-out;
+    cursor: pointer;
+}    
+.btnEvaluacion:hover {
+    color: $colorBlanco;
+    background: $verdeClaro;
+    transition: all .5s ease-in-out;
+}
+
+.evaluacion{
+    p{
+       color: $grisOscuro;
+    }
+    .tiepoRestante{
+        text-align: right; 
+        padding-right: 2em;
+        display: flex;
+        justify-content: right;
+        font-weight: 700;
+        color: $grisOscuro;
+    }
+    .tiempoevaluacion{
+        color: #B92800;
+        font-weight: 700;
+        font-size: 1.7em; 
+        margin-top: -10px;
+        padding-left: 10px;
+    }   
+    .frm{
+        padding: 10px;
+        .iconoPregunta{
+            color: $verdeOscuro;
+            width: 30px;
+            height: 30px;
+            float: left;
+            border-radius: 50%;	
+            font-size: 1.2em;
+            text-align: center;
+            margin-top: -3px;
+            box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);    
+        }
+        .tituloPregunta{
+            font-weight: bold !important;
+            margin-left: 1.2em;
+            margin-bottom: 0.6em;
+        }
+        .alinearRespuesta{
+            padding-left: 40px;
+        }
+    }
+}
+  
+.tituloCurso{
+    font-size: 2em;
+    text-align: center;
+    span{
+        width: 60%;
+        height: 2px;
+        background-color: $verdeClaro;
+        margin: auto;    
+        margin-bottom: 2em;
+    }
+}
+
+.cardCurso {
+    min-height: 21em;
+    padding: 5px;
+    margin-bottom: 1em;
+    text-align: center;
+    .icono {
+        font-size: 6em;
+        color: $verdeClaro;
+        margin-bottom: -0.2em;
+    }
+    h1{
+        font-family: 'Oswald';
+        color: var(--verdeOscuro);
+        font-size: 1.7em;
+        font-weight: bold;
+    }
+    h2 {
+        color: $grisOscuro;       
+        font-weight: 600;
+    }
+    p{
+        text-align: justify;
+        padding-top: 0.5em;
+        padding: 10px;
+    }
+}
+
+.contenidoCardCurso{
+    color: #868686;
+    .icono{
+        font-size: 5em;
+        color: $verdeClaro;
+        padding-right: 10px;
+    }
+    .iconoTitulo{
+        display: flex;
+        text-align: center;
+    }
+    h2{
+        font-family: 'Oswald';
+        color: $verdeOscuro;
+        font-size: 1.8em;
+        font-weight: bold;
+    }
+    h3{
+        font-family: 'Oswald';
+        color: $verdeClaro;
+        font-size: 1.6em;
+        font-weight: 600;
+    }
+    h4{
+        font-family: 'Oswald';
+        color: $grisOscuro;
+        font-size: 1.4em;
+        font-weight: 600;   
+    }
+    img{
+        border: 2px solid #e8e8e8;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    p{
+        text-align: justify;
+    }
+    a{
+        color: $verdeOscuro;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .5s ease-in-out;
+    }
+    a:hover{
+        color: $verdeClaro;
+        transition: all .5s ease-in-out;
+        text-decoration: revert;
+    }
+    li{
+        text-align: justify;
+    }
+    .alinearCentro{
+        text-align: center;
+    }    
+    .imgFluid {
+        max-width: 100%;
+        height: auto;
+        vertical-align: middle;
+    }
+    .imgTop{
+        margin-top: 1em;
+    }
+    .alinearImgTexto{
+        display: flex;
+        align-items: center;
+        .boxLeft{
+            max-width: 30%;
+            margin-right: 10px;
+        }
+        .boxRight{
+            max-width: 70%;
+            margin-right: 10px;
+        }
+    }   
+}
+
+.msgAlert{
+    background-color: rgb(237, 237, 237);
+    padding: 5px;
+    border: 1px solid rgb(131, 131, 131);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    .avatar{
+      margin-right: 20px;
+      margin-top: 6px;
+    }
+    .textoRojo{
+      color: #ec1c21;
+      font-size: 1.2em;
+      font-weight: 700;
+      padding: 2px;
+    }
+    .textoVerde{
+        color: $verdeOscuro;
+        font-size: 1.2em;
+        font-weight: 700;
+        padding: 2px;
+      }
+    .p{
+      display: inline-flex;
+    }
+}
+
+.tituloErrorEvaluacion{
+    font-family: 'Oswald';
+    color: #ec1c21;
+    font-size: 1.7em;
+    font-weight: bold;
+}
+
+
+/*lg*/
+@media (max-width: 992px) { 
+    
+}
+
+/*md*/
+@media (max-width: 768px) { 
+    .cardCurso {
+        min-height: 23em;  
+    }
+    .tituloCurso{
+        font-size: 1.5em;
+    }
+}
+
+/*sm*/
+@media (max-width: 600px) {
+
+}
+
+/*xs*/
+@media (max-width: 576px) {
+    .tituloCurso{
+        font-size: 1em;
+    }
+}

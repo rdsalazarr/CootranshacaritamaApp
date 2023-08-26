@@ -1,0 +1,60 @@
+$colorBlanco: var(--colorBlanco);
+$verdeClaro : var(--verdeClaro);
+$verdeOscuro: var(--verdeOscuro);
+$grisClaro  : var(--grisClaro);
+$grisOscuro : var(--grisOscuro);
+
+.paginaError{
+    margin-top: 10em;
+    h1{
+        color: $verdeOscuro;
+        font-size: 5em;
+        text-shadow: 1px 1px #575a51, 1.2px 1.2px #575a51;
+    }
+    img{
+        width: 70%;
+        cursor: pointer;
+    }
+    .icono{
+        color: $verdeClaro;
+        font-size: 5em;
+    }
+    p{
+        text-align: justify;
+    }
+}
+
+.piePagina{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+/*lg*/
+@media (max-width: 992px) {
+    .paginaError{
+        margin-top: 6em;
+        h1{
+            font-size: 4em;
+        }
+        img{
+            width: 98%;
+        }
+        .icono{
+            font-size: 5em;
+        }
+        .centrarContenido{
+            text-align: center;
+        }
+    }
+}
+
+/*xs*/
+@media (max-width: 576px) {
+    .paginaError{       
+        h1{
+            font-size: 3em;
+        }
+    }
+}
