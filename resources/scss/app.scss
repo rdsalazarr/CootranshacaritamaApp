@@ -34,268 +34,24 @@ $grisOscuro : var(--grisOscuro);
    }
 }
 
-.bannerBlanco {  
-    transition: all .5s ease-in-out;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;   
-}
-
-.bannerCurso {
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    min-height: 100vh; 
-    h1 {
-        color: $verdeOscuro;
-        position: absolute;
-        font-size: 6em;
-        font-weight: 500;
-        line-height: 88px;
-        width: 80%;
-        margin: auto;  
-        background-color: #fdfdfd;
-        text-shadow: $verdeClaro 1px 1px 3px;
-    }   
-    h2{
-        margin-top: -2em;
-        position: absolute;
-        width: 40%;
-        font-size: 4.7em;
-        color: $verdeOscuro;
-        line-height: 1em;
-        font-weight: 800;
-        text-transform: uppercase;
-        font-family: 'Oswald';
-        text-shadow: 1px 1px #fdfdfd, 2px 2px #fdfdfd;
+.cardPrincipal{
+    width: 22em;
+    margin: 10em auto;
+    border-radius: 0;
+    border-top: 5px solid $verdeClaro;
+    > div{
+      background: #f7f7f7;
     }
-    h5{
-        position: absolute;
-        font-size: 2em;
-        width: 50%;
-        color: $verdeClaro;
-        line-height: 1em;
-        font-weight: 800; 
-        text-shadow: 1px 1px #079a34, 2px 2px #079a34;
+    .titleInicio{
+      margin: 0.5em;
+      text-align: center;
+      color: $verdeOscuro; 
+      text-shadow: -0.03em 0.03em #fff6e6, -0.08em 0.08em #e7dcd7;
+      font-weight: bold;
+      font-family: "Oswald";  
+      margin-bottom: 0.5em;
     }
-    .zoomImage {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        animation: zoomAnimation 12s alternate;
-    }
-    .buttonContainer {
-        display: flex;
-        flex-direction: row;
-        margin-top: 9em;
-    }
-    .btnEnlaceCurso {
-        margin-top: 2em;
-        position: relative;
-        font-size: 2.2em;
-        font-family: 'Open Sans', sans-serif;
-        color: $colorBlanco;
-        background: $verdeClaro;
-        border-radius: 20px 45px 45px 4px;
-        font-weight: 700;
-        text-align: center;
-        border: 1px solid transparent;
-        box-shadow: 0px 15px 30px rgba(0,0,0,.1) !important;
-        padding: 0.3em;
-        display: flex;
-        justify-content: center;
-        transition: all .5s ease-in-out;
-        text-decoration: none;
-        margin-left: 2em;
-        cursor: pointer;
-    }        
-    .iconoBtnEnlaceCurso{
-        font-size: 1.2em !important;
-        padding-left: 0.3em;
-    }        
-    .btnEnlaceCurso:hover {
-        color: $colorBlanco;
-        background: $verdeOscuro;
-        transition: all .5s ease-in-out;
-    }
-}
-
-@keyframes zoomAnimation {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.curvedCourse {
-    position: relative; 
-    height: 50vh;
-}
-
-.curvedCourse::after {
-    content: '';
-    border-top-left-radius: 50% 100%;
-    border-top-right-radius: 50% 100%;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: #f8f9fa;
-    height: 2%;
-}
-
-.marginTopCurso{
-    margin-top: calc(100vh - 30em);
-}
-
-.tituloBeneficios {
-    margin-bottom: 60px;
-    text-align: center;
-    > h2 {
-        text-align: center;
-        font-weight: 500;
-        color: #575757;
-        font-size: 3em;
-        margin: 0;
-    }
-    .borderTituloBeneficios {
-        width: 60%;
-        height: 2px;
-        background-color: $verdeClaro;
-        margin: auto;
-        margin-top: -16px;
-        margin-bottom: 2em;
-    }
-}
-
-.cardCurso {
-    min-height: 14em;
-    padding: 5px;
-    margin-bottom: 1em;
-    text-align: center;
-    .icono {
-        font-size: 6em;
-        color: $verdeClaro;
-        margin-bottom: -0.2em;
-    }
-    h2 {
-        color: #575757;
-        font-weight: 500;
-        font-weight: 600;
-    }
-    p{
-        text-align: justify;
-        padding-top: 0.5em;
-        padding: 10px;
-    }
-}
-
-.divisorPagina{
-    background-color: #e3e6e9;
-    border-bottom: solid $verdeClaro;
-    padding: 1em;
-    transform: skewY(-2deg);
-    margin-top: 3em;
-    margin-bottom: 3em;
-    h1{
-        font-weight: 500;
-        color: $verdeClaro;
-        text-shadow: 1px 1px #079a34, 2px 2px #079a34;
-        font-size: 3em;
-        text-align: center;
-    }
-}
-
-.alingIconos{
-    display: flex;
-    align-items: center;
-    .iconos{
-        color: $verdeClaro;
-        font-size: 2.5em !important;
-    }
-}
-
-.lineaAtencion{
-    text-align: justify;
-    display: flex;
-    flex-direction: column;
-}
-
-.titleIniciarSesion{
-    color: $verdeOscuro;  
-    margin: 0;
-    text-shadow: -0.03em 0.03em #fff6e6, -0.08em 0.08em #e7dcd7;
-    font-weight: bold;
-    font-family: "Oswald";  
-    margin-bottom: 0.5em;
-}
-
-.enlaceRecuperaCuenta{
-    color: #868686;
-    font-weight: 700;
-    padding: 5px;
-    padding-top: 10px;
-    transition: all .5s ease-in-out;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.enlaceRecuperaCuenta:hover{
-    color: $verdeOscuro;
-    transition: all .5s ease-in-out;
-    text-decoration: revert;
-}
-
-.subTituloFrm {
-    background-color: $verdeClaro;
-    font-weight: 600;
-    padding-left: 10px;
-    color: $colorBlanco;
-    width: calc(100% + 20px);
-    margin-left: -10px;  
-}
-
-.msgAlert{
-    background-color: rgb(237, 237, 237);
-    padding: 5px;
-    border: 1px solid rgb(131, 131, 131);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-    .avatar{
-      margin-right: 20px;
-      margin-top: 6px;
-      background-color: $verdeClaro;
-    }
-    .textoRojo{
-      color: #ec1c21;
-      font-size: 1.2em;
-      font-weight: 700;
-      padding: 2px;
-    }
-    .textoVerde{
-        color: $verdeOscuro;
-        font-size: 1.2em;
-        font-weight: 700;
-        padding: 2px;
-        text-align: justify;
-    }
-    .p{
-      display: inline-flex;
-    }
-}
-
+}  
 
 .piePagina{
     border-radius: 2px;
@@ -316,10 +72,6 @@ $grisOscuro : var(--grisOscuro);
     }
 }
 
-.activarCuenta{
-    margin-top: 7em;
-}
-
 /*lg*/
 @media (max-width: 992px) { 
     .container {
@@ -327,44 +79,6 @@ $grisOscuro : var(--grisOscuro);
     }
     .banner h1{
         font-size: 1.6em;
-    }
-    .marginTopCurso {
-        margin-top: 12em;
-    }
-    .bannerCurso{
-        h2{
-            font-size: 3.7em;
-        }
-        h5{
-            font-size: 1.5em;
-            width: 80%;
-        }
-        .buttonContainer{
-            margin-top: 3em;
-            margin-left: 1em;
-        }
-        .btnEnlaceCurso {
-            padding: 0.2em;
-            font-size: 1.9em;
-            margin-left: 0.5em;
-        }
-    }
-    .cardCurso {
-        min-height: 24em;  
-        h2{
-            font-size: 2.4em;
-        }
-        h5{
-            width: 90%;
-            font-size: 1.5em;
-        }
-        .buttonContainer {
-            display: flex;
-            flex-direction: column;
-        }
-    }
-    .divisorPagina h1 {
-        font-size: 2em;
     }
 }
 
@@ -380,53 +94,10 @@ $grisOscuro : var(--grisOscuro);
     .container {
         width: 90%;
     }
-    .banner h1{      
+    .banner h1{
         font-size: 1.3em;
         text-align: center;
         margin-left: 1em;
-    }       
-    .btnEnlaceCurso{
-        margin-left: 0.2em;
-        font-size: 1.8em;
-    }  
-    .bannerCurso {
-        min-height: 70vh;
-        h2{
-            font-size: 2.4em;
-        }
-        h5{
-            width: 90%;
-            font-size: 1.5em;
-        }
-        .buttonContainer {
-            margin-top: 8em;
-            display: flex;
-            flex-direction: column;
-        }
-    }
-    .divisorPagina h1 {
-        font-size: 2em;
-    }
-    .zoomImage{
-        height: 70%;
-    }
-    .marginTopCurso {
-        margin-top: 12em;
-    }  
-    .buttonContainer {
-        flex-direction: column;
-    }  
-    .buttonContainerMovil{
-        margin-top: 1.2em !important;
-    } 
-    .cardCurso {
-        min-height: 14em;  
-        h2 {
-            font-size: 2em;
-        }
-        .icono {
-            font-size: 4em;
-        }
     }
     .piePagina{
         min-height: 4.4em;
@@ -438,16 +109,16 @@ $grisOscuro : var(--grisOscuro);
     .container {
         width: 88%;
     }
-    .marginTopCurso {
-        margin-top: 10em;
-    }
-    .buttonContainerMovil{
-        margin-top: 1em !important;
-    }
-    .btnEnlaceCurso {
-        font-size: 1.6em;
+    .banner h1 {
+        font-size: 1.1em;
+        text-align: center;
+        margin-left: 3.1em;
     }
     .piePagina{
         min-height: 4.5em;
+    }    
+    .cardPrincipal{
+        width: 22em;
+        margin: 8em auto;       
     }
 }

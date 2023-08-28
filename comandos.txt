@@ -1,0 +1,11 @@
+php artisan make:migration create_usuario
+php artisan make:migration create_tipo_identificacion
+php artisan make:migration create_ingreso_sistema
+php artisan make:migration create_intentos_fallidos
+php artisan make:migration create_historial_contrasena
+
+php artisan make:model IngresoSistema
+php artisan make:model IntentosFallidos
+php artisan make:model HistorialContrasena
+
+ 

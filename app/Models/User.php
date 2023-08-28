@@ -12,16 +12,16 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $table      = 'usuario';
+	protected $primaryKey = 'usuaid';
+                            
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $fillable = ['tipideid','usuadocumento','usuanombre','usuaapellidos','usuanick','usuaemail',
+                            'usuapassword','usuacambiarpassword','usuabloqueado','usuaactivo'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -29,9 +29,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+                        'password',
+                        'remember_token',
+                    ];
 
     /**
      * The attributes that should be cast.
@@ -39,7 +39,13 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+                        'email_verified_at' => 'datetime',
+                        'usuapassword' => 'hashed',
+                    ];
+
+
+    //Para realizar la relacion con los roles
+    public function roles(){     
+        return $this->hasMany('App\Models\UsuarioRol', 'usuroluserid', 'id');
+    } 
 }

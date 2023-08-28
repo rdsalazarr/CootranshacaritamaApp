@@ -62,7 +62,14 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model'  => App\Models\User::class,
+            'table'  => 'usuario',
+            'password' => [
+                'email' => 'auth.emails.password',
+                'table' => 'password_resets',
+                'expire' => 60,
+            ],
+            'throttle' => 3, // Número máximo de intentos antes del bloqueo
         ],
 
         // 'users' => [
@@ -93,8 +100,8 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
+            'table'    => 'password_reset_tokens',
+            'expire'   => 60,
             'throttle' => 60,
         ],
     ],

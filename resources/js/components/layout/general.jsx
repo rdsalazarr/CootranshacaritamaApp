@@ -27,18 +27,11 @@ export function Header(){
     )
 }
 
-export function HeaderBlanco(){
-    return (
-        <Box className={'bannerBlanco'}>          
-        </Box>
-    )
-}
-
 export function Footer(){
     return (
         <Box className='piePagina'>
             <Box className='container'>
-                <span>COOPIGON | Todos los derechos reservados | Copyright © 2023</span>
+                <span>COOTRANSHACARITAMA | Todos los derechos reservados | Copyright © 2023</span>
                 <span className='implesoft'>Diseño y desarrollo <a href="http://implesoft.com/" target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft.com</a></span>
             </Box>
         </Box>
@@ -46,10 +39,10 @@ export function Footer(){
 }
 
 export function HeaderAdmon(){
-    return (
+        return (
         <Box className={"headerAdmon"}>
             <Box className='colAdmonLeft'>
-                <h2>Cooperativa de ahorro y crédito COOPIGON</h2>
+                <h2>Cooperativa de transporte COOTRANSHACARITAMA</h2>
             </Box>
             <Box className='colAdmonRight'>
                 <img src={logo} alt="logo"  />
@@ -63,7 +56,7 @@ export function FooterAdmon(){
         <Box className={'footerAdmon'}>
             <div style={{borderRight: '1px solid rgb(149 144 144)'}}>
                 <p>
-                    <strong>Curso de cooperativismo</strong>
+                    <strong>Cooperativa de transporte COOTRANSHACARITAMA</strong>
                 </p>
             </div>
             <div style={{marginLeft: '4px'}}>

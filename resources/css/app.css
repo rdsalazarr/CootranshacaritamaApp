@@ -25,3 +25,15 @@ body{
 .paddingFrm{
     padding: 5px;
 }
+
+a{
+    color: var(--verdeOscuro);
+    transition: all .5s ease-in-out;
+ }
+ 
+a:hover{
+    color: var(--verdeClaro);
+    text-decoration: none;
+    transition: all .5s ease-in-out;
+}
+ 

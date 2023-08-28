@@ -2,7 +2,8 @@ import '../../bootstrap';
 import React from 'react';
 import {createRoot} from "react-dom/client";
 import {Header, Footer} from "../layout/general";
-import { Box, Grid } from '@mui/material';
+import IniciarSesion from './iniciarSesion'
+import { Box} from '@mui/material';
 import "../../../scss/app.scss";
 
 export default function App(){
@@ -10,14 +11,9 @@ export default function App(){
     return(
         <Box>
             <Header />
-            <div>
-                <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
-
-                <h1>hola mundo </h1>
-
-                <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
-            </div>
-
+            <Box className='container'>
+                <IniciarSesion />
+            </Box>
             <Footer />
         </Box>
     )

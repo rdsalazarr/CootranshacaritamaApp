@@ -11,20 +11,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import "../../../scss/contenedor.scss";
 import {generalTema} from "../layout/theme";
 import instance from '../layout/instance';
-import Welcome from "../admin/curso/welcome";
-import Usuario from "../admin/usuario/list";
-import Evaluacion from "../admin/evaluacion/list";
 
-import Modulo from "../admin/curso/institucion/list";
-import Funcionalidad from "../admin/curso/institucion/list";
-import Institucion from "../admin/curso/institucion/list";
-import Asociados from "../admin/curso/asociados/list";
-import Beneficios from "../admin/curso/beneficios/list";
-import Certificacion from "../admin/curso/certificacion/list";
-import Organizacion from "../admin/curso/organizacion/list";
-import Productos from "../admin/curso/productos/list";
-import Servicios from "../admin/curso/servicios/list";
-import MiPerfil from "../admin/usuario/miPerfil";
+import Welcome from "../admin/welcome";
+import Usuario from "../admin/usuario/list";
 
 const HeaderMenu = ({open , setOpen}) =>{
     return (
@@ -106,22 +95,22 @@ const componenteMenu = [
         icono : 'settings_applications',
         itemMenu: [
             {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> },
-            {ruta : 'admin/evaluacion', menu: 'Evaluación', icono : 'add_chart ', componente : <Evaluacion /> }
+            {ruta : 'admin/evaluacion', menu: 'Evaluación', icono : 'add_chart ', componente : <Usuario /> }
         ]
     }    
 ];
 
 const menuComponente = [
-    {id:11,componente : <Modulo />},
-    {id:12,componente : <Funcionalidad />}     
+    {id:11,componente : <Usuario />},
+    {id:12,componente : <Usuario />}     
 ];
 
 export default function  Contenedor ({componente, users}) {
     const [esInvitado, setEsInvitado] = useState(true); 
     useEffect(() => {
-        instance.get('/nameUser').then(res=>{
+        /*instance.get('/nameUser').then(res=>{
             setEsInvitado((res.esInvitado === 1) ? true : false);
-        })
+        })*/
     }, []);
     const [open, setOpen] = useState(true); 
     return (
@@ -138,16 +127,6 @@ export default function  Contenedor ({componente, users}) {
                     <Box className='containerAdmin'>
                         <Routes >
                             <Route exact = {`true`} path="/dashboard" element={<Welcome susuario={users}/>}/>
-
-                            <Route exact = {`true`} path="/curso/institucion" element={<Institucion />}/>
-                            <Route exact = {`true`} path="/curso/asociados" element={<Asociados />}/>
-                            <Route exact = {`true`} path="/curso/organizacion" element={<Organizacion />}/>
-                            <Route exact = {`true`} path="/curso/productos" element={<Productos />}/>
-                            <Route exact = {`true`} path="/curso/servicios" element={<Servicios />}/>
-                            <Route exact = {`true`} path="/curso/beneficios" element={<Beneficios />}/>
-                            <Route exact = {`true`} path="/curso/certificacion" element={<Certificacion />}/>
-                            <Route exact = {`true`} path="/admin/miPerfil" element={<MiPerfil />}/>
-
                             {componenteMenu.map(item=>{
                                 return item.itemMenu.map((res, i ) =>{
                                         /*const resultado = menuComponente.find( resul => resul.id === parseInt(res.id));
@@ -167,16 +146,7 @@ export default function  Contenedor ({componente, users}) {
                     {(!esInvitado)? componenteMenu.map((res, i )=>{
                                 return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
                                 })
-                    : null}
-
-                    <ItemMenu route={'curso/institucion'} text={'Institución'} icon={'account_balance'} />
-                    <ItemMenu route={'curso/asociados'} text={'Asociados'} icon={'people'} />
-                    <ItemMenu route={'curso/organizacion'} text={'Organización'} icon={'business'} />
-                    <ItemMenu route={'curso/productos'} text={'Productos'} icon={'category'} />
-                    <ItemMenu route={'curso/servicios'} text={'Servicios'} icon={'settings_suggest'} />
-                    <ItemMenu route={'curso/beneficios'} text={'Beneficios'} icon={'loyalty'} />
-                    <ItemMenu route={'curso/certificacion'} text={'Certificación'} icon={'school'} />
-                    <ItemMenu route={'admin/miPerfil'} text={'Mi perfil'} icon={'person'} />
+                    : null}               
 
                     <ItemMenu route={'logout'} text={'Salir'} icon={'exit_to_app'} />
                   

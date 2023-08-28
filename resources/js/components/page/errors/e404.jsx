@@ -9,6 +9,7 @@ import "../../../../scss/app.scss";
 import "../../../../scss/errors.scss";
 
 export default function E404(){
+
     return(
         <Box>
             <Header />

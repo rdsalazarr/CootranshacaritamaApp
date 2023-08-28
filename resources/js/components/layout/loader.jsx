@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Box } from "@mui/material";
 import "../../../scss/loader.scss";
-import logo from "../../../images/logoCoopigon.png";
+import logo from "../../../images/logoCootranshacaritama.png";
 
 export default function Loader(){
     return (<Box className={'loader'}>

@@ -108,4 +108,39 @@ class generales
 		return $dia." de ".$mes1." de ".$anyo." a las ".$hora; 
 	}
 
+	function validarContrasena($contrasena) {
+		// Verifica la longitud de la contraseña
+		if (strlen($contrasena) < 8 || strlen($contrasena) > 20) {
+			return false;
+		}
+	
+		// Verifica si hay al menos una letra mayúscula
+		if (!preg_match('/[A-Z]/', $contrasena)) {
+			return '1';
+		}
+	
+		// Verifica si hay al menos una letra minúscula
+		if (!preg_match('/[a-z]/', $contrasena)) {
+			return '2';
+		}
+	
+		// Verifica si hay al menos un número
+		if (!preg_match('/[0-9]/', $contrasena)) {
+			return '3';
+		}
+	
+		// Verifica si hay al menos un carácter especial
+		/*if (!preg_match('/[\*\#\!]/', $contrasena)) {
+			return '4';
+		}
+	
+		// Verifica si no hay números ni letras consecutivas
+		if (preg_match('/(\d)\1{1,}|([a-zA-Z])\2{1,}/', $contrasena)) {
+			return '5';
+		}*/
+	
+		// Si pasa todas las validaciones, la contraseña es válida
+		return true;
+	}
+
 }
