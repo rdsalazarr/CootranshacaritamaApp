@@ -23,7 +23,7 @@ export default function Reset(){
     }
 
     const handleSubmit =() =>{  
-        setLoader(true);
+        //setLoader(true);
         /*window.axios.post('/updatePassword', formData
             ,{ headers : { crsfToken : document.querySelector('meta[name="csrf-token"]').content } } )
         .then(response => {
@@ -86,8 +86,11 @@ export default function Reset(){
                                 puede cerrar sesion <a href="#" onClick={()=>{location.href = '/logout'}} title='Cerrar sesión'>aquí</a>. </p> 
 
                         </Grid>
-                        <Grid item md={4} xl={4} sm={5} xs={12}>                        
-                            <Card style={{ margin: '5em auto'}}>
+                        <Grid item md={4} xl={4} sm={5} xs={12}> 
+                            <Box>
+                                <h1 className='titleInicio'>Cambiar contraseña</h1>    
+                            </Box>                     
+                            <Card>
                                 <CardContent>
                                     <ValidatorForm onSubmit={handleSubmit}>
                                         <Grid container spacing={2}>
@@ -122,7 +125,7 @@ export default function Reset(){
                                             </Grid>
 
                                             <Grid container direction="row"  justifyContent="right">
-                                                <Button type={"submit"}  style={{width: '96%', marginBottom: '1em'}} >Cambiar contraseña</Button>
+                                                <Button type={"submit"}  style={{width: '96%', marginBottom: '1em'}} >Guardar</Button>
                                             </Grid>
 
                                         </Grid>

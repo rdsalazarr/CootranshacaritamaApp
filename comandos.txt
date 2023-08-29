@@ -8,4 +8,9 @@ php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
 php artisan make:model HistorialContrasena
 
- 
+
+
+php artisan make:seeder PersonaSeeder
+php artisan make:request ResumenRequest
+php artisan make:controller Gestionar\EleccionDeelegadoAspiranteController
+php artisan db:seed

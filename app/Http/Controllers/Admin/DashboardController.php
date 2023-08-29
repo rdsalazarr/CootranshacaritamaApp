@@ -38,14 +38,16 @@ class DashboardController extends Controller
 			'repPassword' => 'required|same:password'
 		]);
 
-		$generales = new generales();
-	
-		$validarPassword = $generales->validarContrasena($request->password);
+		$generales               = new generales();	
+		[$success, $message] = $generales->validarContrasena($request->password);
+		dd($success, $message);
 
-	
-		if(!$validarPassword){
-			return response()->json(['success' => false, 'message'=> 'La contraseña digitada no cumple con los requerimientos mínimos establecidos']);
+		//list($titulo,$error) = $funcion->mostarMensajeError(1);
+		if(!$success){
+			return response()->json(['success' => false, 'message'=> $validarPassword]);
 		}
+
+		dd((!$validarPassword->mensaje));
 
 		//Verifico que la contraseña no la halla utilizado el usuario
 		$historialcontrasena = DB::table('historialcontrasena')->select('hisconid')

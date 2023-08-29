@@ -41,17 +41,18 @@ $grisOscuro : var(--grisOscuro);
     border-top: 5px solid $verdeClaro;
     > div{
       background: #f7f7f7;
-    }
-    .titleInicio{
-      margin: 0.5em;
-      text-align: center;
-      color: $verdeOscuro; 
-      text-shadow: -0.03em 0.03em #fff6e6, -0.08em 0.08em #e7dcd7;
-      font-weight: bold;
-      font-family: "Oswald";  
-      margin-bottom: 0.5em;
-    }
-}  
+    }   
+}
+
+.titleInicio{
+    margin: 0.5em;
+    text-align: center;
+    color: $verdeOscuro; 
+    text-shadow: -0.03em 0.03em #fff6e6, -0.08em 0.08em #e7dcd7;
+    font-weight: bold;
+    font-family: "Oswald";  
+    margin-bottom: 0.5em;
+}
 
 .piePagina{
     border-radius: 2px;

@@ -111,36 +111,37 @@ class generales
 	function validarContrasena($contrasena) {
 		// Verifica la longitud de la contraseña
 		if (strlen($contrasena) < 8 || strlen($contrasena) > 20) {
-			return false;
+			return array('success' => false, 'message' => 'El requerimiento de tener entre 8 y 20 caracteres de longitud, no se esta cumpliendo');
 		}
 	
 		// Verifica si hay al menos una letra mayúscula
 		if (!preg_match('/[A-Z]/', $contrasena)) {
-			return '1';
+			return array('success' => false, 'message' => 'El requerimiento de incluir al menos una letra mayúscula, no se esta cumpliendo');
 		}
 	
 		// Verifica si hay al menos una letra minúscula
 		if (!preg_match('/[a-z]/', $contrasena)) {
-			return '2';
+			return 'El requerimiento de incluir al menos una letra minúscula, no se esta cumpliendo';
 		}
 	
 		// Verifica si hay al menos un número
 		if (!preg_match('/[0-9]/', $contrasena)) {
-			return '3';
+			return 'El requerimiento de contener al menos un número, no se esta cumpliendo';
 		}
 	
 		// Verifica si hay al menos un carácter especial
 		/*if (!preg_match('/[\*\#\!]/', $contrasena)) {
-			return '4';
+			return 'El requerimiento de tener al menos un carácter especial, no se esta cumpliendo';
 		}
 	
 		// Verifica si no hay números ni letras consecutivas
 		if (preg_match('/(\d)\1{1,}|([a-zA-Z])\2{1,}/', $contrasena)) {
-			return '5';
+			return 'El requerimiento de no tener números ni letras consecutivas, no se esta cumpliendo';
 		}*/
 	
 		// Si pasa todas las validaciones, la contraseña es válida
-		return true;
+		//return true;
+		return array('success' => true, 'message' => '');
 	}
 
 }

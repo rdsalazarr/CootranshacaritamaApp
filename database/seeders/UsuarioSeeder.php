@@ -23,8 +23,9 @@ class UsuarioSeeder extends Seeder
             'usuaapellidos' => 'Salazar Rincón',
             'usuaemail'     => 'radasa10@hotmail.com',
             'usuanick'      => 'RSALAZAR',         	
-        	'usuapassword'  => bcrypt('123456'),
-            'usuaactivo'    => '1'
+        	'password'      => bcrypt('123456'),
+            'usuaactivo'    => '1',
+            'usuacambiarpassword' => '0',
         ]); 
     }
 }

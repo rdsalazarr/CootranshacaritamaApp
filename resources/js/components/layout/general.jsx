@@ -18,7 +18,7 @@ export function Header(){
                         </Grid> 
 
                         <Grid item md={10} xl={10} sm={9} xs={10}>
-                            <h1>Cooperativa de transporte COOTRANSHACARITAMA</h1>
+                            <h1>Cooperativa de transportadores HACARITAMA</h1>
                         </Grid> 
                     </Grid>
                 </Box>
@@ -42,7 +42,7 @@ export function HeaderAdmon(){
         return (
         <Box className={"headerAdmon"}>
             <Box className='colAdmonLeft'>
-                <h2>Cooperativa de transporte COOTRANSHACARITAMA</h2>
+                <h2>Cooperativa de transportadores HACARITAMA</h2>
             </Box>
             <Box className='colAdmonRight'>
                 <img src={logo} alt="logo"  />
