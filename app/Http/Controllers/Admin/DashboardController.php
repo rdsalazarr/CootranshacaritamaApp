@@ -38,28 +38,24 @@ class DashboardController extends Controller
 			'repPassword' => 'required|same:password'
 		]);
 
-		$generales               = new generales();	
-		[$success, $message] = $generales->validarContrasena($request->password);
-		dd($success, $message);
-
-		//list($titulo,$error) = $funcion->mostarMensajeError(1);
+		$generales               = new generales();
+		list($success, $message) = $generales->validarContrasena($request->password);
 		if(!$success){
-			return response()->json(['success' => false, 'message'=> $validarPassword]);
+			return response()->json(['success' => false, 'message'=> $message]);
 		}
 
-		dd((!$validarPassword->mensaje));
-
 		//Verifico que la contraseña no la halla utilizado el usuario
-		$historialcontrasena = DB::table('historialcontrasena')->select('hisconid')
-																->where('usuaid', Auth::id())
-																->where('hisconpassword', bcrypt($request->password))->first();
-		
-		dd($historialcontrasena);
-		
-
+		$historialcontrasenas = DB::table('historialcontrasena')
+								->select('hisconid','hisconpassword')
+								->where('usuaid', Auth::id())->get();
+		foreach($historialcontrasenas as $historialcontrasena){
+			if (password_verify($request->password, $historialcontrasena->hisconpassword)) {
+				return response()->json(['success' => false, 'message'=> 'Lo siento, pero esta contraseña ya ha sido utilizada en el pasado. Por favor, elige una contraseña diferente']);
+			}
+		}
 
 		DB::beginTransaction();
-		try {			
+		try {
 			$historialcontrasena                 = new HistorialContrasena();
 			$historialcontrasena->usuaid         = Auth::id();
 			$historialcontrasena->hisconpassword = bcrypt($request->password);
@@ -67,19 +63,13 @@ class DashboardController extends Controller
 
 			$usuario = User::findOrFail(Auth::id());
 			$usuario->password = bcrypt($request->password);
-			$usuario->usuacambiarpassword = false;			
+			$usuario->usuacambiarpassword = false;
 			$usuario->save();
 			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Contraseña modificada con éxito por favor cierra sesión y vuelve a ingresar al sistema']);
+			return response()->json(['success' => true, 'message' => 'Contraseña modificada con éxito. Por favor, espera unos momentos mientras el sistema te redirecciona']);
 		} catch (Exception $error){
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}
-	
-
-
-	
-
-	
+	}	
 }

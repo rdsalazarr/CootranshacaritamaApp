@@ -109,39 +109,46 @@ class generales
 	}
 
 	function validarContrasena($contrasena) {
+		$success = false;
+		$message = '';
 		// Verifica la longitud de la contraseña
-		if (strlen($contrasena) < 8 || strlen($contrasena) > 20) {
-			return array('success' => false, 'message' => 'El requerimiento de tener entre 8 y 20 caracteres de longitud, no se esta cumpliendo');
+		if (strlen($contrasena) < 8 || strlen($contrasena) > 20) {		
+			$message = 'Debe tener entre 8 y 20 caracteres de longitud';
+			return array($success, $message );
 		}
 	
 		// Verifica si hay al menos una letra mayúscula
 		if (!preg_match('/[A-Z]/', $contrasena)) {
-			return array('success' => false, 'message' => 'El requerimiento de incluir al menos una letra mayúscula, no se esta cumpliendo');
+			$message = 'Debe incluir al menos una letra mayúscula';
+			return array($success, $message );
 		}
 	
 		// Verifica si hay al menos una letra minúscula
 		if (!preg_match('/[a-z]/', $contrasena)) {
-			return 'El requerimiento de incluir al menos una letra minúscula, no se esta cumpliendo';
+			$message = 'Debe incluir al menos una letra minúscula';
+			return array($success, $message );
 		}
 	
 		// Verifica si hay al menos un número
 		if (!preg_match('/[0-9]/', $contrasena)) {
-			return 'El requerimiento de contener al menos un número, no se esta cumpliendo';
+			$message = 'Debe contener al menos un número';
+			return array($success, $message );
 		}
 	
 		// Verifica si hay al menos un carácter especial
-		/*if (!preg_match('/[\*\#\!]/', $contrasena)) {
-			return 'El requerimiento de tener al menos un carácter especial, no se esta cumpliendo';
+		if (!preg_match('/[\!\@\#\$\%\^\&\*\(\)\-\_\+\=\[\]\{\}\|\:\;\,\.\<\>\/\?]/', $contrasena)) {
+			$message = 'Debe incluir al menos un carácter especial o el carácter no esta soportado';
+			return array($success, $message );
 		}
-	
-		// Verifica si no hay números ni letras consecutivas
-		if (preg_match('/(\d)\1{1,}|([a-zA-Z])\2{1,}/', $contrasena)) {
-			return 'El requerimiento de no tener números ni letras consecutivas, no se esta cumpliendo';
-		}*/
-	
+
+		if (!preg_match('/[A-Z]/', $contrasena) || !preg_match('/[a-z]/', $contrasena) || !preg_match('/\d/', $contrasena) || !preg_match('/[\*\#\!]/', $contrasena)) {
+			$message = 'No debe tener números ni letras consecutivas';
+			return array($success, $message );
+		}
+
 		// Si pasa todas las validaciones, la contraseña es válida
-		//return true;
-		return array('success' => true, 'message' => '');
+		$success = true;
+		return array($success, $message );
 	}
 
 }

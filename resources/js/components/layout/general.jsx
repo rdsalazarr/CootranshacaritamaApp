@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import ReactDOM from "react-dom";
 import "../../../scss/general.scss";
 import { Card, CardContent, Box, Grid } from '@mui/material';
@@ -56,13 +56,13 @@ export function FooterAdmon(){
         <Box className={'footerAdmon'}>
             <div style={{borderRight: '1px solid rgb(149 144 144)'}}>
                 <p>
-                    <strong>Cooperativa de transporte COOTRANSHACARITAMA</strong>
+                    <strong>Cooperativa de transportadores HACARITAMA</strong>
                 </p>
             </div>
             <div style={{marginLeft: '4px'}}>
                 <span>
-                    <strong>Todos los derechos Reservados | Copyright  |</strong>
-                    <a href='https://implesoft.com/'> Implesoft</a> © 2023
+                    <strong>Todos los derechos Reservados | Copyright  | </strong>
+                    <a href='https://implesoft.com/' target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft</a> © 2023
                 </span>
             </div>
         </Box>
@@ -87,3 +87,28 @@ export function TabPanel(props) {
         </Box>
     );
 }
+
+export function Contador({tiempoInicial, onTiempoFinalizado}){
+    const [contador, setContador] = useState(tiempoInicial);
+  
+    useEffect(() => {
+      const intervalo = setInterval(() => {
+        setContador((prevContador) => prevContador - 1);
+      }, 1000);
+  
+      return () => {
+        clearInterval(intervalo);
+      };
+    }, []);
+  
+    useEffect(() => {
+      if (contador === 0) {
+        onTiempoFinalizado();
+        clearInterval(intervalo);
+      }
+    }, [contador]); 
+  
+    return ( 
+        <>{contador} </> 
+    );
+  }

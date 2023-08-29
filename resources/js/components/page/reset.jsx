@@ -1,54 +1,38 @@
 import '../../bootstrap';
 import React, {useState, useEffect} from 'react';
 import {createRoot} from "react-dom/client";
-import {Header, FooterAdmon } from "../layout/general";
-import "../../../scss/app.scss";
-
-import { ThemeProvider } from '@mui/material/styles';
-import {generalTema} from "../layout/theme";
-import { Card, CardContent, Box, Grid, Button } from '@mui/material';
+import {Header, FooterAdmon, Contador } from "../layout/general";
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
-import Loader from "../layout/loader";
-import instance from '../layout/instance';
+import { Card, CardContent, Box, Grid, Button } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import showSimpleSnackbar from '../layout/snackBar';
+import {generalTema} from "../layout/theme";
+import instance from '../layout/instance';
+import Loader from "../layout/loader";
+import "../../../scss/app.scss";
 
 export default function Reset(){
 
-    const [formData, setFormData] = useState({password:'', repPassword:'' }); 
+    const [formData, setFormData] = useState({password:'123456', repPassword:'123456' }); 
     const [loader, setLoader] = useState(false);
     const [dataUsuario, setDataUsuario] = useState([]);
-    
+    const [success, setSuccess] = useState(false);
+
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const handleSubmit =() =>{  
-        //setLoader(true);
-        /*window.axios.post('/updatePassword', formData
-            ,{ headers : { crsfToken : document.querySelector('meta[name="csrf-token"]').content } } )
-        .then(response => {
-            let res = response.data;
-            let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.msg, icono);
-            setLoader(false);
-            if(res.success){
-                
-            } 
-        }).catch(error => {
-            showSimpleSnackbar(error.response.data.message, 'error');
-            setLoader(false); 
-        });*/
-
+    const handleSubmit =() =>{
+        setLoader(true);
         instance.post('/updatePassword', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            //(res.success) ? 'success' : 'error';
+            (res.success) ? setSuccess(true) : null;
             setLoader(false);
         })
-
     }
-
-    const redireccionarUrl =() =>{  
+  
+    const redireccionarUrl =() =>{
         location.replace('/dashboard');
     }
 
@@ -84,12 +68,12 @@ export default function Reset(){
                             </ul>
                             <p>Gracias por su colaboración. Su seguridad es nuestra prioridad. Si decide no cambiar su contraseña en este momentos, 
                                 puede cerrar sesion <a href="#" onClick={()=>{location.href = '/logout'}} title='Cerrar sesión'>aquí</a>. </p> 
-
                         </Grid>
                         <Grid item md={4} xl={4} sm={5} xs={12}> 
                             <Box>
-                                <h1 className='titleInicio'>Cambiar contraseña</h1>    
-                            </Box>                     
+                                <h1 className='titleInicio'>Cambiar contraseña</h1>
+                            </Box>
+
                             <Card>
                                 <CardContent>
                                     <ValidatorForm onSubmit={handleSubmit}>
@@ -132,6 +116,13 @@ export default function Reset(){
                                     </ValidatorForm>
                                 </CardContent>
                             </Card>
+
+                            {(success) ? 
+                                <Box>
+                                    <h1 className='titleInicio' style={{color: '#e92908'}}>Redireccionando en (<Contador tiempoInicial={4} onTiempoFinalizado={redireccionarUrl} /> )</h1>   
+                                </Box>
+                            : null}
+    
                         </Grid>
                     </Grid>
                 </Box>
