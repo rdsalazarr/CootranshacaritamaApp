@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route, Routes, NavLink } from "react-router-dom";
 import {Drawer, List, ListItem,  IconButton, Divider, Icon, Box  } from '@mui/material';
 import { ListItemButton , ListItemText ,  Collapse  } from '@mui/material';
@@ -14,6 +13,8 @@ import instance from '../layout/instance';
 
 import Welcome from "../admin/welcome";
 import Usuario from "../admin/usuario/list";
+import Menu from "../admin/menu/list";
+
 
 const HeaderMenu = ({open , setOpen}) =>{
     return (
@@ -95,7 +96,7 @@ const componenteMenu = [
         icono : 'settings_applications',
         itemMenu: [
             {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> },
-            {ruta : 'admin/evaluacion', menu: 'Evaluación', icono : 'add_chart ', componente : <Usuario /> }
+            {ruta : 'admin/menu', menu: 'Menu', icono : 'add_chart ', componente : <Menu /> }
         ]
     }    
 ];
@@ -124,7 +125,7 @@ export default function  Contenedor ({componente, users}) {
                 </Drawer>
 
                 <Box className={open ? 'component' : 'component componentClose'}>
-                    <Box className='containerAdmin'>
+                    <Box>
                         <Routes >
                             <Route exact = {`true`} path="/dashboard" element={<Welcome susuario={users}/>}/>
                             {componenteMenu.map(item=>{
@@ -137,19 +138,15 @@ export default function  Contenedor ({componente, users}) {
                         </Routes>
                     </Box>
                 </Box>
-                
+
                 <Drawer variant="permanent" className={open ? "nav" : "nav navClose"} open={open}>
                     <HeaderMenu open={open} setOpen={setOpen} />
                     <Divider/>
                     <ItemMenu route={'dashboard'} text={'Inicio'} icon={'home'} />
-
-                    {(!esInvitado)? componenteMenu.map((res, i )=>{
-                                return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
-                                })
-                    : null}               
-
+                    {componenteMenu.map((res, i )=>{
+                            return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
+                        }) }
                     <ItemMenu route={'logout'} text={'Salir'} icon={'exit_to_app'} />
-                  
                 </Drawer>
 
             </Router>

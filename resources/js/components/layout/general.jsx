@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import ReactDOM from "react-dom";
 import "../../../scss/general.scss";
 import { Card, CardContent, Box, Grid } from '@mui/material';
 import logo from "../../../images/logoHome.png";

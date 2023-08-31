@@ -4,13 +4,33 @@ php artisan make:migration create_ingreso_sistema
 php artisan make:migration create_intentos_fallidos
 php artisan make:migration create_historial_contrasena
 
+php artisan make:migration create_modulo
+php artisan make:migration create_rol
+php artisan make:migration create_funcionalidad
+php artisan make:migration create_rol_funcionalidad
+
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
 php artisan make:model HistorialContrasena
+php artisan make:model Modulo
+php artisan make:model Rol
+php artisan make:model Funcionalidad
+php artisan make:model RolFuncionalidad
 
 
 
-php artisan make:seeder PersonaSeeder
+php artisan make:seeder TipoIdentificacionSeeder
+php artisan make:seeder UsuarioSeeder
+
+
 php artisan make:request ResumenRequest
+
 php artisan make:controller Gestionar\EleccionDeelegadoAspiranteController
+php artisan make:controller Gestionar\ModuloController
+php artisan make:controller Gestionar\FuncionalidadController
+php artisan make:controller Gestionar\RolController
+
+
 php artisan db:seed
+
+

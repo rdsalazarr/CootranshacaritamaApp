@@ -7,10 +7,13 @@ import { Box} from '@mui/material';
 import "../../../scss/app.scss";
 
 export default function Dashboard(){
+
     return(
-        <Box>
+        <Box >
             <HeaderAdmon />
-            <Contenedor />
+                <Box style={{ marginTop: '5em', marginBottom: '4em'}}>
+                    <Contenedor />
+                </Box>
             <FooterAdmon />
         </Box>
     )

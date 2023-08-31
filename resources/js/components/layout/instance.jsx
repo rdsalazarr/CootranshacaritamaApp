@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import axios from "axios";
 import showSimpleSnackbar from './snackBar';
 
@@ -18,7 +17,6 @@ const instance = axios.create({headers: config, withCredentials: true});
         },
         error => {
             if (error.response.status === 401 || error.response.status === 403) {
-               // window.location.href = "http://127.0.0.1:8001/logout";
                 window.location.href = import.meta.env.VITE_APP_URL+"/logout";
             }
             let msg = (typeof error.response.data.data === 'undefined') ? error.response.data.message : error.response.data.data;

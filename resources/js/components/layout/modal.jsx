@@ -1,8 +1,7 @@
 
 import React, {useState , useEffect} from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardContent, Icon, Modal, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { makeStyles } from "@mui/styles";
+import { Box, CardContent, Icon, Modal, Paper, Typography } from '@mui/material';
 import '../../../scss/modal.scss';
 
 export function TabPanel(props) {
