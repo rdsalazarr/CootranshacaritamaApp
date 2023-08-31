@@ -49,11 +49,14 @@ export function ModalDefaultAuto({title, content, close, tam = 'bigFlot', abrir=
     }, [abrir]);
     return (
         <Modal open={open} onClose={() => {close()}} className={"modalCenter"} >
-            <Paper className= {tam} >
+            <Paper className= {tam + " animate__animated animate__zoomIn" }>
                 <Box className={"modalHeader"} >
-                <Box className={"iconLateral"}><Box /></Box>
-                    <Typography component={'h3'} >{title}</Typography>
+                    <Box className={"iconLateral"}><Box />
                 </Box>
+
+                <Typography component={'h3'} >{title}</Typography>
+                </Box>
+                
                 <Box className={"modalContent"} >
                     {content}
                 </Box>

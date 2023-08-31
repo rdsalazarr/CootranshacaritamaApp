@@ -4,9 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Home\FrondController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Gestionar\ModuloController;
-use App\Http\Controllers\Gestionar\FuncionalidadController;
-use App\Http\Controllers\Gestionar\RolController;
+use App\Http\Controllers\Admin\Menu\ModuloController;
+use App\Http\Controllers\Admin\Menu\FuncionalidadController;
+use App\Http\Controllers\Admin\Menu\RolController;
 
 
 Route::get('/', [FrondController::class, 'index']);

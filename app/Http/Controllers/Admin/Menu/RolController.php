@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Gestionar;
+namespace App\Http\Controllers\Admin\Menu;
 
 use App\Http\Controllers\Controller;
 use App\Models\RolFuncionalidad;
@@ -22,12 +22,12 @@ class RolController extends Controller
 
     public function funcionalidades(Request $request)
 	{
-		$data = DB::table('funcionalidad as fm')
-						->select('fi.funcid',DB::raw("CONCAT(fm.funcnombre,'-', fi.funcnombre) as titulo"))
-						->leftJoin('funcionalidad as fi', 'fi.funcidpadre', '=', 'fm.funcid')
-	    				->where('fi.funcactiva', 1)
-						->orderBy('fm.funcnombre')
-						->orderBy('fi.funcnombre')->get();
+		$data = DB::table('funcionalidad as f')
+						->select('f.funcid',DB::raw("CONCAT(f.funcnombre,'-', m.modunombre) as titulo"))
+						->join('modulo as m', 'm.moduid', '=', 'f.moduid')
+	    				->where('f.funcactiva', 1)
+						->orderBy('m.modunombre')
+						->orderBy('f.funcnombre')->get();
 
 		$marcados = DB::table('rolfuncionalidad')->select('rolfunfuncid as funcid')
 						->where('rolfunrolid', $request->codigo)->get();
@@ -38,9 +38,10 @@ class RolController extends Controller
 	public function salve(Request $request)
 	{
         $this->validate(request(),[
-            'nombre'          => 'required|string|min:4|max:80',
-            'estado'          => 'required',
-            'funcionalidades' => 'required|array|min:1',
+				'codigo' => 'required',
+				'nombre'          => 'required|string|min:4|max:80',
+				'estado'          => 'required',
+				'funcionalidades' => 'required|array|min:1',
             ]);
 
         DB::beginTransaction();        
@@ -60,7 +61,7 @@ class RolController extends Controller
 	            $rol->save(); 
 			}			
 
-			//elimino las funcionalides asignada
+			//Elimino las funcionalides asignada
 			if($request->tipo === 'U'){
 				$rolfuncionalidad = DB::table('rolfuncionalidad')->select('rolfunid')
 						->where('rolfunrolid', $request->codigo)->get();
@@ -80,10 +81,10 @@ class RolController extends Controller
                 $rolfuncionalidad->save();
             }
             DB::commit();
-            return response()->json(['success' => true, 'data' => 'Registro almacenado con éxito']);
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
 			DB::rollback();
-			return response()->json(['success' => false, 'data'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}		
 	}
 	
@@ -99,10 +100,10 @@ class RolController extends Controller
 			}
 			$rol->delete();
             DB::commit();
-            return response()->json(['success' => true, 'data' => 'Registro eliminado con éxito']);
+            return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
         } catch (Exception $error){
             DB::rollback();
-            return response()->json(['success' => false, 'data'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
         }			
 	} 
 }

@@ -25,7 +25,7 @@ const instancePdf = axios.create({headers: config, withCredentials: true});
         },
         error => {
             if (error.response.status === 401 || error.response.status === 403) {
-                window.location.href = import.meta.env.VITE_APP_URL+"logout";
+                window.location.href = import.meta.env.VITE_APP_URL+"/logout";
             }
             let msg = (typeof error.response.data.data === 'undefined') ? error.response.data.message : error.response.data.data;
             showSimpleSnackbar(msg, "error");

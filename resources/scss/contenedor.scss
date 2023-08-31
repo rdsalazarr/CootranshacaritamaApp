@@ -111,21 +111,11 @@ body{
 .containerMedium {
   width: 80%;
   margin: auto;
-  /*width: 80% ;
-  margin-top: 3.5em !important;
-  padding: 2em;
-  margin-right: auto;
-  margin-left: auto;*/
 }
 
 .containerSmall{
   width: 50%;
   margin: auto;
-  /*width: 50% ;
-  margin-top: 3.5em !important;
-  padding: 2em;
-  margin-right: auto;
-  margin-left: auto;*/
 }
 
 .inputGeneral{
@@ -293,13 +283,26 @@ body{
 /*md*/
 @media (max-width: 768px) { 
   .containerAdmin{
-     width: 94%;
+     width: 96%;
+  }
+  .containerMedium {
+    width: 94%;
+  }  
+  .containerSmall{
+    width: 94%;
   }
 }
 
 /*xs*/
 @media (max-width: 576px) {
   .containerAdmin{
-    width: 92%;
+    width: 94%;
+  }
+  .containerMedium {
+    width: 125%;
+    margin-left: -25px;
+  }  
+  .containerSmall{
+    width: 100%;
   }
 }

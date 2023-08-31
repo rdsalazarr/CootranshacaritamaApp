@@ -21,10 +21,10 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.moduid : null} ruta={'/admin/rol/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.moduid : null} ruta={'/admin/modulo/destroy'} cerrarModal={cerrarModal} />
                     ];
 
-    const tituloModal = ['Nuevo rol','Editar rol',''];
+    const tituloModal = ['Nuevo módulo','Editar módulo',''];
 
     function edit(data, tipo){
         setTipo(tipo);
@@ -33,7 +33,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/rol/list').then(res=>{
+        instance.get('/admin/modulo/list').then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -46,13 +46,13 @@ export default function List(){
     }
 
     return (
-        <Box className={'containerSmall'} >
+        <Box className={'containerMedium'} >
             <Box className={'cardContainer'} >
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Nombre','Activo','Actualizar','Eliminar']}
-                        ver={["rolnombre","estado"]}
+                        titulo={['Nombre','Ícono', 'Total Menú','Orden','Activo','Actualizar','Eliminar']}
+                        ver={["modunombre","moduicono","totalMenu","moduorden","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

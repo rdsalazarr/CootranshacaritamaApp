@@ -3,6 +3,7 @@ import React from 'react';
 import {createRoot} from "react-dom/client";
 import {HeaderAdmon, FooterAdmon } from "../layout/general";
 import Contenedor from '../layout/contenedor';
+import "animate.css/animate.min.css";
 import { Box} from '@mui/material';
 import "../../../scss/app.scss";
 

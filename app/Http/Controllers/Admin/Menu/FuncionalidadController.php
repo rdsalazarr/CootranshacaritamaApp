@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Gestionar;
+namespace App\Http\Controllers\Admin\Menu;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -33,6 +33,7 @@ class FuncionalidadController extends Controller
 	public function salve(Request $request)
 	{
 	   $this->validate(request(),[
+			'codigo' => 'required',
 			'modulo' => 'required|numeric',
             'nombre' => 'required|string|min:3|max:80',
 			'titulo' => 'required|string|min:3|max:80',
@@ -53,9 +54,9 @@ class FuncionalidadController extends Controller
 			$funcionalidad->funcorden   = $request->orden;
 			$funcionalidad->funcactiva  = $request->estado;
 			$funcionalidad->save();
-			return response()->json(['success' => true, 'data' => 'Registro almacenado con éxito']);
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
-			return response()->json(['success' => false, 'data'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
 	}
 
@@ -66,14 +67,14 @@ class FuncionalidadController extends Controller
 					->where('rolfunfuncid', $request->codigo)->first();
 
 		if($rolfuncionalidad){
-			return response()->json(['success' => false, 'data'=> 'Este registro no se puede eliminar, porque está asignado a un rol del sistema']);
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un rol del sistema']);
 		}else{
 			try {
 				$funcionalidad = Funcionalidad::findOrFail($request->codigo);
 				$funcionalidad->delete();
-				return response()->json(['success' => true, 'data' => 'Registro eliminado con éxito']);
+				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 			} catch (Exception $error){
-				return response()->json(['success' => false, 'data'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
+				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}
 	} 

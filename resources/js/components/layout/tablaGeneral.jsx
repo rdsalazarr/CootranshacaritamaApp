@@ -130,7 +130,7 @@ export default function TablaGeneral({datos, titulo, ver, accion= [],
     return (
             <TableContainer  className={'tableGeneral'}   style={mergeJSON({margin: '0 auto'}, style)}>
                 <Grid container spacing={0}>
-                    <Grid item className={'tablaIcono'} md={8} xl={8} style={{textAlign:'left', padding: 0}}>
+                    <Grid item className={'tablaIcono'} xl={8} md={8} sm={2} xs={2} style={{textAlign:'left', padding: 0}}>
                         {accion.map(ev=>{
                             if(ev.tipo === 'T'){
                                 return (<Icon key={'icon'+ ev.icono} className={'icon top ' + ev.color }
@@ -139,7 +139,7 @@ export default function TablaGeneral({datos, titulo, ver, accion= [],
                             }
                         })}
                     </Grid>
-                    <Grid item sm={12} md={4} xl={4} style={{ padding: 0}}>
+                    <Grid item xl={4} md={4} sm={10} xs={10}  style={{ padding: 0}}>
                         {(funciones.search) ?  
                             <TextField 
                                 className={'inputGeneral searchTable'}
@@ -182,7 +182,7 @@ export default function TablaGeneral({datos, titulo, ver, accion= [],
                                     <TableCell 
                                         component={"th"} 
                                         colSpan={ver.length + accion.length} 
-                                        style={{textAlign: 'center'}}>
+                                        style={{textAlign: 'center', fontSize: '1.5em', color: '#8b8b8b', fontWeight: '600'}}>
                                             <b>No existen registros para mostrar</b>                                            
                                     </TableCell>
                                 </TableRow> : null}

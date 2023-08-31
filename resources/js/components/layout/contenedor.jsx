@@ -125,7 +125,7 @@ export default function  Contenedor ({componente, users}) {
                 </Drawer>
 
                 <Box className={open ? 'component' : 'component componentClose'}>
-                    <Box>
+                    <Box className='containerAdmin'>
                         <Routes >
                             <Route exact = {`true`} path="/dashboard" element={<Welcome susuario={users}/>}/>
                             {componenteMenu.map(item=>{
