@@ -83,7 +83,7 @@ export default function New({data, tipo}){
         <ValidatorForm onSubmit={handleSubmit} >
             
             <Grid container spacing={2}>
-                <Grid item md={9} xl={9} sm={12}>
+                <Grid item xl={9} md={9} sm={12} xs={12}>
                     <TextValidator 
                         name={'nombre'}
                         value={formData.nombre}
@@ -97,7 +97,7 @@ export default function New({data, tipo}){
                     />
                 </Grid>
                 
-                <Grid item md={3} xl={3} sm={12}>
+                <Grid item xl={3} md={3} sm={12} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}
@@ -115,7 +115,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item md={12} xl={12} sm={12}>
+                <Grid item xl={12} md={12} sm={12} xs={12}>
                     <FormLabel component="legend">Listado de menús para asignar</FormLabel>
                     <FormGroup row name={"menus"} 
                         value={formDataMenu.funcid}

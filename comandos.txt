@@ -8,6 +8,10 @@ php artisan make:migration create_modulo
 php artisan make:migration create_rol
 php artisan make:migration create_funcionalidad
 php artisan make:migration create_rol_funcionalidad
+php artisan make:migration create_informacion_notificacion_correo
+
+php artisan make:migration create_empresa
+
 
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
@@ -16,8 +20,9 @@ php artisan make:model Modulo
 php artisan make:model Rol
 php artisan make:model Funcionalidad
 php artisan make:model RolFuncionalidad
+php artisan make:model InformacionNotificacionCorreo
 
-
+php artisan make:model Empresa
 
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder

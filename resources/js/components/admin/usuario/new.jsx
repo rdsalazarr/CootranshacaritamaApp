@@ -1,48 +1,48 @@
 import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack } from '@mui/material';
-import showSimpleSnackbar from '../../../layout/snackBar';
-import {LoaderModal} from "../../../layout/loader";
+import showSimpleSnackbar from '../../layout/snackBar';
+import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
-import instance from '../../../layout/instance';
+import instance from '../../layout/instance';
 
 export default function New({data, tipo}){
-
+ 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo: data.funcid, modulo: data.moduid, nombre: data.funcnombre, orden: data.funcorden,
-                                    titulo: data.functitulo,icono: data.funcicono, ruta: data.funcruta,  estado: data.funcactiva, tipo:tipo 
-                                    } : {codigo:'000', modulo: '', nombre: '', orden: '', icono: '', titulo: '', ruta: '', estado: '1', tipo:tipo
+                    (tipo !== 'I') ? {codigo:data.usuaid, tipoIdentificacion: data.tipideid, documento: data.usuadocumento, nombre: data.usuanombre, 
+                                      apellido: data.usuaapellidos, correo: data.usuaemail,usuario: data.usuanick,  cambiarPassword: data.usuacambiarpassword,
+                                      bloqueado: data.usuabloqueado, estado: data.usuaactivo, tipo:tipo 
+                                    } : {codigo:'000', tipoIdentificacion:'',documento:'', nombre: '', apellido: '', correo: '', usuario:'', 
+                                        cambiarPassword:'',bloqueado:'',estado: '1', tipo:tipo
                                 });
-
+                                
    const [loader, setLoader] = useState(false); 
    const [habilitado, setHabilitado] = useState(true);
-   const [modulos, setModulos] = useState([]);
-
+   const [tipoIdentificacion, setTipoIdentificacion] = useState([]);
+   
    const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
    }
 
     const handleSubmit = () =>{
         setLoader(true); 
-        instance.post('/admin/funcionalidad/salve', formData).then(res=>{
+        instance.post('/admin/usuario/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', modulo: '', nombre: '', orden: '', icono: '', titulo: '', ruta: '', estado: '1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', tipoIdentificacion:'',documento:'', nombre: '', apellido: '', correo: '', usuario:'', 
+                                                                    cambiarPassword:'',bloqueado:'',estado: '1', tipo:tipo}) : null;
             setLoader(false);
         })
     }
 
-    const inicio = () =>{
+    useEffect(()=>{
         setLoader(true);
-        instance.get('/admin/funcionalidad/listar/modulos').then(res=>{
-            setModulos(res.data);
+        instance.get('/listar/tipo/identificacion').then(res=>{
+            setTipoIdentificacion(res.data);
             setLoader(false);
-        }) 
-    }
-
-    useEffect(()=>{inicio(); }, []);
-
+        })
+    }, []);
 
     if(loader){
         return <LoaderModal />
@@ -50,29 +50,42 @@ export default function New({data, tipo}){
 
     return (
         <ValidatorForm onSubmit={handleSubmit} >
-            <Grid container spacing={2}>           
-
-                <Grid item xl={3} md={3} sm={12} xs={12}>
+            <Grid container spacing={2}>
+                <Grid item xl={3} md={3} sm={4} xs={12}>
                     <SelectValidator
-                        name={'modulo'}
-                        value={formData.modulo}
-                        label={'Módulo'} 
-                        className={'inputGeneral'} 
+                        name={'tipoIdentificacion'}
+                        value={formData.tipoIdentificacion}
+                        label={'Tipo de documento'}
+                        className={'inputGeneral'}
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
                         validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
+                        errorMessages={["Debe hacer una selección"]}
                         onChange={handleChange} 
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
-                        {modulos.map(res=>{
-                            return <MenuItem value={res.moduid} key={res.moduid} >{res.modunombre}</MenuItem>
+                        {tipoIdentificacion.map(res=>{
+                            return <MenuItem value={res.tipideid} key={res.tipideid} >{res.tipidenombre}</MenuItem>
                         })}
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={5} md={5} sm={12} xs={12}>
-                    <TextValidator 
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <TextValidator
+                        name={'documento'}
+                        value={formData.documento}
+                        label={'Documento'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off', maxLength: 15}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <TextValidator
                         name={'nombre'}
                         value={formData.nombre}
                         label={'Nombre'}
@@ -83,44 +96,45 @@ export default function New({data, tipo}){
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
                     />
-                </Grid> 
+                </Grid>
 
-                <Grid item xl={4} md={4} sm={12} xs={12}>
-                    <TextValidator 
-                        name={'titulo'}
-                        value={formData.titulo}
-                        label={'Título'}
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <TextValidator
+                        name={'apellido'}
+                        value={formData.apellido}
+                        label={'Apellido'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 50}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+                
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <TextValidator
+                        name={'correo'}
+                        value={formData.correo}
+                        label={'Correo'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 80}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
+                        validators={['required', 'isEmail']}
+                        errorMessages={['Campo requerido', 'Correo no válido']}
+                        type={"email"}
                         onChange={handleChange}
                     />
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={12} xs={12}>
-                    <TextValidator 
-                        name={'ruta'}
-                        value={formData.ruta}
-                        label={'Ruta'}
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <TextValidator
+                        name={'usuario'}
+                        value={formData.usuario}
+                        label={'Usuario'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 60}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={3} md={3} sm={12} xs={12}>
-                    <TextValidator 
-                        name={'icono'}
-                        value={formData.icono}
-                        label={'Ícono'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 60}}
+                        inputProps={{autoComplete: 'off', maxLength: 20}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -128,21 +142,6 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item xl={3} md={3} sm={12} xs={12}>
-                    <TextValidator 
-                        name={'orden'}
-                        value={formData.orden}
-                        label={'Orden'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                        type={"number"}
-                    />
-                </Grid> 
-
-                <Grid item xl={2} md={2} sm={12} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}
@@ -159,6 +158,7 @@ export default function New({data, tipo}){
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
                 </Grid>
+                
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">

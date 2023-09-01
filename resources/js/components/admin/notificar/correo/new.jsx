@@ -50,7 +50,7 @@ export default function New({data, tipo}){
 
     return (
         <ValidatorForm onSubmit={handleSubmit} >
-            <Grid container spacing={2}>           
+            <Grid container spacing={2}>
 
                 <Grid item xl={3} md={3} sm={12} xs={12}>
                     <SelectValidator

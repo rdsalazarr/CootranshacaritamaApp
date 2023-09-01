@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Menu;
-
 use App\Http\Controllers\Controller;
 use App\Models\RolFuncionalidad;
 use Illuminate\Http\Request;

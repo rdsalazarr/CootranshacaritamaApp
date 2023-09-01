@@ -71,5 +71,5 @@ class DashboardController extends Controller
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}	
+	}
 }
