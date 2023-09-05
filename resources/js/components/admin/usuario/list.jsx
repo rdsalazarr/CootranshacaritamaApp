@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Card} from '@mui/material';
+import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../layout/tablaGeneral';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
@@ -46,8 +46,10 @@ export default function List(){
     }
 
     return (
-        <Box className={'containerMedium'} >
-            <Box className={'cardContainer'} >
+        <Box >
+            <Card className={'cardContainer'} >
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar usuarios</Typography>
+                </Box>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
@@ -61,15 +63,15 @@ export default function List(){
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />
                 </Box>
+            </Card>
 
-                <ModalDefaultAuto
-                    title={modal.titulo}
-                    content={modales[modal.vista]}
-                    close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
-                    tam = {modal.tamano}
-                    abrir ={modal.open}
-                />
-            </Box>
+            <ModalDefaultAuto
+                title={modal.titulo}
+                content={modales[modal.vista]}
+                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                tam = {modal.tamano}
+                abrir ={modal.open}
+            />
         </Box>
     )
 }

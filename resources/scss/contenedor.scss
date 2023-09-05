@@ -12,6 +12,7 @@ $grisOscuro : var(--grisOscuro);
 body{
     background-color: #fafafaad;
 }
+
 .nav {
   transition: width 0.3s, left 0.3s;
   position: fixed;
@@ -190,22 +191,22 @@ body{
   text-shadow: -0.03px 0.03px #1a1a19, -1px 1px #282625;
 }
 
-.frm-texto{
+.frmTexto {
   width: 100%;
-}
-
-.frm-texto, label{
-  line-height: 18px;
-  display: block;
-  font-weight: 600;
-  flex: 1;
-  color: $grisOscuro;
-}
-
-.frm-texto, span{
-  line-height: 20px;
-  display: block;
-  font-weight: 300;
+  color: #666262;
+  label {
+      line-height: 18px;
+      display: block;
+      font-weight: 600;
+      color: #6e6e6d;
+  }
+  span {
+      line-height: 20px;
+      display: block;
+      font-weight: 300;
+      padding-top: 2px;
+      font-family: serif;
+  }
 }
 
 .icon-add{

@@ -25,6 +25,12 @@ class UsuarioController extends Controller
 		return response()->json(['success' => true, "data" => $data]);
 	} 
 
+	public function datos()
+	{	
+		$tipoIdentificaciones = DB::table('tipoidentificacion')->get();
+        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones]);
+	}
+
 	public function salve(Request $request)
 	{
         $id      = $request->codigo;
@@ -35,33 +41,55 @@ class UsuarioController extends Controller
             'documento'         => 'required|string|min:6|max:15',
             'nombre'            => 'required|string|min:5|max:50',
             'apellido'          => 'required|string|min:5|max:50',
-            'usuario'           => 'required|string|min:5|max:20|unique:users,usuario,'.$usuario->id,
-            'correo'            => 'required|email|string|max:80|unique:users,email,'.$usuario->id,
-            'ciudadExpedicion'  => 'required|string|min:4|max:80',
-            'numeroEvaluacion'  => 'nullable|numeric',
-            'puntajeEvaluacion' => 'nullable|numeric',
-            'esInvitado'        => 'required|numeric',
-            'esAsociado'        => 'required|numeric',
-            'activo'            => 'required|numeric'
+            'usuario'           => 'required|string|min:5|max:20|unique:usuario,usuanick,'.$usuario->usuaid.',usuaid',
+            'correo'            => 'required|email|string|max:80|unique:usuario,usuaemail,'.$usuario->usuaid.',usuaid',
+			'cambiarPassword'   => 'required|numeric',
+			'bloqueado'         => 'required|numeric',
+            'estado'            => 'required|numeric'
         ]);
 
         DB::beginTransaction();
 		try {
-            $tokenFirma                 = strtoupper(strtr(substr(md5(microtime()), 0, 8),"01","97"));
-            $nombre                     = mb_strtoupper($request->nombre,'UTF-8');
-            $apellido                   = mb_strtoupper($request->apellido,'UTF-8');
-            $nickUsuario                = mb_strtoupper($request->usuario,'UTF-8');
-            $usuario->tipideid          = $request->tipoIdentificacion;
-            $usuario->usuadocumento     = $request->documento;
-			$usuario->usuanombre        = $nombre;
-			$usuario->usuaapellidos     = $apellido;
-            $usuario->usuanick          = $nickUsuario;
-			$usuario->usuaemail         = $request->correo;
+            $tokenFirma                   = strtoupper(strtr(substr(md5(microtime()), 0, 8),"01","97"));
+            $nombre                       = mb_strtoupper($request->nombre,'UTF-8');
+            $apellido                     = mb_strtoupper($request->apellido,'UTF-8');
+            $nickUsuario                  = mb_strtoupper($request->usuario,'UTF-8');
+            $usuario->tipideid            = $request->tipoIdentificacion;
+            $usuario->usuadocumento       = $request->documento;
+			$usuario->usuanombre          = $nombre;
+			$usuario->usuaapellidos       = $apellido;
+            $usuario->usuanick            = $nickUsuario;
+			$usuario->usuaemail           = $request->correo;
+			$usuario->usuacambiarpassword = $request->cambiarPassword;
+			$usuario->usuabloqueado       = $request->bloqueado;
+			$usuario->usuaactivo          = $request->estado;
             ($request->tipo  === 'I' ) ? $usuario->password = bcrypt($request->documento): '';
             $usuario->save();
 
+			$mensajeCorreo      = '';
+			if ($request->tipo  === 'I' ){
+				$notificar         = new Notificar();
+				$nombreUsuario     = $nombre.' '. $apellido;
+				$siglaCooperativa  = 'COOTRANSHACARITAMA';
+				$nombreEmpresa     = "Cooperativa de transporte HACARITAMA";
+				$contrasenaSistema = $request->documento; 
+				$email             = $request->correo; 
+				$urlSistema        =  URL::to('/');
+				$emailEmpresa      = '';
+				$nombreGerente     = 'Luis manuel Ascanio'; 
+
+				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'registroUsuario')->first();
+				$buscar            = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlSistema','nombreGerente');
+				$remplazo          = Array($siglaCooperativa, $nombreUsuario,  $nickUsuario, $nombreEmpresa, $contrasenaSistema, $urlSistema,$nombreGerente); 
+				$asunto            = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
+				$msg               = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido); 
+				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
+				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
+				$mensajeCorreo     = ', Se ha enviado notificacion al correo  '.$notificar->correo([$email], $asunto, $msg, '', $emailEmpresa, $enviarcopia, $enviarpiepagina);
+			}
+
             DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeCorreo ]);
 		} catch (Exception $error){
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

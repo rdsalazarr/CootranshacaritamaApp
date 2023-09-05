@@ -141,10 +141,10 @@ class generales
 			return array($success, $message );
 		}
 
-		if (!preg_match('/[A-Z]/', $contrasena) || !preg_match('/[a-z]/', $contrasena) || !preg_match('/\d/', $contrasena) || !preg_match('/[\*\#\!]/', $contrasena)) {
+		/*if (!preg_match('/[A-Z]/', $contrasena) || !preg_match('/[a-z]/', $contrasena) || !preg_match('/\d/', $contrasena) || !preg_match('/[\*\#\!]/', $contrasena)) {
 			$message = 'No debe tener números ni letras consecutivas';
 			return array($success, $message );
-		}
+		}*/
 
 		// Si pasa todas las validaciones, la contraseña es válida
 		$success = true;

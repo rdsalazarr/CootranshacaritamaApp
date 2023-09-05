@@ -11,9 +11,9 @@ class InformacionCorreoController extends Controller
 	public function index()
 	{  
         $data = DB::table('informacionnotificacioncorreo')
-                    ->select('innocoid','innoconombre','innocotitulo','innococontenido','innocoenviarpiepagina','innocoenviarcopia',
-                    DB::raw("if(innocoenviarpiepagina = 1 ,'Sí', 'No') as piePagina"),
-                    DB::raw("if(innocoenviarcopia = 1 ,'Sí', 'No') as enviarCcopia"))->get();
+                    ->select('innocoid','innoconombre','innocoasunto','innococontenido','innocoenviarpiepagina','innocoenviarcopia',
+                    DB::raw("if(innocoenviarcopia = 1 ,'Sí', 'No') as enviarPiePagina"),
+                    DB::raw("if(innocoenviarcopia = 1 ,'Sí', 'No') as enviarCopia"))->get();
 
         return response()->json(["data" => $data]);
     }
@@ -24,17 +24,17 @@ class InformacionCorreoController extends Controller
         $infocorreonotificacion = ($id != 000) ? InformacionNotificacionCorreo::findOrFail($id) : new InformacionNotificacionCorreo();
 
 		$this->validate(request(),[
-                'nombre'     => 'required|string|min:6|max:50|unique:informacionnotificacioncorreo,innoconombre,'.$infocorreonotificacion->innocoid,
-                'titulo'     => 'required|string|min:4|max:100',
+                'nombre'     => 'required|string|min:6|max:50|unique:informacionnotificacioncorreo,innocoid,'.$infocorreonotificacion->innocoid.',innocoid',
+                'asunto'     => 'required|string|min:4|max:100',
                 'contenido'  => 'required|string',
                 'piePagina'  => 'required',
                 'copia'      => 'required'
 			]);
 
 		try {
-            $infocorreonotificacion->innoconombre          = $request->titulo; 
-            $infocorreonotificacion->innocotitulo          = $request->titulo; 
-            $infocorreonotificacion->innococontenido       = $request->contenido;  
+            $infocorreonotificacion->innoconombre          = $request->nombre;
+            $infocorreonotificacion->innocoasunto          = $request->asunto;
+            $infocorreonotificacion->innococontenido       = $request->contenido;
             $infocorreonotificacion->innocoenviarpiepagina = $request->piePagina; 
             $infocorreonotificacion->innocoenviarcopia     = $request->copia;
             $infocorreonotificacion->save();

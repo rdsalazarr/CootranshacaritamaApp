@@ -52,30 +52,28 @@ class MantenimientoController extends Controller
         $notificar       = new Notificar();
         $fechaHoraActual = Carbon::now();
 
-        $email           = 'rdsalazarr@ufpso.edu.co';
-        $nombre_empresa  = 'IMPLESOFT';
-        $nombre_empleado = "NOMBRE DE PRUEBAS";  
-        $nombre_usuario  = "PRUEBAS";
-        $tokenFirma      = '123456789'; 
-        $url_sistema     =  URL::to('/');
-        $emailEmpresa    = '';      
-    
-       /* $informacioncorreo = DB::table('informacioncorreonotificacion')->where('inconoid', 2)->first();
+        $email             = 'rdsalazarr@ufpso.edu.co';
+        $email             = 'radasa10@hotmail.com';
+        $nombreUsuario     = 'RAMON DAVID SALAZAR RINCON';
+        $siglaCooperativa  = 'COOTRANSHACARITAMA';
+        $nombreEmpresa     = "Cooperativa de transporte HACARITAMA";  
+        $usuarioSistema    = "RSALAZR";
+        $contrasenaSistema = '123456789'; 
+        $urlSistema        =  URL::to('/');
+        $emailEmpresa      = '';
+        $nombreGerente     = 'Luis manuel Ascanio'; 
+
+        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innocoid', 2)->first();
         
-        $buscar   = Array('nombre_empresa', 'nombre_empleado', 'nombre_usuario','contrasena_usuario', 'url_sistema');
-        $remplazo = Array($nombre_empresa, $nombre_empleado, $nombre_usuario, $tokenFirma, $url_sistema);  
-
-        $asunto = str_replace($buscar,$remplazo,$informacioncorreo->inconotitulo);
-        $msg = str_replace($buscar,$remplazo,$informacioncorreo->inconocontenido); 
-        $enviarcopia = $informacioncorreo->inconoenviarcopia;
-        $enviarpiepagina = $informacioncorreo->inconoenviarpiepagina;*/
-
-        $asunto         = 'ASUNTO 01';
-        $msg             = 'MSG ASUNTO 01';
+        $buscar          = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlSistema','nombreGerente');
+        $remplazo        = Array($siglaCooperativa, $nombreUsuario,  $usuarioSistema, $nombreEmpresa, $contrasenaSistema, $urlSistema,$nombreGerente); 
+        $asunto          = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
+        $msg             = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido); 
+        $enviarcopia     = $informacioncorreo->innocoenviarcopia;
+        $enviarpiepagina = $informacioncorreo->innocoenviarpiepagina;
         $enviarcopia     = 0;
-        $enviarpiepagina = 0;
+        $enviarpiepagina = 1;
 
-        $enviarcopia = 0;
         $mensajeCorreo = ', '.$notificar->correo([$email], $asunto, $msg, '', $emailEmpresa, $enviarcopia, $enviarpiepagina);
 
        dd($mensajeCorreo);      

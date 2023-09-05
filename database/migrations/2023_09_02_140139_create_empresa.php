@@ -10,10 +10,11 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    {        
         Schema::create('empresa', function (Blueprint $table) {
-            $table->tinyIncrements('emprid')->comment('Identificador de la tabla empresa');            
-            //$table->smallInteger('emprmuniid')->nullable()->unsigned()->comment('Identificador del municipio');
+            $table->tinyIncrements('emprid')->comment('Identificador de la tabla empresa'); 
+            $table->tinyInteger('emprdepaid')->unsigned()->comment('Identificador del departamento');
+            $table->smallInteger('emprmuniid')->nullable()->unsigned()->comment('Identificador del municipio');
             $table->string('emprnit', 15)->comment('Nit de la empresa');
             $table->string('emprnombre', 100)->comment('Nombre de la empresa');
             $table->string('emprsigla', 20)->nullable()->comment('Sigla de la empresa');
@@ -30,8 +31,11 @@ return new class extends Migration
             $table->string('emprcargorepresentantelegal', 50)->nullable()->comment('Nombre del cargo del representante legal');
             $table->string('emprciudadresidenciareplegal', 50)->nullable()->comment('Ciudad de residencia del representante legal');
             $table->string('emprlugarexpedicionreplegal', 50)->nullable()->comment('Lugar de expedición del representante legal');
-            $table->string('emprlogo', 80)->comment('Logo de la empresa en en formato png');
-           // $table->foreign('emprmuniid')->references('muniid')->on('municipio')->index('fk_emprmuni');
+            $table->string('emprfirmapresenlegal', 80)->nullable()->comment('Imagen de la firma en png del representante de la empresa en en formato png');
+            $table->string('emprlogo', 80)->nullable()->comment('Logo de la empresa en en formato png');
+            $table->timestamps();
+            $table->foreign('emprdepaid')->references('depaid')->on('departamento')->index('fk_emprdepa');
+            $table->foreign('emprmuniid')->references('muniid')->on('municipio')->index('fk_emprmuni');
         });
     }
 

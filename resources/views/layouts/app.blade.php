@@ -14,6 +14,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ $title ?? 'Cootranshacaritama APP'}}</title>
         <link rel="shortcut icon" href="{{asset('images/logo.png')}}" type="image/png"/>
+        
       
         @viteReactRefresh
         @yield('variables')
@@ -23,4 +24,6 @@
         <div id="app"></div>
         <div id='snake' ></div>
     </body>
+
+    <script src="{{asset('tinymce/tinymce.min.js')}}"></script>
 </html>

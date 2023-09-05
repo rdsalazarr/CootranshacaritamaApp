@@ -11,5 +11,5 @@ class InformacionNotificacionCorreo extends Model
 
     protected $table      = 'informacionnotificacioncorreo';
 	protected $primaryKey = 'innocoid';
-    protected $fillable   = ['innoconombre','innocotitulo','innococontenido','innocoenviarpiepagina','innocoenviarcopia'];
+    protected $fillable   = ['innoconombre','innocoasunto','innococontenido','innocoenviarpiepagina','innocoenviarcopia'];
 }

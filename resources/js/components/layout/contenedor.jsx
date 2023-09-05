@@ -13,7 +13,11 @@ import instance from '../layout/instance';
 
 import Welcome from "../admin/welcome";
 import Usuario from "../admin/usuario/list";
+import NotificarCorreo from "../admin/notificar/correo/list";
+
 import Menu from "../admin/menu/list";
+import DatosGeograficos from "../admin/datosGeograficos/list";
+import Empresa from "../admin/empresa/list";
 
 
 const HeaderMenu = ({open , setOpen}) =>{
@@ -26,8 +30,8 @@ const HeaderMenu = ({open , setOpen}) =>{
                 </ListItem>
                 <ListItem style={{padding: 0}}>
                     <div className={"titleMenu"}>
-                        <span className={open ? '': 'hidden'}>CURSO DE</span>
-                        <h3>{ open ?  "COOPERATIVISMO" : ""}</h3>
+                        <span className={open ? '': 'hidden'}>COOPERATIVA</span>
+                        <h3>{ open ?  "HACARITAMA" : "CTH"}</h3>
                     </div> 
                 </ListItem>
             </List>
@@ -96,7 +100,11 @@ const componenteMenu = [
         icono : 'settings_applications',
         itemMenu: [
             {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> },
-            {ruta : 'admin/menu', menu: 'Menu', icono : 'add_chart ', componente : <Menu /> }
+            {ruta : 'admin/menu', menu: 'Menu', icono : 'add_chart ', componente : <Menu /> },
+            {ruta : 'admin/informacionNotificarCorreo', menu: 'Info notificar correo', icono : 'mail_outline_icon', componente : <NotificarCorreo />}, 
+            {ruta : 'admin/datosTerritorial', menu: 'Datos territorial', icono : 'language_icon ', componente : <DatosGeograficos /> },
+            {ruta : 'admin/empresa', menu: 'Empresa', icono : 'store', componente : <Empresa /> },
+          
         ]
     }    
 ];

@@ -13,9 +13,9 @@ class Empresa extends Model
     protected $table      = 'empresa';
     public $timestamps    = false;
     protected $primaryKey = 'emprid';
-    protected $fillable   = ['emprmunid','emprnit','emprnombre','emprsigla','emprlema','emprdireccion',
+    protected $fillable   = ['emprdepaid','emprmunid','emprnit','emprnombre','emprsigla','emprlema','emprdireccion',
                             'emprcorreo','emprtelefonofijo','emprhorarioatencion','emprurl','emprcodigopostal',
-                            'emprlogo','emprtelefonocelular','emprdocumentorepresenlegal',
+                            'emprlogo','emprtelefonocelular','emprdocumentorepresenlegal', 'emprfirmapresenlegal',
                             'emprrepresentantelegal','emprcargorepresentantelegal',
                             'emprciudadresidenciareplegal','emprlugarexpedicionreplegal'];
 

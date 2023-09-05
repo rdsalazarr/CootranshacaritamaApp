@@ -8,21 +8,25 @@ import instance from '../../layout/instance';
 
 export default function New({data, tipo}){
  
-    const [formData, setFormData] = useState(
+    const [formData, setFormData] = useState( 
                     (tipo !== 'I') ? {codigo:data.usuaid, tipoIdentificacion: data.tipideid, documento: data.usuadocumento, nombre: data.usuanombre, 
                                       apellido: data.usuaapellidos, correo: data.usuaemail,usuario: data.usuanick,  cambiarPassword: data.usuacambiarpassword,
                                       bloqueado: data.usuabloqueado, estado: data.usuaactivo, tipo:tipo 
                                     } : {codigo:'000', tipoIdentificacion:'',documento:'', nombre: '', apellido: '', correo: '', usuario:'', 
-                                        cambiarPassword:'',bloqueado:'',estado: '1', tipo:tipo
+                                        cambiarPassword:'1',bloqueado:'0',estado: '1', tipo:tipo
                                 });
                                 
-   const [loader, setLoader] = useState(false); 
-   const [habilitado, setHabilitado] = useState(true);
-   const [tipoIdentificacion, setTipoIdentificacion] = useState([]);
+    const [loader, setLoader] = useState(false); 
+    const [habilitado, setHabilitado] = useState(true);
+    const [tipoIdentificacion, setTipoIdentificacion] = useState([]);
    
-   const handleChange = (e) =>{
+    const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-   }
+    }
+
+    const handleInputChange = (e) => {
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
+    };
 
     const handleSubmit = () =>{
         setLoader(true); 
@@ -31,15 +35,15 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', tipoIdentificacion:'',documento:'', nombre: '', apellido: '', correo: '', usuario:'', 
-                                                                    cambiarPassword:'',bloqueado:'',estado: '1', tipo:tipo}) : null;
+                                                                    cambiarPassword:'1',bloqueado:'0',estado: '1', tipo:tipo}) : null;
             setLoader(false);
         })
     }
 
     useEffect(()=>{
         setLoader(true);
-        instance.get('/listar/tipo/identificacion').then(res=>{
-            setTipoIdentificacion(res.data);
+        instance.get('/admin/listar/datos/usuario').then(res=>{
+            setTipoIdentificacion(res.tipoIdentificaciones);
             setLoader(false);
         })
     }, []);
@@ -94,7 +98,7 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 50}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
+                        onChange={handleInputChange}
                     />
                 </Grid>
 
@@ -108,7 +112,7 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 50}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
+                        onChange={handleInputChange}
                     />
                 </Grid>
                 
@@ -137,11 +141,51 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 20}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
+                        onChange={handleInputChange}
                     />
                 </Grid>
+                 
+                { (formData.tipo === 'U') ?
+                    <Grid item xl={2} md={2} sm={6} xs={12}>
+                        <SelectValidator
+                            name={'cambiarPassword'}
+                            value={formData.cambiarPassword}
+                            label={'Cambiar clave'}
+                            className={'inputGeneral'} 
+                            variant={"standard"} 
+                            inputProps={{autoComplete: 'off'}}
+                            validators={["required"]}
+                            errorMessages={["Campo obligatorio"]}
+                            onChange={handleChange} 
+                        >
+                            <MenuItem value={""}>Seleccione</MenuItem>
+                            <MenuItem value={"1"} >Sí</MenuItem>
+                            <MenuItem value={"0"}>No</MenuItem>
+                        </SelectValidator>
+                    </Grid>
+                : null }  
 
-                <Grid item xl={3} md={3} sm={12} xs={12}>
+                { (formData.tipo === 'U') ?
+                    <Grid item xl={2} md={2} sm={6} xs={12}>
+                        <SelectValidator
+                            name={'bloqueado'}
+                            value={formData.bloqueado}
+                            label={'¡Usuario bloqueado?'}
+                            className={'inputGeneral'} 
+                            variant={"standard"} 
+                            inputProps={{autoComplete: 'off'}}
+                            validators={["required"]}
+                            errorMessages={["Campo obligatorio"]}
+                            onChange={handleChange} 
+                        >
+                            <MenuItem value={""}>Seleccione</MenuItem>
+                            <MenuItem value={"1"} >Sí</MenuItem>
+                            <MenuItem value={"0"}>No</MenuItem>
+                        </SelectValidator>
+                    </Grid>
+                : null }  
+
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}

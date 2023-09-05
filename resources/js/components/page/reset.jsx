@@ -13,7 +13,7 @@ import "../../../scss/app.scss";
 
 export default function Reset(){
 
-    const [formData, setFormData] = useState({password:'123456', repPassword:'123456' }); 
+    const [formData, setFormData] = useState({password:'', repPassword:'' }); 
     const [loader, setLoader] = useState(false);
     const [dataUsuario, setDataUsuario] = useState([]);
     const [success, setSuccess] = useState(false);

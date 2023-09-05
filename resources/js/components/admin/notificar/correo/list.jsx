@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Card} from '@mui/material';
+import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import { ModalDefaultAuto  } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
@@ -49,12 +49,14 @@ export default function List(){
 
     return (
         <Box className={'containerMedium'} >
-            <Box className={'cardContainer'} >
+            <Card className={'cardContainer'} >
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar información de la notificación del correo</Typography>
+                </Box>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Nombre', 'Título','Píe pagina','Copia','Actualizar','Eliminar','Ver']}
-                        ver={["innoconombre","innocotitulo","piePagina","enviarCcopia"]}
+                        titulo={['Nombre', 'Asunto','Píe pagina','Copia','Actualizar','Eliminar','Ver']}
+                        ver={["innoconombre","innocoasunto","enviarPiePagina","enviarCopia"]}
                         accion={[
                             {tipo: 'T', icono : 'add',        color: 'green',  funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
@@ -72,7 +74,7 @@ export default function List(){
                     tam = {modal.tamano}
                     abrir ={modal.open}
                 />
-            </Box>
+            </Card>
         </Box>
     )
 }
