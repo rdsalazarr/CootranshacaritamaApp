@@ -9,7 +9,7 @@ class TipoDocumental extends Model
 {
     use HasFactory;
 
-    protected $table      = 'tipodocumental';    
+    protected $table      = 'tipodocumental';
     protected $primaryKey = 'tipdocid';
     protected $fillable   = ['tipdoccodigo','tipdocnombre','tipdocactivo'];
 }

@@ -14,6 +14,15 @@ php artisan make:migration create_municipio
 php artisan make:migration create_tipo_documental
 php artisan make:migration create_serie_documental
 php artisan make:migration create_sub_serie_documental
+php artisan make:migration create_tipo_saludo
+php artisan make:migration create_tipo_despedida
+php artisan make:migration create_tipo_estado_documento
+php artisan make:migration create_tipo_destino
+php artisan make:migration create_tipo_relacion_laboral
+php artisan make:migration create_persona
+php artisan make:migration create_dependencia
+php artisan make:migration create_cargo_laboral
+
 
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
@@ -26,16 +35,30 @@ php artisan make:model InformacionNotificacionCorreo
 php artisan make:model Empresa
 php artisan make:model Departamento
 php artisan make:model Municipio
-
 php artisan make:model TipoDocumental
 php artisan make:model SerieDocumental
 php artisan make:model SubSerieDocumental
+php artisan make:model TipoSaludo
+php artisan make:model TipoDespedida
+php artisan make:model TipoEstadoDocumento
+php artisan make:model TipoDestino
+php artisan make:model Dependencia
+php artisan make:model TipoRelacionLaboral
+php artisan make:model CargoLaboral
 
 
 
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
 php artisan make:seeder TipoDocumentalSeeder
+php artisan make:seeder TipoEstadoDocumentoSeeder
+php artisan make:seeder TipoDespedidaSeeder
+php artisan make:seeder TipoSaludoSeeder
+php artisan make:seeder TipoDestinoSeeder
+php artisan make:seeder SerieDocumentalSeeder
+php artisan make:seeder SubSerieDocumentalSeeder
+php artisan make:seeder TipoRelacionLaboralSeeder
+php artisan make:seeder CargoLaboralSeeder
 
 
 php artisan make:request ResumenRequest
@@ -46,6 +69,14 @@ php artisan make:controller Admin\FuncionalidadController
 php artisan make:controller Admin\RolController
 php artisan make:controller Admin\DepartamentoController
 php artisan make:controller Admin\MunicipioController
+php artisan make:controller Admin\DependenciaController
+
+php artisan make:controller Admin\Series\SerieDocumentalController
+php artisan make:controller Admin\Series\SubSerieDocumentalController
+
+php artisan make:controller Admin\Tipos\TipoDespedidaController
+php artisan make:controller Admin\Tipos\TipoSaludoController
+
 
 
 php artisan db:seed
