@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Dependencia extends Model
 {
     use HasFactory;
+
+    protected $table      = 'dependencia';
+    protected $primaryKey = 'depeid';
+    protected $fillable   = ['depejefeid','depecodigo','depesigla','depenombre','depecorreo','depeactiva'];
 }

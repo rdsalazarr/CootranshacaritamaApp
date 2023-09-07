@@ -280,7 +280,7 @@ export default function New({data}){
                         <MenuItem value={""}>Seleccione</MenuItem>
                         {departamentos.map(res=>{
                            return <MenuItem value={res.depaid} key={res.depaid} >{res.depanombre}</MenuItem>
-                        })}                     
+                        })}
                     </SelectValidator>
                 </Grid>
 

@@ -19,6 +19,11 @@ import Menu from "../admin/menu/list";
 import DatosGeograficos from "../admin/datosGeograficos/list";
 import Empresa from "../admin/empresa/list";
 
+import GestionTipos from "../admin/tipos/list";
+import SeriesDocumentales from "../admin/seriesDocumental/list";
+import Dependencia from "../admin/dependencia/list";
+import Persona from "../admin/persona/list";
+
 
 const HeaderMenu = ({open , setOpen}) =>{
     return (
@@ -95,18 +100,28 @@ const ItemMenu = ({route, text, icon}) => {
     );
 };
 
+//ManageAccountsIcon
+
 const componenteMenu = [
     {   nombre: 'Configuración',
         icono : 'settings_applications',
-        itemMenu: [
-            {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> },
+        itemMenu: [  
             {ruta : 'admin/menu', menu: 'Menu', icono : 'add_chart ', componente : <Menu /> },
             {ruta : 'admin/informacionNotificarCorreo', menu: 'Info notificar correo', icono : 'mail_outline_icon', componente : <NotificarCorreo />}, 
             {ruta : 'admin/datosTerritorial', menu: 'Datos territorial', icono : 'language_icon ', componente : <DatosGeograficos /> },
-            {ruta : 'admin/empresa', menu: 'Empresa', icono : 'store', componente : <Empresa /> },
-          
+            {ruta : 'admin/empresa', menu: 'Empresa', icono : 'store', componente : <Empresa /> },            
         ]
-    }    
+    },
+    {   nombre: 'Gestionar',
+        icono : 'add_home_work_icon',
+        itemMenu: [
+            {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> }, 
+            {ruta : 'admin/gestionarTipos', menu: 'Tipos', icono : 'ac_unit_icon', componente : <GestionTipos /> },
+            {ruta : 'admin/gestionarSeriesDocumentales', menu: 'Series', icono : 'insert_chart_icon', componente : <SeriesDocumentales /> },
+            {ruta : 'admin/gestionarDependencia', menu: 'Dependencia', icono : 'maps_home_work_icon', componente : <Dependencia /> },
+            {ruta : 'admin/gestionarPersona', menu: 'Persona', icono : 'person_icon', componente : <Persona /> },
+        ]
+    } 
 ];
 
 const menuComponente = [

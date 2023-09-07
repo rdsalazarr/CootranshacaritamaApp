@@ -21,7 +21,7 @@ return new class extends Migration
             $table->smallInteger('funcorden')->comment('Orden del en el árbol del menú');
             $table->boolean('funcactiva')->default(true)->comment('Determina si la funcionalidad encuentra activa'); 
             $table->timestamps();
-            $table->foreign('moduid')->references('moduid')->on('modulo')->onUpdate('cascade')->index('fk_funcmodu');
+            $table->foreign('moduid')->references('moduid')->on('modulo')->onUpdate('cascade')->index('fk_modufunc');
         });
     }
 

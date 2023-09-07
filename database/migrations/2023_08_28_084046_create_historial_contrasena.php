@@ -16,7 +16,7 @@ return new class extends Migration
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario');
             $table->string('hisconpassword')->comment('Password del usuario utilizado');
             $table->timestamps();
-            $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_hisconusua');
+            $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuahiscon');
         });
     }
 

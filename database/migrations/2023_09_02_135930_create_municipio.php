@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('municodigo', 8)->unique('uk_municipio')->comment('Código del municipio');
             $table->string('muninombre', 80)->comment('Nombre del municipio');
             $table->boolean('munihacepresencia')->default(false)->comment('Determina si la entidad hace presencia en este municipio'); 
-            $table->foreign('munidepaid')->references('depaid')->on('departamento')->index('fk_munidepa');
+            $table->foreign('munidepaid')->references('depaid')->on('departamento')->index('fk_depamuni');
             $table->timestamps();
         });
     }

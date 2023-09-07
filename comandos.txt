@@ -24,6 +24,7 @@ php artisan make:migration create_dependencia
 php artisan make:migration create_cargo_laboral
 
 
+
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
 php artisan make:model HistorialContrasena
@@ -45,7 +46,7 @@ php artisan make:model TipoDestino
 php artisan make:model Dependencia
 php artisan make:model TipoRelacionLaboral
 php artisan make:model CargoLaboral
-
+php artisan make:model Persona
 
 
 php artisan make:seeder TipoIdentificacionSeeder
@@ -59,6 +60,7 @@ php artisan make:seeder SerieDocumentalSeeder
 php artisan make:seeder SubSerieDocumentalSeeder
 php artisan make:seeder TipoRelacionLaboralSeeder
 php artisan make:seeder CargoLaboralSeeder
+php artisan make:seeder PersonaSeeder
 
 
 php artisan make:request ResumenRequest
@@ -76,6 +78,7 @@ php artisan make:controller Admin\Series\SubSerieDocumentalController
 
 php artisan make:controller Admin\Tipos\TipoDespedidaController
 php artisan make:controller Admin\Tipos\TipoSaludoController
+php artisan make:controller Admin\PersonaController
 
 
 

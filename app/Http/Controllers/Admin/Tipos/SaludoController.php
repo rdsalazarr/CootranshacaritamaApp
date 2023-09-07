@@ -2,34 +2,34 @@
 
 namespace App\Http\Controllers\Admin\Tipos;
 use App\Http\Controllers\Controller;
-use App\Models\TipoDespedida;
 use Illuminate\Http\Request;
+use App\Models\TipoSaludo;
 use DB;
 
-class TipoDespedidaController extends Controller
+class SaludoController extends Controller
 {
     public function index()
-    {  
-        $data = DB::table('tipodespedida')->select('tipdesid','tipdesnombre','tipdesactivo',
-                                    DB::raw("if(tipdesactivo = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('tipdesnombre')->get();
+    { 
+        $data = DB::table('tiposaludo')->select('tipsalid','tipsalnombre','tipsalactivo',
+                                    DB::raw("if(tipsalactivo = 1 ,'Sí', 'No') as estado"))
+                                    ->orderBy('tipsalnombre')->get();
         return response()->json(["data" => $data]);
     }
 
     public function salve(Request $request)
 	{
-        $id            = $request->codigo;
-        $tipodespedida = ($id != 000) ? TipoDespedida::findOrFail($id) : new TipoDespedida();
+        $id         = $request->codigo;
+        $tiposaludo = ($id != 000) ? TipoSaludo::findOrFail($id) : new TipoSaludo();
 
 	    $this->validate(request(),[
 	   	        'nombre' => 'required|string|min:4|max:100', 
 	            'estado' => 'required'
 	        ]);
 
-        try {          
-            $tipodespedida->tipdesnombre = $request->nombre;           
-            $tipodespedida->tipdesactivo = $request->estado;
-            $tipodespedida->save();
+        try {
+            $tiposaludo->tipsalnombre = $request->nombre;
+            $tiposaludo->tipsalactivo = $request->estado;
+            $tiposaludo->save();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -46,8 +46,8 @@ class TipoDespedidaController extends Controller
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una serie documental del sistema']);
 		}else{
 			try {
-				$tipodespedida = TipoDespedida::findOrFail($request->codigo);
-				$tipodespedida->delete();
+				$tiposaludo = TipoSaludo::findOrFail($request->codigo);
+				$tiposaludo->delete();
 				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 			} catch (Exception $error){
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);

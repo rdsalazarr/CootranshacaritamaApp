@@ -14,6 +14,12 @@ use App\Http\Controllers\Admin\Notificar\InformacionCorreoController;
 use App\Http\Controllers\Admin\DatosGeograficos\DepartamentoController;
 use App\Http\Controllers\Admin\DatosGeograficos\MunicipioController;
 use App\Http\Controllers\Admin\EmpresaController;
+use App\Http\Controllers\Admin\Tipos\SaludoController;
+use App\Http\Controllers\Admin\Tipos\DespedidaController;
+use App\Http\Controllers\Admin\Series\SerieDocumentalController;
+use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
+use App\Http\Controllers\Admin\PersonaController;
+use App\Http\Controllers\Admin\DependenciaController;
 
 
 Route::get('/', [FrondController::class, 'index']);
@@ -66,6 +72,32 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/empresa/list', [EmpresaController::class, 'index']);
         Route::get('/empresa/list/municipio', [EmpresaController::class, 'municipio']);
         Route::post('/empresa/salve', [EmpresaController::class, 'salve']);
+
+        Route::get('/tipoSaludo/list', [SaludoController::class, 'index']);
+        Route::post('/tipoSaludo/salve', [SaludoController::class, 'salve']);
+        Route::post('/tipoSaludo/destroy', [SaludoController::class, 'destroy']);
+
+        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index']);   
+        Route::post('/tipoDespedida/salve', [DespedidaController::class, 'salve']);
+        Route::post('/tipoDespedida/destroy', [DespedidaController::class, 'destroy']);
+
+        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index']);   
+        Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
+        Route::post('/serieDocumental/destroy', [SerieDocumentalController::class, 'destroy']);
+
+        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index']);
+        Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos']);  
+        Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
+        Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
+
+        Route::get('/persona/list', [PersonaController::class, 'index']);
+        Route::post('/persona/salve', [PersonaController::class, 'salve']);
+        Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
+
+        Route::get('/dependencia/list', [DependenciaController::class, 'index']);
+        Route::get('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
+        Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
+        Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
     });
         

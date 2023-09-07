@@ -1165,6 +1165,17 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 (1122, 33, '99773', 'Cumaribo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --Debe existir el municipio
-INSERT INTO empresa (emprid, emprdepaid, emprmuniid, emprnit, emprnombre, emprsigla, emprlema, emprdireccion, emprcorreo, emprtelefonofijo, emprtelefonocelular,  emprhorarioatencion, emprurl, emprcodigopostal, emprdocumentorepresenlegal, emprrepresentantelegal, emprcargorepresentantelegal, emprciudadresidenciareplegal, emprlugarexpedicionreplegal, emprfirmapresenlegal,emprlogo) VALUES
-(1, 18, 804, '890505424-7', 'Cooperativa de transportadores HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311',  'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '205030', '1018439027', 'LUIS MANUEL ASCANIO CLARO', 'Representante Legal', 'Ocaña', 'GONZALEZ (CESAR)', null, null);
+INSERT INTO empresa (emprid, emprdepaid, emprmuniid, emprnit, emprnombre, emprsigla, emprlema, emprdireccion, emprcorreo, emprtelefonofijo,
+ emprtelefonocelular,  emprhorarioatencion, emprurl, emprcodigopostal, emprdocumentorepresenlegal, emprrepresentantelegal,
+  emprcargorepresentantelegal, emprciudadresidenciareplegal, emprlugarexpedicionreplegal, emprfirmapresenlegal,emprlogo) VALUES
+(1, 18, 804, '890505424-7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 
+'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
+ 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '205030', '1018439027', 
+ 'LUIS MANUEL ASCANIO CLARO', 'Representante Legal', 'Ocaña', 'GONZALEZ (CESAR)', null, null);
 
+/*
+
+INSERT INTO `empresa` VALUES (1,'COOPERATIVA DE TRANSPORTADORES HACARITAMA','COOTRANSHACARITAMA','890505424',7,'LUIS MANUEL ASCANIO CLARO',
+'5036123',54498,'DIRECCIÓN',54498,'3142197149',NULL,
+'cootranshacaritama@hotmail.com',NULL,'http://hacaritama.ivanmel.dev/api/files/67bde08e1f1b05de8b2fe0cf5105bcec.png',
+NULL,'*** FELIZ VIAJE ***',NULL,'*** FELIZ VIAJE ***',NULL,'2022-12-09 10:54:24');**/

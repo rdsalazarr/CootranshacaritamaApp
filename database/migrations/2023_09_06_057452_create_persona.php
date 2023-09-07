@@ -12,22 +12,34 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('persona', function (Blueprint $table) {
-            $table->increments('persid')->index('pk_pers')->comment('Identificador de la tabla persona');
+            $table->increments('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->smallInteger('carlabid')->unsigned()->comment('Identificador del cargo laboral');
             $table->tinyInteger('tipideid')->unsigned()->comment('Identificador del tipo de identificación');
             $table->tinyInteger('tirelaid')->unsigned()->comment('Identificador del tipo de realación laboral');
-            $table->string('persdocumento', 10)->comment('Documento de la persona');
-            $table->string('persprimernonbre', 40)->comment('Primer nombre de la persona');
-            $table->string('perssegundononbre', 40)->nullable()->comment('Segundo nombre de la persona');
+            $table->tinyInteger('persdepaidexpedicion')->unsigned()->nullable()->comment('Identificador del departamento de expedición del documento');
+            $table->smallInteger('persmuniidexpedicion')->unsigned()->nullable()->comment('Identificador del municipio de expedición del documento'); 
+            $table->string('persdocumento', 15)->comment('Número de documento de la persona');
+            $table->string('persprimernombre', 40)->comment('Primer nombre de la persona');
+            $table->string('perssegundonombre', 40)->nullable()->comment('Segundo nombre de la persona');
             $table->string('persprimerapellido', 40)->comment('Primer apellido de la persona');
             $table->string('perssegundoapellido', 40)->nullable()->comment('Segundo apellido de la persona');
-            $table->string('persrutafirma', 100)->nullable()->comment('Ruta de la imagen de la firma de la persona');
-            $table->boolean('persactivo')->default(false)->comment('Determina si la persona se encuentra activo');
+            $table->date('persfechanacimiento')->nullable()->comment('Fecha de nacimiento de la persona');
+            $table->string('persdireccion',100)->comment('Determina el genero de la persona');
+            $table->string('perscorreoelectronico', 80)->nullable()->comment('Correo electrónico de la persona');
+            $table->date('persfechadexpedicion')->nullable()->comment('Fecha de nacimiento de la persona');
+            $table->string('persnumerotelefonofijo', 20)->nullable()->comment('Número de teléfono fijo de la persona');
+            $table->string('persnumerocelular', 20)->nullable()->comment('Número de teléfono fijo de la persona');
+            $table->string('persgenero',1)->comment('Determina el genero de la persona');
+            $table->string('persrutafoto',100)->nullable()->comment('Ruta de la foto de la persona');
+            $table->string('persrutafirma', 100)->nullable()->comment('Ruta de la firma digital de la persona para la gestión documental');
+            $table->boolean('persactiva')->default(true)->comment('Determina si la persona se encuentra activa');
             $table->timestamps();
             $table->unique(['tipideid','persdocumento'],'uk_personatipoidentificacion');
             $table->foreign('carlabid')->references('carlabid')->on('cargolaboral')->onUpdate('cascade')->index('fk_carglabpers');   
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipidepers');
             $table->foreign('tirelaid')->references('tirelaid')->on('tiporelacionlaboral')->onUpdate('cascade')->index('fk_tirelapers');
+            $table->foreign('persdepaidexpedicion')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapers');
+            $table->foreign('persmuniidexpedicion')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munipers');
         });
     }
 

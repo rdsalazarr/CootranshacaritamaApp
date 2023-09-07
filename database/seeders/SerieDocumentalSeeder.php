@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 use DB;
 
 class SerieDocumentalSeeder extends Seeder
@@ -13,7 +14,9 @@ class SerieDocumentalSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('serdocedocumental')->insert([
+        $fechaHoraActual = Carbon::now();
+
+        DB::table('seriedocumental')->insert([
             'serdocid'     => '1',
             'serdoccodigo' => '001',
             'serdocnombre' => 'Acta',
@@ -21,10 +24,12 @@ class SerieDocumentalSeeder extends Seeder
             'serdoctiempoarchivocentral'   => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar'        => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);   
 
-        DB::table('serdocedocumental')->insert([
+        DB::table('seriedocumental')->insert([
             'serdocid'     => '2',
             'serdoccodigo' => '002',
             'serdocnombre' => 'Certificado',
@@ -32,10 +37,12 @@ class SerieDocumentalSeeder extends Seeder
             'serdoctiempoarchivocentral' => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]); 
 
-        DB::table('serdocedocumental')->insert([
+        DB::table('seriedocumental')->insert([
             'serdocid' => '3',
             'serdoccodigo' => '003',
             'serdocnombre' => 'Circular',
@@ -43,10 +50,12 @@ class SerieDocumentalSeeder extends Seeder
             'serdoctiempoarchivocentral' => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
-        DB::table('serdocedocumental')->insert([
+        DB::table('seriedocumental')->insert([
             'serdocid' => '4',
             'serdoccodigo' => '004',
             'serdocnombre' => 'Citación',
@@ -54,10 +63,12 @@ class SerieDocumentalSeeder extends Seeder
             'serdoctiempoarchivocentral' => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
-        DB::table('serdocedocumental')->insert([
+        DB::table('seriedocumental')->insert([
             'serdocid' => '5',
             'serdoccodigo' => '005',
             'serdocnombre' => 'Constancia',
@@ -65,51 +76,35 @@ class SerieDocumentalSeeder extends Seeder
             'serdoctiempoarchivocentral' => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
-        DB::table('serdocedocumental')->insert([
+        DB::table('seriedocumental')->insert([
             'serdocid' => '6',
             'serdoccodigo' => '006',
-            'serdocnombre' => 'Memorando',
-            'serdoctiempoarchivogestion' => '360',
-            'serdoctiempoarchivocentral' => '720',
-            'serdoctiempoarchivohistorico' => '1440',
-            'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
-        ]);
-
-        DB::table('serdocedocumental')->insert([
-            'serdocid' => '7',
-            'serdoccodigo' => '007',
             'serdocnombre' => 'Oficio',
             'serdoctiempoarchivogestion' => '360',
             'serdoctiempoarchivocentral' => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
-        DB::table('serdocedocumental')->insert([
-            'serdocid' => '8',
-            'serdoccodigo' => '008',
+        DB::table('seriedocumental')->insert([
+            'serdocid' => '7',
+            'serdoccodigo' => '007',
             'serdocnombre' => 'Resolucion',
             'serdoctiempoarchivogestion' => '360',
             'serdoctiempoarchivocentral' => '720',
             'serdoctiempoarchivohistorico' => '1440',
             'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
-        ]);
-
-        DB::table('serdocedocumental')->insert([
-            'serdocid' => '9',
-            'serdoccodigo' => '009',
-            'serdocnombre' => 'Nota Interna',
-            'serdoctiempoarchivogestion' => '360',
-            'serdoctiempoarchivocentral' => '720',
-            'serdoctiempoarchivohistorico' => '1440',
-            'serdocpermiteeliminar' => '0',
-            'serdocactiva' => '1'
+            'serdocactiva' => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
     }
 }

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->smallInteger('rolfunrolid')->unsigned()->comment('Identificador del rol');
             $table->smallInteger('rolfunfuncid')->unsigned()->comment('Identificador de la funcionalidad');
 
-            $table->foreign('rolfunrolid')->references('rolid')->on('rol')->onUpdate('cascade')->index('fk_rolfunrol');
-            $table->foreign('rolfunfuncid')->references('funcid')->on('funcionalidad')->onUpdate('cascade')->index('fk_rolfunfunc');           
+            $table->foreign('rolfunrolid')->references('rolid')->on('rol')->onUpdate('cascade')->index('fk_rolrolfun');
+            $table->foreign('rolfunfuncid')->references('funcid')->on('funcionalidad')->onUpdate('cascade')->index('fk_funcrolfun');           
         });
     }
 

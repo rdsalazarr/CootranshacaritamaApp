@@ -13,26 +13,26 @@ export default function New({data, tipo}){
                                     } : {codigo:'000', nombre: '', funcionalidades: '',  estado: '1', tipo:tipo
                                 });
 
-   const [loader, setLoader] = useState(false); 
-   const [habilitado, setHabilitado] = useState(true);
-   const [menus, setMenus] = useState([]); 
-   const [formDataMenu, setFormDataMenu] = useState([]); 
-   const [menuMarcado, setMenuMarcado] = useState([]); 
+    const [loader, setLoader] = useState(false); 
+    const [habilitado, setHabilitado] = useState(true);
+    const [menus, setMenus] = useState([]); 
+    const [formDataMenu, setFormDataMenu] = useState([]); 
+    const [menuMarcado, setMenuMarcado] = useState([]); 
 
-   const handleChange = (e) =>{
+    const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-   }
-
-   const handleChangeMenu = (e) =>{
-    let newFormDataMenu = [...formDataMenu];    
-    if(e.target.checked){
-        newFormDataMenu.push({funcid: parseInt(e.target.value)});
-    }else{
-        //Elimino la posicion
-        newFormDataMenu = formDataMenu.filter((item) => item.funcid !== parseInt(e.target.value));
     }
-    setFormDataMenu(newFormDataMenu);
-}
+
+    const handleChangeMenu = (e) =>{
+        let newFormDataMenu = [...formDataMenu];
+        if(e.target.checked){
+            newFormDataMenu.push({funcid: parseInt(e.target.value)});
+        }else{
+            //Elimino la posicion
+            newFormDataMenu = formDataMenu.filter((item) => item.funcid !== parseInt(e.target.value));
+        }
+        setFormDataMenu(newFormDataMenu);
+    }
 
     const handleSubmit = () =>{
         setLoader(true);
@@ -51,7 +51,6 @@ export default function New({data, tipo}){
                 });
             });
             setMenuMarcado(newFormDataMenu);
-
             setLoader(false);
         })
     }
@@ -60,7 +59,6 @@ export default function New({data, tipo}){
         setLoader(true);
         let newFormDataMenu = [...formDataMenu];
         instance.post('/admin/rol/listar/funcionalidad', {codigo: formData.codigo}).then(res=>{
-            console.log(res.marcados);
             setMenus(res.data);
             setMenuMarcado(res.marcados);
             res.marcados.forEach(function(men){
@@ -122,7 +120,7 @@ export default function New({data, tipo}){
                         onChange={handleChangeMenu}
                         >
                         {menus.map(res=>{
-                            const marcado  = menuMarcado.find(resul => resul.funcid === res.funcid);                        
+                            const marcado  = menuMarcado.find(resul => resul.funcid === res.funcid);
                             const checkbox = (marcado !== undefined) ? <Checkbox color="secondary" defaultChecked /> : <Checkbox color="secondary"  />;  
                           
                             const frmCheckbox = <Grid item md={4} xl={4} sm={6} key={res.titulo} >

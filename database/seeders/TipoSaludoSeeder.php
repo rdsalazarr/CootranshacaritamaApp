@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\TipoSaludo;
+use Carbon\Carbon;
 use DB;
 
 class TipoSaludoSeeder extends Seeder
@@ -14,99 +14,139 @@ class TipoSaludoSeeder extends Seeder
      */
     public function run(): void
     {
+        $fechaHoraActual = Carbon::now();
+
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '1',
-            'tipsalnombre' => 'Apreciado señor,'
+            'tipsalnombre' => 'Apreciado señor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '2',
-            'tipsalnombre' => 'Apreciada señora,'
+            'tipsalnombre' => 'Apreciada señora,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '3',
-            'tipsalnombre' => 'Apreciado proveedor,'
+            'tipsalnombre' => 'Apreciado proveedor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '4',
-            'tipsalnombre' => 'Cordial saludo,'
+            'tipsalnombre' => 'Cordial saludo,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '5',
-            'tipsalnombre' => 'Estimado señor,'
+            'tipsalnombre' => 'Estimado señor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '6',
-            'tipsalnombre' => 'Estimada señora'
+            'tipsalnombre' => 'Estimada señora,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '7',
-            'tipsalnombre' => 'Estimado cliente,'
+            'tipsalnombre' => 'Estimado cliente,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '8',
-            'tipsalnombre' => 'Estimado consultante,'
+            'tipsalnombre' => 'Estimado consultante,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '9',
-            'tipsalnombre' => 'Distinguido señor,'
+            'tipsalnombre' => 'Distinguido señor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '10',
-            'tipsalnombre' => 'Distinguida señora,'
+            'tipsalnombre' => 'Distinguida señora,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '11',
-            'tipsalnombre' => 'Distinguidos señores,'
+            'tipsalnombre' => 'Distinguidos señores,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '19',
-            'tipsalnombre' => 'Notable señor,'
+            'tipsalnombre' => 'Notable señor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '12',
-            'tipsalnombre' => 'Notable señora,'
+            'tipsalnombre' => 'Notable señora,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '13',
-            'tipsalnombre' => 'Notables señores,'
+            'tipsalnombre' => 'Notables señores,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '14',
-            'tipsalnombre' => 'Respetable señor,'
+            'tipsalnombre' => 'Respetable señor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '15',
-            'tipsalnombre' => 'Respetable señora,'
+            'tipsalnombre' => 'Respetable señora,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '16',
-            'tipsalnombre' => 'Respetables señores,'
+            'tipsalnombre' => 'Respetables señores,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '17',
-            'tipsalnombre' => 'Amable señor,'
+            'tipsalnombre' => 'Amable señor,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiposaludo')->insert([
             'tipsalid'     => '18',
-            'tipsalnombre' => 'Amable señora,'
+            'tipsalnombre' => 'Amable señora,',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]);
     }
 }

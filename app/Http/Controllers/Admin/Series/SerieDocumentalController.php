@@ -12,22 +12,24 @@ class SerieDocumentalController extends Controller
     {  
         $data = DB::table('seriedocumental')->select('serdocid','serdoccodigo','serdocnombre','serdoctiempoarchivogestion','serdoctiempoarchivocentral',
                                     'serdoctiempoarchivohistorico','serdocpermiteeliminar','serdocactiva',
+									DB::raw("if(serdocpermiteeliminar = 1 ,'Sí', 'No') as permiteeliminar"),
                                     DB::raw("if(serdocactiva = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('sericodigo')->get();
+                                    ->orderBy('serdoccodigo')->get();
         return response()->json(["data" => $data]);
     }
 
     public function salve(Request $request)
 	{
-        $id      = $request->codigo;
+        $id      = $request->id;
         $seriedocumental = ($id != 000) ? SerieDocumental::findOrFail($id) : new SerieDocumental();
 
 	    $this->validate(request(),[
-	   			'codigo'                 => 'required|string|min:1|max:3|unique:seriedocumental,sericodigo,'.$seriedocumental->serdocid.',serdocid',
+	   			'codigo'                 => 'required|string|min:1|max:3|unique:seriedocumental,serdoccodigo,'.$seriedocumental->serdocid.',serdocid',
 	   	        'nombre'                 => 'required|string|min:4|max:80',
-	            'tiempoArchivoGgestion'  => 'required|numeric|min:1|max:9999',
+	            'tiempoArchivoGestion'   => 'required|numeric|min:1|max:9999',
 	            'tiempoArchivoCentral'   => 'required|numeric|min:1|max:9999',
 	            'tiempoArchivoHistorico' => 'required|numeric|min:1|max:9999',
+				'permiteEliminar'        => 'required',
 	            'estado'                 => 'required'
 	        ]);
 

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipodespedida', function (Blueprint $table) {
-            $table->tinyIncrements('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
+            $table->smallIncrements('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
             $table->string('tipdesnombre', 100)->comment('Nombre del tipo despedida');
             $table->boolean('tipdesactivo')->default(true)->comment('Determina si el tipo de despedida se encuentra activo'); 
             $table->timestamps();

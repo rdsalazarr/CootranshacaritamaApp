@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cargolaboral', function (Blueprint $table) {
             $table->smallIncrements('carlabid')->index('pk_carlab')->comment('Identificador de la tabla cargo laboral');
             $table->string('carlabnombre', 100)->comment('Nombre del cargo laboral');
-            $table->boolean('carlabactivo')->default(false)->comment('Determina si el cargo laboral');
+            $table->boolean('carlabactivo')->default(true)->comment('Determina si el cargo laboral');
         });
     }
 
