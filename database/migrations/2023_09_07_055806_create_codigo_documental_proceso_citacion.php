@@ -26,7 +26,7 @@ return new class extends Migration
             $table->unique(['codoptconsecutivo','codoptsigla','codoptanio'],'uk_coddocumprocesocitacion');       
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopt');  
             $table->foreign('tipactid')->references('tipactid')->on('tipoacta')->onUpdate('cascade')->index('fk_tipactcodopt'); 
-            $table->foreign('usuaid')->references('id')->on('usuario')->onUpdate('cascade')->index('fk_usuacodopt'); 
+            $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacodopt'); 
         });
     }
 

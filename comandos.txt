@@ -27,7 +27,7 @@ php artisan make:migration create_tipo_medio
 php artisan make:migration create_tipo_acta
 php artisan make:migration create_tipo_tramite
 php artisan make:migration create_tipo_persona_documental
-tipopersonadocumental
+
 
 php artisan make:migration create_codigo_documental
 php artisan make:migration create_codigo_documental_proceso
@@ -71,6 +71,20 @@ php artisan make:model TipoRelacionLaboral
 php artisan make:model CargoLaboral
 php artisan make:model Persona
 
+php artisan make:model CodigoDocumental
+php artisan make:model CodigoDocumentalProceso
+php artisan make:model CodigoDocumentalProcesoActa
+php artisan make:model CodigoDocumentalProcesoCertificado
+php artisan make:model CodigoDocumentalProcesoCircular
+php artisan make:model CodigoDocumentalProcesoCitacion
+php artisan make:model CodigoDocumentalProcesoConstancia
+php artisan make:model CodigoDocumentalProcesoOficio
+php artisan make:model CodigoDocumentalProcesoFirma
+php artisan make:model CodigoDocumentalProcesoAnexo
+php artisan make:model CodigoDocumentalProcesoCopia
+php artisan make:model CodigoDocumentalProcesoCambioEstado
+php artisan make:model CodigoDocumentalProcesoCompartido
+php artisan make:model CodigoDocumentalProcesoRadicado
 
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
@@ -84,7 +98,10 @@ php artisan make:seeder SubSerieDocumentalSeeder
 php artisan make:seeder TipoRelacionLaboralSeeder
 php artisan make:seeder CargoLaboralSeeder
 php artisan make:seeder PersonaSeeder
-
+php artisan make:seeder TipoActaSeeder
+php artisan make:seeder TipoMedioSeeder
+php artisan make:seeder TipoTramiteSeeder
+php artisan make:seeder TipoPersonaDocumentalSeeder
 
 php artisan make:request ResumenRequest
 
@@ -106,5 +123,3 @@ php artisan make:controller Admin\PersonaController
 
 
 php artisan db:seed
-
-

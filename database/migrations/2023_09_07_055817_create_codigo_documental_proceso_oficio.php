@@ -15,8 +15,8 @@ return new class extends Migration
             $table->bigIncrements('codopoid')->unsigned()->comment('Identificador de la tabla codigo documental proceso oficio');
             $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el documento');
-            $table->tinyInteger('tipsalid')->unsigned()->comment('Identificador de la tabla tipo saludo');
-            $table->tinyInteger('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
+            $table->smallInteger('tipsalid')->unsigned()->comment('Identificador de la tabla tipo saludo');
+            $table->smallInteger('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
             $table->string('codopoconsecutivo', 4)->comment('Consecutivo de la oficio');
             $table->string('codoposigla', 3)->comment('Sigla de la dependencia productora de la oficio');
             $table->string('codopoanio', 4)->comment('Año en el cual se crea la oficio'); 

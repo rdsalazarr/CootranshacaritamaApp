@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('codoplid')->unsigned()->comment('Identificador de la tabla codigo documental proceso circular');
             $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el documento');
-            $table->tinyInteger('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
+            $table->smallInteger('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
             $table->string('codoplconsecutivo', 4)->comment('Consecutivo de la circular');
             $table->string('codoplsigla', 3)->comment('Sigla de la dependencia productora de la circular');
             $table->string('codoplanio', 4)->comment('Año en el cual se crea la circular'); 

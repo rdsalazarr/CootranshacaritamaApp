@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-    {  /**/
+    {  /*
         $this->call(TipoIdentificacionSeeder::class);
         $this->call(UsuarioSeeder::class);
         $this->call(CargoLaboralSeeder::class);
@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoSaludoSeeder::class);
         $this->call(SerieDocumentalSeeder::class);
         $this->call(SubSerieDocumentalSeeder::class);
-        $this->call(PersonaSeeder::class);
+        $this->call(PersonaSeeder::class);*/
+        $this->call(TipoActaSeeder::class);
+        $this->call(TipoMedioSeeder::class);
+        $this->call(TipoPersonaDocumentalSeeder::class);
+        $this->call(TipoTramiteSeeder::class);        
     }
 }

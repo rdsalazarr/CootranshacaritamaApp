@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\DependenciaController;
 
 
 Route::get('/', [FrondController::class, 'index']);
+Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 
