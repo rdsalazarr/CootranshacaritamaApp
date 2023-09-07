@@ -23,6 +23,29 @@ php artisan make:migration create_persona
 php artisan make:migration create_dependencia
 php artisan make:migration create_cargo_laboral
 
+php artisan make:migration create_tipo_medio
+php artisan make:migration create_tipo_acta
+php artisan make:migration create_tipo_tramite
+php artisan make:migration create_tipo_persona_documental
+tipopersonadocumental
+
+php artisan make:migration create_codigo_documental
+php artisan make:migration create_codigo_documental_proceso
+php artisan make:migration create_codigo_documental_proceso_acta
+php artisan make:migration create_codigo_documental_proceso_certificado
+php artisan make:migration create_codigo_documental_proceso_circular
+php artisan make:migration create_codigo_documental_proceso_citacion
+php artisan make:migration create_codigo_documental_proceso_constancia
+php artisan make:migration create_codigo_documental_proceso_oficio
+php artisan make:migration create_codigo_documental_proceso_firma
+php artisan make:migration create_codigo_documental_proceso_anexo
+php artisan make:migration create_codigo_documental_proceso_copia
+php artisan make:migration create_codigo_documental_proceso_cambio_estado
+php artisan make:migration create_codigo_documental_proceso_compartido
+php artisan make:migration create_codigo_documental_proceso_radicado
+
+
+
 
 
 php artisan make:model IngresoSistema
