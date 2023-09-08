@@ -1170,7 +1170,7 @@ INSERT INTO empresa (emprid, emprdepaid, emprmuniid, emprnit, emprnombre, emprsi
   emprcargorepresentantelegal, emprciudadresidenciareplegal, emprlugarexpedicionreplegal, emprfirmapresenlegal,emprlogo) VALUES
 (1, 18, 804, '890505424-7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 
 'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
- 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '205030', '1018439027', 
+ 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '1018439027', 
  'LUIS MANUEL ASCANIO CLARO', 'Representante Legal', 'Ocaña', 'GONZALEZ (CESAR)', null, null);
 
 /*

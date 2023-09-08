@@ -91,7 +91,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
         Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index']);
+        Route::get('/persona/list', [PersonaController::class, 'index']); 
+        Route::get('/persona/listar/datos', [PersonaController::class, 'datos']); 
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
 

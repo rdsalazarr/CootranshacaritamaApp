@@ -4,8 +4,9 @@ import showSimpleSnackbar from './snackBar';
 
 let config = {
     Authorization: "Bearer " + document.querySelector('meta[name="csrf-token"]').content,
-    "Content-Type": "application/json"
+    "Content-Type": "multipart/form-data"
 };
+//"Content-Type": "application/json" 
 
 const instance = axios.create({headers: config, withCredentials: true});
     instance.interceptors.response.use(

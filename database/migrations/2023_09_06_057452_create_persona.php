@@ -16,6 +16,8 @@ return new class extends Migration
             $table->smallInteger('carlabid')->unsigned()->comment('Identificador del cargo laboral');
             $table->tinyInteger('tipideid')->unsigned()->comment('Identificador del tipo de identificación');
             $table->tinyInteger('tirelaid')->unsigned()->comment('Identificador del tipo de realación laboral');
+            $table->tinyInteger('persdepaidnacimiento')->unsigned()->nullable()->comment('Identificador del departamento de nacimiento del documento');
+            $table->smallInteger('persmuniidnacimiento')->unsigned()->nullable()->comment('Identificador del municipio de nacimiento del documento'); 
             $table->tinyInteger('persdepaidexpedicion')->unsigned()->nullable()->comment('Identificador del departamento de expedición del documento');
             $table->smallInteger('persmuniidexpedicion')->unsigned()->nullable()->comment('Identificador del municipio de expedición del documento'); 
             $table->string('persdocumento', 15)->comment('Número de documento de la persona');
@@ -38,8 +40,10 @@ return new class extends Migration
             $table->foreign('carlabid')->references('carlabid')->on('cargolaboral')->onUpdate('cascade')->index('fk_carglabpers');   
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipidepers');
             $table->foreign('tirelaid')->references('tirelaid')->on('tiporelacionlaboral')->onUpdate('cascade')->index('fk_tirelapers');
-            $table->foreign('persdepaidexpedicion')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapers');
-            $table->foreign('persmuniidexpedicion')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munipers');
+            $table->foreign('persdepaidnacimiento')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapersnac');
+            $table->foreign('persmuniidnacimiento')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munipersnac');
+            $table->foreign('persdepaidexpedicion')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapersexp');
+            $table->foreign('persmuniidexpedicion')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munipersexp');
         });
     }
 

@@ -1,0 +1,77 @@
+
+.iconoSubirPdf{
+    max-width: 6%;
+}
+
+.iconoSubirAdjunto{
+    max-width: 8%;
+}
+
+.files-dropzone{
+    background-color: #fbfbfb;  
+    border-color: #cdcdcd; 
+    border-radius: 10px;    
+    border-style: dotted;
+    border-width: 2px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.fileContent{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    span{
+        background:#ec1c21;
+        color: white;
+        padding: 3px;
+    }
+    label{
+        margin-left: 0.5em;
+        background: #dddddd;
+        padding: 0.344em;
+        color: #645e5d;
+        width: 100%;
+    }
+}
+
+.fileImg{
+    width: 10em;
+    max-width: 10em;
+    border: 3px solid #cacaca;
+    border-radius: 5px;
+    min-height: 10em;
+    max-height: 10em;
+    cursor: pointer
+}
+
+.fileImgShow{
+    width: 100%;
+    height: 100%;    
+    border-color: #cdcdcd;
+    border-radius: 10px;
+    border-style: double;
+    border-width: 2px;
+}
+
+.fileInd{
+    display: flex;
+    flex-direction: column;
+    max-width: 10em;
+    margin: 0 auto;
+    padding-right: 2em;
+    padding-bottom: 1em;
+    div{
+        width: 100%;
+        text-align: center;
+        background: #ec1c21;
+        color: white
+    }
+}
+
+.descripcionSubida{
+    font-family: 'Oswald';
+    color: #666;       
+    font-weight: bold;
+}

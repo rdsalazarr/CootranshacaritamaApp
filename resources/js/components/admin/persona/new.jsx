@@ -1,23 +1,43 @@
 import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, FormLabel, Box  } from '@mui/material';
 import showSimpleSnackbar from '../../layout/snackBar';
+import {ButtonFileImg, ContentFile} from "../../layout/files";
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../layout/instance';
+import Files from "react-files";
 
-export default function New({data, tipo}){ 
+export default function New({data, tipo}){
 
     const [formData, setFormData] = useState( 
-                    (tipo !== 'I') ? {id:data.depeid, codigo:data.depecodigo, sigla: data.depesigla, nombre: data.depenombre, correo: data.depecorreo, 
-                                    jefe: data.depejefeid, estado: data.depeactiva, tipo:tipo 
-                                    } : {id:'000', codigo:'', sigla:'', nombre: '', correo: '', jefe:'', estado: '1', tipo:tipo
+                    (tipo !== 'I') ? {codigo:data.persid, documento: data.persdocumento, cargo:data.carlabid, tipoIdentificacion:data.tipideid, tipoRelacionLaboral: data.tirelaid, 
+                                        departamentoNacimiento:data.persdepaidnacimiento, municipioNacimiento: data.persmuniidnacimiento, departamentoExpedicion:data.persdepaidexpedicion,
+                                        municipioExpedicion: data.persmuniidexpedicion, primerNombre: data.persprimernombre, segundoNombre: data.perssegundonombre, 
+                                        primerApellido:data.persprimerapellido, segundoApellido: data.perssegundoapellido, fechaNacimiento: data.persfechanacimiento,
+                                        direccion: data.persdireccion, correo: data.perscorreoelectronico, fechaExpedicion: data.persfechadexpedicion, telefonoFijo: data.persnumerotelefonofijo,
+                                        numeroCelular: data.persnumerocelular, genero: data.persgenero, rutaFirma_old: data.persrutafirma, rutaFoto_old: data.persrutafoto, 
+                                        estado:  data.persactiva, tipo:tipo 
+                                    } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoExpedicion:'', departamentoNacimiento:'', municipioNacimiento:'',
+                                        departamentoExpedicion:'', municipioExpedicion:'',departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', segundoApellido:'', fechaNacimiento:'',
+                                        direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
+                                        estado: '1', tipo:tipo
                                 });
-                                
+
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
-    const [listaJefes, setListaJefes] = useState([]);
-   
+    const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
+    const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
+    const [tipoRelacionLaborales, setTipoRelacionLaborales] = useState([]);
+    const [departamentos, setDepartamentos] = useState([]);
+    const [municipios, setMunicipios] = useState([]);
+    const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
+    const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
+    const [fotografia, setFotografia] = useState();
+    const [imagenFirma, setImagenFirma] = useState();
+    const [escrituraPdf, setEscrituraPdf] = useState();
+    const [formDataFile, setFormDataFile] = useState({ fotografia : [], firma : []});
+
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -26,9 +46,30 @@ export default function New({data, tipo}){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
     };
 
+    const onFilesChange = (files , nombre) =>  {
+        setFormDataFile(prev => ({...prev, [nombre]: files}));
+    }
+
+    const removeFIle = (nombre)=>{
+        setFormDataFile(prev => ({...prev, archivos: prev.archivos.filter(item => item.name !== nombre)}));
+    }
+    
+    const onFilesError = (error, file) => {  
+        let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
+        showSimpleSnackbar(msj, 'error');
+    }
+
     const handleSubmit = () =>{
+        let dataFile = new FormData();
+        Object.keys(formData).forEach(function(key) {
+           dataFile.append(key, formData[key])
+        })
+        let fotografia = formDataFile.fotografia;
+        let firma      = formDataFile.firma;
+        dataFile.append('firma', (firma[0] != undefined) ? firma[0] : '');
+        dataFile.append('fotografia', (fotografia[0] != undefined) ? fotografia[0] : '');
         setLoader(true); 
-        instance.post('/admin/persona/salve', formData).then(res=>{
+        instance.post('/admin/persona/salve', dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -40,23 +81,86 @@ export default function New({data, tipo}){
     useEffect(()=>{
         setLoader(true);
         instance.get('/admin/persona/listar/datos').then(res=>{
-            setListaJefes(res.tipoidentificaciones);
+            setTipoCargoLaborales(res.tipoCargoLaborales);
+            setTipoIdentificaciones(res.tipoIdentificaciones);
+            setTipoRelacionLaborales(res.tipoRelacionLaborales);
+            setDepartamentos(res.departamentos);
+            setMunicipios(res.municipios);
+
+            if(tipo !== 'I'){
+                let munNacimiento   = [];
+                let deptoNacimiento = data.persdepaidnacimiento;          
+                res.municipios.forEach(function(muni){ 
+                    if(muni.munidepaid === deptoNacimiento){
+                        munNacimiento.push({
+                            muniid: muni.muniid,
+                            muninombre: muni.muninombre
+                        });
+                    }
+                });
+                setMunicipiosNacimiento(munNacimiento);
+
+                //Municipios de expedicion
+                let deptoExpedicion = data.persdepaidexpedicion;
+                let munExpedicion   = [];
+                res.municipios.forEach(function(muni){ 
+                    if(muni.munidepaid === deptoExpedicion){
+                        munExpedicion.push({
+                            muniid: muni.muniid,
+                            muninombre: muni.muninombre
+                        });
+                    }
+                });
+                setMunicipiosExpedicion(munExpedicion);
+
+            }
             setLoader(false);
         })
     }, []);
+
+    const consultarMunicipioNacimiento = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+        let munNacimiento   = [];
+        let deptoNacimiento = e.target.value;
+        municipios.forEach(function(muni){ 
+            if(muni.munidepaid === deptoNacimiento){
+                munNacimiento.push({
+                    muniid: muni.muniid,
+                    muninombre: muni.muninombre
+                });
+            }
+        });        
+        setMunicipiosNacimiento(munNacimiento);
+    }
+
+    const consultarMunicipioExpedicion = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+        let munExpedicion  = [];
+        let deptoExpedicion = e.target.value;
+        municipios.forEach(function(muni){ 
+            if(muni.munidepaid === deptoExpedicion){
+                munExpedicion.push({
+                    muniid: muni.muniid,
+                    muninombre: muni.muninombre
+                });
+            }
+        });
+        setMunicipiosExpedicion(munExpedicion); 
+    } 
 
     if(loader){
         return <LoaderModal />
     }
 
     return (
-        <ValidatorForm onSubmit={handleSubmit} >
+        <ValidatorForm onSubmit={handleSubmit}>
             <Grid container spacing={2}>
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator
-                        name={'jefe'}
-                        value={formData.jefe}
-                        label={'Jefe de la dependencia'}
+                        name={'tipoIdentificacion'}
+                        value={formData.tipoIdentificacion}
+                        label={'Tipo identificación'}
                         className={'inputGeneral'}
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
@@ -65,55 +169,205 @@ export default function New({data, tipo}){
                         onChange={handleChange} 
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
-                        {listaJefes.map(res=>{
-                            return <MenuItem value={res.persid} key={res.persid} >{res.nombreJefe}</MenuItem>
+                        {tipoIdentificaciones.map(res=>{
+                            return <MenuItem value={res.tipideid} key={res.tipideid} >{res.tipidenombre}</MenuItem>
                         })}
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
-                        name={'codigo'}
-                        value={formData.codigo}
-                        label={'Código'}
+                        name={'documento'}
+                        value={formData.documento}
+                        label={'Documento'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 10}}
+                        inputProps={{autoComplete: 'off', maxLength: 15}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
                     />
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
-                        name={'sigla'}
-                        value={formData.sigla}
-                        label={'Sigla'}
+                        name={'primerNombre'}
+                        value={formData.primerNombre}
+                        label={'Primer nombre'}
                         className={'inputGeneral'}
                         variant={"standard"}
-                        inputProps={{autoComplete: 'off', maxLength: 3}}
+                        inputProps={{autoComplete: 'off', maxLength: 40}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleInputChange}
                     />
                 </Grid>
 
-                <Grid item xl={6} md={6} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
-                        name={'nombre'}
-                        value={formData.nombre}
-                        label={'Nombre'}
+                        name={'segundoApellido'}
+                        value={formData.segundoApellido}
+                        label={'Segundo apellido'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 50}}
+                        inputProps={{autoComplete: 'off', maxLength: 40}}
+                        onChange={handleInputChange}
+                    />
+                </Grid>
+                
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'primerApellido'}
+                        value={formData.primerApellido}
+                        label={'Primer apellido'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off', maxLength: 40}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleInputChange}
                     />
-                </Grid>        
-                
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'segundoNombre'}
+                        value={formData.segundoNombre}
+                        label={'Segundo nombre'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 40}}
+                        onChange={handleInputChange}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'fechaNacimiento'}
+                        value={formData.fechaNacimiento}
+                        label={'Fecha nacimiento'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                        type={"date"}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'departamentoNacimiento'}
+                        value={formData.departamentoNacimiento}
+                        label={'Departamento de nacimiento'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={consultarMunicipioNacimiento}
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {departamentos.map(res=>{
+                            return <MenuItem value={res.depaid} key={res.depaid} >{res.depanombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'municipioNacimiento'}
+                        value={formData.municipioNacimiento}
+                        label={'Municipio de nacimiento'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {municipiosNacimiento.map(res=>{
+                            return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'fechaExpedicion'}
+                        value={formData.fechaExpedicion}
+                        label={'Fecha expedición'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                        type={"date"}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'departamentoExpedicion'}
+                        value={formData.departamentoExpedicion}
+                        label={'Departamento de expedición'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={consultarMunicipioExpedicion}
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {departamentos.map(res=>{
+                            return <MenuItem value={res.depaid} key={res.depaid} >{res.depanombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'municipioExpedicion'}
+                        value={formData.municipioExpedicion}
+                        label={'Municipio de expedición'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {municipiosExpedicion.map(res=>{
+                            return <MenuItem value={res.muniid} key={res.muniid} >{res.muninombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'direccion'}
+                        value={formData.direccion}
+                        label={'Dirección'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off', maxLength: 40}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
                         name={'correo'}
                         value={formData.correo}
@@ -121,14 +375,94 @@ export default function New({data, tipo}){
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 80}}
-                        validators={['required', 'isEmail']}
-                        errorMessages={['Campo requerido', 'Correo no válido']}
+                        validators={['isEmail']}
+                        errorMessages={['Correo no válido']}
                         type={"email"}
                         onChange={handleChange}
                     />
-                </Grid>               
+                </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'telefonoFijo'}
+                        value={formData.telefonoFijo}
+                        label={'Teléfono fijo'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off', maxLength: 20}}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator
+                        name={'numeroCelular'}
+                        value={formData.numeroCelular}
+                        label={'Número de celular'}
+                        className={'inputGeneral'}
+                        variant={"standard"}
+                        inputProps={{autoComplete: 'off', maxLength: 20}}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'genero'}
+                        value={formData.genero}
+                        label={'Género'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        <MenuItem value={"M"}>Másculino</MenuItem>
+                        <MenuItem value={"F"}>FEmenino</MenuItem>
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'cargo'}
+                        value={formData.cargo}
+                        label={'Cargo laboral'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {tipoCargoLaborales.map(res=>{
+                            return <MenuItem value={res.carlabid} key={res.carlabid}>{res.carlabnombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'tipoRelacionLaboral'}
+                        value={formData.tipoRelacionLaboral}
+                        label={'Tipo relación laboral'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {tipoRelacionLaborales.map(res=>{
+                            return <MenuItem value={res.tirelaid} key={res.tirelaid} >{res.tirelanombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+                
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}
@@ -141,10 +475,58 @@ export default function New({data, tipo}){
                         onChange={handleChange} 
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
-                        <MenuItem value={"1"} >Sí</MenuItem>
+                        <MenuItem value={"1"}>Sí</MenuItem>
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
                 </Grid>
+
+                <Grid item md={6} xl={6} sm={12} xs={12}>
+                    <Files
+                        className='files-dropzone'
+                        onChange={(file ) =>{onFilesChange(file, 'fotografia') }}
+                        onError={onFilesError}
+                        accepts={['.jpg', '.png', '.jpeg']} 
+                        multiple
+                        maxFiles={1}
+                        maxFileSize={1000000}
+                        clickable
+                        dropActiveClassName={"files-dropzone-active"}
+                    >
+                    <ButtonFileImg title={"Adicionar fotografia"} />
+                    </Files>
+                </Grid>
+
+                <Grid item md={5} xl={5} sm={12} xs={12}>
+                    <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                        {formDataFile.fotografia.map((file, a) =>{
+                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                        })}
+                    </Box>
+                </Grid> 
+                
+                <Grid item md={5} xl={5} sm={12} xs={12}>
+                    <Files
+                        className='files-dropzone'
+                        onChange={(file ) =>{onFilesChange(file, 'firma') }}
+                        onError={onFilesError}
+                        accepts={['.jpg', '.png', '.jpeg']} 
+                        multiple
+                        maxFiles={1}
+                        maxFileSize={1000000}
+                        clickable
+                        dropActiveClassName={"files-dropzone-active"}
+                    >
+                    <ButtonFileImg title={"Adicionar firma"} />
+                    </Files>
+                </Grid>
+
+                <Grid item md={4} xl={4} sm={12} xs={12}>
+                    <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                        {formDataFile.firma.map((file, a) =>{
+                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                        })}
+                    </Box>
+                </Grid> 
                 
             </Grid>
 

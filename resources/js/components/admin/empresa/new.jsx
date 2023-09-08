@@ -23,12 +23,12 @@ export default function New({data}){
     //const [logo, setLogo] = useState(formData.imagen); 
 
     const logo = formData.imagen; 
-    const [logoEmpresa, setLogo] = useState('');
+    const [logoEmpresa, setLogo] = useState();
     const [firma, setFirma] = useState(formData.firma); 
     const [loader, setLoader] = useState(true); 
     const [habilitado, setHabilitado] = useState(true);
-    //const [logoEmpresa, setLogoEmpresa] = useState('');
-    const [firmaRL, setFirmaRL] = useState('');
+    //const [logoEmpresa, setLogoEmpresa] = useState();
+    const [firmaRL, setFirmaRL] = useState();
     const [municipios, setMunicipios] = useState([]);
     const [newMunicipios, setNewMunicipios] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);

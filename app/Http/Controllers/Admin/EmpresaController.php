@@ -49,11 +49,9 @@ class EmpresaController extends Controller
                 'ciudadResidenciaRepresentanteLegal' => 'nullable|max:50',
                 'lugarExpedicionRepresentanteLegal'  => 'nullable|max:50',
                 'documentoRepresentanteLegal'        => 'nullable|max:15',
-               // 'logo'       => 'nullable|mimes:png|max:1000',
-              //  'firma'      => 'nullable|mimes:png|max:1000'
-			  ]); 
-
-        dd($request, $request->hasFile('logo'), $request->hasFile('firma'));
+                'logo'       => 'nullable|mimes:png|max:1000',
+               'firma'      => 'nullable|mimes:png|max:1000'
+			  ]);       
         
 		try {
             $funcion = new generales();
@@ -63,7 +61,7 @@ class EmpresaController extends Controller
                 $filename    = pathinfo($nombreOriginal, PATHINFO_FILENAME);
                 $extension   = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
                 $nombreBD    = $request->nit.'_'.$funcion->quitarCaracteres($filename).'.'.$extension;
-                $file->move(public_path().'/images/logo/',$nombreBD);
+                $file->move(public_path().'/archivos/empresa/logo/',$nombreBD);
             }else{
                 $nombreBD = $request->logo_old;
             }
@@ -74,7 +72,7 @@ class EmpresaController extends Controller
                 $filename      = pathinfo($nombreOriginal, PATHINFO_FILENAME);
                 $extension     = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
                 $nombreBDFirma = $request->nit.'_'.$funcion->quitarCaracteres($filename).'.'.$extension;
-                $file->move(public_path().'/images/firma/',$nombreBD);
+                $file->move(public_path().'/archivos/empresa/firma/',$nombreBD);
             }else{
                 $nombreBDFirma = $request->firma_old;
             } 

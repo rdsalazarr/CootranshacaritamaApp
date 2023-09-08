@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Persona;
-use DB;
+use App\Util\generales;
+use File, DB;
 
 class PersonaController extends Controller
 {
     public function index()
     {  
-        $data = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tirelaid','p.persdepaidexpedicion','p.persmuniidexpedicion','p.persdocumento',
+        $data = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tirelaid','p.persdepaidnacimiento','p.persmuniidnacimiento',
+                                    'p.persdepaidexpedicion','p.persmuniidexpedicion','p.persdocumento',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     'p.persgenero','p.persrutafoto','p.persrutafirma','p.persactiva',
@@ -22,55 +24,92 @@ class PersonaController extends Controller
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->orderBy('persprimernombre')->orderBy('perssegundonombre')
                                     ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')->get();
+
         return response()->json(["data" => $data]);
     }
 
     public function datos()
 	{ 
-		$tipoidentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
-		$tiporelacionlaborales = DB::table('tiporelacionlaboral')->select('tirelaid','tirelanombre')->orderBy('tirelanombre')->get();
-        $cargolaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabactivo',1)->orderBy('carlabnombre')->get();
-        return response()->json(["tipoidentificaciones" => $tipoidentificaciones, "tiporelacionlaborales" => $tiporelacionlaborales, "cargolaborales" => $cargolaborales ]);
+        $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabactivo',1)->orderBy('carlabnombre')->get();
+		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
+		$tipoRelacionLaborales = DB::table('tiporelacionlaboral')->select('tirelaid','tirelanombre')->orderBy('tirelanombre')->get();
+        $departamentos         = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
+        $municipios            = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
+       
+        return response()->json(["tipoCargoLaborales" => $cargoLaborales, "tipoIdentificaciones" => $tipoIdentificaciones,
+                                 "tipoRelacionLaborales" => $tipoRelacionLaborales, "departamentos" => $departamentos, "municipios" => $municipios ]);
 	}
 
     public function salve(Request $request)
 	{
-        $id      = $request->id;
+        $id      = $request->codigo;
         $persona = ($id != 000) ? Persona::findOrFail($id) : new Persona();
 
 	    $this->validate(request(),[
-                'documento'             => 'required|string|max:15|unique:persona,documento,'.$persona->persid.',persid,tipideid,'.$request->tipoIdentificacion, 
-                'cargo'                 => 'required|numeric',
-                'tipoIdentificacion'    => 'required|numeric',
-                'tipoRelacionLaboral'   => 'required|numeric',
-                'depatamentoExpedicion' => 'required|numeric',
-                'municipioExpedicion'   => 'required|numeric',
-	   	        'documento'             => 'required|string|min:6|max:15',
-                'primerNombre'          => 'required|string|min:4|max:40',
-                'segundoNombre'         => 'nullable|string|min:4|max:40',
-                'primerApellido'        => 'required|string|min:4|max:40',
-                'segundoApellido'       => 'nullable|string|min:4|max:40',
-                'fechaNacimiento' 	    => 'nullable|date|date_format:Y-m-d',
-                'direccion'             => 'required|string|min:4|max:100',
-                'correo'                => 'nullable|email|string|max:80',
-                'fechaExpedicion' 	    => 'nullable|date|date_format:Y-m-d',
-                'telefonoFijo'          => 'nullable|string|max:20',
-                'numeroCelular'         => 'nullable|string|max:20',
-                'genero'                => 'required',
-	            'estado'                => 'required',
-                'firma' 	            => 'nullable|mimes:png,PNG|max:1000',
-                'foto'     	            => 'nullable|mimes:png,jpg,PNG,JPG|max:1000'
+                'documento'              => 'required|string|max:15|unique:persona,persdocumento,'.$id.',persid,tipideid,'.$request->tipoIdentificacion, 
+                'cargo'                  => 'required|numeric',
+                'tipoIdentificacion'     => 'required|numeric',
+                'tipoRelacionLaboral'    => 'required|numeric',
+                'departamentoNacimiento' => 'required|numeric',
+                'municipioNacimiento'    => 'required|numeric',
+                'departamentoExpedicion' => 'required|numeric',
+                'municipioExpedicion'    => 'required|numeric',
+                'primerNombre'           => 'required|string|min:4|max:40',
+                'segundoNombre'          => 'nullable|string|min:4|max:40',
+                'primerApellido'         => 'required|string|min:4|max:40',
+                'segundoApellido'        => 'nullable|string|min:4|max:40',
+                'fechaNacimiento' 	     => 'nullable|date|date_format:Y-m-d',
+                'direccion'              => 'required|string|min:4|max:100',
+                'correo'                 => 'nullable|email|string|max:80',
+                'fechaExpedicion' 	     => 'nullable|date|date_format:Y-m-d',
+                'telefonoFijo'           => 'nullable|string|max:20',
+                'numeroCelular'          => 'nullable|string|max:20',
+                'genero'                 => 'required',
+	            'estado'                 => 'required',
+                'firma' 	             => 'nullable|mimes:png,PNG|max:1000',
+                'fotografia'             => 'nullable|mimes:png,jpg,PNG,JPG|max:1000'
 	        ]);
 
         try {
 
+			$funcion 		 = new generales();          
+            $rutaCarpeta     = public_path().'/archivos/persona/'.$request->documento;
+            $carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
+            if($request->hasFile('firma')){
+				$file = $request->file('firma');
+				$nombreOriginal = $file->getclientOriginalName();
+				$filename   = pathinfo($nombreOriginal, PATHINFO_FILENAME);
+				$extension  = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+				$nombre_escritura = 'Firma_'.$request->documento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file->move($rutaCarpeta, $nombre_escritura);
+                $rutaFirma = $nombre_escritura;
+			}else{
+				$rutaFirma = $request->rutaFirma_old;
+			}
+
+            if($request->hasFile('fotografia')){
+				$file = $request->file('fotografia');
+				$nombreOriginal = $file->getclientOriginalName();
+				$filename   = pathinfo($nombreOriginal, PATHINFO_FILENAME);
+				$extension  = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+				$nombre_escritura = $request->documento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file->move($rutaCarpeta, $nombre_escritura);
+                $rutaFoto = $nombre_escritura;
+			}else{
+				$rutaFoto = $request->rutaFoto_old;
+			}
+
+            //rutaFoto_old
+
             $rutaFoto = '';
-            $rutaFirma = '';
+           
 
             $persona->carlabid               = $request->cargo;
             $persona->tipideid               = $request->tipoIdentificacion;
             $persona->tirelaid               = $request->tipoRelacionLaboral;
-            $persona->persdepaidexpedicion   = $request->depatamentoExpedicion;
+            $persona->persdepaidnacimiento   = $request->departamentoNacimiento;
+            $persona->persmuniidnacimiento   = $request->municipioNacimiento;
+            $persona->persdepaidexpedicion   = $request->departamentoExpedicion;
             $persona->persmuniidexpedicion   = $request->municipioExpedicion;
             $persona->persdocumento          = $request->documento;
             $persona->persprimernombre       = $request->primerNombre;
