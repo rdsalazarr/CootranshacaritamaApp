@@ -20,7 +20,9 @@ use App\Http\Controllers\Admin\Series\SerieDocumentalController;
 use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
 use App\Http\Controllers\Admin\PersonaController;
 use App\Http\Controllers\Admin\DependenciaController;
+use App\Http\Controllers\Admin\ShowPersonaController;
 
+use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -31,6 +33,10 @@ Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])-
 Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin/{id}', [DashboardController::class, 'index']);
+
+    //Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
+    Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
+
     Route::get('reset', [DashboardController::class, 'reset']);
     Route::get('dataUsuario', [DashboardController::class, 'dataUsuario']);
     Route::post('updatePassword',[DashboardController::class, 'updatePassword']);
@@ -95,11 +101,21 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/persona/listar/datos', [PersonaController::class, 'datos']); 
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
+        Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta
+
+        
 
         Route::get('/dependencia/list', [DependenciaController::class, 'index']);
         Route::get('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
+
+
+        Route::prefix('/producion/documental')->group(function(){
+            Route::get('/oficio/list', [OficioController::class, 'index']);
+            Route::post('/oficio/salve', [OficioController::class, 'salve']);
+
+        });
 
     });
         

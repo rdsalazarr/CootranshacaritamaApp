@@ -75,3 +75,35 @@
     color: #666;       
     font-weight: bold;
 }
+
+.fotografia{
+    width: 120px;
+    height: 150px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #ccc; 
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); 
+    background-color: #f3f3f3;   
+    img{
+        width: 95%; 
+        height: 95%; 
+        object-fit: cover;
+        padding: 5px 5px 5px 5px;
+    }
+}
+
+.firmaPersona{
+    width: 300px;
+    height: 100px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #ccc; 
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); 
+    background-color: #f3f3f3;
+    img{
+        width: 95%; 
+        height: 95%; 
+        object-fit: cover;
+        padding: 5px 5px 5px 5px;
+    }
+}

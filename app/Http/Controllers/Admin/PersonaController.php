@@ -4,14 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Util\redimencionarImagen;
 use App\Models\Persona;
 use App\Util\generales;
-use File, DB;
+use File, DB, URL;
 
 class PersonaController extends Controller
 {
     public function index()
     {  
+        $url  = URL::to('/');    
         $data = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tirelaid','p.persdepaidnacimiento','p.persmuniidnacimiento',
                                     'p.persdepaidexpedicion','p.persmuniidexpedicion','p.persdocumento',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
@@ -19,8 +21,12 @@ class PersonaController extends Controller
                                     'p.persgenero','p.persrutafoto','p.persrutafirma','p.persactiva',
                                     DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-                                    DB::raw("CONCAT(ti.tipidesigla,'_', ti.tipidenombre) as tipoIdentificacion"),
-                                    DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"))
+                                    DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as tipoIdentificacion"),
+                                    DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"),
+                                    DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"),
+                                    DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona")
+                                    
+                                    )
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->orderBy('persprimernombre')->orderBy('perssegundonombre')
                                     ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')->get();
@@ -35,7 +41,7 @@ class PersonaController extends Controller
 		$tipoRelacionLaborales = DB::table('tiporelacionlaboral')->select('tirelaid','tirelanombre')->orderBy('tirelanombre')->get();
         $departamentos         = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
         $municipios            = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
-       
+ 
         return response()->json(["tipoCargoLaborales" => $cargoLaborales, "tipoIdentificaciones" => $tipoIdentificaciones,
                                  "tipoRelacionLaborales" => $tipoRelacionLaborales, "departamentos" => $departamentos, "municipios" => $municipios ]);
 	}
@@ -67,22 +73,23 @@ class PersonaController extends Controller
                 'genero'                 => 'required',
 	            'estado'                 => 'required',
                 'firma' 	             => 'nullable|mimes:png,PNG|max:1000',
-                'fotografia'             => 'nullable|mimes:png,jpg,PNG,JPG|max:1000'
+                'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000'
 	        ]);
-
+  
         try {
 
-			$funcion 		 = new generales();          
-            $rutaCarpeta     = public_path().'/archivos/persona/'.$request->documento;
-            $carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
+			$redimencionarImagen = new redimencionarImagen();
+            $funcion 		     = new generales();
+            $rutaCarpeta         = public_path().'/archivos/persona/'.$request->documento;
+            $carpetaServe        = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
             if($request->hasFile('firma')){
 				$file = $request->file('firma');
 				$nombreOriginal = $file->getclientOriginalName();
 				$filename   = pathinfo($nombreOriginal, PATHINFO_FILENAME);
 				$extension  = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-				$nombre_escritura = 'Firma_'.$request->documento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-				$file->move($rutaCarpeta, $nombre_escritura);
-                $rutaFirma = $nombre_escritura;
+				$rutaFirma  = 'Firma_'.$request->documento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file->move($rutaCarpeta, $rutaFirma);
+                $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaFirma, 280, 140);//Se redimenciona a un solo tipo
 			}else{
 				$rutaFirma = $request->rutaFirma_old;
 			}
@@ -90,19 +97,14 @@ class PersonaController extends Controller
             if($request->hasFile('fotografia')){
 				$file = $request->file('fotografia');
 				$nombreOriginal = $file->getclientOriginalName();
-				$filename   = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-				$extension  = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-				$nombre_escritura = $request->documento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-				$file->move($rutaCarpeta, $nombre_escritura);
-                $rutaFoto = $nombre_escritura;
+				$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
+				$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+				$rutaFotografia = $request->documento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file->move($rutaCarpeta, $rutaFotografia);
+                $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaFotografia, 210, 270);//Se redimenciona a un solo tipo
 			}else{
-				$rutaFoto = $request->rutaFoto_old;
+				$rutaFotografia = $request->rutaFoto_old;
 			}
-
-            //rutaFoto_old
-
-            $rutaFoto = '';
-           
 
             $persona->carlabid               = $request->cargo;
             $persona->tipideid               = $request->tipoIdentificacion;
@@ -123,7 +125,7 @@ class PersonaController extends Controller
             $persona->persnumerotelefonofijo = $request->telefonoFijo;
             $persona->persnumerocelular      = $request->numeroCelular;
             $persona->persgenero             = $request->genero;
-            $persona->persrutafoto           = $rutaFoto;
+            $persona->persrutafoto           = $rutaFotografia;
             $persona->persrutafirma          = $rutaFirma;
             $persona->persactiva             = $request->estado;
             $persona->save();

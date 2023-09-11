@@ -6,7 +6,7 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import Eliminar from '../../../layout/eliminar';
 import NewEdit from './new';
-import Show from './show';
+
 
 export default function List(){
 
@@ -23,7 +23,7 @@ export default function List(){
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.innocoid : null} ruta={'/admin/informacionCorreo/destroy'} cerrarModal={cerrarModal} />,
-                        <Show data={modal.data}  />
+                    
                     ];
 
     const tituloModal = ['Nueva información de notificación de correo','Editar información de notificación de correo','','Visualizar la información de notificación por correo'];
@@ -35,7 +35,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/informacionCorreo/list').then(res=>{
+        instance.get('/admin/producion/documental/oficio/list').then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -48,9 +48,9 @@ export default function List(){
     }
 
     return (
-        <Box className={'containerMedium'} >
+        <Box>
             <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar información de la notificación del correo</Typography>
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Produccion de oficio</Typography>
                 </Box>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral

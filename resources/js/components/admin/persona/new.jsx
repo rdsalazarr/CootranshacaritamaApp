@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, FormLabel, Box  } from '@mui/material';
-import showSimpleSnackbar from '../../layout/snackBar';
+import { Button, Grid, MenuItem, Stack, Box } from '@mui/material';
 import {ButtonFileImg, ContentFile} from "../../layout/files";
+import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../layout/instance';
@@ -11,19 +11,23 @@ import Files from "react-files";
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState( 
-                    (tipo !== 'I') ? {codigo:data.persid, documento: data.persdocumento, cargo:data.carlabid, tipoIdentificacion:data.tipideid, tipoRelacionLaboral: data.tirelaid, 
-                                        departamentoNacimiento:data.persdepaidnacimiento, municipioNacimiento: data.persmuniidnacimiento, departamentoExpedicion:data.persdepaidexpedicion,
-                                        municipioExpedicion: data.persmuniidexpedicion, primerNombre: data.persprimernombre, segundoNombre: data.perssegundonombre, 
-                                        primerApellido:data.persprimerapellido, segundoApellido: data.perssegundoapellido, fechaNacimiento: data.persfechanacimiento,
-                                        direccion: data.persdireccion, correo: data.perscorreoelectronico, fechaExpedicion: data.persfechadexpedicion, telefonoFijo: data.persnumerotelefonofijo,
-                                        numeroCelular: data.persnumerocelular, genero: data.persgenero, rutaFirma_old: data.persrutafirma, rutaFoto_old: data.persrutafoto, 
-                                        estado:  data.persactiva, tipo:tipo 
-                                    } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoExpedicion:'', departamentoNacimiento:'', municipioNacimiento:'',
-                                        departamentoExpedicion:'', municipioExpedicion:'',departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', segundoApellido:'', fechaNacimiento:'',
-                                        direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
+                    (tipo !== 'I') ? {codigo:data.persid,                           documento: data.persdocumento,                    cargo:data.carlabid,                             tipoIdentificacion:data.tipideid, 
+                                     tipoRelacionLaboral: data.tirelaid,            departamentoNacimiento:data.persdepaidnacimiento,  municipioNacimiento: data.persmuniidnacimiento, departamentoExpedicion:data.persdepaidexpedicion,
+                                     municipioExpedicion: data.persmuniidexpedicion, primerNombre: data.persprimernombre,              segundoNombre: (data.perssegundonombre !== null)  ? data.perssegundonombre : '', 
+                                     primerApellido:data.persprimerapellido,         segundoApellido: (data.perssegundoapellido !== null) ? data.perssegundoapellido : '', 
+                                     fechaNacimiento: data.persfechanacimiento,       direccion: data.persdireccion,                     correo: (data.perscorreoelectronico !== null ) ? data.perscorreoelectronico : '', 
+                                     fechaExpedicion: data.persfechadexpedicion,      telefonoFijo: (data.persnumerotelefonofijo !== null) ? data.persnumerotelefonofijo : '',
+                                     numeroCelular: (data.persnumerocelular !== null) ? data.persnumerocelular : '',                      genero: data.persgenero,                       
+                                     rutaFirma_old: (data.persrutafirma !== null) ? data.persrutafirma : '',                              rutaFoto_old: (data.persrutafoto !== null) ? data.persrutafoto : '',                 
+                                     estado:  data.persactiva, tipo:tipo 
+                                    } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
+                                        departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
+                                        segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                         estado: '1', tipo:tipo
                                 });
-
+ 
+    const showFotografia   = (formData.rutaFoto_old !== null && tipo === 'U') ? data.fotografia : null;
+    const showFirmaPersona = (formData.rutaFirma_old !== null && tipo === 'U') ? data.firmaPersona  : null;    
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
     const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
@@ -33,9 +37,6 @@ export default function New({data, tipo}){
     const [municipios, setMunicipios] = useState([]);
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
     const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
-    const [fotografia, setFotografia] = useState();
-    const [imagenFirma, setImagenFirma] = useState();
-    const [escrituraPdf, setEscrituraPdf] = useState();
     const [formDataFile, setFormDataFile] = useState({ fotografia : [], firma : []});
 
     const handleChange = (e) =>{
@@ -205,9 +206,9 @@ export default function New({data, tipo}){
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
-                        name={'segundoApellido'}
-                        value={formData.segundoApellido}
-                        label={'Segundo apellido'}
+                        name={'segundoNombre'}
+                        value={formData.segundoNombre}
+                        label={'Segundo nombre'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 40}}
@@ -231,9 +232,9 @@ export default function New({data, tipo}){
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
-                        name={'segundoNombre'}
-                        value={formData.segundoNombre}
-                        label={'Segundo nombre'}
+                        name={'segundoApellido'}
+                        value={formData.segundoApellido}
+                        label={'Segundo apellido'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 40}}
@@ -360,7 +361,7 @@ export default function New({data, tipo}){
                         label={'Dirección'}
                         className={'inputGeneral'}
                         variant={"standard"}
-                        inputProps={{autoComplete: 'off', maxLength: 40}}
+                        inputProps={{autoComplete: 'off', maxLength: 100}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -480,7 +481,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item md={6} xl={6} sm={12} xs={12}>
+                <Grid item md={5} xl={5} sm={12} xs={12}>
                     <Files
                         className='files-dropzone'
                         onChange={(file ) =>{onFilesChange(file, 'fotografia') }}
@@ -496,13 +497,21 @@ export default function New({data, tipo}){
                     </Files>
                 </Grid>
 
-                <Grid item md={5} xl={5} sm={12} xs={12}>
+                <Grid item md={4} xl={4} sm={12} xs={12}>
                     <Box style={{display: 'flex', flexWrap: 'wrap'}}>
                         {formDataFile.fotografia.map((file, a) =>{
                             return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
                         })}
                     </Box>
-                </Grid> 
+                </Grid>             
+
+                {(showFotografia !== null && tipo === 'U') ?
+                    <Grid item md={3} xl={3} sm={12} xs={12}>
+                        <Box className='fotografia'>
+                            <img src={showFotografia} ></img>
+                        </Box>
+                    </Grid>
+                : null }
                 
                 <Grid item md={5} xl={5} sm={12} xs={12}>
                     <Files
@@ -526,14 +535,22 @@ export default function New({data, tipo}){
                             return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
                         })}
                     </Box>
-                </Grid> 
-                
+                </Grid>
+
+                {(showFirmaPersona !== null && tipo === 'U') ?
+                    <Grid item md={3} xl={3} sm={12} xs={12}>
+                        <Box className='firmaPersona'>
+                            <img src={showFirmaPersona}></img>
+                        </Box>
+                    </Grid>
+                : null }
+
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">
                 <Stack direction="row" spacing={2}>
                     <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
-                        startIcon={<SaveIcon />}> {(tipo=== 'I') ? "Guardar" : "Actualizar"}
+                        startIcon={<SaveIcon />}> {(tipo === 'I') ? "Guardar" : "Actualizar"}
                     </Button>
                 </Stack>
             </Grid>

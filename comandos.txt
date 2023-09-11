@@ -46,8 +46,6 @@ php artisan make:migration create_codigo_documental_proceso_radicado
 
 
 
-
-
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
 php artisan make:model HistorialContrasena
@@ -103,7 +101,12 @@ php artisan make:seeder TipoMedioSeeder
 php artisan make:seeder TipoTramiteSeeder
 php artisan make:seeder TipoPersonaDocumentalSeeder
 
-php artisan make:request ResumenRequest
+php artisan make:request ActaRequests
+php artisan make:request CertificadoRequests
+php artisan make:request CircularRequests
+php artisan make:request CitacionRequests
+php artisan make:request ConstanciaRequests
+php artisan make:request OficioRequests
 
 php artisan make:controller Admin\EleccionDeelegadoAspiranteController
 php artisan make:controller Admin\ModuloController
@@ -119,7 +122,7 @@ php artisan make:controller Admin\Series\SubSerieDocumentalController
 php artisan make:controller Admin\Tipos\TipoDespedidaController
 php artisan make:controller Admin\Tipos\TipoSaludoController
 php artisan make:controller Admin\PersonaController
-
+php artisan make:controller Admin\ProducionDocumental\OficioController
 
 
 php artisan db:seed
