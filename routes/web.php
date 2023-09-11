@@ -102,17 +102,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
         Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta
-
-        
-
+       
         Route::get('/dependencia/list', [DependenciaController::class, 'index']);
         Route::get('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-
         Route::prefix('/producion/documental')->group(function(){
             Route::get('/oficio/list', [OficioController::class, 'index']);
+            Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
             Route::post('/oficio/salve', [OficioController::class, 'salve']);
 
         });

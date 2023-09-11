@@ -46,16 +46,33 @@ class OficioController extends Controller
         return response()->json(["data" => $data]);
 	}
 
-    public function salve(OficioRequests $request){ 
+	public function datos(Request $request)
+	{ 
+		$id              = $request->codigo;
+		//Y-m-d m/d/Y
+		$fechaActual     = Carbon::now()->format('Y-m-d');	
+		$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
+		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->orderBy('tipmednombre')->get();
+		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
+        $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
+        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->orderBy('depenombre')->get();
+ 
+        return response()->json(["fechaActual" => $fechaActual, "tipoDestinos"   => $tipoDestinos,   "tipoMedios"   => $tipoMedios,
+                                 "tipoSaludos" => $tipoSaludos, "tipoDespedidas" => $tipoDespedidas, "dependencias" => $dependencias ]);
+	}
 
-		$codigodocumental                    = new CodigoDocumental();		
+    public function salve(OficioRequests $request){
+
+		$codigodocumental                    = new CodigoDocumental();
 		$codigodocumentalproceso             = new CodigoDocumentalProceso();
 		$codigodocumentalprocesooficio       = new CodigoDocumentalProcesoOficio();
 		$codigodocumentalprocesofirma        = new CodigoDocumentalProcesoFirma();
-		$codigodocumentalprocesocambioestado = new CodigoDocumentalProcesoCambioEstado();	
+		$codigodocumentalprocesocambioestado = new CodigoDocumentalProcesoCambioEstado();
        	
        // $id      = $request->codigo;
         //$infocorreonotificacion = ($id != 000) ? InformacionNotificacionCorreo::findOrFail($id) : new InformacionNotificacionCorreo();
+		
+		dd($request->fecha);
 
         DB::beginTransaction();
 		try {
@@ -63,53 +80,80 @@ class OficioController extends Controller
             $fechaHoraActual = Carbon::now();
             $anioActual      = Carbon::now()->year;
 
-	    	$codigodocumental->depeid          = $request->dependenciaproductora;
-		    $codigodocumental->seriid          =  $request->serie;
-		    $codigodocumental->subserid        = $request->subSerie;	
+			//Consulto la sigla
+			$dependencia    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeid',$request->dependencia)->first();
+			$sigla = $dependencia->depesigla;
+
+	    	$codigodocumental->depeid          = $request->dependencia;
+		    $codigodocumental->serdocid        = $request->serie;
+		    $codigodocumental->susedoid        = $request->subSerie;	
 		    $codigodocumental->tipdocid        = '6';//Oficio
 		    $codigodocumental->tipmedid        = $request->tipoMedio;
 		    $codigodocumental->tiptraid        = $request->tipoTramite;
 		    $codigodocumental->tipdetid        = $request->tipoDestino;
-		    $codigodocumental->coddocuserid    = $usuarioId;
+		    $codigodocumental->usuaid          = $usuarioId;
             $codigodocumental->coddocfechahora = $fechaHoraActual;	  
-		   	$codigodocumental->save();  
+		   	$codigodocumental->save();
 
 		   	//Consulto el ultimo identificador de los codigos documentales
             $codDocMaxConsecutio = CodigoDocumental::latest('coddocid')->first();
-            $coddocid =  $codDocMaxConsecutio->coddocid;
+            $coddocid            =  $codDocMaxConsecutio->coddocid;
 
 	    	$codigodocumentalproceso->coddocid                  =  $coddocid;
 	    	$codigodocumentalproceso->tiesdoid                  = '1'; //Inicial
 	    	$codigodocumentalproceso->codoprfecha               = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido      = $request->destinatario;
-	    	$codigodocumentalproceso->codoprcargonombredirigido = $request->cargo;
+	    	$codigodocumentalproceso->codoprnombredirigido      = $request->nombreDirigido;
+	    	$codigodocumentalproceso->codoprcargonombredirigido = $request->cargoDirigido;
 	      	$codigodocumentalproceso->codoprasunto              = $request->asunto;
 	    	$codigodocumentalproceso->codoprcorreo              = $request->correo;
 	    	$codigodocumentalproceso->codoprcontenido           = $request->contenido;
-	    	$codigodocumentalproceso->codoprtieneanexo          = $request->anexarDocumento;
+	    	$codigodocumentalproceso->codoprtieneanexo          = $request->tieneAnexo;
 	    	$codigodocumentalproceso->codopranexonombre         = $request->nombreAnexo;
-	    	$codigodocumentalproceso->codoprtienecopia          = $request->enviarCopia;
-	    	$codigodocumentalproceso->codoprcopianombre         = $request->copiaNombre;	    		 
+	    	$codigodocumentalproceso->codoprtienecopia          = $request->tieneCopia;
+	    	$codigodocumentalproceso->codoprcopianombre         = $request->nombreCopia;
 	    	$codigodocumentalproceso->save();  
 
             $codDocProcesoMaxConsecutio = CodigoDocumentalProceso::latest('codoprid')->first();
-            $codoprid =  $codDocProcesoMaxConsecutio->codoprid;
+            $codoprid                   =  $codDocProcesoMaxConsecutio->codoprid;
 
-		   	$codigodocumentalprocesooficio->codoprid                = $codoprid;		   
-			$codigodocumentalprocesooficio->codopouserid            = $usuarioId;
-			$codigodocumentalprocesooficio->codopoconsecutivo       = $this->obtenerConsecutivo($request->dependenciaproductora, $anioActual);
-		   	$codigodocumentalprocesooficio->codoposigla             = $request->depeproductora;
+		   	$codigodocumentalprocesooficio->codoprid                = $codoprid;
+			$codigodocumentalprocesooficio->usuaid                  = $usuarioId;
+			$codigodocumentalprocesooficio->tipsalid                = $request->saludo;
+			$codigodocumentalprocesooficio->tipdesid                = $request->despedida;
+			$codigodocumentalprocesooficio->codopoconsecutivo       = $this->obtenerConsecutivo($sigla, $anioActual);
+		   	$codigodocumentalprocesooficio->codoposigla             = $sigla;
 		   	$codigodocumentalprocesooficio->codopoanio              = $anioActual;
-		   	$codigodocumentalprocesooficio->tipsalid                = $request->saludo;
-		   	$codigodocumentalprocesooficio->tipdesid                = $request->despedida;
-		   	$codigodocumentalprocesooficio->codopotitulo            = $request->titulo;
+		  
+		   	$codigodocumentalprocesooficio->codopotitulo            = $request->tituloPersona;
 		   	$codigodocumentalprocesooficio->codopociudad            = $request->ciudad;
-		   	$codigodocumentalprocesooficio->codopocargodestinatario = $request->cargo;
+		   	$codigodocumentalprocesooficio->codopocargodestinatario = $request->cargoDestinatario;
 		   	$codigodocumentalprocesooficio->codopoempresa           = $request->empresa;
-		   	$codigodocumentalprocesooficio->codopodireccion         = $request->direccion;
+		   	$codigodocumentalprocesooficio->codopodireccion         = $request->direccionDestinatario;
 			$codigodocumentalprocesooficio->codopotelefono          = $request->telefono;
-			$codigodocumentalprocesooficio->codoporesponderadicado  = $request->responder_radicado;
-		   	$codigodocumentalprocesooficio->save();  
+			$codigodocumentalprocesooficio->codoporesponderadicado  = $request->responderRadicado;
+		   	$codigodocumentalprocesooficio->save();
+
+			//Elimino las funcionalides asignada
+			/*if($request->tipo === 'U'){
+				$rolfuncionalidad = DB::table('rolfuncionalidad')->select('rolfunid')
+						->where('rolfunrolid', $request->codigo)->get();
+				foreach ($rolfuncionalidad as $funcionalidad)
+            	{
+					$rolfuncionalidad = CodigoDocumentalProcesoCopia::findOrFail($funcionalidad->rolfunid);
+					$rolfuncionalidad->delete();
+				}
+			}*/
+
+			/*foreach ($request->dependenciaCopias as $dependenciaCopia)
+            {
+                $codigodocumentalprocesofirma= new CodigoDocumentalProcesoFirma();
+                $codigodocumentalprocesofirma->codoprid = $idRol;
+                $codigodocumentalprocesofirma->persid = $dependenciaCopia['funcid'];
+                $codigodocumentalprocesofirma->save();
+            }
+
+
+
 		 /*
 			//Obtenemos los vectores
 		   	$estadoFirma = $request->estado_firma;	//Este estado solo se pasa porque se requiere al copiar el documento	   

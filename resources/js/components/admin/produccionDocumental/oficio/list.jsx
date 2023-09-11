@@ -6,7 +6,7 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import Eliminar from '../../../layout/eliminar';
 import NewEdit from './new';
-
+import Prueba from './prueba';
 
 export default function List(){
 
@@ -19,10 +19,12 @@ export default function List(){
         setModal({open : false, vista:4, data:{}, titulo:'', tamano:'bigFlot'});
     }
 
+    //<NewEdit tipo={'I'}  />, <Prueba />
     const modales = [
-                        <NewEdit tipo={'I'}  />,
+                        <NewEdit tipo={'I'} />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.innocoid : null} ruta={'/admin/informacionCorreo/destroy'} cerrarModal={cerrarModal} />,
+                        <Prueba />
                     
                     ];
 
@@ -55,13 +57,13 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Nombre', 'Asunto','Píe pagina','Copia','Actualizar','Eliminar','Ver']}
+                        titulo={['Nombre', 'Asunto','Píe pagina','Copia','Actualizar','Eliminar','Ver','Prueba']}
                         ver={["innoconombre","innocoasunto","enviarPiePagina","enviarCopia"]}
                         accion={[
                             {tipo: 'T', icono : 'add',        color: 'green',  funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
                             {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
+                            {tipo: 'T', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />

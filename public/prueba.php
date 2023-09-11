@@ -4,20 +4,13 @@
   <script src="./tinymce/tinymce.min.js" referrerpolicy="origin"></script>
   <script type="text/javascript">
   tinymce.init({
-    selector: '#mytextarea',
-   
-                      
-                            height: 500,
-                            menubar: false,   
-                                                    
-                            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
-                           
-                            // Configuración de la barra de herramientas
-                            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table',
-
-                            content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 14px }',
-                           
-                          
+    selector: '#mytextarea', 
+    height: 500,
+    menubar: false,                               
+    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+    // Configuración de la barra de herramientas
+    toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table',
+    content_style: 'body { font-family: Helvetica, Arial, sans-serif; font-size: 14px }',  
   });
   </script>
 </head>

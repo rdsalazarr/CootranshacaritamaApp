@@ -6,7 +6,7 @@ import logoPdf from "../../../images/files/pdf.png";
 import { Box, Typography } from '@mui/material';
 import '../../../scss/files.scss';
 
-export  function ButtonFile({title, icon = 'backup'}){
+export function ButtonFile({title, icon = 'backup'}){
     return (
         <Box className={'fileContent'}>
             <Icon>{icon}</Icon>
@@ -15,7 +15,7 @@ export  function ButtonFile({title, icon = 'backup'}){
     )
 }
 
-export  function ButtonFilePdf({title}){
+export function ButtonFilePdf({title}){
     return (
         <Box>
             <img className={'iconoSubirPdf'} src={logoPdf}/>
@@ -24,7 +24,7 @@ export  function ButtonFilePdf({title}){
     )
 }
 
-export  function ButtonFileImg({title}){
+export function ButtonFileImg({title}){
     return (
         <Box>
             <img className={'iconoSubirAdjunto'} src={logoFile}/>
@@ -37,7 +37,7 @@ export  function ContentFile({file, name, remove, mostrarEnlace = true}){
     return (
         <Box className={"fileInd"}>
             <embed className={"fileImg"} src={canPreviewFile(file, file.extension )} key={file.id} />
-            {(mostrarEnlace) ? <Box onClick={() => {remove(name)}} style={{ cursor: 'pointer'}}>Eliminar </Box> : null}
+            {(mostrarEnlace) ? <Box onClick={() => {remove(name)}} className={'eliminar'}>Eliminar </Box> : null}
         </Box>
     )
 }

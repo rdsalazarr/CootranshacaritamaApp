@@ -60,13 +60,24 @@
     flex-direction: column;
     max-width: 10em;
     margin: 0 auto;
-    padding-right: 2em;
+    padding-right: 1em;
     padding-bottom: 1em;
     div{
         width: 100%;
         text-align: center;
         background: #ec1c21;
-        color: white
+        color: white;
+        border-radius: 4px;
+    }
+    .eliminar{
+        cursor: pointer;
+        transition: all 0.3s, left 0.3s;
+        margin-top: 0.2em;
+    }
+    .eliminar:hover{
+        border-radius: 6px;
+        background: #c71a1e;
+        transition: all 0.3s, left 0.3s;
     }
 }
 
@@ -107,3 +118,15 @@
         padding: 5px 5px 5px 5px;
     }
 }
+
+.msgAlert{
+    background-color: rgb(237, 237, 237);   
+    border: 1px solid rgb(131, 131, 131);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    .avatar{
+      margin-right: 20px;
+      margin-top: 6px;
+    }
+  }

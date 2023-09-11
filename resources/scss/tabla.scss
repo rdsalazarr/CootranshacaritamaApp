@@ -156,13 +156,23 @@ $grisOscuro : var(--grisOscuro);
 
 .subTituloFormulario {
   background-color: $verdeOscuro;
-  font-weight: 500;
   text-align: left;
   padding: 5px 0px 5px 10px;
   color: $colorBlanco;
   margin-top: 1em;
   font-weight: 600;
   border-radius: 4px;
+}
+
+.frmDivision {
+  background-color: $grisClaro;
+  text-align: left;
+  padding: 5px 0px 5px 10px;
+  color: #747171;;
+  margin-top: 1em;
+  font-weight: 600;
+  border-radius: 4px;
+  text-shadow: -0.03px 0.03px #43ab33, -1px 1px #f1f7f1;
 }
 
 /*md*/

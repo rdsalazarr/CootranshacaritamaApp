@@ -11,7 +11,7 @@ class OficioRequests extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,25 +22,39 @@ class OficioRequests extends FormRequest
     public function rules(): array
     {
         return [
-            'serie'             => 'required',
-            'subSerie'          => 'required',
-            'fecha'             => 'required|date|date_format:Y-m-d',
-            'tipoDestino'       => 'required',
-            'tipoMedio'         => 'required',
-            'correo'            => 'required_if:tipo_medio,2|required_if:tipo_medio,3|email',      
-            'destinatario'      => 'required',
-            'ciudad'            => 'required',
-            'asunto'            => 'required',
-            'responderRadicado' => 'required',
-            'saludo'            => 'required',
-            'tipoTramite'       => 'required',
-            'contenido'         => 'required',
-            'despedida'         => 'required', 
-            'enviarCopia'       => 'required',
-            'anexarDocumento'   => 'required',
-            'depeidproductora'  => 'required',
-            'depeproductora'    => 'required',
-            'nombreRemitente'   => 'required|array|min:1'  
+            'idCodigoDocumental' => 'required|numeric',
+           // 'dependencia'        => 'required|numeric',
+            'serie'              => 'required|numeric',
+            'subSerie'           => 'required|numeric',
+            'tipoMedio'          => 'required|numeric',
+            'tipoTramite'        => 'required|numeric',
+            'tipoDestino'        => 'required|numeric',
+
+            'idCodigoDocumentalProceso' => 'required|numeric',
+            //'fecha'                     => 'required|date|date_format:Y-m-d',
+            'fecha'                     => 'required|date|date_format:m/d/Y',
+            'nombreDirigido'            => 'required|string|min:4|max:2000',
+            'cargoDirigido'             => 'nullable|string|min:4|max:100',
+            'asunto'                    => 'required|string|min:4|max:200',
+          //  'correo'                    => 'required_if:tipo_medio,2|required_if:tipo_medio,3|email',
+            'contenido'                 => 'required',
+            'tieneAnexo'                => 'required|string',
+            'nombreAnexo'               => 'nullable|string|min:4|max:300',
+            'tieneCopia'                => 'required|string',
+            'nombreCopia'               => 'nullable|string|min:4|max:300',
+
+            'idCodigoDocumentalProcesoOficio' => 'required|numeric',
+            'saludo'                          => 'required|numeric',
+            'despedida'                       => 'required|numeric',
+            'tituloPersona'                   => 'nullable|string|min:4|max:80',
+            'ciudad'                          => 'required|string|min:4|max:80',
+            'cargoDestinatario'               => 'nullable|string|min:4|max:80',
+            'empresa'                         => 'nullable|string|min:4|max:80',
+            'direccionDestinatario'           => 'nullable|string|min:4|max:80',
+            'telefono'                        => 'nullable|string|min:4|max:20',
+            'responderRadicado'               => 'required|string',
+
+            //'nombreRemitente'                 => 'required|array|min:1'
         ];
     }
 }
