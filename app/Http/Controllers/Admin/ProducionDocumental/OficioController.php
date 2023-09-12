@@ -56,9 +56,14 @@ class OficioController extends Controller
 		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
         $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
         $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->orderBy('depenombre')->get();
- 
-        return response()->json(["fechaActual" => $fechaActual, "tipoDestinos"   => $tipoDestinos,   "tipoMedios"   => $tipoMedios,
-                                 "tipoSaludos" => $tipoSaludos, "tipoDespedidas" => $tipoDespedidas, "dependencias" => $dependencias ]);
+ 		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
+														->orderBy('nombrePersona')
+														->whereIn('carlabid', [1, 2])->get();
+        $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
+
+        return response()->json(["fechaActual" => $fechaActual, "tipoDestinos"    => $tipoDestinos,   "tipoMedios"   => $tipoMedios,
+                                "tipoSaludos"  => $tipoSaludos, "tipoDespedidas"  => $tipoDespedidas, "dependencias" => $dependencias,
+								"personas"     => $personas,     "cargoLaborales" => $cargoLaborales ]);
 	}
 
     public function salve(OficioRequests $request){

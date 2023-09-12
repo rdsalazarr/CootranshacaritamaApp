@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment, useRef} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Avatar, FormGroup, FormLabel, FormControlLabel, Checkbox, Card } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Avatar, FormGroup, FormLabel, FormControlLabel } from '@mui/material';
+import { Checkbox, Icon,Table, TableHead, TableBody, TableRow, TableCell, Card } from '@mui/material';
 import {ButtonFileImg, ContentFile} from "../../../layout/files";
 import showSimpleSnackbar from '../../../layout/snackBar';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -50,27 +51,36 @@ export default function New({data, tipo}){
 
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
+    const [fechaActual, setFechaActual] = useState('');
     const [tipoDestinos, setTipoDestinos] = useState([]);
     const [tipoMedios, setTipoMedios] = useState([]);
     const [tipoSaludos, setTipoSaludos] = useState([]);
     const [tipoDespedidas, setTipoDespedidas] = useState([]);
     const [dependencias, setDependencias] = useState([]);
-    const [fechaActual, setFechaActual] = useState('');
+    const [personas, setPersonas] = useState([]);
+    const [cargoLaborales, setCargoLaborales] = useState([]);
+   
     const [formDataFile, setFormDataFile] = useState({ archivos : []});
     const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_OFICIO);
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
-    const [dependenciaMarcada, setDependenciaMarcada] = useState([]); 
-
+    const [dependenciaMarcada, setDependenciaMarcada] = useState([]);     
+    const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
     const minDate = dayjs();
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const onFilesChange = (files , nombre) =>  {
-        setFormDataFile(prev => ({...prev, [nombre]: files}));
-    }
+    const handleChangeDate = (date) => {
+        setFormData((prevData) => ({...prevData,  fecha: date.format('MM/DD/YYYY'), }));
+    };
 
+    const handleChangeFirmaPersona = (e, index) =>{
+        let newFirmaPersona= [...firmaPersona];
+        newFirmaPersona[index][e.target.name] = e.target.value; 
+        setFirmaPersona(newFirmaPersona);
+    }
+   
     const handleChangeDependencia = (e) =>{
         let newFormDataDependencia = [...formDataDependencia];
         if(e.target.checked){
@@ -82,28 +92,42 @@ export default function New({data, tipo}){
         setFormDataDependencia(newFormDataDependencia);
     }
 
+    const onFilesChange = (files , nombre) =>  {
+        setFormDataFile(prev => ({...prev, [nombre]: files}));
+    }
+
     const removeFIle = (nombre)=>{
         setFormDataFile(prev => ({...prev, archivos: prev.archivos.filter(item => item.name !== nombre)}));
     }
     
-    const onFilesError = (error, file) => {  
+    const onFilesError = (error, file) => {
         let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
         showSimpleSnackbar(msj, 'error');
     }
 
     const handleSubmit = () =>{
         console.log("enviado el formulario en handleSubmit");
-        console.log(formData);
+  
         let newFormData = {...formData};
         newFormData.contenido = editorTexto.current.getContent();
-       // setLoader(true);
-        
-        //console.log("enviado el formulario");
+     
+        let totalCampos = 0;
+        Object.keys(firmaPersona).forEach(function(key) {
+            let datos = firmaPersona[key];
+            Object.keys(datos).forEach(function(a){
+                dataFile.append(a+key, datos[a]);
+            })
+            totalCampos ++;
+        })
 
-    
+        newFormData.append('totalCampos', totalCampos);     
         newFormData.dependenciaCopias = dependenciaMarcada; 
-        setFormData(newFormData);
+        
+        let archivos      = formDataFile.archivos;
+       // dataFile.append('firma', (firma[0] != undefined) ? firma[0] : '');
 
+        //setLoader(true);
+        setFormData(newFormData);
         instance.post('/admin/producion/documental/oficio/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
@@ -112,17 +136,43 @@ export default function New({data, tipo}){
             setLoader(false);
         })
     }
+    
+    const adicionarFilaFirmaPersona = () =>{
+        let newFirmaPersona = [...firmaPersona];
+        newFirmaPersona.push({identificador:'', persona:'',  cargo: '',  estado: 'I'});
+        setFirmaPersona(newFirmaPersona);
+    }  
+
+    const eliminarFirmaPersona = (id) =>{
+        let newDatosFirmaPersona = []; 
+        firmaPersona.map((res,i) =>{
+            if(res.estado === 'U' && i === id){
+                newDatosFirmaPersona.push({ identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado: 'D' }); 
+            }else if(res.estado === 'D' && i === id){
+                newDatosFirmaPersona.push({identificador:res.identificador,  persona: res.persona, cargo:res.cargo, estado: 'U'});
+            }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
+                newDatosFirmaPersona.push({identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado:res.estado});
+            }else{
+                if(i != id){
+                    newDatosFirmaPersona.push({identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado: 'I' });
+                }
+            }
+        })
+        setFirmaPersona(newDatosFirmaPersona);
+    }
 
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/producion/documental/oficio/listar/datos').then(res=>{
-            setFechaActual(res.fechaActual);            
+            setFechaActual(res.fechaActual);
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
             setTipoSaludos(res.tipoSaludos);
             setTipoDespedidas(res.tipoDespedidas);
             setDependencias(res.dependencias);
+            setPersonas(res.personas);
+            setCargoLaborales(res.cargoLaborales);
             newFormData.fecha = res.fechaActual
             setFormData(newFormData);
             setLoader(false);
@@ -133,16 +183,7 @@ export default function New({data, tipo}){
 
     if(loader){
         return <LoaderModal />
-    } 
-
-    const handleChangeDate = (date) => {
-        setFormData((prevData) => ({...prevData,  fecha: date.format('MM/DD/YYYY'),    }));
-    };
-
-    const formatDate = (date) => {
-        // Personaliza el formato de la fecha
-        return dayjs(date).format('YYYY-MM-DD');
-      };
+    }
 
     return (
         <ValidatorForm onSubmit={handleSubmit} >
@@ -160,8 +201,8 @@ export default function New({data, tipo}){
                             className={'inputGeneral'} 
                             onChange={handleChangeDate}
                         />
-                    </LocalizationProvider>                
-                </Grid>             
+                    </LocalizationProvider>
+                </Grid>
 
                 <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha' >
                     <SelectValidator
@@ -255,7 +296,7 @@ export default function New({data, tipo}){
                         label={'Cargo'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 100}}                    
+                        inputProps={{autoComplete: 'off', maxLength: 100}}
                         onChange={handleChange}
                     />
                 </Grid>
@@ -418,7 +459,7 @@ export default function New({data, tipo}){
                             >
                             <ButtonFileImg title={"Adicionar anexos"} />
                             </Files>
-                        </Grid>                     
+                        </Grid>
 
                         <Grid item md={6} xl={6} sm={12} xs={12}>
                             <Box style={{display: 'flex', flexWrap: 'wrap'}}>
@@ -460,10 +501,8 @@ export default function New({data, tipo}){
                             />
                         </Grid>
 
-
-
                         <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <FormLabel component="legend">Listado de dependencia para asignar al tipo documental</FormLabel>
+                            <FormLabel component="legend">Listado de dependencia para asignar copias al tipo documental</FormLabel>
                             <FormGroup row name={"dependencias"} 
                                 value={formDataDependencia.depeid}
                                 onChange={handleChangeDependencia}
@@ -482,7 +521,84 @@ export default function New({data, tipo}){
                     </Fragment>
                 : null}
 
-            </Grid>            
+                <Grid item md={12} xl={12} sm={12}>
+                    <Box className='frmDivision'>Adicionar personas que firma el tipo documental</Box>
+                    <Box className={'icon-add'}>
+                        <Icon key={'iconAdd'} className={'icon top green'}
+                            onClick={() => {adicionarFilaFirmaPersona()}}
+                        >add</Icon>
+                    </Box>
+
+                    <Table key={'tableFirmaPersona'}  className={'tableAdicional'} >
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={{width: '60%'}}>Nombre de la persona</TableCell>
+                                <TableCell style={{width: '40%'}}>Cargo </TableCell>                          
+                                <TableCell style={{width: '10%'}} className='cell-center'>Acción </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+
+                        { firmaPersona.map((frmPers, a) => { 
+
+                            return(
+                                <TableRow key={'rowA-' +a} className={(frmPers.estado == 'D')? 'tachado': null}>
+                                    <TableCell>
+                                        <SelectValidator
+                                            name={'persona'}
+                                            value={frmPers['persona']}
+                                            label={'Nombre de la persona'}
+                                            className={'inputGeneral'} 
+                                            variant={"standard"} 
+                                            inputProps={{autoComplete: 'off'}}
+                                            validators={["required"]}
+                                            errorMessages={["Campo obligatorio"]}
+                                            onChange={(e) => {handleChangeFirmaPersona(e, a)}}
+                                        >
+                                        <MenuItem value={""}>Seleccione</MenuItem>
+                                        {personas.map(res=>{
+                                            return <MenuItem value={res.persid} key={res.persid} >{res.nombrePersona}</MenuItem>
+                                        })}
+                                        </SelectValidator>
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <SelectValidator
+                                            name={'cargo'}
+                                            value={frmPers['cargo']}
+                                            label={'Cargo laboral'}
+                                            className={'inputGeneral'} 
+                                            variant={"standard"} 
+                                            inputProps={{autoComplete: 'off'}}
+                                            validators={["required"]}
+                                            errorMessages={["Campo obligatorio"]}
+                                            onChange={(e) => {handleChangeFirmaPersona(e, a)}}
+                                        >
+                                        <MenuItem value={""}>Seleccione</MenuItem>
+                                        {cargoLaborales.map((res, i) =>{
+                                            return <MenuItem value={res.carlabid} key={res.carlabid} >{res.carlabnombre}</MenuItem>
+                                        })}
+                                        </SelectValidator>
+                                    </TableCell>
+                                
+                                    <TableCell className='cell-center'>
+                                        {(a !== 0)?
+                                        <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                onClick={() => {eliminarFirmaPersona(a);}}
+                                            >clear</Icon>
+                                            : null
+                                        }
+                                    </TableCell>
+                                 </TableRow>
+                                );
+                            })
+                        }
+
+                        </TableBody>
+                    </Table>
+                </Grid>
+
+            </Grid>
 
             <Grid container direction="row"  justifyContent="right">
                 <Stack direction="row" spacing={2}>
