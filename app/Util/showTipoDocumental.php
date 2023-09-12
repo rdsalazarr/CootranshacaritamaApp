@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Util;
+use App\Util\generales;
+use Auth, DB;
+
+class showTipoDocumental
+{
+    function oficio($id)
+	{
+        $infodocumento =  DB::table('coddocumprocesooficio as cdpo')
+						->select('cdpo.codopoid as id','cdpo.tipdesid','cdpo.tipsalid', DB::raw("CONCAT(cdpo.codopoanio,' - ', cdpo.codopoconsecutivo) as consecutivogenerado"),
+						'cdpo.codopoconsecutivo','cdpo.codoposigla','cdpo.codopoanio', 'cdpo.codopotitulo','cdpo.codopociudad','cdpo.codopocargodestinatario',
+						'cdpo.codopoempresa','cdpo.codopodireccion','cdpo.codopotelefono','cdpo.codoporesponderadicado',
+						DB::raw("if(cdpo.codoporesponderadicado = 1 ,'Sí', 'No') as responderadicado"), 'td.tipdesnombre','ts.tipsalnombre',
+						
+						'cdp.codoprid','cdp.codoprfecha','cdp.codoprnombredirigido','cdp.codoprcargonombredirigido','cdp.codoprasunto','cdp.codoprcorreo',
+						'cdp.codoprcontenido','cdp.codoprtieneanexo','cdp.codoprtienecopia','cdp.codoprsolicitafirma',
+						'cdp.codopranexonombre','cdp.codoprcopianombre', 'cdp.codoprfirmado',
+						DB::raw("if(cdp.codoprtieneanexo = 1 ,'Sí', 'No') as tieneanexo"),
+						DB::raw("if(cdp.codoprtienecopia = 1 ,'Sí', 'No') as tienecopia"),
+						'ted.tiesdonombre as estado',
+						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
+						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuanombre as alias')
+						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
+	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
+						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
+						->join('tipodespedida as td', 'td.tipdesid', '=', 'cdpo.tipdesid')
+						->join('tiposaludo as ts', 'ts.tipsalid', '=', 'cdpo.tipsalid')
+						->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
+						->join('seriedocumental as sd', 'sd.serdocid', '=', 'cd.serdocid')
+						->join('subseriedocumental as ssd', function($join)
+							{
+								$join->on('ssd.susedoid', '=', 'cd.susedoid');
+								$join->on('ssd.serdocid', '=', 'cd.serdocid'); 
+							})
+						->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
+						->join('usuario as u', 'u.usuaid', '=', 'cd.usuaid')
+						->where('cdpo.codopoid', $id)->first();
+
+		$firmas = DB::table('coddocumprocesofirma as cdpf')
+						->select(DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado')
+						->join('persona as p', 'p.persid', '=', 'cdpf.persid')
+						->join('cargolaboral as cl', 'cl.carlabid', '=', 'cdpf.carlabid')  					
+						->where('cdpf.codoprid', $infodocumento->codoprid)->get(); 	
+
+		$copiaDependencias = DB::table('coddocumprocesocopia as cdpp')
+						  ->select('d.depeid','d.depenombre','cdpp.codoppid')
+						  ->join('dependencia as d', 'd.depeid', '=', 'cdpp.depeid')
+						  ->where('cdpp.codoppescopiadocumento', true)
+						  ->where('cdpp.codoprid', $infodocumento->codoprid)->get();
+
+		 return array ($infodocumento, $firmas, $copiaDependencias);
+    }
+}

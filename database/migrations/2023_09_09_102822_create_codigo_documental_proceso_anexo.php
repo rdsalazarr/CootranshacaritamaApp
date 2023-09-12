@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('coddocumprocesoanexo', function (Blueprint $table) {
             $table->bigIncrements('codopxid')->unsigned()->comment('Identificador de la tabla codigo documental proceso anexo');
-            $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');    
-            $table->string('codopxnombreanexo', 200)->comment('Nombre con el cual se ha subido el documento');
+            $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
+            $table->string('codopxnombreanexooriginal', 200)->comment('Nombre con el cual se ha subido el documento'); 
+            $table->string('codopxnombreanexoeditado', 200)->comment('Nombre con el cual se ha subido el documento pero editado');
             $table->string('codopxrutaanexo', 500)->comment('Ruta enfuscada del anexo para el documento');
             $table->timestamps();            
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopx'); 

@@ -11,5 +11,5 @@ class CodigoDocumental extends Model
 
     protected $table      = 'codigodocumental';	 
     protected $primaryKey = 'coddocid';
-    protected $fillable   = ['depeid','subserid','seriid','tipdocid','tipmedid','tiptraid','tipdetid','usuaid','coddocfechahora'];
+    protected $fillable   = ['depeid','serdocid','susedoid','tipdocid','tipmedid','tiptraid','tipdetid','usuaid','coddocfechahora'];
 }

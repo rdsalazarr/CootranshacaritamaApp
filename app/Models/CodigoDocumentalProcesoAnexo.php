@@ -11,5 +11,5 @@ class CodigoDocumentalProcesoAnexo extends Model
 
     protected $table      = 'coddocumprocesoanexo';
 	protected $primaryKey = 'codopxid';
-    protected $fillable   = ['codoprid', 'codopxrutaanexo'];
+    protected $fillable   = ['codoprid', 'codopxnombreanexooriginal','codopxnombreanexoeditado','codopxrutaanexo'];
 }

@@ -3,108 +3,265 @@
 namespace App\Util;
 use Illuminate\Support\Facades\Crypt;
 use App\Util\generales;
-use Auth, PDF, DB;
+use Auth, PDF, DB, URL;
 use Carbon\Carbon;
+use App\Util\showTipoDocumental;
 
 class generarPDF
 {
-    function certificadoCurso($idUsuario, $metodo = 'I')
-	{	
-        $funcion         = new generales();
-        $fechaHoraActual = Carbon::now();
-        $fechaActual 	 = $fechaHoraActual->format('Y-m-d');
-		$fechaActual = $funcion->formatearFecha($fechaActual);
-   
-        //Consulto la informacion 
-        $usuario = DB::table('users as u')
-                        ->select('u.documento','u.nombre','u.apellidos',
-                            'u.ciudadexpedicion','ti.tipidesigla','ti.tipidenombre',
-                            DB::raw('(SELECT max(evausufechahorafinal)
-                                    FROM evaluacionusuario
-                                    WHERE evausuuserid = u.id
-                                    AND evausupuntaje >= u.puntajeevaluacion
-                                    AND evausufechahorafinal IS NOT NULL
-                                    ) AS fecha_respuesta')
-                            )
-                        ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'u.tipideid')
-                        ->where('u.id', $idUsuario)->first(); 
-        if($usuario){
-            $nombrePersona     = mb_strtoupper($usuario->nombre,'UTF-8').' '. mb_strtoupper($usuario->apellidos,'UTF-8');
-			$documento         = $usuario->documento;
-            $tipoDocumento     = $usuario->tipidenombre;
-			$numeroDocumento   = number_format($usuario->documento,0,',','.');   
-            $ciudadExpedicion  = $usuario->ciudadexpedicion;
-            $contenidoTres     = $funcion->formatearFechaCertificado(substr($usuario->fecha_respuesta, 0, 10) );
-        }
-			
-		$contenidoUno  = 'Que el señor '. $nombrePersona.' Identificado con '. $tipoDocumento;
-		$contenidoUno .= ' No '.$numeroDocumento.' expedida en '.$ciudadExpedicion.', está vinculado como asociado a COOPIGON.';
+    function oficio($id = 1, $metodo = 'I')
+	{
+        $funcion          = new generales();
+        $fechaHoraActual  = Carbon::now();    
+		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+	    $visualizar       = new showTipoDocumental();
+		list($infodocumento, $firmasDocumento, $copiaDependencias) =  $visualizar->oficio($id);
 
-		$contenidoDos  = 'Realizo el curso de inducción cooperativa en COOPIGON para adquirir habilidad ';
-		$contenidoDos .= 'como asociado, capacitación que incluyo temas como principios cooperativos, valores,';
-		$contenidoDos .= 'estructura básica de la organización, su control, marco legal y jurídico aplicado, deberes, ';
-		$contenidoDos .= 'derechos y demás que buscan crear conciencia cooperativa despertando el sentido de ';
-		$contenidoDos .= 'pertenencia de nuestros asociados. ';
+/*
+		(1, 18, 804, '890505424-7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 
+'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
+ 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '1018439027', 
+ 'LUIS MANUEL ASCANIO CLARO', 'Representante Legal', 'Ocaña', 'GONZALEZ (CESAR)', null, null);*/
+
+		$direccionEmpresa = 'Calle 7 a 56 211 la ondina vía a rio de oro';
+		$cidudadEmpresa   = 'Ocaña';
+		$barrioEmpresa   = 'Santa clara'; 
+		$telefonoEmpresa = '3146034311';
+		$celularEmpresa  = '3146034311';
+		$urlEmpresa      = 'www.cootranshacaritama.com';
+		$nombreEmpresa   = 'COOPERATIVA DE TRANSPORTADORES HACARITAMA'; 
+		$lemaEmpresa     = 'COOTRANSHACARITAMA';
+		//$codigoInstitucional = '561233';
+		//$codigoDocumental = '561233';
+		$logoEmpresa = '561233';
+		$logoEmpresa = URL::to('/').'/archivos/empresa/logo/logoCootranshacaritama.png';
+
+		$logoEmpresa = 'logoCootranshacaritama.png';
+		//
+
+		$fechaActualDocumento = $infodocumento->codoprfecha;
+  		$anioDocumento        = $infodocumento->codopoanio;
+  		$tipoDocumento        = $infodocumento->tipdoccodigo;
+  		$siglaDependencia     = $infodocumento->codoposigla;
+  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
+		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;		
+		
+		$titulo               = $infodocumento->codopotitulo;	
+		$nombreDirigido       = $infodocumento->codoprnombredirigido;	
+		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;	
+		$ciudad               = $infodocumento->codopociudad;	
+		$asunto               = $infodocumento->codoprasunto;	
+		$saludo               = $infodocumento->tipsalnombre;		
+		$contenido            = $infodocumento->codoprcontenido;
+		$despedida            = $infodocumento->tipdesnombre;
+		$tipoDestino          = $infodocumento->tipdetid;
+
+		$empresaOficio        = $infodocumento->codopoempresa;		
+		$direreccionOficio    = $infodocumento->codopodireccion;
+		$telefonoOficio       = $infodocumento->codopotelefono; 
+
+		$tieneCopia           = $infodocumento->codoprtienecopia; 
+		$tieneAnexo     	  = $infodocumento->codoprtieneanexo;
+		$nombreAnexo    	  = $infodocumento->codopranexonombre;
+		$nombreCopia    	  = $infodocumento->codoprcopianombre; 	
+	
+		$tipoMedio      	  = $infodocumento->tipmedid;
+		$firmado        	  = $infodocumento->codoprfirmado;		
+		$transcriptor   	  = $infodocumento->alias;	
+		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 
         PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator('CURSO COOPERATIVISMO COOPIGON');
-		PDF::SetSubject('Certificado curso de cooperativismo');
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($asunto);
 		PDF::SetKeywords('Certificado, curso, cooperativismo');
-        PDF::SetTitle(mb_strtoupper("Certificado curso de cooperativismo de ".$nombrePersona,'UTF-8'));
+        PDF::SetTitle($codigoInstitucional);
 
-		PDF::setHeaderCallback(function($pdf) {
-				//PDF::Image('images/curso/logoLema.png',10,1,80,24); 
-				//PDF::Image('images/curso/bannerCertificado.png',30,0.4,181,24); 
-				PDF::Image('images/curso/bannerCertificado2.png',6,0.2,203.8,24); 
-            }
-        );
+		//Encabezado
+		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){	
+			$linea = str_pad('',  70, "_", STR_PAD_LEFT); //Diibuja la linea
+			PDF::Image('archivos/empresa/logo/'.$logoEmpresa,24,4,24,18);
+			PDF::SetY(8);
+            PDF::SetX(46);
+			PDF::SetFont('helvetica','B',14);
+		    PDF::Cell(144,5,$nombreEmpresa,0,0,'C');
+		    PDF::SetFont('helvetica','I',12);
+		    PDF::Ln(6); 		    
+		    PDF::SetX(46);
+		    PDF::Cell(144,4,$lemaEmpresa,0,0,'C');
+		    PDF::Ln(4);
+			PDF::SetX(24);	
+		    PDF::Cell(170,5,$linea,'0',0,'C');
+		    PDF::Ln(6);
+		    PDF::SetFont('helvetica','I',9);
+		    PDF::SetX(25);								
+			PDF::Cell(25,4,$codigoInstitucional,0,0,'');	
+			PDF::Ln(4);
+			PDF::SetX(25);								
+			PDF::Cell(25,4,$codigoDocumental,0,0,'');
+			PDF::SetY(22);
+        	PDF::SetX(180);
+			PDF::Cell(0, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+			}
+		);		
 
-        //Pie de pagina
-        PDF::setFooterCallback(function($pdf) use ($fechaActual){
-			PDF::Image('images/curso/pieCertificado.png',0.2,268,210,22); 
-			PDF::Ln(12);
-			PDF::SetY(288);
-			PDF::SetFont('helvetica','',7);
-			PDF::Cell(200, 3, "Documento generado automáticamente desde www.coopigon.com el día ".$fechaActual, 0, 0, 'C');
-        });
+		//Pie de pagina
+		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa){
+			$linea = str_pad('',  52, "_", STR_PAD_LEFT); //Diibuja la linea
+			PDF::SetFont('helvetica','I',12);
+			PDF::Ln(2);
+			PDF::SetY(275);	
+			PDF::SetX(30);			
+			PDF::Cell(165,4,$linea,0,0,'C');
+			PDF::Ln(5);
+			PDF::SetX(30);
+			PDF::Cell(165,4,$direccionEmpresa.' | '.$barrioEmpresa,0,0,'C');
+			PDF::Ln(4);
+			PDF::SetX(30);
+			PDF::Cell(165,4,'Teléfono: '.$telefonoEmpresa.' | Celular: '.$celularEmpresa.'',0,0,'C'); 
+			PDF::Ln(4);
+			PDF::SetX(30);
+			PDF::Cell(165,4,$urlEmpresa,0,0,'C');
+			$id = 1;
+			$style = array(
+				'border' => 0,
+				'vpadding' => 'auto',
+				'hpadding' => 'auto',
+				'fgcolor' => array(0,0,0),
+				'bgcolor' => false, 
+				'module_width' => 1, 
+				'module_height' => 1
+			);	
+		
+			$url = asset('verificar/documento/'.base64_encode($id));	
+			PDF::write2DBarcode($url, 'QRCODE,H', 172, 266, 70, 70, $style, 'N');
+
+		});
+
 
 		PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		//Construccion del PDF
 		PDF::AddPage('P', 'Letter');
-		#Establecemos los márgenes izquierda, arriba y derecha: 
-		PDF::SetMargins(30, 30 , 0);
+		PDF::SetMargins(24, 50 , 20);
 		#Establecemos el margen inferior: 
-		PDF::SetAutoPageBreak(true,30);	
-		PDF::Ln(38); 
-		PDF::SetFont('helvetica','B',12);
-		PDF::Image('images/curso/logoBlancoNegro.png',7,48,174,196); 
-		PDF::Image('images/curso/firmaCertificado.png',70,187,80,10); 
+		PDF::SetAutoPageBreak(true,30);
+		PDF::SetY(16); 
+		PDF::Ln(24);
+		PDF::SetFont('helvetica', '', 12);
+	    PDF::Cell(80, 4,$fechaDocumento, 0, 0, '');
+	    PDF::Ln(20);
 
-		PDF::MultiCell(160, 4, 'LA SUSCRITA SECRETARIA DE LA COOPERATIVA ESPECIALIZADA DE AHORRO Y CRÉDITO COOPIGON', 0, 'C', 0);
-		PDF::MultiCell(160, 4, 'NIT:   800.145.149-3', 0, 'C', 0);
-		PDF::Ln(12);
-		PDF::MultiCell(160, 4, 'HACE CONSTAR:', 0, 'C', 0);
-		PDF::Ln(16);
-		PDF::SetFont('times', '', 11, '', false);
-		PDF::MultiCell(160, 4, $contenidoUno."\n", 0, 'J', 0);
-		PDF::Ln(6);
-		PDF::MultiCell(160, 4, $contenidoDos."\n", 0, 'J', 0);
+	    if($titulo!=''){
+		    PDF::Cell(80, 4, $titulo, 0, 0, '');
+		    PDF::Ln(5);
+	    }
+
+	    PDF::SetFont('helvetica', 'B', 12);
+	    PDF::MultiCell(0, 4, $nombreDirigido, 0, '', 0);
+	    PDF::SetFont('helvetica', '', 12);
+
+	    if ($cargoDirigido != '') {
+	        PDF::Cell(100, 4, $cargoDirigido, 0, 0, '');
+	        PDF::Ln(5);
+	    }
+
+		if ($tipoDestino != 1){//si el tipo destino es diferente de interno
+			if($empresaOficio != ''){
+				PDF::MultiCell(160, 4, $empresaOficio, 0, '', 0);
+			}
+
+			if($direreccionOficio){
+				PDF::Cell(80, 4, $direreccionOficio, 0, 0, '');
+				PDF::Ln(4);
+			}
+
+			if($telefonoOficio != ''){
+				PDF::Cell(40, 4, $telefonoOficio, 0, 0, '');
+				PDF::Ln(4);
+			}
+		}
+
+	    PDF::Cell(80, 4, $ciudad, 0, 0, '');
+	    PDF::Ln(16);
+	    PDF::SetFont('helvetica', 'B', 12);
+        PDF::Cell(20, 4, 'Asunto: ', 0, 0, '');
+        PDF::SetFont('helvetica', '', 12);
+	    PDF::MultiCell(0, 4, $asunto, 0, '', 0);
+		
 		PDF::Ln(8);
-		PDF::MultiCell(160, 4, $contenidoTres."\n", 0, 'J', 0);
-		PDF::Ln(4);
-		PDF::SetFont('helvetica','B',12);
-		PDF::Ln(40); 
+	    PDF::Cell(60, 4,$saludo, 0, 0, '');
+		PDF::Ln(16);
+	    PDF::writeHTML($contenido, true, 1, true, true);
+	    PDF::Ln(8);
+	    PDF::Cell(60, 4,$despedida, 0, 0, '');
+	    PDF::Ln(20);	
 
-		PDF::MultiCell(160, 4, 'ANGELA CRISTINA BERMUDEZ ANGARITA', 0, 'C', 0);
-		PDF::MultiCell(160, 4, 'Secretaria General', 0, 'C', 0);
+		$cont = 0;
+		foreach ($firmasDocumento as $firma)
+		{
+			$remitente = $firma->nombrePersona;
+			$cargo     = $firma->carlabnombre;
+			$firmado   = $firma->codopffirmado;
+			if($firmado == 1){
+				$rutaFirma = 'images/firma/'.$firma->persrutafirma;
+			}else{
+				$rutaFirma = 'images/documentoSinFirma.png';
+			}
 
-		PDF::Ln(4);	
-		PDF::SetFillColor(255, 0, 0);
-		PDF::SetTextColor(255, 255, 255);
-		PDF::Cell(160, 3, "Documento generado como prueba, no apto hasta que este en producción. ", 0, 0, 'C', true);
+			if($cont == 0){
+				PDF::Image($rutaFirma, 28, PDF::GetY() -7,50,8);//le quito -7 a la posicion y
+			    PDF::writeHTMLCell(88, 4, 26, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
+			    $cont += 1;
+			}else{
+				PDF::Image($rutaFirma, 114, PDF::GetY() -7,50,8);	
+			    PDF::writeHTMLCell(88, 4, 112, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
+			    PDF::Ln(24);
+			    $cont = 0;
+			}
+		}
 
+		if(count($firmasDocumento) == 1){//Por si solo tiene una sola firma
+			PDF::Ln(20);
+		}/**/
+	
+		//verifico si tiene adjunto
+		if($tieneAnexo == 1){
+			PDF::Cell(20, 4, 'Anexos:', 0, 0, '');
+			//imprimo los adjuntos
+
+			if($nombreAnexo != '') {
+	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);
+	            PDF::Ln(4);
+	        }
+		}
+
+		//Verifico si tiene copia
+		if($tieneCopia == 1){
+			PDF::Cell(20, 4, 'Copia:', 0, 0, '');
+			//imprimo las depedencias a las que va dirigida la copia
+			/*foreach ($copiaDependencias as $copiaDependencia)
+			{
+				PDF::MultiCell(140, 4, $copiaDependencia->depenombre, 0, '', 0);
+				PDF::Cell(20, 4, '', 0, 0, '');
+			}*/
+
+
+			if ($nombreCopia != '') {
+			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);
+	            PDF::Ln(4);
+	        }
+		}		
+		
+		PDF::Ln(8);
+		PDF::Cell(30,4,$transcriptor,0,0,'');
+
+		//Informacion para visualizar o descargar el pdf
+		$nombrePdf = $codigoInstitucional.'-'.$fechaActualDocumento.'.pdf';	
+		
+
+		$documento = 123456;
+/*
 		$style = array(
 			'border' => 0,
 			'vpadding' => 'auto',
@@ -115,8 +272,8 @@ class generarPDF
 			'module_height' => 1
 		);	
 	
-		$url = asset('verificar/certificado/'.base64_encode($idUsuario));	
-		PDF::write2DBarcode($url, 'QRCODE,H', 160, 214, 100, 100, $style, 'N');
+		$url = asset('verificar/documento/'.base64_encode($id));	
+		PDF::write2DBarcode($url, 'QRCODE,H', 160, 210, 50, 50, $style, 'N');**/
 
         $tituloPDF = 'Certificado_'.$documento.'.pdf';
 		if($metodo === 'S'){			

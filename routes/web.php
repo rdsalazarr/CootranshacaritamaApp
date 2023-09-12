@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
+use App\Http\Controllers\Admin\ProducionDocumental\VisualizarTipoDocumentalController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -112,6 +113,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/oficio/list', [OficioController::class, 'index']);
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
             Route::post('/oficio/salve', [OficioController::class, 'salve']);
+
+
+           
+            Route::post('/visualizar/PDF', [VisualizarTipoDocumentalController::class, 'index']);
 
         });
 

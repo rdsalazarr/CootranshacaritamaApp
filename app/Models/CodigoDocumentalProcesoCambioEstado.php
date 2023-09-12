@@ -9,7 +9,7 @@ class CodigoDocumentalProcesoCambioEstado extends Model
 {
     use HasFactory;
 
-    public $timestamps    = false;
+    //public $timestamps    = false;
     protected $table      = 'coddocumprocesocambioestado';	 
 	protected $primaryKey = 'codpceid';
     protected $fillable   = ['codoprid', 'tiesdoid','usuaid', 'codpcefechahora','codpceobservacion'];

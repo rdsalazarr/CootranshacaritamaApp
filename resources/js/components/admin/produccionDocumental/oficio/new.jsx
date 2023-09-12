@@ -11,7 +11,6 @@ import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
 
 
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -19,35 +18,24 @@ import dayjs from 'dayjs';
 import esLocale from 'date-fns/locale/es'; 
 import Files from "react-files";
 
+import "/resources/scss/fechaDatePicker.scss";
+
 //npm install @mui/x-date-pickers
 //npm install date-fns
 
-export default function New({data, tipo}){
+export default function New({id, tipo}){
     const editorTexto = useRef(null);
   //console.log("Hola ");
    // console.log(tipo)
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {idCodigoDocumental: data.innocoid, idCodigoDocumentalProceso: data.innoconombre,   idCodigoDocumentalProcesoOficio: data.innocoasunto,                              
-                                    dependencia: data.innoconombre,            serie: data.innocoasunto,                       subSerie: data.innococontenido,    
-                                    tipoMedio: data.innococontenido,           tipoTramite: data.innocoenviarpiepagina,        tipoDestino: data.innocoenviarcopia, 
-                                    fecha: data.innocoenviarpiepagina,         nombreDirigido: data.innocoenviarcopia,         cargoDirigido: data.innococontenido,                
-                                    asunto: data.innocoenviarpiepagina,        correo: data.innocoenviarcopia,                 contenido: data.innocoenviarcopia, 
-                                    tieneAnexo: data.innocoenviarpiepagina,    nombreAnexo: data.innocoenviarcopia,            tieneCopia: data.innocoenviarcopia, 
-                                    nombreCopia: data.innocoenviarpiepagina,   saludo: data.innocoenviarcopia,                 despedida: data.innocoenviarcopia, 
-                                    tituloPersona: data.innocoenviarpiepagina, ciudad: data.innocoenviarcopia,                 cargoDestinatario: data.innocoenviarcopia, 
-                                    empresa: data.innocoenviarpiepagina,       direccionDestinatario: data.innocoenviarcopia,  telefono: data.innocoenviarcopia, 
-                                    responderRadicado: data.innocoenviarcopia,                                     
-                                    tipo:tipo
-                                    } : {idCodigoDocumental:'000', idCodigoDocumentalProceso:'000', idCodigoDocumentalProcesoOficio:'000',
+                                {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
                                         dependencia: '1',       serie: '6',     subSerie: '6',       tipoMedio: '1',     tipoTramite: '1', 
                                         tipoDestino: '1',       fecha: '',      nombreDirigido: 'ramon salazar',  cargoDirigido: 'CArgo de ramon',  asunto: 'Asunto de prueba',  
                                         correo: '',            contenido: 'abc del contenido',  tieneAnexo: '1',      nombreAnexo: '',    tieneCopia: '1', 
                                         nombreCopia: '',       saludo: '1',     despedida: 1,              tituloPersona: 'ingeniero de sistema',  ciudad: 'Ocaña',    
                                         cargoDestinatario: 'desarrollador', empresa: 'ufpso',     direccionDestinatario: 'calle principal', telefono: '5612333',       responderRadicado: '0',
                                         tipo:tipo
-                                });
-
- 
+                                }); 
 
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
@@ -63,7 +51,7 @@ export default function New({data, tipo}){
     const [formDataFile, setFormDataFile] = useState({ archivos : []});
     const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_OFICIO);
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
-    const [dependenciaMarcada, setDependenciaMarcada] = useState([]);     
+    const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
     const minDate = dayjs();
 
@@ -72,7 +60,7 @@ export default function New({data, tipo}){
     }
 
     const handleChangeDate = (date) => {
-        setFormData((prevData) => ({...prevData,  fecha: date.format('MM/DD/YYYY'), }));
+        setFormData((prevData) => ({...prevData, fecha: date.format('YYYY-MM-DD')}));
     };
 
     const handleChangeFirmaPersona = (e, index) =>{
@@ -107,27 +95,43 @@ export default function New({data, tipo}){
 
     const handleSubmit = () =>{
         console.log("enviado el formulario en handleSubmit");
-  
-        let newFormData = {...formData};
-        newFormData.contenido = editorTexto.current.getContent();
-     
-        let totalCampos = 0;
-        Object.keys(firmaPersona).forEach(function(key) {
-            let datos = firmaPersona[key];
-            Object.keys(datos).forEach(function(a){
-                dataFile.append(a+key, datos[a]);
-            })
-            totalCampos ++;
-        })
-
-        newFormData.append('totalCampos', totalCampos);     
-        newFormData.dependenciaCopias = dependenciaMarcada; 
         
-        let archivos      = formDataFile.archivos;
-       // dataFile.append('firma', (firma[0] != undefined) ? firma[0] : '');
+        //En el momento de enviar la pericion no muestra los cambio en el tyminice
+        let formDataCopia       = {...formData};
+        formDataCopia.contenido = editorTexto.current.getContent();
 
+        let newFormData = new FormData();
+        //Capturo todos los datos del formulario
+        Object.keys(formData).forEach(function(key) {
+            newFormData.append(key, formData[key])
+        })        
+        newFormData.append('contenido', editorTexto.current.getContent())
+
+        //Identifico las firma del documento
+        let totalCamposFirmas = 0;
+        Object.keys(firmaPersona).forEach(function(key) {
+            newFormData.append('identificadorFirma'+key, firmaPersona[key].persona)
+            newFormData.append('personaFirma'+key, firmaPersona[key].persona)
+            newFormData.append('personaCargo'+key, firmaPersona[key].cargo)
+            newFormData.append('personaEstado'+key, firmaPersona[key].estado)
+            totalCamposFirmas ++;
+        })
+        newFormData.append('totalCamposFirmas', totalCamposFirmas); 
+
+        //Identificamos el total de archivos
+        let totalCamposArchivos = 0;
+        let archivos      = formDataFile.archivos;
+        Object.keys(archivos).forEach(function(key) {
+            newFormData.append('archivos'+key, archivos[key])
+            totalCamposArchivos ++;
+        })
+        newFormData.append('totalCamposArchivos', totalCamposArchivos);
+        newFormData.copiasDependencia = formDataDependencia; 
+
+        //console.log(formDataDependencia);
+         
         //setLoader(true);
-        setFormData(newFormData);
+        //setFormData(formDataCopia);
         instance.post('/admin/producion/documental/oficio/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
@@ -164,7 +168,7 @@ export default function New({data, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/oficio/listar/datos').then(res=>{
+        instance.post('/admin/producion/documental/oficio/listar/datos', {id: id, tipo: tipo}).then(res=>{
             setFechaActual(res.fechaActual);
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
@@ -174,6 +178,35 @@ export default function New({data, tipo}){
             setPersonas(res.personas);
             setCargoLaborales(res.cargoLaborales);
             newFormData.fecha = res.fechaActual
+            if(tipo === 'U'){        
+                let tpDocumental                  = res.data;
+                newFormData.idCDP                 = tpDocumental.codoprid;
+                newFormData.idCDPO                = tpDocumental.codopoid;
+                newFormData.dependencia           = tpDocumental.depeid;
+                newFormData.serie                 = tpDocumental.seriid;
+                newFormData.subSerie              = tpDocumental.subserid;
+                newFormData.tipoMedio             = tpDocumental.tipmedid;    
+                newFormData.tipoTramite           = tpDocumental.tiptraid;
+                newFormData.tipoDestino           = tpDocumental.tipdetid;     
+                newFormData.fecha                 = tpDocumental.codoprfecha;
+                newFormData.nombreDirigido        = tpDocumental.codoprnombredirigido; 
+                newFormData.cargoDirigido         = tpDocumental.codoprcargonombredirigido;
+                newFormData.asunto                = tpDocumental.codoprasunto;
+                newFormData.correo                = (tpDocumental.codoprcorreo !== null) ? tpDocumental.codoprcorreo : '';  
+                newFormData.contenido             = tpDocumental.codoprcontenido;
+                newFormData.tieneAnexo            = tpDocumental.codoprtieneanexo;
+                newFormData.nombreAnexo           = (tpDocumental.codopranexonombre !== null) ? tpDocumental.codopranexonombre : '';
+                newFormData.tieneCopia            = tpDocumental.codoprtienecopia;
+                newFormData.nombreCopia           = (tpDocumental.codoprcopianombre !== null) ? tpDocumental.codoprcopianombre : '';
+                newFormData.saludo                = tpDocumental.tipsalid;  
+                newFormData.despedida             = tpDocumental.tipdesid;        
+                newFormData.tituloPersona         = tpDocumental.codopotitulo;
+                newFormData.ciudad                = tpDocumental.codopociudad;
+                newFormData.cargoDestinatario     = tpDocumental.codopocargodestinatario;
+                newFormData.empresa               = (tpDocumental.codopoempresa !== null) ? tpDocumental.codopoempresa : '';
+                newFormData.direccionDestinatario = tpDocumental.codopodireccion;
+                newFormData.telefono              = (tpDocumental.codopotelefono !== null) ? tpDocumental.codopotelefono : '';
+            }
             setFormData(newFormData);
             setLoader(false);
         }) 
@@ -444,13 +477,13 @@ export default function New({data, tipo}){
                                 onChange={handleChange}
                             />
                         </Grid>
-                       
+
                         <Grid item md={5} xl={5} sm={12} xs={12}>
                             <Files
                                 className='files-dropzone'
                                 onChange={(file ) =>{onFilesChange(file, 'archivos') }}
                                 onError={onFilesError}
-                                accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf', '.xls', '.xlsx', '.mp3', '.mp4']} 
+                                accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf','.ppt', '.pptx', '.xls', '.xlsx', '.xlsm', '.zip', '.rar']} 
                                 multiple
                                 maxFiles={totalAdjunto}
                                 maxFileSize={1000000}
@@ -468,11 +501,11 @@ export default function New({data, tipo}){
                                 })}
                             </Box>
                         </Grid> 
-                        
+
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className={'msgAlert'}>
                                 <Avatar className={'avatar'}> <WarningIcon /></Avatar> 
-                                <p>Nota: Recuerde que puede subir como máximo ({totalAdjunto}) archivos, en los formatos tipo .PDF, .DOCX, .DOC, .XLS, XLSX, .JPG y .PNG</p>
+                                <p>Nota: Recuerde que puede subir como máximo ({totalAdjunto}) archivos, en los formatos tipo .PDF, .DOCX, .DOC, .PPT, .PPTX, .XLS, XLSX, .ZIP, .RAR, .JPG y .PNG</p>
                             </Box>
                         </Grid>
                     </Fragment>
