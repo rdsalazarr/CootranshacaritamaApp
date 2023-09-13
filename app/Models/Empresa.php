@@ -13,11 +13,9 @@ class Empresa extends Model
     protected $table      = 'empresa';
     public $timestamps    = false;
     protected $primaryKey = 'emprid';
-    protected $fillable   = ['emprdepaid','emprmunid','emprnit','emprnombre','emprsigla','emprlema','emprdireccion',
-                            'emprcorreo','emprtelefonofijo','emprhorarioatencion','emprurl','emprcodigopostal',
-                            'emprlogo','emprtelefonocelular','emprdocumentorepresenlegal', 'emprfirmapresenlegal',
-                            'emprrepresentantelegal','emprcargorepresentantelegal',
-                            'emprciudadresidenciareplegal','emprlugarexpedicionreplegal'];
+    protected $fillable   = ['persidrepresentantelegal','emprdepaid','emprmuniid','emprnit','emprdigitoverificacion',
+                            'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo',
+                            'emprhorarioatencion','emprurl','emprcodigopostal', 'emprlogo'];
 
     //Funcion para pasar la informacion en todas las vistas
     public static function consultar()

@@ -1165,13 +1165,14 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 (1122, 33, '99773', 'Cumaribo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --Debe existir el municipio
-INSERT INTO empresa (emprid, emprdepaid, emprmuniid, emprnit, emprnombre, emprsigla, emprlema, emprdireccion, emprcorreo, emprtelefonofijo,
- emprtelefonocelular,  emprhorarioatencion, emprurl, emprcodigopostal, emprdocumentorepresenlegal, emprrepresentantelegal,
-  emprcargorepresentantelegal, emprciudadresidenciareplegal, emprlugarexpedicionreplegal, emprfirmapresenlegal,emprlogo) VALUES
-(1, 18, 804, '890505424-7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 
+INSERT INTO empresa (emprid, persidrepresentantelegal,emprdepaid,emprmuniid,emprnit,emprdigitoverificacion,
+emprnombre,emprsigla,emprlema,emprdireccion, emprcorreo, emprtelefonofijo,emprtelefonocelular,
+emprhorarioatencion,emprurl,emprcodigopostal, emprlogo) VALUES
+(1, 2, 18, 804, '890505424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'la cooperativa de transporte del catatumbo', 
 'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
- 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '1018439027', 
- 'LUIS MANUEL ASCANIO CLARO', 'Representante Legal', 'Ocaña', 'GONZALEZ (CESAR)', null, null);
+ 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', null);
+
+
 
 /*
 

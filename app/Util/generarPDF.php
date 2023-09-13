@@ -15,7 +15,7 @@ class generarPDF
         $fechaHoraActual  = Carbon::now();    
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
-		list($infodocumento, $firmasDocumento, $copiaDependencias) =  $visualizar->oficio($id);
+		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
 
 /*
 		(1, 18, 804, '890505424-7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 
@@ -45,7 +45,7 @@ class generarPDF
   		$siglaDependencia     = $infodocumento->codoposigla;
   		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;		
-		
+			
 		$titulo               = $infodocumento->codopotitulo;	
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;	
 		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;	
@@ -229,6 +229,19 @@ class generarPDF
 		if($tieneAnexo == 1){
 			PDF::Cell(20, 4, 'Anexos:', 0, 0, '');
 			//imprimo los adjuntos
+			foreach ($anexosDocumento as $anexo)
+			{
+				$nombreArchivo = $anexo->codopxnombreanexooriginal;
+				$nombreEditado = $anexo->codopxnombreanexoeditado;
+				$adjunto       = asset('/archivos/produccionDocumental/adjuntos/'.$siglaDependencia.'/'.$anioDocumento.'/'.Crypt::decrypt($anexo->codopxrutaanexo)); 
+$html = <<<EOD
+		<a href="$adjunto" target="_blank" title="$nombreArchivo" >$nombreArchivo</a>
+EOD;
+			  // PDF::writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true); 
+
+
+			  PDF::AddAttachment($adjunto, $nombreArchivo);
+			}
 
 			if($nombreAnexo != '') {
 	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);

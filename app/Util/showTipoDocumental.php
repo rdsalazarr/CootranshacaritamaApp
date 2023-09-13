@@ -52,6 +52,10 @@ class showTipoDocumental
 						  ->where('cdpp.codoppescopiadocumento', true)
 						  ->where('cdpp.codoprid', $infodocumento->codoprid)->get();
 
-		 return array ($infodocumento, $firmas, $copiaDependencias);
+		$anexosDocumento = DB::table('coddocumprocesoanexo')
+						  ->select('codopxid','codopxnombreanexooriginal','codopxnombreanexoeditado','codopxrutaanexo')					
+						  ->where('codoprid', $infodocumento->codoprid)->get();
+
+		 return array ($infodocumento, $firmas, $copiaDependencias, $anexosDocumento);
     }
 }

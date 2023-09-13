@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('usuario', function (Blueprint $table) {
             $table->smallIncrements('usuaid')->comment('Identificador de la tabla usuario');
+            $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->tinyInteger('tipideid')->unsigned()->comment('Identificador del tipo de identificación');
             $table->string('usuadocumento', 15)->comment('Documento del usuario');
             $table->string('usuanombre', 50)->comment('Nombre del usuario');
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipideusua');
+            $table->foreign('persid')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persusua');
         });
     }
 

@@ -23,6 +23,9 @@ php artisan make:migration create_persona
 php artisan make:migration create_dependencia
 php artisan make:migration create_cargo_laboral
 
+php artisan make:migration create_dependencia_persona
+php artisan make:migration create_dependencia_sub_serie_documental
+
 php artisan make:migration create_tipo_medio
 php artisan make:migration create_tipo_acta
 php artisan make:migration create_tipo_tramite

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('coddocumprocesofirma', function (Blueprint $table) {
             $table->bigIncrements('codopfid')->unsigned()->comment('Identificador de la tabla codigo documental proceso firma');
             $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
-            $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');        
+            $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->smallInteger('carlabid')->nullable()->unsigned()->comment('Identificador de la tabla cargo laboral');
             $table->boolean('codopffirmado')->default(false)->comment('Determina si el documento esta firmado');
             $table->boolean('codopfesinvitado')->default(false)->comment('Determina si el que firma es invitado en el acta');
