@@ -72,6 +72,9 @@ php artisan make:model TipoRelacionLaboral
 php artisan make:model CargoLaboral
 php artisan make:model Persona
 
+php artisan make:model DependenciaPersona
+php artisan make:model DependenciaSubSerieDocumental
+
 php artisan make:model CodigoDocumental
 php artisan make:model CodigoDocumentalProceso
 php artisan make:model CodigoDocumentalProcesoActa

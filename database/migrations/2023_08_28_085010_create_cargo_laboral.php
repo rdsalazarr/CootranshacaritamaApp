@@ -15,6 +15,7 @@ return new class extends Migration
             $table->smallIncrements('carlabid')->index('pk_carlab')->comment('Identificador de la tabla cargo laboral');
             $table->string('carlabnombre', 100)->comment('Nombre del cargo laboral');
             $table->boolean('carlabactivo')->default(true)->comment('Determina si el cargo laboral');
+            $table->timestamps();
         });
     }
 

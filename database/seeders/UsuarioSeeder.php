@@ -17,12 +17,11 @@ class UsuarioSeeder extends Seeder
     {
         DB::table('usuario')->insert([
             'persid'        => '1',
-            'tipideid'      => '1',
-            'usuadocumento' => '1978917',
         	'usuanombre'    => 'Ramón David',
             'usuaapellidos' => 'Salazar Rincón',
             'usuaemail'     => 'radasa10@hotmail.com',
-            'usuanick'      => 'RSALAZAR',         	
+            'usuanick'      => 'RSALAZAR',
+            'usuaalias'     => 'RSALAZAR',
         	'password'      => bcrypt('123456'),
             'usuaactivo'    => '1',
             'usuacambiarpassword' => '0',

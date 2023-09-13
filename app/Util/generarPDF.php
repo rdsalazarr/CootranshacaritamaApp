@@ -2,10 +2,10 @@
 
 namespace App\Util;
 use Illuminate\Support\Facades\Crypt;
+use App\Util\showTipoDocumental;
 use App\Util\generales;
 use Auth, PDF, DB, URL;
 use Carbon\Carbon;
-use App\Util\showTipoDocumental;
 
 class generarPDF
 {
@@ -17,11 +17,6 @@ class generarPDF
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
 
-/*
-		(1, 18, 804, '890505424-7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'CCCCC', 
-'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
- 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '1018439027', 
- 'LUIS MANUEL ASCANIO CLARO', 'Representante Legal', 'Ocaña', 'GONZALEZ (CESAR)', null, null);*/
 
 		$direccionEmpresa = 'Calle 7 a 56 211 la ondina vía a rio de oro';
 		$cidudadEmpresa   = 'Ocaña';
@@ -105,7 +100,7 @@ class generarPDF
 		);		
 
 		//Pie de pagina
-		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa){
+		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $id){
 			$linea = str_pad('',  52, "_", STR_PAD_LEFT); //Diibuja la linea
 			PDF::SetFont('helvetica','I',12);
 			PDF::Ln(2);
@@ -121,7 +116,7 @@ class generarPDF
 			PDF::Ln(4);
 			PDF::SetX(30);
 			PDF::Cell(165,4,$urlEmpresa,0,0,'C');
-			$id = 1;
+	
 			$style = array(
 				'border' => 0,
 				'vpadding' => 'auto',
@@ -131,25 +126,48 @@ class generarPDF
 				'module_width' => 1, 
 				'module_height' => 1
 			);	
-		
-			$url = asset('verificar/documento/'.base64_encode($id));	
-			PDF::write2DBarcode($url, 'QRCODE,H', 172, 266, 70, 70, $style, 'N');
 
+			/*$style = array ( 
+				'hpadding' => 'auto',
+				'vpadding' => 'auto',
+				'fgcolor' => array(0,0,0),
+				'bgcolor' => false, 
+				'text' => true,
+				'font' => 'helvetica',
+				'fontsize' => 8,
+				'stretchtext' => 4,
+				'label' => 'Verifica este documento en https://sid.ufpso.edu.co/Verificar'
+			); */
+
+		
+			$url = asset('verificar/documento/'.base64_encode($id));
+			//160, 250, 50, 50  174, 268, 74, 74
+			PDF::write2DBarcode($url, 'QRCODE,H', 170, 0, 50, 50, $style, 'N');
 		});
 
+		/* $style = array ( 
+            'hpadding' => 'auto',
+            'vpadding' => 'auto',
+            'fgcolor' => array(0,0,0),
+            'bgcolor' => false, 
+            'text' => true,
+            'font' => 'helvetica',
+            'fontsize' => 8,
+            'stretchtext' => 4,
+            'label' => 'Verifica este documento en https://sid.ufpso.edu.co/Verificar'
+        );  
+        $pdf->write2DBarcode('https://sid.ufpso.edu.co/VerificarQR?id='.urlencode($codigoBarras), 'QRCODE,H', 174, 36, 25, 48, $style, 'N');*/
 
 		PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		//Construccion del PDF
+		PDF::SetMargins(24, 36 , 20);
 		PDF::AddPage('P', 'Letter');
-		PDF::SetMargins(24, 50 , 20);
-		#Establecemos el margen inferior: 
-		PDF::SetAutoPageBreak(true,30);
+		PDF::SetAutoPageBreak(true,24);
 		PDF::SetY(16); 
 		PDF::Ln(24);
 		PDF::SetFont('helvetica', '', 12);
-	    PDF::Cell(80, 4,$fechaDocumento, 0, 0, '');
+	    PDF::Cell(80, 4, $fechaDocumento, 0, 0, '');
 	    PDF::Ln(20);
 
 	    if($titulo!=''){
@@ -192,7 +210,7 @@ class generarPDF
 		PDF::Ln(8);
 	    PDF::Cell(60, 4,$saludo, 0, 0, '');
 		PDF::Ln(16);
-	    PDF::writeHTML($contenido, true, 1, true, true);
+		PDF::writeHTML($contenido, true, false, true, false, '');
 	    PDF::Ln(8);
 	    PDF::Cell(60, 4,$despedida, 0, 0, '');
 	    PDF::Ln(20);	
@@ -211,11 +229,11 @@ class generarPDF
 
 			if($cont == 0){
 				PDF::Image($rutaFirma, 28, PDF::GetY() -7,50,8);//le quito -7 a la posicion y
-			    PDF::writeHTMLCell(88, 4, 26, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
+			    PDF::writeHTMLCell(86, 4, 24, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
 			    $cont += 1;
 			}else{
 				PDF::Image($rutaFirma, 114, PDF::GetY() -7,50,8);	
-			    PDF::writeHTMLCell(88, 4, 112, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
+			    PDF::writeHTMLCell(86, 4, 112, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
 			    PDF::Ln(24);
 			    $cont = 0;
 			}
@@ -223,72 +241,54 @@ class generarPDF
 
 		if(count($firmasDocumento) == 1){//Por si solo tiene una sola firma
 			PDF::Ln(20);
-		}/**/
-	
+		}
+
 		//verifico si tiene adjunto
 		if($tieneAnexo == 1){
 			PDF::Cell(20, 4, 'Anexos:', 0, 0, '');
+
 			//imprimo los adjuntos
 			foreach ($anexosDocumento as $anexo)
 			{
 				$nombreArchivo = $anexo->codopxnombreanexooriginal;
 				$nombreEditado = $anexo->codopxnombreanexoeditado;
-				$adjunto       = asset('/archivos/produccionDocumental/adjuntos/'.$siglaDependencia.'/'.$anioDocumento.'/'.Crypt::decrypt($anexo->codopxrutaanexo)); 
+				$rutaAdjunto   = asset('/archivos/produccionDocumental/adjuntos/'.$siglaDependencia.'/'.$anioDocumento.'/'.Crypt::decrypt($anexo->codopxrutaanexo)); 
 $html = <<<EOD
-		<a href="$adjunto" target="_blank" title="$nombreArchivo" >$nombreArchivo</a>
+		<a href="$rutaAdjunto" target="\_blank" title="$nombreArchivo" >$nombreArchivo</a>
 EOD;
-			  // PDF::writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true); 
-
-
-			  PDF::AddAttachment($adjunto, $nombreArchivo);
+			    PDF::writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true); 
+				PDF::Cell(20, 4, '', 0, 0, '');
 			}
 
 			if($nombreAnexo != '') {
-	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);
-	            PDF::Ln(4);
+	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);	           
 	        }
 		}
 
 		//Verifico si tiene copia
 		if($tieneCopia == 1){
+			PDF::Ln(4);
 			PDF::Cell(20, 4, 'Copia:', 0, 0, '');
 			//imprimo las depedencias a las que va dirigida la copia
-			/*foreach ($copiaDependencias as $copiaDependencia)
+			foreach ($copiaDependencias as $copiaDependencia)
 			{
 				PDF::MultiCell(140, 4, $copiaDependencia->depenombre, 0, '', 0);
 				PDF::Cell(20, 4, '', 0, 0, '');
-			}*/
-
+			}
 
 			if ($nombreCopia != '') {
-			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);
-	            PDF::Ln(4);
+			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);	            
 	        }
-		}		
+		}
 		
-		PDF::Ln(8);
+		PDF::Ln(10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
 		//Informacion para visualizar o descargar el pdf
 		$nombrePdf = $codigoInstitucional.'-'.$fechaActualDocumento.'.pdf';	
 		
 
-		$documento = 123456;
-/*
-		$style = array(
-			'border' => 0,
-			'vpadding' => 'auto',
-			'hpadding' => 'auto',
-			'fgcolor' => array(0,0,0),
-			'bgcolor' => false, 
-			'module_width' => 1, 
-			'module_height' => 1
-		);	
-	
-		$url = asset('verificar/documento/'.base64_encode($id));	
-		PDF::write2DBarcode($url, 'QRCODE,H', 160, 210, 50, 50, $style, 'N');**/
-
-        $tituloPDF = 'Certificado_'.$documento.'.pdf';
+        $tituloPDF = $codigoDocumental.'.pdf';
 		if($metodo === 'S'){			
 			return base64_encode(PDF::output($tituloPDF, 'S'));
 		}else{

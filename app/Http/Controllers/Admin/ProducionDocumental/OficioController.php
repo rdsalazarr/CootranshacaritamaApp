@@ -84,13 +84,14 @@ class OficioController extends Controller
 														->whereIn('carlabid', [1, 2])->get();
         $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
 
-        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"      => $tipoDestinos,     "tipoMedios"   => $tipoMedios,
-                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"   => $tipoDespedidas,   "dependencias" => $dependencias,
-								"personas"        => $personas,        "cargoLaborales"    => $cargoLaborales,  "data" => $data,
-								"firmasDocumento" => $firmasDocumento, "copiaDependencias" => $copiaDependencias  ]);
+        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"       => $tipoDestinos,      "tipoMedios"      => $tipoMedios,
+                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"    => $tipoDespedidas,    "dependencias"    => $dependencias,
+								"personas"        => $personas,        "cargoLaborales"    => $cargoLaborales,    "data"            => $data,
+								"firmasDocumento" => $firmasDocumento, "copiaDependencias" => $copiaDependencias, "anexosDocumento" => $anexosDocumento ]);
 	}
 
-    public function salve(OficioRequests $request){	
+    public function salve(OficioRequests $request){
+
         $coddocid      				   = $request->idCD;
 	    $codoprid      				   = $request->idCDP;
 	    $codopoid      				   = $request->idCDPO;
@@ -117,15 +118,15 @@ class OficioController extends Controller
 				$codigodocumental->usuaid          = $usuarioId;
 				$codigodocumental->coddocfechahora = $fechaHoraActual;
 			}
-			$codigodocumental->tipmedid        = $request->tipoMedio;
-			$codigodocumental->tipdetid        = $request->tipoDestino;
+			$codigodocumental->tipmedid            = $request->tipoMedio;
+			$codigodocumental->tipdetid            = $request->tipoDestino;
 		   	$codigodocumental->save();
 
 			if($request->tipo === 'I'){
 				//Consulto el ultimo identificador de los codigos documentales
 				$codDocMaxConsecutio               = CodigoDocumental::latest('coddocid')->first();
-				$coddocid                          =  $codDocMaxConsecutio->coddocid;
-				$codigodocumentalproceso->coddocid =  $coddocid;
+				$coddocid                          = $codDocMaxConsecutio->coddocid;
+				$codigodocumentalproceso->coddocid = $coddocid;
 	    		$codigodocumentalproceso->tiesdoid = '1'; //Inicial
 			}
 	    	
@@ -160,53 +161,69 @@ class OficioController extends Controller
 		   	$codigodocumentalprocesooficio->codopodireccion         = $request->direccionDestinatario;
 			$codigodocumentalprocesooficio->codopotelefono          = $request->telefono;
 			$codigodocumentalprocesooficio->codoporesponderadicado  = $request->responderRadicado;
-		   	$codigodocumentalprocesooficio->save();
-	
+		   	$codigodocumentalprocesooficio->save();	
+
 			//Registramos los adjuntos
-			$numeroAleatorio = rand(100, 1000);
-			$funcion         = new generales();
-			$rutaCarpeta     = public_path().'/archivos/produccionDocumental/adjuntos/'.$sigla.'/'.$anioActual;
-			$carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-	
-			for($i = 0; $i < $request->totalCamposArchivos; $i++){
-				$archivos   = 'archivos'.$i;
-				if($request->hasFile($archivos)){
-					$file = $request->file($archivos);
+			if($request->hasFile('archivos')){
+				$numeroAleatorio = rand(100, 1000);
+				$funcion         = new generales();
+				$rutaCarpeta     = public_path().'/archivos/produccionDocumental/adjuntos/'.$sigla.'/'.$anioActual;
+				$carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+				$files           = $request->file('archivos');
+				foreach($files as $file){
 					$nombreOriginal = $file->getclientOriginalName();
 					$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
 					$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
 					$nombreArchivo  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 					$file->move($rutaCarpeta, $nombreArchivo);
 					$rutaArchivo = Crypt::encrypt($nombreArchivo);
-				}
-				$coddocumprocesoanexo = new CodigoDocumentalProcesoAnexo();
-				$coddocumprocesoanexo->codoprid                  = $codoprid;
-				$coddocumprocesoanexo->codopxnombreanexooriginal = $nombreOriginal;
-				$coddocumprocesoanexo->codopxnombreanexoeditado  = $nombreArchivo;
-				$coddocumprocesoanexo->codopxrutaanexo           = $rutaArchivo;
-				$coddocumprocesoanexo->save();
-			}
 
-			for($i = 0; $i < $request->totalCamposFirmas; $i++){
-				$identificadorFirma = 'identificadorFirma'.$i;
-				$personaFirma       = 'personaFirma'.$i;
-				$personaCargo       = 'personaCargo'.$i;
-				$personaEstado      = 'personaEstado'.$i;
+					$coddocumprocesoanexo = new CodigoDocumentalProcesoAnexo();
+					$coddocumprocesoanexo->codoprid                  = $codoprid;
+					$coddocumprocesoanexo->codopxnombreanexooriginal = $nombreOriginal;
+					$coddocumprocesoanexo->codopxnombreanexoeditado  = $nombreArchivo;
+					$coddocumprocesoanexo->codopxrutaanexo           = $rutaArchivo;
+					$coddocumprocesoanexo->save();
+				}
+			}
+		
+			foreach($request->firmaPersona as $firmaPersona){
+				$identificadorFirma = $firmaPersona['identificador'];
+				$personaFirma       = $firmaPersona['persona'];
+				$personaCargo       = $firmaPersona['cargo'];
+				$personaEstado      = $firmaPersona['estado'];
 				if($personaEstado === 'I'){
 					$coddocumprocesofirma = new CodigoDocumentalProcesoFirma();
 					$coddocumprocesofirma->codoprid  = $codoprid;
-					$coddocumprocesofirma->persid    = $request->$personaFirma;
-					$coddocumprocesofirma->carlabid  = $request->$personaCargo;
+					$coddocumprocesofirma->persid    = $personaFirma;
+					$coddocumprocesofirma->carlabid  = $personaCargo;
 					$coddocumprocesofirma->save();
 				}else if($personaEstado === 'D'){
 					$coddocumprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($identificadorFirma);
 					$coddocumprocesofirma->delete();
 				}else{
 					$coddocumprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($identificadorFirma);
-					$coddocumprocesofirma->persid    = $request->$personaFirma;
-					$coddocumprocesofirma->carlabid  = $request->$personaCargo;
+					$coddocumprocesofirma->persid    = $personaFirma;
+					$coddocumprocesofirma->carlabid  = $personaCargo;
 					$coddocumprocesofirma->save();
 				}
+			}
+
+			if($request->tipo === 'U'){
+				//Elimino las dependencia que esten en el documento
+				$coddocumprocesocopiaConsultas = DB::table('coddocumprocesocopia')->select('codoppid')->where('codoprid', $codoprid)->get();
+				foreach($coddocumprocesocopiaConsultas as $coddocumprocesocop){
+					$coddocumprocesocopiaDelete = CodigoDocumentalProcesoCopia::findOrFail($coddocumprocesocop->codoppid);
+					$coddocumprocesocopiaDelete->delete();
+				}
+			}
+
+			foreach($request->copiasDependencia as $copiaDependencia){
+				$coddocumprocesocopia                         = new CodigoDocumentalProcesoCopia();
+				$coddocumprocesocopia->codoprid               = $codoprid;
+				$coddocumprocesocopia->depeid                 = $copiaDependencia['depeid'];
+				$coddocumprocesocopia->codoppescopiadocumento = true;
+				$coddocumprocesocopia->save();
 			}
 
 			if($request->tipo === 'I'){

@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
 use App\Http\Controllers\Admin\PersonaController;
 use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
-
+use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarTipoDocumentalController;
 
@@ -29,6 +29,8 @@ Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
+
+Route::get('/download/adjunto/{capeta}/{ruta}/{id}', [DownloadFileController::class, 'download'])->name('Download');
 
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {

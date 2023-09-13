@@ -23,9 +23,9 @@ export default function List(){
     //<NewEdit tipo={'I'}  />, <Prueba />
     const modales = [
                         <NewEdit tipo={'I'} />,
-                        <NewEdit id={modal.data.id} tipo={'U'} /> ,                      
+                        <NewEdit id={(tipo === 1) ? modal.data.id : null} tipo={'U'} /> ,                      
                         <Prueba />,
-                        <VisualizarPdf id={modal.data.id} tipo={'OFICIO'} />                    
+                        <VisualizarPdf id={(tipo === 3) ? modal.data.id : null} tipo={'OFICIO'} />                    
                     ];
 
     const tituloModal = ['Registrar nuevo tipo documental oficio','Editar tipo documental oficio','Solicitar firma del tipo documental','Visualizar el tipo documental en formato PDF'];

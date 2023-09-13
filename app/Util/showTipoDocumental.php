@@ -13,16 +13,16 @@ class showTipoDocumental
 						'cdpo.codopoconsecutivo','cdpo.codoposigla','cdpo.codopoanio', 'cdpo.codopotitulo','cdpo.codopociudad','cdpo.codopocargodestinatario',
 						'cdpo.codopoempresa','cdpo.codopodireccion','cdpo.codopotelefono','cdpo.codoporesponderadicado',
 						DB::raw("if(cdpo.codoporesponderadicado = 1 ,'Sí', 'No') as responderadicado"), 'td.tipdesnombre','ts.tipsalnombre',
-						
 						'cdp.codoprid','cdp.codoprfecha','cdp.codoprnombredirigido','cdp.codoprcargonombredirigido','cdp.codoprasunto','cdp.codoprcorreo',
 						'cdp.codoprcontenido','cdp.codoprtieneanexo','cdp.codoprtienecopia','cdp.codoprsolicitafirma',
-						'cdp.codopranexonombre','cdp.codoprcopianombre', 'cdp.codoprfirmado',
+						'cdp.codopranexonombre','cdp.codoprcopianombre', 'cdp.codoprfirmado','cdp.coddocid',
 						DB::raw("if(cdp.codoprtieneanexo = 1 ,'Sí', 'No') as tieneanexo"),
 						DB::raw("if(cdp.codoprtienecopia = 1 ,'Sí', 'No') as tienecopia"),
 						'ted.tiesdonombre as estado',
 						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
-						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuanombre as alias')
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuanombre as alias',
+						DB::raw('(SELECT COUNT(codopxid) AS codopxid FROM coddocumprocesoanexo WHERE codoprid = cdp.codoprid) AS totalAnexos'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
@@ -40,7 +40,8 @@ class showTipoDocumental
 						->where('cdpo.codopoid', $id)->first();
 
 		$firmas = DB::table('coddocumprocesofirma as cdpf')
-						->select(DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+						->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid', 
+						 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
 						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado')
 						->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 						->join('cargolaboral as cl', 'cl.carlabid', '=', 'cdpf.carlabid')  					
@@ -52,9 +53,13 @@ class showTipoDocumental
 						  ->where('cdpp.codoppescopiadocumento', true)
 						  ->where('cdpp.codoprid', $infodocumento->codoprid)->get();
 
-		$anexosDocumento = DB::table('coddocumprocesoanexo')
-						  ->select('codopxid','codopxnombreanexooriginal','codopxnombreanexoeditado','codopxrutaanexo')					
-						  ->where('codoprid', $infodocumento->codoprid)->get();
+		$anexosDocumento = DB::table('coddocumprocesoanexo as cdpa')
+						  ->select('cdpa.codopxid','cdpa.codopxnombreanexooriginal','cdpa.codopxnombreanexoeditado','cdpa.codopxrutaanexo',
+						  'cdpo.codoposigla','cdpo.codopoanio',
+						  	DB::raw("CONCAT('archivos/produccionDocumental/',cdpo.codoposigla,'/',cdpo.codopoanio,'/', cdpa.codopxrutaanexo) as rutaDescargar"))	
+						  ->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
+						  ->join('coddocumprocesooficio as cdpo', 'cdpo.codoprid', '=', 'cdpa.codoprid')
+						  ->where('cdpa.codoprid', $infodocumento->codoprid)->get();
 
 		 return array ($infodocumento, $firmas, $copiaDependencias, $anexosDocumento);
     }
