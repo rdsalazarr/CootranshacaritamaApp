@@ -61,6 +61,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/rol/destroy', [RolController::class, 'destroy']);
 
         Route::get('/usuario/list', [UsuarioController::class, 'index']);
+        Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
         Route::post('/usuario/salve', [UsuarioController::class, 'salve']);
         Route::post('/usuario/destroy', [UsuarioController::class, 'destroy']);
         Route::get('/listar/datos/usuario', [UsuarioController::class, 'datos']);

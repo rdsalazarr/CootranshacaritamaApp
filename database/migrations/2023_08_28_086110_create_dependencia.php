@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dependencia', function (Blueprint $table) {
-            $table->smallIncrements('depeid')->comment('Identificador de la tabla cargo dependencia');
+            $table->smallIncrements('depeid')->unsigned()->comment('Identificador de la tabla cargo dependencia');
             $table->integer('depejefeid')->unsigned()->comment('Identificador del jefe de la dependencia');
             $table->string('depecodigo', 10)->unique('uk_dependencia1')->comment('Código de la dependencia');
             $table->string('depesigla', 3)->unique('uk_dependencia2')->comment('Sigla de la dependencia');

@@ -13,22 +13,40 @@ class UsuarioController extends Controller
 	public function index()
 	{
         $data = DB::table('usuario as u')
-                    ->select('u.usuaid','u.tipideid','u.usuadocumento','u.usuanombre','u.usuaapellidos',
+                    ->select('u.usuaid','u.persid','p.tipideid','p.persdocumento','u.usuanombre','u.usuaapellidos','u.usuaalias',
                             'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword',
-                            DB::raw("CONCAT(ti.tipidesigla,'-', u.usuadocumento ) as tipoDocumento"),
+                            DB::raw("CONCAT(ti.tipidesigla,'-', p.persdocumento ) as tipoDocumento"),
                             DB::raw("if(u.usuaactivo = 1,'Sí', 'No') as estado"),
                             DB::raw("if(u.usuabloqueado = 1,'Sí', 'No') as bloqueado"),
                             DB::raw("if(u.usuacambiarpassword = 1,'Sí', 'No') as cambiarpassword"))
-                    ->leftjoin('tipoidentificacion as ti', 'ti.tipideid', '=', 'u.tipideid')
+                    ->join('persona as p', 'p.persid', '=', 'u.persid')
+					->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                     ->orderBy('u.usuanombre')->orderBy('u.usuaapellidos')->get();
 
 		return response()->json(['success' => true, "data" => $data]);
-	} 
+	}
 
 	public function datos()
-	{	
-		$tipoIdentificaciones = DB::table('tipoidentificacion')->get();
+	{
+		$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
         return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones]);
+	}
+
+	public function consultar(Request $request)
+	{
+		$this->validate(request(),[
+            'tipoIdentificacion'=> 'required',
+            'documento'         => 'required|string|min:6|max:15'
+        ]);	
+
+		$personas = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
+															DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos"),
+															'perscorreoelectronico','persgenero','persprimernombre','persprimerapellido'
+															)
+														->where('tipideid', $request->tipoIdentificacion)
+														->where('persdocumento', $request->documento)->first();
+
+        return response()->json(['success' => true,'personas' => $personas]);
 	}
 
 	public function salve(Request $request)
@@ -39,6 +57,7 @@ class UsuarioController extends Controller
 	    $this->validate(request(),[
             'tipoIdentificacion'=> 'required',
             'documento'         => 'required|string|min:6|max:15',
+			'persona'           => 'required|numeric',
             'nombre'            => 'required|string|min:5|max:50',
             'apellido'          => 'required|string|min:5|max:50',
             'usuario'           => 'required|string|min:5|max:20|unique:usuario,usuanick,'.$usuario->usuaid.',usuaid',
@@ -54,11 +73,11 @@ class UsuarioController extends Controller
             $nombre                       = mb_strtoupper($request->nombre,'UTF-8');
             $apellido                     = mb_strtoupper($request->apellido,'UTF-8');
             $nickUsuario                  = mb_strtoupper($request->usuario,'UTF-8');
-            $usuario->tipideid            = $request->tipoIdentificacion;
-            $usuario->usuadocumento       = $request->documento;
+            $usuario->persid              = $request->persona;
 			$usuario->usuanombre          = $nombre;
 			$usuario->usuaapellidos       = $apellido;
             $usuario->usuanick            = $nickUsuario;
+			$usuario->usuaalias           = $request->alias;
 			$usuario->usuaemail           = $request->correo;
 			$usuario->usuacambiarpassword = $request->cambiarPassword;
 			$usuario->usuabloqueado       = $request->bloqueado;
@@ -70,13 +89,21 @@ class UsuarioController extends Controller
 			if ($request->tipo  === 'I' ){
 				$notificar         = new Notificar();
 				$nombreUsuario     = $nombre.' '. $apellido;
-				$siglaCooperativa  = 'COOTRANSHACARITAMA';
-				$nombreEmpresa     = "Cooperativa de transporte HACARITAMA";
+
+				$empresa           = DB::table('empresa as e')
+										->select('e.emprnombre','e.emprsigla','e.emprcorreo',
+												DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+												 p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
+										->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+										->where('e.emprid', 1)->first();
+
+				$siglaCooperativa  = $empresa->emprsigla;
+				$nombreEmpresa     = $empresa->emprnombre;
 				$contrasenaSistema = $request->documento; 
 				$email             = $request->correo; 
 				$urlSistema        =  URL::to('/');
-				$emailEmpresa      = '';
-				$nombreGerente     = 'Luis manuel Ascanio'; 
+				$emailEmpresa      = $empresa->emprcorreo;
+				$nombreGerente     = $empresa->nombrePersona; 
 
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'registroUsuario')->first();
 				$buscar            = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlSistema','nombreGerente');
@@ -107,22 +134,18 @@ class UsuarioController extends Controller
   	public function updatePerfil(Request $request)
   	{
         $usuario = User::findOrFail(Auth::id());
-   		$this->validate(request(),[ 
-   			'tipoIdentificacion' => 'required',
-            'documento'          => 'required|string|min:6|max:15',
+   		$this->validate(request(),[
             'nombre'             => 'required|string|min:5|max:50',
             'apellido'           => 'required|string|min:5|max:50',
-            'usuario'            => 'required|string|min:6|max:15|unique:users,usuario,'.$usuario->id,
-            'correo'             => 'required|email|string|unique:users,email,'.$usuario->id
+            'usuario'            => 'required|string|min:6|max:15|unique:usuario,usuanick,'.$usuario->usuaid.',usuaid',
+            'correo'             => 'required|email|string|unique:usuario,usuaemail,'.$usuario->usuaid.',usuaid'
            ]);
-   
+
         try {
-            $usuario->tipideid  = $request->tipoIdentificacion;
-            $usuario->documento = $request->documento;
-            $usuario->nombre    = $request->nombre;
-            $usuario->apellidos = $request->apellido;
-            $usuario->usuario   = mb_strtoupper($request->usuario,'UTF-8'); 
-            $usuario->email     = $request->correo;
+            $usuario->usuanombre    = $request->nombre;
+            $usuario->usuaapellidos = $request->apellido;
+            $usuario->usuanick      = mb_strtoupper($request->usuario,'UTF-8'); 
+            $usuario->email         = $request->correo;
             $usuario->save();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
         } catch (Exception $error){
@@ -176,11 +199,15 @@ class UsuarioController extends Controller
 	
 	public function destroy(Request $request)
 	{
-        //consulto que no tenga evaluacion
-        $data = DB::table('evaluacionusuario')->select('evausuuserid')
-				                        ->where('evausuuserid', $request->codigo)->first();
+        //consulto que no tenga evaluacion 
+        $data = DB::table('codigodocumental')->select('usuaid')
+				                        ->where('usuaid', $request->codigo)->first();
+		$dataIngreso = DB::table('ingresosistema')->select('usuaid')
+				                        ->where('usuaid', $request->codigo)->first();
 		if($data){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está relacionado con una evaluación']);
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está relacionado con un tipo documental producido en el sistema']);
+		}else if($dataIngreso){
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está relacionado con un ingreso al sistema']);
 		}else{
 			try {
                 $usuario = User::findOrFail($request->codigo);

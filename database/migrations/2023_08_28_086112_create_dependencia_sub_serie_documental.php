@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dependenciasubseriedocumental', function (Blueprint $table) {
-            $table->increments('desusdid')->comment('Identificador de la tabla dependencia sub serie documental');
+            $table->increments('desusdid')->unsigned()->comment('Identificador de la tabla dependencia sub serie documental');
             $table->mediumInteger('desusdsusedoid')->unsigned()->comment('Identificador de la tabla sub serie');
             $table->smallInteger('desusddepeid')->unsigned()->comment('Identificador de la tabla dependencia');
-           
-            $table->foreign('desusdsusedoid')->references('subserid')->on('subseriedocumental')->onUpdate('cascade')->index('fk_susedodesusd'); 
+ 
+            $table->foreign('desusdsusedoid')->references('susedoid')->on('subseriedocumental')->onUpdate('cascade')->index('fk_susedodesusd'); 
             $table->foreign('desusddepeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_depedesusd'); 
         });
     }

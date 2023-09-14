@@ -60,12 +60,12 @@ class SubSerieDocumentalController extends Controller
 
     public function destroy(Request $request)
 	{
-		$subseriedocumental = DB::table('subseriedocumental')
-					->select('serdocid')
-					->where('serdocid', $request->codigo)->first();
+		$subseriedocumental = DB::table('codigodocumental')
+					->select('susedoid')
+					->where('susedoid', $request->codigo)->first();
 
 		if($subseriedocumental){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una serie documental del sistema']);
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un tipo documental ya producido en el sistema']);
 		}else{
 			try {
 				$subseriedocumental = SubSerieDocumental::findOrFail($request->codigo);

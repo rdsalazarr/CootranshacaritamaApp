@@ -142,7 +142,9 @@ class generarPDF
 		
 			$url = asset('verificar/documento/'.base64_encode($id));
 			//160, 250, 50, 50  174, 268, 74, 74
-			PDF::write2DBarcode($url, 'QRCODE,H', 170, 0, 50, 50, $style, 'N');
+			//PDF::write2DBarcode($url, 'QRCODE,H', 170, 0, 50, 50, $style, 'N');
+
+			PDF::write2DBarcode($url, 'QRCODE,H', 172, 266, 70, 70, $style, 'N');
 		});
 
 		/* $style = array ( 

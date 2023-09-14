@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dependenciapersona', function (Blueprint $table) {
-            $table->increments('depperid')->comment('Identificador de la tabla dependencia persona');  
+            $table->increments('depperid')->unsigned()->comment('Identificador de la tabla dependencia persona');  
             $table->smallInteger('depperdepeid')->unsigned()->comment('Identificador de la dependencia');
-            $table->smallInteger('depperpersid')->unsigned()->comment('Identificador del persona asignado a la dependencia');  
+            $table->integer('depperpersid')->unsigned()->comment('Identificador del persona asignado a la dependencia');  
             
             $table->unique(['depperdepeid','depperpersid'],'uk_dependenciapersona');            
             $table->foreign('depperdepeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_depedepper'); 
