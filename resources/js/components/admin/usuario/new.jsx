@@ -40,23 +40,26 @@ export default function New({data, tipo}){
         })
     }
 
-    const consultarPersona = () =>{
-        //setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-        let newFormData = {...formData}
-        setLoader(true); 
-        instance.post('/admin/usuario/consultar/persona', {tipoIdentificacion:formData.tipoIdentificacion, documento: formData.documento}).then(res=>{
-            let personas         = res.personas; 
-            let apellidoAlias    = (personas.persgenero === 'F') ? personas.persprimernombre.substring(0, 1)+'.' : personas.persprimerapellido.substring(0, 1)+'.';             
-            let aliasGenerado    = (personas.persgenero === 'F') ? personas.persprimerapellido : personas.persprimernombre;
-            newFormData.persona  = personas.persid;
-            newFormData.nombre   = personas.nombres;
-            newFormData.apellido = personas.apellidos;
-            newFormData.correo   = personas.perscorreoelectronico;
-            newFormData.usuario  = eliminarCaracteresEspeciales(personas.persprimernombre)+''+personas.persprimerapellido.substring(0, 1);
-            newFormData.alias    = nombreAlias(aliasGenerado)+' '+apellidoAlias;
-            setFormData(newFormData);
-            setLoader(false);
-        })
+    const consultarPersona = (e) =>{
+        let newFormData                = {...formData}
+        let tpIdentificacion           = (e.target.name === 'tipoIdentificacion' ) ? e.target.value : formData.tipoIdentificacion ;
+        newFormData.tipoIdentificacion = tpIdentificacion;
+        if (tpIdentificacion !=='' && formData.numeroIdentificacion !==''){
+            setLoader(true); 
+            instance.post('/admin/usuario/consultar/persona', {tipoIdentificacion:formData.tipoIdentificacion, documento: formData.documento}).then(res=>{
+                let personas         = res.personas; 
+                let apellidoAlias    = (personas.persgenero === 'F') ? personas.persprimernombre.substring(0, 1)+'.' : personas.persprimerapellido.substring(0, 1)+'.';             
+                let aliasGenerado    = (personas.persgenero === 'F') ? personas.persprimerapellido : personas.persprimernombre;
+                newFormData.persona  = personas.persid;
+                newFormData.nombre   = personas.nombres;
+                newFormData.apellido = personas.apellidos;
+                newFormData.correo   = personas.perscorreoelectronico;
+                newFormData.usuario  = eliminarCaracteresEspeciales(personas.persprimernombre)+''+personas.persprimerapellido.substring(0, 1);
+                newFormData.alias    = nombreAlias(aliasGenerado)+' '+apellidoAlias;
+                setFormData(newFormData);
+                setLoader(false);
+            })
+        }
     }
 
     const nombreAlias = (cadena) =>{
@@ -92,8 +95,8 @@ export default function New({data, tipo}){
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
                         validators={["required"]}
-                        errorMessages={["Debe hacer una selección"]}
-                        onChange={handleChange} 
+                        errorMessages={["Debe hacer una selección"]}                     
+                        onChange={consultarPersona} 
                         disabled={(tipo === 'U') ? true : false}
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
