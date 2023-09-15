@@ -135,8 +135,8 @@ export default function New({data, tipo}){
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
+                        validators={["required","maxNumber:99"]}
+                        errorMessages={["Campo obligatorio","Número máximo permitido es el 99"]}
                         onChange={handleChange}
                         type={"number"}
                     />

@@ -81,7 +81,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/municipio/salve', [MunicipioController::class, 'salve']);
 
         Route::get('/empresa/list', [EmpresaController::class, 'index']);
-        Route::get('/empresa/list/municipio', [EmpresaController::class, 'municipio']);
+        Route::get('/empresa/list/datos', [EmpresaController::class, 'datos']);
         Route::post('/empresa/salve', [EmpresaController::class, 'salve']);
 
         Route::get('/tipoSaludo/list', [SaludoController::class, 'index']);

@@ -41,10 +41,11 @@ export default function New({data, tipo}){
     }
 
     const consultarPersona = (e) =>{
-        let newFormData                = {...formData}
+        let newFormData                = {...formData}      
+        let documento                  = (e.target.name === 'documento' ) ? e.target.value : formData.documento ;
         let tpIdentificacion           = (e.target.name === 'tipoIdentificacion' ) ? e.target.value : formData.tipoIdentificacion ;
         newFormData.tipoIdentificacion = tpIdentificacion;
-        if (tpIdentificacion !=='' && formData.numeroIdentificacion !==''){
+        if (tpIdentificacion !=='' && documento !==''){
             setLoader(true); 
             instance.post('/admin/usuario/consultar/persona', {tipoIdentificacion:formData.tipoIdentificacion, documento: formData.documento}).then(res=>{
                 let personas         = res.personas; 
@@ -55,11 +56,11 @@ export default function New({data, tipo}){
                 newFormData.apellido = personas.apellidos;
                 newFormData.correo   = personas.perscorreoelectronico;
                 newFormData.usuario  = eliminarCaracteresEspeciales(personas.persprimernombre)+''+personas.persprimerapellido.substring(0, 1);
-                newFormData.alias    = nombreAlias(aliasGenerado)+' '+apellidoAlias;
-                setFormData(newFormData);
+                newFormData.alias    = nombreAlias(aliasGenerado)+' '+apellidoAlias;                
                 setLoader(false);
             })
         }
+        setFormData(newFormData);
     }
 
     const nombreAlias = (cadena) =>{

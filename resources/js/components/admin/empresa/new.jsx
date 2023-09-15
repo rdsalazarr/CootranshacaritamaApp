@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box } from '@mui/material';
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
@@ -10,57 +10,36 @@ export default function New({data}){
  
     const [formData, setFormData] = useState(
                     {
-                        codigo: data.emprid,  municipio: data.emprmuniid, nit: data.emprnit, nombre: data.emprnombre,  sigla: data.emprsigla,
-                        lema: (data.emprlema !== null ) ? data.emprlema : '', url: data.emprurl, direccion: data.emprdireccion, correo: data.emprcorreo,
-                        telefono: data.emprtelefonofijo, celular: data.emprtelefonocelular, horarioAtencion: data.emprhorarioatencion,
-                        codigo_postal: data.emprcodigopostal,  documentoRepresentanteLegal: data.emprdocumentorepresenlegal,
-                        representanteLegal: data.emprrepresentantelegal, cargoRepresentanteLegal: data.emprcargorepresentantelegal,
-                        ciudadResidenciaRepresentanteLegal: data.emprciudadresidenciareplegal, lugarExpedicionRepresentanteLegal: data.emprlugarexpedicionreplegal,
-                        departamento: data.emprdepaid, logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: '',
-                        firma_old: data.emprfirmapresenlegal , firma: (data.emprfirmapresenlegal !== null ) ? data.emprfirmapresenlegal : '' , firma: ''
+                        codigo: data.emprid, jefe: data.persidrepresentantelegal, departamento: data.emprdepaid, municipio: data.emprmuniid, 
+                        nit: data.emprnit, digitoVerificacion: data.emprdigitoverificacion,  nombre: data.emprnombre,  sigla: data.emprsigla,
+                        lema: (data.emprlema !== null ) ? data.emprlema : '',  direccion: data.emprdireccion, correo: (data.emprcorreo !== null ) ? data.emprcorreo : '',
+                        telefono: (data.emprtelefonofijo !== null ) ? data.emprtelefonofijo : '', celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', 
+                        horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '',
+                        url: data.emprurl, codigoPostal: data.emprcodigopostal,  
+                        logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: ''
                     });
-
-    //const [logo, setLogo] = useState(formData.imagen); 
 
     const logo = formData.imagen; 
     const [logoEmpresa, setLogo] = useState();
-    const [firma, setFirma] = useState(formData.firma); 
     const [loader, setLoader] = useState(true); 
     const [habilitado, setHabilitado] = useState(true);
-    //const [logoEmpresa, setLogoEmpresa] = useState();
     const [firmaRL, setFirmaRL] = useState();
     const [municipios, setMunicipios] = useState([]);
     const [newMunicipios, setNewMunicipios] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
+    const [jefes, setJefes] = useState([]);
    
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
     const handleSubmit = () =>{
-
         let dataFile = new FormData();
         Object.keys(formData).forEach(function(key) {
            dataFile.append(key, formData[key])
         })
         dataFile.append('logo', logoEmpresa);
-        dataFile.append('logo1', logoEmpresa);
-        dataFile.append('firma', firmaRL);
-        setLoader(true);
-
-
-        console.log(logoEmpresa);
-/*
-        let dataFile = new FormData();
-        Object.keys(formData).forEach(function(key) {
-           dataFile.append(key, formData[key])
-        })
-        dataFile.append('logo', logoEmpresa);
-        dataFile.append('logo1', logoEmpresa);
-        dataFile.append('firma', firmaRL);
-        setLoader(true);
-        console.log(dataFile);*/
-
+       // setLoader(true);
         instance.post('/admin/empresa/salve', dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
@@ -70,7 +49,8 @@ export default function New({data}){
     }
 
     useEffect(()=>{
-        instance.get('/admin/empresa/list/municipio').then(res=>{  
+        instance.get('/admin/empresa/list/datos').then(res=>{ 
+            setJefes(res.jefes);
             let depto_id =  formData.departamento;
             let mun      = [];
             res.municipios.forEach(function(muni){
@@ -107,26 +87,42 @@ export default function New({data}){
     if(loader){
         return <LoaderModal />
     }
-
+ 
     return (
         <ValidatorForm onSubmit={handleSubmit} >
             <Grid container spacing={2}>
 
-                <Grid item xl={3} md={3} sm={4} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
                         name={'nit'}
                         value={formData.nit}
                         label={'NIT'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 15}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required","maxNumber:999999999"]}
+                        errorMessages={["Campo obligatorio","Número máximo permitido es el 999999999"]}
                         onChange={handleChange}
+                        type={"number"}
                     />
                 </Grid>
 
-                <Grid item xl={5} md={5} sm={5} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator 
+                        name={'digitoVerificacion'}
+                        value={formData.digitoVerificacion}
+                        label={'NIT'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required","maxNumber:9"]}
+                        errorMessages={["Campo obligatorio","Número máximo permitido es el 9"]}
+                        onChange={handleChange}
+                        type={"number"}
+                    />
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={12} xs={12}>
                     <TextValidator 
                         name={'nombre'}
                         value={formData.nombre}
@@ -140,7 +136,7 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={3} xs={12}>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <TextValidator 
                         name={'sigla'}
                         value={formData.sigla}
@@ -156,12 +152,12 @@ export default function New({data}){
 
                 <Grid item xl={2} md={2} sm={6} xs={12}>
                     <TextValidator 
-                        name={'codigo_postal'}
-                        value={formData.codigo_postal}
+                        name={'codigoPostal'}
+                        value={formData.codigoPostal}
                         label={'Código postal'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 15}}
+                        inputProps={{autoComplete: 'off'}}
                         onChange={handleChange}
                         type={"number"}
                     />
@@ -236,7 +232,7 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={5} md={5} sm={6} xs={12}>
                     <TextValidator 
                         name={'url'}
                         value={formData.url}
@@ -303,6 +299,25 @@ export default function New({data}){
                     </SelectValidator>
                 </Grid>
 
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'jefe'}
+                        value={formData.jefe}
+                        label={'Representante legal'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione </MenuItem>
+                        {jefes.map(res=>{
+                           return <MenuItem value={res.persid} key={res.persid} >{res.nombres} {res.apellidos}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
+
                 <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         fullWidth
@@ -317,106 +332,14 @@ export default function New({data}){
                     />
                 </Grid>
 
-                {(formData.emprlogo !== undefined) ?
+                {(formData.emprlogo !== null) ?
                     <Grid item xl={2} md={2} sm={6} xs={12}>
-                        <img src={logo} style={{width: '100%'}} ></img>
-                    </Grid>
-                : null }                
-
-                <Grid item xl={12} md={12} sm={12} xs={12}>
-                    <div className={'subTituloFormulario'}> Información del representante legal </div>
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'documentoRepresentanteLegal'}
-                        value={formData.documentoRepresentanteLegal}
-                        label={'Documento'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 15}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'lugarExpedicionRepresentanteLegal'}
-                        value={formData.lugarExpedicionRepresentanteLegal}
-                        label={'Lugar de expedición'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 50}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>             
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'ciudadResidenciaRepresentanteLegal'}
-                        value={formData.ciudadResidenciaRepresentanteLegal}
-                        label={'Ciudad de residencia'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 50}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={8} md={8} sm={12} xs={12}>
-                    <TextValidator 
-                        name={'representanteLegal'}
-                        value={formData.representanteLegal}
-                        label={'Representante legal'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 80}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'cargoRepresentanteLegal'}
-                        value={formData.cargoRepresentanteLegal}
-                        label={'Cargo'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 50}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        fullWidth
-                        name={'firmaRL'}
-                        label={'Firma del representante legal'}
-                        className={'inputGeneral'}
-                        variant={"standard"}
-                        inputProps={{autoComplete: 'off', accept: "image/png"}}
-                        onChange={(e)=>{ setFirmaRL(e.target.files[0])}}
-                        type={"file"}
-                        InputLabelProps={{shrink :true}}
-                    />
-                </Grid>
-
-                {(formData.emprfirma !== undefined) ?
-                    <Grid item xl={2} md={2} sm={6} xs={12}>
-                        <img src={firma} style={{width: '100%'}} ></img>
+                        <Box className='fotografia'>
+                            <img src={logo} style={{width: '100%'}} ></img>
+                        </Box>
                     </Grid>
                 : null }
-                
+
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">

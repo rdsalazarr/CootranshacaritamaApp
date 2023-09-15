@@ -29,6 +29,8 @@ class DependenciaController extends Controller
                         ->where('persactiva',1)
                         ->orderBy('persprimernombre')->orderBy('perssegundonombre')
                         ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')->get();
+
+        
         return response()->json(["jefes" => $jefes ]);
 	}
 

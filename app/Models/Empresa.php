@@ -8,24 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Empresa extends Model
 {
     use HasFactory;
-
     
     protected $table      = 'empresa';
     public $timestamps    = false;
     protected $primaryKey = 'emprid';
     protected $fillable   = ['persidrepresentantelegal','emprdepaid','emprmuniid','emprnit','emprdigitoverificacion',
-                            'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo',
+                            'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular',
                             'emprhorarioatencion','emprurl','emprcodigopostal', 'emprlogo'];
 
-    //Funcion para pasar la informacion en todas las vistas
-    public static function consultar()
-    {
-        return DB::table('empresa as e')
-                    ->select('e.*','d.depanombre', 
-                        DB::raw("CONCAT('/images/intitucion/',e.emprlogo) as logo") 
-                        )   
-                    ->leftjoin('municipio as m', 'm.muniid', '=', 'e.emprmunid') 
-                    ->leftjoin('departamento as d', 'd.depaid', '=', 'm.munidepaid')  
-                    ->where('e.emprid', 1)->first();
-    }
 }
