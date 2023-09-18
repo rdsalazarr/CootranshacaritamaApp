@@ -21,12 +21,12 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.depeid : null} ruta={'/admin/usuario/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.depeid : null} ruta={'/admin/dependencia/destroy'} cerrarModal={cerrarModal} />
                     ];
 
     const tituloModal = ['Nueva dependencia','Editar dependencia',''];
 
-    function edit(data, tipo){
+    const edit = (data, tipo) =>{
         setTipo(tipo);
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'mediumFlot'});
     }

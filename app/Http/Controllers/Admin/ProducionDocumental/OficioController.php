@@ -17,7 +17,7 @@ use App\Models\CodigoDocumental;
 use App\Util\showTipoDocumental;
 use App\Util\generales;
 use Carbon\Carbon;
-use Auth, DB;
+use Auth, DB, File;
 
 //use App\Models\CambiarEstadoProducionDocumental;
 //use App\Models\CompartirDocumento;
@@ -58,6 +58,17 @@ class OficioController extends Controller
 
         return response()->json(["data" => $data]);
 	}
+
+	public function area()
+	{
+		$areas = DB::table('dependencia as d')
+						->select('d.depeid','d.depenombre','d.depesigla')
+						->join('dependenciapersona as dp', 'dp.depperdepeid', '=', 'd.depeid')
+						->where('dp.depperpersid', auth()->user()->persid)
+						->orderBy('d.depenombre')->get();
+
+		return response()->json(["areas" => $areas,   ]);
+	}	
 
 	public function datos(Request $request)
 	{ 
@@ -218,12 +229,14 @@ class OficioController extends Controller
 				}
 			}
 
-			foreach($request->copiasDependencia as $copiaDependencia){
-				$coddocumprocesocopia                         = new CodigoDocumentalProcesoCopia();
-				$coddocumprocesocopia->codoprid               = $codoprid;
-				$coddocumprocesocopia->depeid                 = $copiaDependencia['depeid'];
-				$coddocumprocesocopia->codoppescopiadocumento = true;
-				$coddocumprocesocopia->save();
+			if($request->copiasDependencia !== null){
+				foreach($request->copiasDependencia as $copiaDependencia){
+					$coddocumprocesocopia                         = new CodigoDocumentalProcesoCopia();
+					$coddocumprocesocopia->codoprid               = $codoprid;
+					$coddocumprocesocopia->depeid                 = $copiaDependencia['depeid'];
+					$coddocumprocesocopia->codoppescopiadocumento = true;
+					$coddocumprocesocopia->save();
+				}
 			}
 
 			if($request->tipo === 'I'){

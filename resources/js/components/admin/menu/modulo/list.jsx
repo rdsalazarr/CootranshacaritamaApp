@@ -26,7 +26,7 @@ export default function List(){
 
     const tituloModal = ['Nuevo módulo','Editar módulo',''];
 
-    function edit(data, tipo){
+    const edit = (data, tipo) =>{
         setTipo(tipo);
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'mediumFlot'});
     }

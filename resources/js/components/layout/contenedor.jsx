@@ -24,7 +24,14 @@ import SeriesDocumentales from "../admin/seriesDocumental/list";
 import Dependencia from "../admin/dependencia/list";
 import Persona from "../admin/persona/list";
 
+import Acta from "../admin/produccionDocumental/acta/list";
+import Citacion from "../admin/produccionDocumental/citacion/list";
+import Constancia from "../admin/produccionDocumental/constancia/list";
+import Certificado from "../admin/produccionDocumental/certificado/list";
+import Circular from "../admin/produccionDocumental/circular/list";
 import Oficio from "../admin/produccionDocumental/oficio/list";
+
+import Radicacion from "../admin/radicacion/documentoExterno/list";
 
 
 const HeaderMenu = ({open , setOpen}) =>{
@@ -102,8 +109,6 @@ const ItemMenu = ({route, text, icon}) => {
     );
 };
 
-//ManageAccountsIcon
-
 const componenteMenu = [
     {   nombre: 'Configuración',
         icono : 'settings_applications',
@@ -115,10 +120,10 @@ const componenteMenu = [
         ]
     },
     {   nombre: 'Gestionar',
-        icono : 'add_home_work_icon',
+        icono : 'ac_unit_icon',
         itemMenu: [
             {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> }, 
-            {ruta : 'admin/gestionarTipos', menu: 'Tipos', icono : 'ac_unit_icon', componente : <GestionTipos /> },
+            {ruta : 'admin/gestionarTipos', menu: 'Tipos', icono : 'star_rate_icon', componente : <GestionTipos /> },
             {ruta : 'admin/gestionarSeriesDocumentales', menu: 'Series', icono : 'insert_chart_icon', componente : <SeriesDocumentales /> },
             {ruta : 'admin/gestionarDependencia', menu: 'Dependencia', icono : 'maps_home_work_icon', componente : <Dependencia /> },
             {ruta : 'admin/gestionarPersona', menu: 'Persona', icono : 'person_icon', componente : <Persona /> },
@@ -127,16 +132,22 @@ const componenteMenu = [
     {   nombre: 'Produccion documental',
         icono : 'menu_book_icon',
         itemMenu: [
-            {ruta : 'admin/produccion/documental/acta', menu: 'Acta', icono : 'local_library_icon', componente : <Usuario /> }, 
-            {ruta : 'admin/produccion/documental/citacion', menu: 'Citación', icono : 'collections_bookmark_icon', componente : <GestionTipos /> },
-            {ruta : 'admin/produccion/documental/constancia', menu: 'Constancia', icono : 'import_contacts_icon', componente : <SeriesDocumentales /> },
-            {ruta : 'admin/produccion/documental/certificado', menu: 'Certificao', icono : 'note_icon', componente : <Dependencia /> },
-            {ruta : 'admin/produccion/documental/circular', menu: 'Ciruclar', icono : 'menu_book_icon', componente : <Persona /> },
+            {ruta : 'admin/produccion/documental/acta', menu: 'Acta', icono : 'local_library_icon', componente : <Acta /> }, 
+            {ruta : 'admin/produccion/documental/citacion', menu: 'Citación', icono : 'collections_bookmark_icon', componente : <Citacion /> },
+            {ruta : 'admin/produccion/documental/constancia', menu: 'Constancia', icono : 'import_contacts_icon', componente : <Constancia /> },
+            {ruta : 'admin/produccion/documental/certificado', menu: 'Certificado', icono : 'note_icon', componente : <Certificado /> },
+            {ruta : 'admin/produccion/documental/circular', menu: 'Circular', icono : 'menu_book_icon', componente : <Circular /> },
             {ruta : 'admin/produccion/documental/oficio', menu: 'Oficio', icono : 'library_books_icon', componente : <Oficio /> }, 
-            {ruta : 'admin/produccion/documental/radicacionDocumentoEsterno', menu: 'Radicar documento externo', icono : 'folder_special_icon', componente : <Persona /> },
+        ]
+    },
+    {   nombre: 'Radicación',
+        icono : 'folder_special_icon',
+        itemMenu: [       
+            {ruta : 'admin/radicacion/documento/externo', menu: 'Documento externo', icono : 'import_contacts_icon', componente : <Radicacion /> },
         ]
     } 
 ];
+
 
 const menuComponente = [
     {id:11,componente : <Usuario />},

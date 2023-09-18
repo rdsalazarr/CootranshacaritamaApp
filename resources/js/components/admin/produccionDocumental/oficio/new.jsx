@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Fragment, useRef} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Box, Avatar, FormGroup, FormLabel, FormControlLabel } from '@mui/material';
-import { Checkbox, Icon,Table, TableHead, TableBody, TableRow, TableCell, Card } from '@mui/material';
+import { Checkbox, Icon,Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import {ButtonFileImg, ContentFile} from "../../../layout/files";
 import showSimpleSnackbar from '../../../layout/snackBar';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -24,13 +24,14 @@ import Anexos from '../anexos';
 //npm install @mui/x-date-pickers
 //npm install date-fns
 
-export default function New({id, tipo}){
+export default function New({id, area, tipo}){ 
+    console.log(id, area, tipo);
     const editorTexto = useRef(null);
   //console.log("Hola ");
    // console.log(tipo)
-    const [formData, setFormData] = useState(
+    const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                        dependencia: '1',       serie: '6',     subSerie: '6',       tipoMedio: '1',     tipoTramite: '1', 
+                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',     subSerie: '6',       tipoMedio: '1',     tipoTramite: '1', 
                                         tipoDestino: '1',       fecha: '',      nombreDirigido: 'ramon salazar',  cargoDirigido: 'CArgo de ramon',  asunto: 'Asunto de prueba',  
                                         correo: '',            contenido: 'abc del contenido',  tieneAnexo: '1',      nombreAnexo: '',    tieneCopia: '1', 
                                         nombreCopia: '',       saludo: '1',     despedida: 1,              tituloPersona: 'ingeniero de sistema',  ciudad: 'Ocaña',    
@@ -102,6 +103,7 @@ export default function New({id, tipo}){
 
     const handleSubmit = () =>{
         console.log("enviado el formulario en handleSubmit");
+        console.log(formDataDependencia);
         
         //En el momento de enviar la peticion no muestra los cambio en el tyminice
         let formDataCopia       = {...formData};
@@ -624,17 +626,11 @@ export default function New({id, tipo}){
 
                 <Grid item md={12} xl={12} sm={12}>
                     <Box className='frmDivision'>Adicionar personas que firma el tipo documental</Box>
-                    <Box className={'icon-add'}>
-                        <Icon key={'iconAdd'} className={'icon top green'}
-                            onClick={() => {adicionarFilaFirmaPersona()}}
-                        >add</Icon>
-                    </Box>
-
-                    <Table key={'tableFirmaPersona'}  className={'tableAdicional'} >
+                    <Table key={'tableFirmaPersona'}  className={'tableAdicional'} style={{marginTop: '5px'}} >
                         <TableHead>
                             <TableRow>
                                 <TableCell style={{width: '60%'}}>Nombre de la persona</TableCell>
-                                <TableCell style={{width: '40%'}}>Cargo </TableCell>                          
+                                <TableCell style={{width: '40%'}}>Cargo </TableCell> 
                                 <TableCell style={{width: '10%'}} className='cell-center'>Acción </TableCell>
                             </TableRow>
                         </TableHead>
@@ -685,9 +681,11 @@ export default function New({id, tipo}){
                                     <TableCell className='cell-center'>
                                         {(a !== 0)?
                                         <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                onClick={() => {eliminarFirmaPersona(a);}}
+                                                onClick={() => {eliminarFirmaPersona(a);}} title={'Eliminar registro'}
                                             >clear</Icon>
-                                            : null
+                                            : <Icon key={'iconAdd'} className={'icon top green'} title={'Adicionar firma'}
+                                                onClick={() => {adicionarFilaFirmaPersona()}}
+                                            >add</Icon>
                                         }
                                     </TableCell>
                                  </TableRow>

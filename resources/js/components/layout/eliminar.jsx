@@ -1,8 +1,8 @@
 
 import React, {useState} from 'react';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {Box, Grid, Button, Avatar} from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 import showSimpleSnackbar from './snackBar';
 import {LoaderModal} from "./loader";
@@ -41,7 +41,7 @@ export default function Eliminar({id, ruta, cerrarModal}){
             </Grid>
 
             <Grid item xl={6} md={6} sm={6} xs={6}>
-                <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo'
+                <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
                     startIcon={<ClearIcon />}> Cancelar
                 </Button>
             </Grid> 

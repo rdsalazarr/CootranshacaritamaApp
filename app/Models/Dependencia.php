@@ -12,4 +12,14 @@ class Dependencia extends Model
     protected $table      = 'dependencia';
     protected $primaryKey = 'depeid';
     protected $fillable   = ['depejefeid','depecodigo','depesigla','depenombre','depecorreo','depeactiva'];
+
+      //Para realizar la relacion entre DependenciaPersona
+      public function dependenciaPersona(){
+        return $this->hasMany('App\Models\DependenciaPersona', 'depperdepeid', 'depeid');
+    } 
+
+    //Para realizar la relacion entre DependenciaSubSerieDocumental
+    public function dependenciaSubSerieDocumental(){
+        return $this->hasMany('App\Models\DependenciaSubSerieDocumental', 'desusddepeid', 'depeid');
+    }
 }

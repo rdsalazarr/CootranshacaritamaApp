@@ -15,7 +15,7 @@ export default function List(){
 
     return ( 
         <Box>
-            <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Tipo documental oficio</Typography>
+            <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Tipo documental citación</Typography>
             </Box>
             
             <Tabs value={value} onChange={handleChangeTab} 

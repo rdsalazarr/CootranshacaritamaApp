@@ -15,7 +15,7 @@ export default function List(){
     const modales     = [<NewEdit data={modal.data} />];
     const tituloModal = ['Editar datos de la empresa',''];
 
-    function edit(data, tipo){
+    const edit = (data, tipo) =>{
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'bigFlot'});
     }
 

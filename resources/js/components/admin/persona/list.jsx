@@ -28,7 +28,7 @@ export default function List(){
 
     const tituloModal = ['Nueva persona','Editar persona','','Visualizar la información de la persona'];
 
-    function edit(data, tipo){
+    const edit = (data, tipo) =>{
         setTipo(tipo);
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'bigFlot'});
     }
