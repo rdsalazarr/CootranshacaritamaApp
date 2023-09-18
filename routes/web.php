@@ -23,7 +23,7 @@ use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
-use App\Http\Controllers\Admin\ProducionDocumental\VisualizarTipoDocumentalController;
+use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -113,14 +113,17 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
         Route::prefix('/producion/documental')->group(function(){
-            Route::get('/oficio/list', [OficioController::class, 'index']);
+            Route::post('/oficio/list', [OficioController::class, 'index']);            
             Route::get('/oficio/consultar/area', [OficioController::class, 'area']);
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
             Route::post('/oficio/salve', [OficioController::class, 'salve']);
+            Route::post('/oficio/solicitar/firma', [OficioController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/oficio', [OficioController::class, 'verificarSellado']);
+            Route::post('/sellar/oficio', [OficioController::class, 'sellar']);
 
-
+            
            
-            Route::post('/visualizar/PDF', [VisualizarTipoDocumentalController::class, 'index']);
+            Route::post('/visualizar/PDF', [VisualizarDocumentosController::class, 'index']);
 
         });
 

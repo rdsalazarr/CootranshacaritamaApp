@@ -4,7 +4,6 @@ import TablaGeneral from '../../../layout/tablaGeneral';
 import { ModalDefaultAuto  } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import Eliminar from '../../../layout/eliminar';
 import NewEdit from './new';
 
 export default function List(){

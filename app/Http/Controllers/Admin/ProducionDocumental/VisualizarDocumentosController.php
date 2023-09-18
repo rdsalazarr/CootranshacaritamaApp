@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use Auth, DB;
 
-class VisualizarTipoDocumentalController extends Controller
+class VisualizarDocumentosController extends Controller
 {
     public function index(Request $request)
 	{

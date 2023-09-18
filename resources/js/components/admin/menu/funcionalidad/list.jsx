@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Card} from '@mui/material';
 import TablaGeneral from '../../../layout/tablaGeneral';
-import { ModalDefaultAuto  } from '../../../layout/modal';
+import { ModalDefaultAuto} from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
+import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
-import Eliminar from '../../../layout/eliminar';
+import { Box} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){

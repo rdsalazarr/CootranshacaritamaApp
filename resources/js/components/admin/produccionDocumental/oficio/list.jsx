@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../layout/general';
-import Gestionar from "./gestionar.jsx";
-import Producir from "./producir.jsx";
+import Verificar from "./verificar";
+import Historico from "./historico";
+import Producir from "./producir";
 
 export default function List(){
 
@@ -13,7 +14,7 @@ export default function List(){
         setValue(newValue);
     };
 
-    return ( 
+    return (
         <Box>
             <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Tipo documental oficio</Typography>
             </Box>
@@ -24,7 +25,8 @@ export default function List(){
                 textColor="secondary"
                 variant={variantTab} >
                 <Tab label="Producir" />
-                <Tab label="Gestionar" /> 
+                <Tab label="Verificar" />
+                <Tab label="Histórico" /> 
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -32,7 +34,11 @@ export default function List(){
             </TabPanel>
 
             <TabPanel value={value} index={1}>
-                <Gestionar />
+                <Verificar />
+            </TabPanel>
+
+            <TabPanel value={value} index={2}>
+                <Historico />
             </TabPanel>
         </Box>
     )

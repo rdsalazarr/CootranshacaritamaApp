@@ -1,19 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import TablaGeneral from '../../../layout/tablaGeneral';
 import { ModalDefaultAuto  } from '../../../layout/modal';
+import {SolicitarFirma} from '../../../layout/modalFijas';
+import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import VisualizarPdf from '../visualizarPdf';
 import Verificar from '../verificar';
 import { Box} from '@mui/material';
 import NewEdit from './new';
-import Prueba from './prueba';
 
-export default function List(){
+export default function Producir(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
-    const [tipo, setTipo] = useState(0);   
+    const [tipo, setTipo] = useState(0);
     const [areaSeleccionada, setAreaSeleccionada] = useState([]);
     const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
 
@@ -26,18 +26,16 @@ export default function List(){
         setModal({open: true, vista: 1, data:data, titulo: 'Registrar nuevo tipo documental oficio del área '+area.depenombre.toLowerCase(), tamano: 'bigFlot'});
     }
 
-    //modal.data.id
-    //<NewEdit tipo={'I'}  />, <Prueba />
     const modales = [
-                        <Verificar cerrarModal={cerrarModal} verificarArea={verificarArea} ruta={'oficio'}/>,
+                        <Verificar cerrarModal={cerrarModal} verificarArea={verificarArea} ruta={'oficio'} />,
                         <NewEdit tipo={'I'} area={areaSeleccionada} />,
-                        <NewEdit tipo={'U'} id={(tipo === 2) ? modal.data.id : null}  /> ,
-                        <Prueba />,
-                        <VisualizarPdf id={(tipo === 3) ? modal.data.id : null} tipo={'OFICIO'} />
+                        <NewEdit tipo={'U'} id={(tipo !== 0) ? modal.data.id : null} /> ,
+                        <SolicitarFirma id={(tipo !== 0) ? modal.data.id : null} ruta={'oficio'} cerrarModal={cerrarModal} />,
+                        <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} tipo={'OFICIO'} />
                     ];
 
     const tituloModal = ['Selecionar área de produccion documental', 
-                        'Registrar nuevo tipo documental oficio del área ',
+                        'Registrar nuevo tipo documental ',
                         'Editar tipo documental oficio',
                         'Solicitar firma del tipo documental',
                         'Visualizar el tipo documental en formato PDF'];
@@ -49,7 +47,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/producion/documental/oficio/list').then(res=>{
+        instance.post('/admin/producion/documental/oficio/list', {tipo:'PRODUCIR'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -62,7 +60,7 @@ export default function List(){
     }
 
     return (
-        <Box>            
+        <Box>
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
@@ -74,14 +72,14 @@ export default function List(){
                         {tipo: 'B', icono : 'signal_cellular_alt', color: 'red',    funcion : (data)=>{edit(data,3)} },
                         {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data,4)} },
                     ]}
-                    funciones={{orderBy: false,search: false, pagination:true}}
+                    funciones={{orderBy: false, search: false, pagination:true}}
                 />
             </Box>
 
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
+                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista === 2 || modal.vista === 3) ? inicio() : null;}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

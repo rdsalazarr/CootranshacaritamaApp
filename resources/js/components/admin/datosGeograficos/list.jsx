@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
-import Departamento from "./departamento/list.jsx";
+import Departamento from "./departamento/list";
 import { TabPanel } from '../../layout/general';
-import Municipio from "./municipio/list.jsx";
+import Municipio from "./municipio/list";
 
 export default function List(){
 

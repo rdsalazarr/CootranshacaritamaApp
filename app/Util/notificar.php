@@ -55,7 +55,7 @@ class Notificar
 			$mail->AltBody = $msg;
 			$mail->send();
 			$mail->ClearAttachments();
-			$mail->ClearAllRecipients(); 
+			$mail->ClearAllRecipients();
 
 			return implode(",", $correo);
 

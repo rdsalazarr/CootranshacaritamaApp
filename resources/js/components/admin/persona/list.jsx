@@ -3,8 +3,8 @@ import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../layout/tablaGeneral';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
+import Eliminar from '../../layout/modalFijas';
 import instance from '../../layout/instance';
-import Eliminar from '../../layout/eliminar';
 import NewEdit from './new';
 import Show from './show';
 

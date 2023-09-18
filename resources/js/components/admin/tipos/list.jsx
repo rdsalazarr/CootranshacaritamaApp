@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../layout/general';
-import Saludo from "./saludo/list.jsx";
-import Despedida from "./despedida/list.jsx";
+import Despedida from "./despedida/list";
+import Saludo from "./saludo/list";
 
 export default function List(){
 

@@ -2,11 +2,10 @@ import React, {useState} from 'react';
 import {Grid, Box } from '@mui/material';
 
 export default function Show({data}){
-
      const [formData, setFormData] = useState(
                     {
                         codigo: data.innocoid, nombre: data.innoconombre, asunto: data.innocoasunto, contenido: data.innococontenido,
-                        piePagina: data.piePagina, copia: data.enviarCopia
+                        piePagina: data.enviarPiePagina, copia: data.enviarCopia
                     } ); 
 
     return (
@@ -29,7 +28,7 @@ export default function Show({data}){
             <Grid item xl={2} md={2} sm={12} xs={12}>
                 <Box className='frmTexto'>
                     <label>Pie página</label>
-                    <span>{formData.enviarPiePagina}</span>
+                    <span>{formData.piePagina}</span>
                 </Box>
             </Grid>
 

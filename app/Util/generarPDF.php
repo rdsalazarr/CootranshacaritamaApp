@@ -3,8 +3,8 @@
 namespace App\Util;
 use Illuminate\Support\Facades\Crypt;
 use App\Util\showTipoDocumental;
+use Auth, PDF, DB, URL, File;
 use App\Util\generales;
-use Auth, PDF, DB, URL;
 use Carbon\Carbon;
 
 class generarPDF
@@ -18,22 +18,24 @@ class generarPDF
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
 
 
-		$direccionEmpresa = 'Calle 7 a 56 211 la ondina vía a rio de oro';
-		$cidudadEmpresa   = 'Ocaña';
-		$barrioEmpresa   = 'Santa clara'; 
-		$telefonoEmpresa = '3146034311';
-		$celularEmpresa  = '3146034311';
-		$urlEmpresa      = 'www.cootranshacaritama.com';
-		$nombreEmpresa   = 'COOPERATIVA DE TRANSPORTADORES HACARITAMA'; 
-		$lemaEmpresa     = 'COOTRANSHACARITAMA';
-		//$codigoInstitucional = '561233';
-		//$codigoDocumental = '561233';
-		$logoEmpresa = '561233';
-		$logoEmpresa = URL::to('/').'/archivos/empresa/logo/logoCootranshacaritama.png';
+		$empresa          = DB::table('empresa as e')
+									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 
+											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre')
+									->join('municipio as m', 'm.muniid', '=', 'e.emprmuniid')
+									->where('e.emprid', 1)
+									->first();
 
-		$logoEmpresa = 'logoCootranshacaritama.png';
-		//
-
+		$direccionEmpresa = $empresa->emprdireccion;
+		$cidudadEmpresa   = $empresa->muninombre;
+		$barrioEmpresa    = 'Santa clara'; 
+		$telefonoEmpresa  = $empresa->emprtelefonofijo;
+		$celularEmpresa   = $empresa->emprtelefonocelular;
+		$urlEmpresa       = $empresa->emprurl;
+		$nombreEmpresa    = $empresa->emprnombre; 
+		$lemaEmpresa      = $empresa->emprlema;
+		$siglaEmpresa     = $empresa->emprsigla;
+		$logoEmpresa      = $empresa->emprlogo;
+		
 		$fechaActualDocumento = $infodocumento->codoprfecha;
   		$anioDocumento        = $infodocumento->codopoanio;
   		$tipoDocumento        = $infodocumento->tipdoccodigo;
@@ -68,13 +70,13 @@ class generarPDF
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($asunto);
-		PDF::SetKeywords('Certificado, curso, cooperativismo');
+		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$asunto);
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado
 		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){	
 			$linea = str_pad('',  70, "_", STR_PAD_LEFT); //Diibuja la linea
-			PDF::Image('archivos/empresa/logo/'.$logoEmpresa,24,4,24,18);
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,24,18);
 			PDF::SetY(8);
             PDF::SetX(46);
 			PDF::SetFont('helvetica','B',14);
@@ -290,11 +292,17 @@ EOD;
 		$nombrePdf = $codigoInstitucional.'-'.$fechaActualDocumento.'.pdf';	
 		
 
-        $tituloPDF = $codigoDocumental.'.pdf';
-		if($metodo === 'S'){			
-			return base64_encode(PDF::output($tituloPDF, 'S'));
+        $tituloPdf = $codigoDocumental.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/produccionDocumental/digitalizados/'.$siglaDependencia.'/'.$anioDocumento;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $carpetaServe.'/'.$nombrePdf;		
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
 		}else{
-			PDF::output($tituloPDF, $metodo);
+			PDF::output($tituloPdf, $metodo);
 		}
     }
 }
