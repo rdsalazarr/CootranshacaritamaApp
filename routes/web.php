@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Home\FrondController;
+use App\Http\Controllers\Home\VerificarDocumentosController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Menu\ModuloController;
 use App\Http\Controllers\Security\MantenimientoController;
@@ -29,8 +30,8 @@ Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
-
-Route::get('/download/adjunto/{capeta}/{ruta}/{id}', [DownloadFileController::class, 'download'])->name('Download');
+Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
+Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}/{id}', [DownloadFileController::class, 'download'])->name('Download');
 
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -120,10 +121,12 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/oficio/solicitar/firma', [OficioController::class, 'solicitarFirma']);
             Route::post('/verificar/sellado/oficio', [OficioController::class, 'verificarSellado']);
             Route::post('/sellar/oficio', [OficioController::class, 'sellar']);
+            Route::post('/anular/oficio', [OficioController::class, 'anular']);
+            Route::post('/oficio/visualizar/PDF', [OficioController::class, 'showPdf']);
 
-            
+            //admin/producion/documental/oficio/visualizar/PDF
            
-            Route::post('/visualizar/PDF', [VisualizarDocumentosController::class, 'index']);
+           // Route::post('/visualizar/PDF', [VisualizarDocumentosController::class, 'index']);
 
         });
 

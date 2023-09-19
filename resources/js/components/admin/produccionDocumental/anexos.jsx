@@ -5,7 +5,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
 import showSimpleSnackbar from '../../layout/snackBar';
-
+import ModalEliminar from './modalEliminar'
 
 export default function Anexos({data, eliminar, cantidadAdjunto}){
 
@@ -37,7 +37,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
 
     const eliminarFilasAdjunto = (id) =>{
         let newDataFiles = []; 
-       dataFiles.map((res,i) =>{
+        dataFiles.map((res,i) =>{
             if(i != id){
                 newDataFiles.push({
                     codopxid: res.codopxid,
@@ -79,9 +79,8 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                         {dataFiles.map((anexos, a) => {
                             let i = a + 1; 
 
-                            console.log(anexos['rutaDescargar']);
+                            let rutaAdjunto = '/download/adjunto/'+anexos['codoposigla']+'/'+anexos['codopoanio']+'/'+anexos['codopxrutaanexo']+'/1';
 
-                            let imagenInueble = '/download/adjunto/'+anexos['codoposigla']+'/'+anexos['codopoanio']+'/1';
                             return(
                                     <TableRow key={'rowAne-' + a + anexos['codopxid']}>
                                         <TableCell>
@@ -93,15 +92,14 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                                         </TableCell>                    
                                      
                     
-                                        <TableCell className='cellCenter'>  
-
-                                        <Link href={imagenInueble} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                                        <TableCell className='cellCenter'> 
+                                            <Link href={rutaAdjunto} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
 
                                             <CloudDownloadIcon onClick={() => {descargarAdjunto(anexos['codopxnombreanexooriginal'], anexos['codopxrutaanexo'], anexos['IDFOLDER']);}} className={'iconoDownload'}/>
                                         </TableCell>
 
                                         {(eliminar) ?  <TableCell className='cellCenter'>
-                                            <DeleteForeverIcon onClick={() => {eliminarAdjunto(a, anexos['codopxid'], anexos['codopxrutaanexo'], anexos['IDFOLDER']);}} className={'iconoDownload'}/>                                        
+                                            <DeleteForeverIcon onClick={() => {eliminarAdjunto(a, anexos['codopxid'], anexos['codopxrutaanexo']);}} className={'iconoDownload'}/>                                        
                                             </TableCell> : null}
                                     </TableRow> 
                                 );
@@ -113,17 +111,13 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                 </Box>
             </Grid>
 
-                {
-/*
-                
-            <ModalDefaultAuto 
+            {<ModalDefaultAuto
                 title={""}
                 content={<ModalEliminar data={dataModal} eliminarFilasAdjunto={eliminarFilasAdjunto} cerrarModal={cerrarModal} cantidadAdjunto={cantidadAdjunto} />}
                 close={() =>{setAbrirModal(false);}} 
                 tam= 'smallFlot' 
                 abrir= {abrirModal}
-                />*/}
-
+                />}
         </Grid>
     )
 }

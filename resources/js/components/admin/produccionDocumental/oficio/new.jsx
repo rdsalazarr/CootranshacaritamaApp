@@ -9,26 +9,20 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
-
+import Files from "react-files";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
 import esLocale from 'date-fns/locale/es'; 
-import Files from "react-files";
+import dayjs from 'dayjs';
 import "/resources/scss/fechaDatePicker.scss";
-
-
 import Anexos from '../anexos';
 
 //npm install @mui/x-date-pickers
 //npm install date-fns
 
 export default function New({id, area, tipo}){ 
-    console.log(id, area, tipo);
     const editorTexto = useRef(null);
-  //console.log("Hola ");
-   // console.log(tipo)
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
                                         dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',     subSerie: '6',       tipoMedio: '1',     tipoTramite: '1', 
@@ -101,10 +95,7 @@ export default function New({id, area, tipo}){
         showSimpleSnackbar(msj, 'error');
     }
 
-    const handleSubmit = () =>{
-        console.log("enviado el formulario en handleSubmit");
-        console.log(formDataDependencia);
-        
+    const handleSubmit = () =>{        
         //En el momento de enviar la peticion no muestra los cambio en el tyminice
         let formDataCopia       = {...formData};
         formDataCopia.contenido = editorTexto.current.getContent();
@@ -114,42 +105,6 @@ export default function New({id, area, tipo}){
         newFormData.firmaPersona       = firmaPersona;
         newFormData.archivos           = formDataFile.archivos;
         newFormData.copiasDependencia  = formDataDependencia;
-
-
-
-
-        /*let newFormData = new FormData();
-        //Capturo todos los datos del formulario
-        Object.keys(formData).forEach(function(key) {
-            newFormData.append(key, formData[key])
-        })        
-        newFormData.append('contenido', editorTexto.current.getContent());
-
-        //Identifico las firma del documento
-        let totalCamposFirmas = 0;
-        Object.keys(firmaPersona).forEach(function(key) {
-            newFormData.append('identificadorFirma'+key, firmaPersona[key].persona)
-            newFormData.append('personaFirma'+key, firmaPersona[key].persona)
-            newFormData.append('personaCargo'+key, firmaPersona[key].cargo)
-            newFormData.append('personaEstado'+key, firmaPersona[key].estado)
-            totalCamposFirmas ++;
-        })
-        newFormData.append('totalCamposFirmas', totalCamposFirmas); 
-
-        //Identificamos el total de archivos
-        let totalCamposArchivos = 0;
-        let archivos      = formDataFile.archivos;
-        Object.keys(archivos).forEach(function(key) {
-            newFormData.append('archivos'+key, archivos[key])
-            totalCamposArchivos ++;
-        })
-        newFormData.append('totalCamposArchivos', totalCamposArchivos);
-        //newFormData.copiasDependencia = formDataDependencia;     
-        console.log(formDataDependencia);
-
-        newFormData.append('copiasDependencia', formDataDependencia);
-
-       */
          
         //setLoader(true);
         //setFormData(formDataCopia);
@@ -388,13 +343,55 @@ export default function New({id, area, tipo}){
                     <TextValidator 
                         name={'cargoDirigido'}
                         value={formData.cargoDirigido}
-                        label={'Cargo'}
+                        label={'Cargo'+ formData.tipoDestino}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 100}}
                         onChange={handleChange}
                     />
                 </Grid>
+
+                {(formData.tipoDestino !== 1) ? 
+                    <Fragment>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                name={'empresa'}
+                                value={formData.empresa}
+                                label={'Nomre de la empresa'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 80}}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                name={'direccionDestinatario'}
+                                value={formData.direccionDestinatario}
+                                label={'Direccion de la emprsa o destinatario'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 80}}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                name={'telefono'}
+                                value={formData.telefono}
+                                label={'Teléfono de la empresa o destinatario'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 20}}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                    </Fragment>
+                : null}
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator

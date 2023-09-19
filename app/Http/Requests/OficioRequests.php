@@ -31,11 +31,11 @@ class OficioRequests extends FormRequest
             'tipoDestino'           => 'required|numeric',
 
             'idCDP'                 => 'required|numeric',
-            'fecha'               => 'required|date|date_format:Y-m-d',
+            'fecha'                 => 'required|date|date_format:Y-m-d',
             'nombreDirigido'        => 'required|string|min:4|max:2000',
             'cargoDirigido'         => 'nullable|string|min:4|max:100',
             'asunto'                => 'required|string|min:4|max:200',
-          //  'correo'              => 'required_if:tipo_medio,2|required_if:tipo_medio,3',
+            'correo'                => 'required_if:tipo_medio,2|required_if:tipo_medio,3',
             'contenido'             => 'required',
             'tieneAnexo'            => 'required|string',
             'nombreAnexo'           => 'nullable|string|min:4|max:300',
@@ -52,9 +52,8 @@ class OficioRequests extends FormRequest
             'direccionDestinatario' => 'nullable|string|min:4|max:80',
             'telefono'              => 'nullable|string|min:4|max:20',
             'responderRadicado'     => 'required|string',
-
-            //'nombreRemitente'                 => 'required|array|min:1'
-            //'video.*'  => 'required|mimes:avi,mp4|max:2000'
+            'firmaPersona'          => 'required|array|min:1',
+            //'archivos'              => 'nullable|array|mimes:jpg,png,jpeg,doc,docx,pdf,ppt,pptx,xls,xlsx,xlsm,zip,rar|max:2000'
         ];
     }
 }

@@ -3,13 +3,13 @@ import {LoaderModal} from "../../layout/loader";
 import instancePdf from '../../layout/instancePdf';
 import { Grid } from '@mui/material';
 
-export default function VisualizarPdf({id, tipo}){
+export default function VisualizarPdf({id, ruta}){
     const [loader, setLoader] = useState(false); 
     const [pdf, setPdf] = useState(); 
 
     useEffect(()=>{
         setLoader(true);
-        instancePdf.post('/admin/producion/documental/visualizar/PDF', {codigo: id, tipoDocumental:tipo}).then(res=>{
+        instancePdf.post('/admin/producion/documental/'+ruta+'/visualizar/PDF', {codigo: id}).then(res=>{
             let url = 'data:application/pdf;base64,'+res.data;
             setPdf(url);
             setLoader(false);
