@@ -28,16 +28,15 @@ class Notificar
 			$mail->Password   = $password; 
 			$mail->SMTPSecure = $SMTPSecure;
 			$mail->Port       = $puerto; //587
-				
-			$mail->setFrom($usuario,utf8_decode('Notificaciones HACARITAMA'));			
+
+			$mail->setFrom($usuario,utf8_decode('Notificaciones CRM HACARITAMA'));
 	
 			foreach ($correo as $email) {
 				$mail->addAddress($email);
 			}
 
-			if($enviarCopia == 1){
-				//copia de la oculta
-				$mail->addBCC($correoDependencia);			
+			if($enviarCopia == 1){//copia de la oculta
+				$mail->addBCC($correoDependencia);
 			}
 		
 			if($adjunto !== '') {
@@ -72,7 +71,7 @@ class Notificar
 		$msj .='<div style="margin-top:5px; padding:8px; text-align:justify;">'; 
 		$msj .= $body;
 		$msj .='</div>
-				<div style="margin-top:5px; font-size:11px; padding:8px; color:#8c8c8c; text-align:justify; ">'.$piePagina.'					
+				<div style="margin-top:5px; font-size:11px; padding:8px; color:#8c8c8c; text-align:justify; ">'.$piePagina.'
 				</div>
 				</div>
 				</html>';
@@ -87,5 +86,4 @@ class Notificar
 
 		return $informacioncorreo->innococontenido;
 	}
-
 }

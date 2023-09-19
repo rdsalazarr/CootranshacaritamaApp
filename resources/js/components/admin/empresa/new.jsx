@@ -240,8 +240,8 @@ export default function New({data}){
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 100}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
+                        validators={['required', 'matchRegexp:^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$']}
+                        errorMessages={["Campo obligatorio", "La URL que ingresó no contiene una estructura válida"]}
                         onChange={handleChange}
                     />
                 </Grid>

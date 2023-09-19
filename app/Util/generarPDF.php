@@ -5,19 +5,20 @@ use Illuminate\Support\Facades\Crypt;
 use App\Util\showTipoDocumental;
 use Auth, PDF, DB, URL, File;
 use App\Util\generales;
+use App\Util\encrypt;
 use Carbon\Carbon;
 
 class generarPDF
 {
-    function oficio($id = 1, $metodo = 'I')
+    function oficio($id, $metodo = 'I')
 	{
         $funcion          = new generales();
-        $fechaHoraActual  = Carbon::now();    
+		$encrypt          = new encrypt();
+        $fechaHoraActual  = Carbon::now();
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
-
-
+		
 		$empresa          = DB::table('empresa as e')
 									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 
 											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre')
@@ -35,13 +36,15 @@ class generarPDF
 		$lemaEmpresa      = $empresa->emprlema;
 		$siglaEmpresa     = $empresa->emprsigla;
 		$logoEmpresa      = $empresa->emprlogo;
-		
+
+		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);		
 		$fechaActualDocumento = $infodocumento->codoprfecha;
   		$anioDocumento        = $infodocumento->codopoanio;
   		$tipoDocumento        = $infodocumento->tipdoccodigo;
   		$siglaDependencia     = $infodocumento->codoposigla;
   		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
-		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;		
+		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
+		$estadoDocumento      = $infodocumento->tiesdoid;			
 			
 		$titulo               = $infodocumento->codopotitulo;	
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;	
@@ -102,22 +105,22 @@ class generarPDF
 		);		
 
 		//Pie de pagina
-		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $id){
+		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento){
 			$linea = str_pad('',  52, "_", STR_PAD_LEFT); //Diibuja la linea
 			PDF::SetFont('helvetica','I',12);
 			PDF::Ln(2);
-			PDF::SetY(275);	
+			PDF::SetY(268);	
 			PDF::SetX(30);			
 			PDF::Cell(165,4,$linea,0,0,'C');
 			PDF::Ln(5);
 			PDF::SetX(30);
 			PDF::Cell(165,4,$direccionEmpresa.' | '.$barrioEmpresa,0,0,'C');
-			PDF::Ln(4);
+			PDF::Ln(5);
 			PDF::SetX(30);
 			PDF::Cell(165,4,'Teléfono: '.$telefonoEmpresa.' | Celular: '.$celularEmpresa.'',0,0,'C'); 
-			PDF::Ln(4);
+			PDF::Ln(5);
 			PDF::SetX(30);
-			PDF::Cell(165,4,$urlEmpresa,0,0,'C');
+			PDF::Cell(165,4,$urlEmpresa.' '.$idCifrado,0,0,'C');
 	
 			$style = array(
 				'border' => 0,
@@ -127,48 +130,29 @@ class generarPDF
 				'bgcolor' => false, 
 				'module_width' => 1, 
 				'module_height' => 1
-			);	
+			);
 
-			/*$style = array ( 
-				'hpadding' => 'auto',
-				'vpadding' => 'auto',
-				'fgcolor' => array(0,0,0),
-				'bgcolor' => false, 
-				'text' => true,
-				'font' => 'helvetica',
-				'fontsize' => 8,
-				'stretchtext' => 4,
-				'label' => 'Verifica este documento en https://sid.ufpso.edu.co/Verificar'
-			); */
+			//Crypt::encrypt($id)
+			$url = asset('verificar/documento/'.urlencode($idCifrado));			
+			PDF::write2DBarcode($url, 'QRCODE,H', 20, 264, 30, 30, $style, 'N');
 
-		
-			$url = asset('verificar/documento/'.base64_encode($id));
-			//160, 250, 50, 50  174, 268, 74, 74
-			//PDF::write2DBarcode($url, 'QRCODE,H', 170, 0, 50, 50, $style, 'N');
-
-			PDF::write2DBarcode($url, 'QRCODE,H', 172, 266, 70, 70, $style, 'N');
+			if($estadoDocumento === 10){
+				PDF::SetFont('helvetica', 'B', 70);
+				PDF::SetTextColor(229, 229, 229);
+				PDF::StartTransform();	
+				PDF::Rotate(52);
+				PDF::Text(74, 240, 'Documento anulado');
+				PDF::StopTransform();
+			}
 		});
 
-		/* $style = array ( 
-            'hpadding' => 'auto',
-            'vpadding' => 'auto',
-            'fgcolor' => array(0,0,0),
-            'bgcolor' => false, 
-            'text' => true,
-            'font' => 'helvetica',
-            'fontsize' => 8,
-            'stretchtext' => 4,
-            'label' => 'Verifica este documento en https://sid.ufpso.edu.co/Verificar'
-        );  
-        $pdf->write2DBarcode('https://sid.ufpso.edu.co/VerificarQR?id='.urlencode($codigoBarras), 'QRCODE,H', 174, 36, 25, 48, $style, 'N');*/
-
-		PDF::SetProtection(array('copy'), '', null, 0, null);
+		//PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		PDF::SetMargins(24, 36 , 20);
 		PDF::AddPage('P', 'Letter');
-		PDF::SetAutoPageBreak(true,24);
-		PDF::SetY(16); 
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(16);
 		PDF::Ln(24);
 		PDF::SetFont('helvetica', '', 12);
 	    PDF::Cell(80, 4, $fechaDocumento, 0, 0, '');
@@ -217,7 +201,7 @@ class generarPDF
 		PDF::writeHTML($contenido, true, false, true, false, '');
 	    PDF::Ln(8);
 	    PDF::Cell(60, 4,$despedida, 0, 0, '');
-	    PDF::Ln(20);	
+	    PDF::Ln(20);
 
 		$cont = 0;
 		foreach ($firmasDocumento as $firma)
@@ -265,7 +249,7 @@ EOD;
 			}
 
 			if($nombreAnexo != '') {
-	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);	           
+	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);
 	        }
 		}
 
@@ -281,17 +265,15 @@ EOD;
 			}
 
 			if ($nombreCopia != '') {
-			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);	            
+			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);
 	        }
 		}
 		
 		PDF::Ln(10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		//Informacion para visualizar o descargar el pdf
+	    //Informacion para visualizar o descargar el pdf
 		$nombrePdf = $codigoInstitucional.'-'.$fechaActualDocumento.'.pdf';	
-		
-
         $tituloPdf = $codigoDocumental.'.pdf';
 		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
@@ -304,5 +286,6 @@ EOD;
 		}else{
 			PDF::output($tituloPdf, $metodo);
 		}
-    }
+    }	
+	
 }

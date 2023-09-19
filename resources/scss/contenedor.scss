@@ -231,7 +231,8 @@ body{
 .iconoDownload{
   font-size: 2em !important;
   color: $verdeOscuro !important;
-  transition: all 0.2s linear !important ;
+  transition: all 0.2s linear !important;
+  cursor: pointer;
   &:hover{
       color: #c41f1f !important;
       transition: all 0.2s linear !important;

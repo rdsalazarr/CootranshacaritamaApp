@@ -10,16 +10,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
 import Files from "react-files";
+import Anexos from '../anexos';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
+import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'date-fns/locale/es'; 
 import dayjs from 'dayjs';
-import "/resources/scss/fechaDatePicker.scss";
-import Anexos from '../anexos';
-
-//npm install @mui/x-date-pickers
-//npm install date-fns
 
 export default function New({id, area, tipo}){ 
     const editorTexto = useRef(null);
@@ -54,7 +51,7 @@ export default function New({id, area, tipo}){
     const minDate = dayjs();
 
     const cantidadAdjunto = () =>{
-        setTotalAdjunto(totalAdjuntoSubido - 1);
+        setTotalAdjuntoSubido(totalAdjuntoSubido - 1);
     }
 
     const handleChange = (e) =>{
@@ -95,7 +92,17 @@ export default function New({id, area, tipo}){
         showSimpleSnackbar(msj, 'error');
     }
 
-    const handleSubmit = () =>{        
+    const handleSubmit = () =>{
+        if(formData.tipoMedio !== 1 && formData.correo === ''){
+            showSimpleSnackbar("Debe ingresar el correo", 'error');
+            return
+        }
+
+        if(!validarCorreos(formData.correo) && formData.correo !== ''){
+            showSimpleSnackbar("El campo de correo electrónico contiene uno o más correos que no tienen una estructura válida", 'error');
+            return
+        }
+
         //En el momento de enviar la peticion no muestra los cambio en el tyminice
         let formDataCopia       = {...formData};
         formDataCopia.contenido = editorTexto.current.getContent();
@@ -105,14 +112,20 @@ export default function New({id, area, tipo}){
         newFormData.firmaPersona       = firmaPersona;
         newFormData.archivos           = formDataFile.archivos;
         newFormData.copiasDependencia  = formDataDependencia;
-         
-        //setLoader(true);
-        //setFormData(formDataCopia);
+
+        setLoader(true);
+        setFormData(formDataCopia);
         instance.post('/admin/producion/documental/oficio/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-          //  (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-           // (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', asunto: '', contenido: '', piePagina: '1', copia: '0', tipo:tipo}) : null;
+            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
+            (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
+                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',      subSerie: '6',      tipoMedio: '',   tipoTramite: '', 
+                                                                    tipoDestino: '',       fecha: '',      nombreDirigido: '',        cargoDirigido: '',  asunto: '',  
+                                                                    correo: '',            contenido: '',  tieneAnexo: '',            nombreAnexo: '',    tieneCopia: '',
+                                                                    nombreCopia: '',       saludo: '',     despedida: '',             tituloPersona: '',  ciudad: '', 
+                                                                    cargoDestinatario: '', empresa: '',    direccionDestinatario: '', telefono: '',       responderRadicado: '0',
+                                                                    tipo:tipo}) : null;
 
             if(formData.tipo === 'I' && res.success){
                 let newFormDataDependencia = [];
@@ -151,6 +164,26 @@ export default function New({id, area, tipo}){
         })
         setFirmaPersona(newDatosFirmaPersona);
     }
+
+    const validarCorreos = (cadena) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const correos = cadena.split(',').map(correo => correo.trim());
+        for (const correo of correos) {
+            if (!emailRegex.test(correo)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const verificarValidezCorreos = () => {
+        let cadena       = formData.correo;
+        let correoValido = true; 
+        if(cadena !== ''){
+            correoValido = validarCorreos(cadena);
+            (!correoValido)? showSimpleSnackbar("El campo de correo electrónico contiene uno o más correos que no tienen una estructura válida", 'error') : null; 
+        }
+    };
 
     const inicio = () =>{
         setLoader(true);
@@ -293,16 +326,18 @@ export default function New({id, area, tipo}){
                 </Grid>
 
                 <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
-                    <TextValidator 
+                    <TextValidator
                         multiline
                         maxRows={3}
                         name={'correo'}
                         value={formData.correo}
-                        label={'Correo'}
+                        label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
                         onChange={handleChange}
+                        onBlur={verificarValidezCorreos}
+                        disabled={(formData.tipoMedio === 1) ? true : false}
                     />
                 </Grid>
             </Grid>
@@ -343,7 +378,7 @@ export default function New({id, area, tipo}){
                     <TextValidator 
                         name={'cargoDirigido'}
                         value={formData.cargoDirigido}
-                        label={'Cargo'+ formData.tipoDestino}
+                        label={'Cargo'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 100}}
@@ -514,7 +549,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                { (formData.totalAdjuntoSubido > 0) ?
+                { (totalAdjuntoSubido > 0) ?
                     <Grid item md={12} xl={12} sm={12} xs={12} >
                         <Anexos data={anexosDocumento} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
                     </Grid>

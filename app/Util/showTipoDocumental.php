@@ -11,7 +11,7 @@ class showTipoDocumental
         $infodocumento =  DB::table('coddocumprocesooficio as cdpo')
 						->select('cdpo.codopoid as id','cdpo.tipdesid','cdpo.tipsalid', DB::raw("CONCAT(cdpo.codopoanio,' - ', cdpo.codopoconsecutivo) as consecutivogenerado"),
 						'cdpo.codopoconsecutivo','cdpo.codoposigla','cdpo.codopoanio', 'cdpo.codopotitulo','cdpo.codopociudad','cdpo.codopocargodestinatario',
-						'cdpo.codopoempresa','cdpo.codopodireccion','cdpo.codopotelefono','cdpo.codoporesponderadicado',
+						'cdpo.codopoempresa','cdpo.codopodireccion','cdpo.codopotelefono','cdpo.codoporesponderadicado','cdp.tiesdoid',
 						DB::raw("if(cdpo.codoporesponderadicado = 1 ,'Sí', 'No') as responderadicado"), 'td.tipdesnombre','ts.tipsalnombre',
 						'cdp.codoprid','cdp.codoprfecha','cdp.codoprnombredirigido','cdp.codoprcargonombredirigido','cdp.codoprasunto','cdp.codoprcorreo',
 						'cdp.codoprcontenido','cdp.codoprtieneanexo','cdp.codoprtienecopia','cdp.codoprsolicitafirma',
@@ -21,7 +21,7 @@ class showTipoDocumental
 						'ted.tiesdonombre as estado',
 						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
-						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuanombre as alias',
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias',
 						DB::raw('(SELECT COUNT(codopxid) AS codopxid FROM coddocumprocesoanexo WHERE codoprid = cdp.codoprid) AS totalAnexos'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
@@ -55,7 +55,7 @@ class showTipoDocumental
 
 		$anexosDocumento = DB::table('coddocumprocesoanexo as cdpa')
 						  ->select('cdpa.codopxid','cdpa.codopxnombreanexooriginal','cdpa.codopxnombreanexoeditado','cdpa.codopxrutaanexo',
-						  'cdpo.codoposigla','cdpo.codopoanio',
+						  'cdpo.codoposigla','cdpo.codopoanio',DB::raw("CONCAT('1') as idFolder"),
 						  	DB::raw("CONCAT('archivos/produccionDocumental/',cdpo.codoposigla,'/',cdpo.codopoanio,'/', cdpa.codopxrutaanexo) as rutaDescargar"))	
 						  ->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
 						  ->join('coddocumprocesooficio as cdpo', 'cdpo.codoprid', '=', 'cdpa.codoprid')

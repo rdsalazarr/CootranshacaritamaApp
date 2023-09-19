@@ -30,7 +30,7 @@ class DownloadFileController extends Controller
                 return response()->download($file, $ruta);
             } else {
                 return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
-            }            
+            }
 		} catch (DecryptException $e) {
 		   return redirect('/error/url');
 		}

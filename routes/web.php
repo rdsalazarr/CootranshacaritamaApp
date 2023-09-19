@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PersonaController;
 use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
+use App\Http\Controllers\Util\EliminarAchivosController;
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
 
@@ -31,7 +32,8 @@ Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
-Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}/{id}', [DownloadFileController::class, 'download'])->name('Download');
+Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}/{id}', [DownloadFileController::class, 'download']);
+Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
 
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -114,7 +116,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
         Route::prefix('/producion/documental')->group(function(){
-            Route::post('/oficio/list', [OficioController::class, 'index']);            
+            Route::post('/oficio/list', [OficioController::class, 'index']);
             Route::get('/oficio/consultar/area', [OficioController::class, 'area']);
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
             Route::post('/oficio/salve', [OficioController::class, 'salve']);
@@ -123,13 +125,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/sellar/oficio', [OficioController::class, 'sellar']);
             Route::post('/anular/oficio', [OficioController::class, 'anular']);
             Route::post('/oficio/visualizar/PDF', [OficioController::class, 'showPdf']);
-
-            //admin/producion/documental/oficio/visualizar/PDF
-           
-           // Route::post('/visualizar/PDF', [VisualizarDocumentosController::class, 'index']);
+            Route::post('/trazabilidad/oficio', [OficioController::class, 'trazabilidad']);
 
         });
-
     });
         
 });

@@ -28,7 +28,7 @@ class OficioController extends Controller
 		$this->validate(request(),['tipo' => 'required']);
 
 		$consulta   = DB::table('coddocumprocesooficio as cdpo')
-						->select('cdpo.codopoid as id', DB::raw("CONCAT(cdpo.codopoanio,' - ', cdpo.codopoconsecutivo) as consecutivo"),
+						->select('cdpo.codopoid as id', 'cdpo.codoprid', DB::raw("CONCAT(cdpo.codopoanio,' - ', cdpo.codopoconsecutivo) as consecutivo"),
 								'cdp.codoprfecha as fecha', 'cdp.codoprasunto as asunto','cdp.codoprnombredirigido as nombredirigido', 
 								'd.depenombre as dependencia', 'ted.tiesdonombre as estado')
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
@@ -80,10 +80,9 @@ class OficioController extends Controller
 			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
 		}
 
-		//Y-m-d m/d/Y
-		$fechaActual     = Carbon::now()->format('Y-m-d');	
+		$fechaActual     = Carbon::now()->format('Y-m-d');
 		$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
-		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->orderBy('tipmednombre')->get();
+		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
 		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
         $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
         $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->orderBy('depenombre')->get();
@@ -451,12 +450,25 @@ class OficioController extends Controller
 		}
 	}
 
+	public function trazabilidad(Request $request)
+	{
+		$this->validate(request(),['codigo' => 'required']);
+		$cambioEstados = DB::table('coddocumprocesocambioestado as cdpce')
+						->select('cdpce.codpcefechahora','cdpce.codpceobservacion','ted.tiesdonombre',
+						DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdpce.tiesdoid')
+						->join('usuario as u', 'u.usuaid', '=', 'cdpce.codpceuserid')
+						->where('cdpce.codoprid', $request->codigo)->get();
+
+		return response()->json(['cambioEstados' => $cambioEstados]);
+	}
+
 	public function showPdf(Request $request)
 	{
 		$this->validate(request(),['codigo' => 'required']);  
 		try {
 			$generarPdf    = new generarPdf();
-			$dataDocumento = $generarPdf->oficio( $request->codigo, 'S');
+			$dataDocumento = $generarPdf->oficio($request->codigo, 'S');
 			return response()->json(["data" => $dataDocumento]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -467,7 +479,7 @@ class OficioController extends Controller
 	public function obtenerConsecutivo($sigla, $anioActual)
 	{
 		$consecutivoTpDoc = DB::table('coddocumprocesooficio')->select('codopoconsecutivo')
-								->where('.codopoanio', $anioActual)->where('codoposigla', $sigla)
+								->where('codopoanio', $anioActual)->where('codoposigla', $sigla)
 								->orderBy('codopoid', 'desc')->first();
         $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopoconsecutivo + 1;
 
