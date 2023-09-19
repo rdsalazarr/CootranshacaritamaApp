@@ -1,10 +1,12 @@
 
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
-import errorTotalizarFirmas from "../../../images/errorTotalizarFirmas.png";
+import errorTotalizarFirmas from "../../../images/modal/errorTotalizarFirmas.png";
+import sellarDocumento from "../../../images/modal/sellarDocumento.png";
+import anularDocumento from "../../../images/modal/anularDocumento.png";
+import firmarDocumento from "../../../images/modal/firmarDocumento.png";
+import solicitudFirma from "../../../images/modal/solicitudFirma.png";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import sellarDocumento from "../../../images/sellarDocumento.png";
-import solicitudFirma from "../../../images/solicitudFirma.png";
 import {Box, Grid, Button, Avatar} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -86,7 +88,7 @@ export function SolicitarFirma({id, ruta, cerrarModal}){
             <Box style={{width: '20%', margin: 'auto'}}>
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <Box className='animate__animated animate__rotateIn'>
-                        <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={solicitudFirma} style={{width: '95%', height: '95%', objectFit: 'cover', padding: '5px 5px 10px 5px'}} /> </Avatar>  
+                        <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={solicitudFirma} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
                     </Box>
                 </Grid>
             </Box>
@@ -217,7 +219,7 @@ export function SellarDocumento({id, ruta, cerrarModal}){
                     <Box style={{width: '20%', margin: 'auto'}}>
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className='animate__animated animate__rotateIn'>
-                                <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={sellarDocumento} style={{width: '95%', height: '95%', objectFit: 'cover', padding: '5px 5px 10px 5px'}} /> </Avatar>  
+                                <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={sellarDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 14px'}} /> </Avatar>  
                             </Box>
                         </Grid>
                     </Box>
@@ -271,5 +273,159 @@ export function SellarDocumento({id, ruta, cerrarModal}){
             }  
 
         </Grid>
+    )
+}
+
+export function AnularDocumento({id, ruta, cerrarModal}){
+
+    const [formData, setFormData] = useState( {codigo: id, observacionCambio: ''});
+
+    const [loader, setLoader] = useState(false);
+    const [habilitado, setHabilitado] = useState(true);
+
+    const handleChange = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
+
+    const continuar = () =>{
+        setLoader(true);
+        instance.post('/admin/producion/documental/anular/'+ruta, formData).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }    
+
+    return (
+        <ValidatorForm onSubmit={continuar} >
+
+            <Grid container spacing={2}>
+
+                <Box style={{width: '20%', margin: 'auto'}}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='animate__animated animate__rotateIn'>
+                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={anularDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                        </Box>
+                    </Grid>
+                </Box>
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                        Antes de anular este tipo documental, verifique cuidadosamente este proceso, ya que no se puede revertir bajo ninguna circunstancia.
+                    </p>
+                </Grid>
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <TextValidator 
+                        multiline
+                        maxRows={4}
+                        name={'observacionCambio'}
+                        value={formData.observacionCambio}
+                        label={'Observación de la analuación del tipo documental'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 500}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                        startIcon={<ClearIcon />}> Cancelar
+                    </Button>
+                </Grid> 
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
+                        startIcon={<SaveIcon />}>Continuar
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </ValidatorForm> 
+    )
+}
+
+export function FirmarDocumento({id, ruta, cerrarModal}){
+
+    const [formData, setFormData] = useState( {codigo: id, observacionCambio: ''});
+
+    const [loader, setLoader] = useState(false);
+    const [habilitado, setHabilitado] = useState(true);
+
+    const handleChange = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
+
+    const continuar = () =>{
+        setLoader(true);
+        instance.post('/admin/producion/documental/firmar/'+ruta, formData).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }    
+
+    return (
+        <ValidatorForm onSubmit={continuar} >
+
+            <Grid container spacing={2}>
+
+                <Box style={{width: '20%', margin: 'auto'}}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='animate__animated animate__rotateIn'>
+                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={firmarDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                        </Box>
+                    </Grid>
+                </Box>
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                        Antes de anular este tipo documental, verifique cuidadosamente este proceso, ya que no se puede revertir bajo ninguna circunstancia.
+                    </p>
+                </Grid>
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <TextValidator 
+                        multiline
+                        maxRows={4}
+                        name={'observacionCambio'}
+                        value={formData.observacionCambio}
+                        label={'Observación de la analuación del tipo documental'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 500}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                        startIcon={<ClearIcon />}> Cancelar
+                    </Button>
+                </Grid> 
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
+                        startIcon={<SaveIcon />}>Continuar
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </ValidatorForm> 
     )
 }

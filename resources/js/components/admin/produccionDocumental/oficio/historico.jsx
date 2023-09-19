@@ -5,6 +5,7 @@ import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import VisualizarPdf from '../visualizarPdf';
+import Trazabilidad from '../trazabilidad';
 import { Box} from '@mui/material';
 
 export default function Verificar(){
@@ -19,9 +20,8 @@ export default function Verificar(){
     }
 
     const modales = [
-                        <AnularSolicitarFirma id={modal.data.id } ruta={'oficio'} cerrarModal={cerrarModal} />,
-                        <AnularSolicitarFirma id={modal.data.id } ruta={'oficio'} cerrarModal={cerrarModal} />,
-                        <VisualizarPdf id={modal.data.id } tipo={'OFICIO'} />
+                        <Trazabilidad id={modal.data.id } ruta={'oficio'} />,                       
+                        <VisualizarPdf id={modal.data.id } ruta={'oficio'} />
                     ];
 
     const tituloModal = ['Anular solicitud firma del tipo documental',
@@ -52,12 +52,11 @@ export default function Verificar(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Asunto','Dirigido','Estado','Anular','Trazabilidad','PDF']}
+                    titulo={['Consecutivo', 'Dependencia','Fecha','Asunto','Dirigido','Estado','Trazabilidad','PDF']}
                     ver={["consecutivo", "dependencia","fecha", "asunto","nombredirigido", "estado"]}
                     accion={[
                         {tipo: 'B', icono : 'clear_icon', color: 'red',    funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'clear_icon', color: 'red',    funcion : (data)=>{edit(data,1)} },
-                        {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data,1)} },
                     ]}
                     funciones={{orderBy: true, search: true, pagination:true}}
                 />

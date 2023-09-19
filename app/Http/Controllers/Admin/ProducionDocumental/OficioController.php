@@ -37,7 +37,7 @@ class OficioController extends Controller
 						->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
 						->whereIn('cd.depeid', function($query){
 							$query->from('dependencia as d')
-									->join('dependenciapersona as dp', 'dp.depperpersid', '=', 'd.depeid')
+									->join('dependenciapersona as dp', 'dp.depperdepeid', '=', 'd.depeid')
 									->select('d.depeid')
 									->where('dp.depperpersid', auth()->user()->persid);
 						});
@@ -279,7 +279,7 @@ class OficioController extends Controller
 							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))							
 							->join('coddocumprocesofirma as cdpf', 'cdpf.codoprid', '=', 'cdp.codoprid')
 							->join('persona as p', 'p.persid', '=', 'cdpf.persid')
-							->where('cdp.codoprid', $codoprid)->get();
+							->where('cdp.codoprid', $infodocumento->codoprid)->get();
 
 			$codoprid         = $infodocumento->codoprid;
 			$numeroDocumental = $infodocumento->consecutivoDocumento;
@@ -309,22 +309,22 @@ class OficioController extends Controller
 			//Enviamos la notificacion
 			$notificar         = new Notificar();
 			$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', $idCorreo)->first();
-			$correoNotificados = [];
+			$correoNotificados = '';
 			foreach($firmaDocumentos as $firmaDocumento){
-				$email             = $firmaDocumento->perscorreoelectronico;
-				array_push($correoNotificados, $email);
-				$nombreFeje        = $firmaDocumento->nombreJefe;
-				$buscar            = Array('numeroDocumental', 'nombreFeje', 'tipoDocumental', 'fechaDocumento','nombreUsuario','cargoUsuario','observacionAnulacionFirma');
-				$remplazo          = Array($numeroDocumental, $nombreFeje,  $tipoDocumental, $fechaDocumento, $nombreUsuario, $cargoUsuario, $request->observacionCambio); 
-				$asunto            = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
-				$msg               = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
-				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
-				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
+				$email              = $firmaDocumento->perscorreoelectronico;
+				$correoNotificados .= $email.', ';
+				$nombreFeje         = $firmaDocumento->nombreJefe;
+				$buscar             = Array('numeroDocumental', 'nombreFeje', 'tipoDocumental', 'fechaDocumento','nombreUsuario','cargoUsuario','observacionAnulacionFirma');
+				$remplazo           = Array($numeroDocumental, $nombreFeje,  $tipoDocumental, $fechaDocumento, $nombreUsuario, $cargoUsuario, $request->observacionCambio); 
+				$asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
+				$msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
+				$enviarcopia        = $informacioncorreo->innocoenviarcopia;
+				$enviarpiepagina    = $informacioncorreo->innocoenviarpiepagina;
 				$notificar->correo([$email], $asunto, $msg, '', $emailDependencia, $enviarcopia, $enviarpiepagina);
 			}
 
 			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito, Se ha enviado notificación al correo  '.$correoNotificados ]);
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito, Se ha enviado notificación al correo '.substr($correoNotificados, 0, -2) ]);
 		} catch (Exception $error){
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -343,7 +343,7 @@ class OficioController extends Controller
 
 			$firmado = ($infodocumento->totalFirma = $infodocumento->totalFirmaRealizadas) ? true : false;
 
-			return response()->json(['success' => true, 'message' => true ]);
+			return response()->json(['success' => true, 'message' => $firmado ]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
@@ -413,6 +413,52 @@ class OficioController extends Controller
 			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito '.$mensajeCorreo ]);
 		} catch (Exception $error){
 			DB::rollback();
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+	}
+
+	public function anular(Request $request)
+	{
+		$this->validate(request(),['codigo' => 'required', 'observacionCambio' => 'required|string|min:20|max:500']);
+
+		DB::beginTransaction();
+		try {
+			
+			$fechaHoraActual  = Carbon::now();
+			$estado           = 10;
+
+			$codigodocumentalprocesooficio =  CodigoDocumentalProcesoOficio::findOrFail($request->codigo);
+			$codoprid = $codigodocumentalprocesooficio->codoprid;
+
+			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);
+			$codigodocumentalproceso->tiesdoid = $estado;
+			$codigodocumentalproceso->save();
+
+			//Almaceno la trazabilidad del documento
+			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
+			$codigodocumentalprocesocambioestado->codoprid          = $codoprid;
+			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
+			$codigodocumentalprocesocambioestado->codpceuserid      = Auth::id();
+			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
+			$codigodocumentalprocesocambioestado->codpceobservacion = $request->observacionCambio;
+			$codigodocumentalprocesocambioestado->save();
+
+			DB::commit();
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+		} catch (Exception $error){
+			DB::rollback();
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+	}
+
+	public function showPdf(Request $request)
+	{
+		$this->validate(request(),['codigo' => 'required']);  
+		try {
+			$generarPdf    = new generarPdf();
+			$dataDocumento = $generarPdf->oficio( $request->codigo, 'S');
+			return response()->json(["data" => $dataDocumento]);
+		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
 	}

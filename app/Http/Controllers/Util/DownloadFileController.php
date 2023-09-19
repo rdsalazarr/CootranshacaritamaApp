@@ -13,7 +13,7 @@ class DownloadFileController extends Controller
 		$this->middleware('auth');
 	}
     
-    public function download($folder, $ruta, $id){
+    public function download($sigla, $anyo, $ruta, $id){
         $array = array(
             '' => 0, 
             '/archivos/produccionDocumental/adjuntos/' => 1,
@@ -23,15 +23,14 @@ class DownloadFileController extends Controller
         );
     
         try {
-	    	$ruta    = Crypt::decrypt($ruta); 	
-            $carpeta = array_search($id, $array).$folder.'/'; 
-          
-            if($carpeta) {
-                $file = public_path().$carpeta.$ruta;
+	    	$ruta    = Crypt::decrypt($ruta);
+            $carpeta = array_search($id, $array).$sigla.'/'.$anyo.'/';
+            $file = public_path().$carpeta.$ruta;
+            if (file_exists($file)) {
                 return response()->download($file, $ruta);
-            }else{
-                return redirect('/error/url');
-            }	
+            } else {
+                return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
+            }            
 		} catch (DecryptException $e) {
 		   return redirect('/error/url');
 		}

@@ -31,7 +31,7 @@ export default function Producir(){
                         <NewEdit tipo={'I'} area={areaSeleccionada} />,
                         <NewEdit tipo={'U'} id={(tipo !== 0) ? modal.data.id : null} /> ,
                         <SolicitarFirma id={(tipo !== 0) ? modal.data.id : null} ruta={'oficio'} cerrarModal={cerrarModal} />,
-                        <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} tipo={'OFICIO'} />
+                        <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} ruta={'oficio'} />
                     ];
 
     const tituloModal = ['Selecionar área de produccion documental', 
