@@ -24,7 +24,9 @@ use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
-use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
+
+use App\Http\Controllers\Admin\ProducionDocumental\ConstanciaController; 
+use App\Http\Controllers\Admin\ProducionDocumental\OficioController; 
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
 
 Route::get('/', [FrondController::class, 'index']);
@@ -116,6 +118,19 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
         Route::prefix('/producion/documental')->group(function(){
+            
+            Route::post('/constancia/list', [ConstanciaController::class, 'index']);
+            Route::get('/constancia/consultar/area', [ConstanciaController::class, 'area']);
+            Route::post('/constancia/listar/datos', [ConstanciaController::class, 'datos']);
+            Route::post('/constancia/salve', [ConstanciaController::class, 'salve']);
+            Route::post('/constancia/solicitar/firma', [ConstanciaController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/constancia', [ConstanciaController::class, 'verificarSellado']);
+            Route::post('/sellar/constancia', [ConstanciaController::class, 'sellar']);
+            Route::post('/anular/constancia', [ConstanciaController::class, 'anular']);
+            Route::post('/constancia/visualizar/PDF', [ConstanciaController::class, 'showPdf']);
+            Route::post('/trazabilidad/constancia', [ConstanciaController::class, 'trazabilidad']);
+
+            
             Route::post('/oficio/list', [OficioController::class, 'index']);
             Route::get('/oficio/consultar/area', [OficioController::class, 'area']);
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
@@ -126,7 +141,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/oficio', [OficioController::class, 'anular']);
             Route::post('/oficio/visualizar/PDF', [OficioController::class, 'showPdf']);
             Route::post('/trazabilidad/oficio', [OficioController::class, 'trazabilidad']);
-
+         
         });
     });
         

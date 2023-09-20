@@ -7,10 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
 use App\Models\CodigoDocumentalProcesoCompartido;
-use App\Models\CodigoDocumentalProcesoOficio;
+use App\Models\CodigoDocumentalProcesoConstancia;
 use App\Models\CodigoDocumentalProcesoFirma;
-use App\Models\CodigoDocumentalProcesoAnexo;
-use App\Models\CodigoDocumentalProcesoCopia;
 use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\OficioRequests;
 use App\Models\CodigoDocumental;
@@ -27,11 +25,11 @@ class OficioController extends Controller
 	{
 		$this->validate(request(),['tipo' => 'required']);
 
-		$consulta   = DB::table('coddocumprocesooficio as cdpo')
-						->select('cdpo.codopoid as id', 'cdpo.codoprid', DB::raw("CONCAT(cdpo.codopoanio,' - ', cdpo.codopoconsecutivo) as consecutivo"),
-								'cdp.codoprfecha as fecha', 'cdp.codoprasunto as asunto','cdp.codoprnombredirigido as nombredirigido', 
+		$consulta   = DB::table('coddocumprocesoconstancia as cdpc')
+						->select('cdpc.codopnid as id', 'cdpc.codoprid', DB::raw("CONCAT(cdpc.codopnanio,' - ', cdpc.codopnconsecutivo) as consecutivo"),
+								'cdp.codoprfecha as fecha', 'cdpc.codopntitulo as asunto','cdpc.codopnnombredirigido as nombredirigido', 
 								'd.depenombre as dependencia', 'ted.tiesdonombre as estado')
-						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
+						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
 						->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
@@ -80,31 +78,28 @@ class OficioController extends Controller
 			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
 		}
 
-		$fechaActual     = Carbon::now()->format('Y-m-d');
-		$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
-		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
-		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
-        $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
-        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->orderBy('depenombre')->get();
- 		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
+		$fechaActual             = Carbon::now()->format('Y-m-d');
+		$tipoDestinos            = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
+		$tipoMedios              = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
+		$tipopersonadocumentales = DB::table('tipopersonadocumental')->select('tipedoid','tipedonombre')->where('tipedoactivo', true)->orderBy('tipedonombre')->get();    
+ 		$personas                = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
 														->orderBy('nombrePersona')
 														->whereIn('carlabid', [1, 2])->get();
         $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
 
-        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"       => $tipoDestinos,      "tipoMedios"      => $tipoMedios,
-                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"    => $tipoDespedidas,    "dependencias"    => $dependencias,
-								"personas"        => $personas,        "cargoLaborales"    => $cargoLaborales,    "data"            => $data,
-								"firmasDocumento" => $firmasDocumento, "copiaDependencias" => $copiaDependencias, "anexosDocumento" => $anexosDocumento ]);
+        return response()->json(["fechaActual"            => $fechaActual,             "tipoDestinos"    => $tipoDestinos,   "tipoMedios"      => $tipoMedios,
+                                "tipopersonadocumentales" => $tipopersonadocumentales, "personas"        => $personas,       "cargoLaborales"    => $cargoLaborales,
+								"data"                    => $data,					   "firmasDocumento" => $firmasDocumento ]);
 	}
 
     public function salve(OficioRequests $request){
 
         $coddocid      				   = $request->idCD;
 	    $codoprid      				   = $request->idCDP;
-	    $codopoid      				   = $request->idCDPO;
+	    $codopnid      				   = $request->idcdpc;
         $codigodocumental              = ($coddocid != 000) ? CodigoDocumental::findOrFail($coddocid) : new CodigoDocumental();
 		$codigodocumentalproceso       = ($codoprid != 000) ? CodigoDocumentalProceso::findOrFail($codoprid) : new CodigoDocumentalProceso();
-		$codigodocumentalprocesooficio = ($codopoid != 000) ? CodigoDocumentalProcesoOficio::findOrFail($codopoid) : new CodigoDocumentalProcesoOficio();
+		$coddocumprocesoconstancia     = ($codopnid != 000) ? CodigoDocumentalProcesoConstancia::findOrFail($codopnid) : new CodigoDocumentalProcesoConstancia();
 
         DB::beginTransaction();
 		try {
@@ -115,12 +110,12 @@ class OficioController extends Controller
 			//Consulto la sigla
 			$dependencia    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeid',$request->dependencia)->first();
 			$sigla          = $dependencia->depesigla;
-			
+
 			if($request->tipo === 'I'){
 				$codigodocumental->depeid          = $request->dependencia;
 				$codigodocumental->serdocid        = $request->serie;
 				$codigodocumental->susedoid        = $request->subSerie;
-				$codigodocumental->tipdocid        = '6';//Oficio
+				$codigodocumental->tipdocid        = '5';//Constancia
 				$codigodocumental->tiptraid        = $request->tipoTramite;
 				$codigodocumental->usuaid          = $usuarioId;
 				$codigodocumental->coddocfechahora = $fechaHoraActual;
@@ -137,63 +132,28 @@ class OficioController extends Controller
 	    		$codigodocumentalproceso->tiesdoid = '1'; //Inicial
 			}
 	    	
-	    	$codigodocumentalproceso->codoprfecha               = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido      = $request->nombreDirigido;
-	    	$codigodocumentalproceso->codoprcargonombredirigido = $request->cargoDirigido;
-	      	$codigodocumentalproceso->codoprasunto              = $request->asunto;
-	    	$codigodocumentalproceso->codoprcorreo              = $request->correo;
-	    	$codigodocumentalproceso->codoprcontenido           = $request->contenido;
-	    	$codigodocumentalproceso->codoprtieneanexo          = $request->tieneAnexo;
-	    	$codigodocumentalproceso->codopranexonombre         = $request->nombreAnexo;
-	    	$codigodocumentalproceso->codoprtienecopia          = $request->tieneCopia;
-	    	$codigodocumentalproceso->codoprcopianombre         = $request->nombreCopia;
+	    	$codigodocumentalproceso->codoprfecha            = $request->fecha;
+	    	$codigodocumentalproceso->codoprnombredirigido   = $request->nombreDirigido;
+	    	$codigodocumentalproceso->codoprcorreo           = $request->correo;
+	    	$codigodocumentalproceso->codoprcontenido        = $request->contenido;
 	    	$codigodocumentalproceso->save();  
 
 			if($request->tipo === 'I'){
-				$codDocProcesoMaxConsecutio 					  = CodigoDocumentalProceso::latest('codoprid')->first();
-				$codoprid                   					  = $codDocProcesoMaxConsecutio->codoprid;
-				$codigodocumentalprocesooficio->codoprid          = $codoprid;
-				$codigodocumentalprocesooficio->usuaid            = $usuarioId;
-				$codigodocumentalprocesooficio->codopoconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual);
-				$codigodocumentalprocesooficio->codoposigla       = $sigla;
-				$codigodocumentalprocesooficio->codopoanio        = $anioActual;
+				$codDocProcesoMaxConsecutio 				  = CodigoDocumentalProceso::latest('codoprid')->first();
+				$codoprid                   				  = $codDocProcesoMaxConsecutio->codoprid;
+				$coddocumprocesoconstancia->codoprid          = $codoprid;
+				$coddocumprocesoconstancia->usuaid            = $usuarioId;
+				$coddocumprocesoconstancia->codopnconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual);
+				$coddocumprocesoconstancia->codopnsigla       = $sigla;
+				$coddocumprocesoconstancia->codopnanio        = $anioActual;
 			}
 
-			$codigodocumentalprocesooficio->tipsalid                = $request->saludo;
-			$codigodocumentalprocesooficio->tipdesid                = $request->despedida;
-		   	$codigodocumentalprocesooficio->codopotitulo            = $request->tituloPersona;
-		   	$codigodocumentalprocesooficio->codopociudad            = $request->ciudad;
-		   	$codigodocumentalprocesooficio->codopocargodestinatario = $request->cargoDestinatario;
-		   	$codigodocumentalprocesooficio->codopoempresa           = $request->empresa;
-		   	$codigodocumentalprocesooficio->codopodireccion         = $request->direccionDestinatario;
-			$codigodocumentalprocesooficio->codopotelefono          = $request->telefono;
-			$codigodocumentalprocesooficio->codoporesponderadicado  = $request->responderRadicado;
-		   	$codigodocumentalprocesooficio->save();	
+			$coddocumprocesoconstancia->tipedoid                = $request->tipoPersona;
+		   	$coddocumprocesoconstancia->codopntitulo            = $request->tituloPersona;
+		   	$coddocumprocesoconstancia->codopnnombredirigido    = $request->nombreDirigido;
+		   	$coddocumprocesoconstancia->codopncontenidoinicial  = $request->contenidoinicial;
+		   	$coddocumprocesoconstancia->save();
 
-			//Registramos los adjuntos
-			if($request->hasFile('archivos')){
-				$numeroAleatorio = rand(100, 1000);
-				$funcion         = new generales();
-				$rutaCarpeta     = public_path().'/archivos/produccionDocumental/adjuntos/'.$sigla.'/'.$anioActual;
-				$carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-				$files           = $request->file('archivos');
-				foreach($files as $file){
-					$nombreOriginal = $file->getclientOriginalName();
-					$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-					$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-					$nombreArchivo  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-					$file->move($rutaCarpeta, $nombreArchivo);
-					$rutaArchivo = Crypt::encrypt($nombreArchivo);
-
-					$coddocumprocesoanexo = new CodigoDocumentalProcesoAnexo();
-					$coddocumprocesoanexo->codoprid                  = $codoprid;
-					$coddocumprocesoanexo->codopxnombreanexooriginal = $nombreOriginal;
-					$coddocumprocesoanexo->codopxnombreanexoeditado  = $nombreArchivo;
-					$coddocumprocesoanexo->codopxrutaanexo           = $rutaArchivo;
-					$coddocumprocesoanexo->save();
-				}
-			}
-		
 			foreach($request->firmaPersona as $firmaPersona){
 				$identificadorFirma = $firmaPersona['identificador'];
 				$personaFirma       = $firmaPersona['persona'];
@@ -213,25 +173,6 @@ class OficioController extends Controller
 					$coddocumprocesofirma->persid    = $personaFirma;
 					$coddocumprocesofirma->carlabid  = $personaCargo;
 					$coddocumprocesofirma->save();
-				}
-			}
-
-			if($request->tipo === 'U'){
-				//Elimino las dependencia que esten en el documento
-				$coddocumprocesocopiaConsultas = DB::table('coddocumprocesocopia')->select('codoppid')->where('codoprid', $codoprid)->get();
-				foreach($coddocumprocesocopiaConsultas as $coddocumprocesocop){
-					$coddocumprocesocopiaDelete = CodigoDocumentalProcesoCopia::findOrFail($coddocumprocesocop->codoppid);
-					$coddocumprocesocopiaDelete->delete();
-				}
-			}
-
-			if($request->copiasDependencia !== null){
-				foreach($request->copiasDependencia as $copiaDependencia){
-					$coddocumprocesocopia                         = new CodigoDocumentalProcesoCopia();
-					$coddocumprocesocopia->codoprid               = $codoprid;
-					$coddocumprocesocopia->depeid                 = $copiaDependencia['depeid'];
-					$coddocumprocesocopia->codoppescopiadocumento = true;
-					$coddocumprocesocopia->save();
 				}
 			}
 
@@ -260,18 +201,18 @@ class OficioController extends Controller
 
 		DB::beginTransaction();
 		try {
-			$infodocumento =  DB::table('coddocumprocesooficio as cdpo')
-							->select('cdpo.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpo.codopoconsecutivo) as consecutivoDocumento"),
+			$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
+							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopnconsecutivo) as consecutivoDocumento"),
 										'tdc.tipdocnombre','cdp.codoprfecha','d.depecorreo','cl.carlabnombre',
 							DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
-							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
+							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 							->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 							->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
 							->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
 							->join('usuario as u', 'u.usuaid', '=', 'cd.usuaid')
 							->join('persona as p', 'p.persid', '=', 'u.persid')
 							->join('cargolaboral as cl', 'cl.carlabid', '=', 'p.carlabid')
-							->where('cdpo.codopoid', $request->codigo)->first();
+							->where('cdpc.codopnid', $request->codigo)->first();
 
 			$firmaDocumentos =  DB::table('codigodocumentalproceso as cdp')
 							->select('cdp.codoprid','p.perscorreoelectronico',
@@ -334,11 +275,11 @@ class OficioController extends Controller
 	{
 		$this->validate(request(),['codigo' => 'required']);
 		try {
-			$infodocumento =  DB::table('coddocumprocesooficio as cdpo')
-								->select('cdpo.codoprid', DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codopffirmado = 1) AS totalFirma'),
-								  DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codopffirmado = 1 AND codoprid = cdpo.codoprid) AS totalFirmaRealizadas'))
-								->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
-								->where('cdpo.codopoid', $request->codigo)->first();
+			$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
+								->select('cdpc.codoprid', DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codopffirmado = 1) AS totalFirma'),
+								  DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codopffirmado = 1 AND codoprid = cdpc.codoprid) AS totalFirmaRealizadas'))
+								->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
+								->where('cdpc.codopnid', $request->codigo)->first();
 
 			$firmado = ($infodocumento->totalFirma = $infodocumento->totalFirmaRealizadas) ? true : false;
 
@@ -354,16 +295,16 @@ class OficioController extends Controller
 		try {
 
 			$empresa       = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();
-			$infodocumento =  DB::table('coddocumprocesooficio as cdpo')
-							->select('cdpo.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpo.codopoconsecutivo) as consecutivoDocumento"),
+			$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
+							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopnconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
 							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
-							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
+							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 							->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 							->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
 							->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
 							->join('persona as p', 'p.persid', '=', 'd.depejefeid')	
-							->where('cdpo.codopoid', $request->codigo)->first();
+							->where('cdpc.codopnid', $request->codigo)->first();
 
 			$codoprid          = $infodocumento->codoprid;
 			$numeroDocumental  = $infodocumento->consecutivoDocumento;
@@ -381,7 +322,7 @@ class OficioController extends Controller
 	
 			$codigodocumentalproceso                = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->tiesdoid      = $estado;
-			$codigodocumentalproceso->codoprsellado = true;
+            $codigodocumentalproceso->codoprsellado = true;
 			$codigodocumentalproceso->save();
 
 			//Almaceno la trazabilidad del documento
@@ -427,8 +368,8 @@ class OficioController extends Controller
 			$fechaHoraActual  = Carbon::now();
 			$estado           = 10;
 
-			$codigodocumentalprocesooficio =  CodigoDocumentalProcesoOficio::findOrFail($request->codigo);
-			$codoprid = $codigodocumentalprocesooficio->codoprid;
+			$coddocumprocesoconstancia =  CodigoDocumentalProcesoConstancia::findOrFail($request->codigo);
+			$codoprid = $coddocumprocesoconstancia->codoprid;
 
 			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->tiesdoid = $estado;
@@ -469,7 +410,7 @@ class OficioController extends Controller
 		$this->validate(request(),['codigo' => 'required']);  
 		try {
 			$generarPdf    = new generarPdf();
-			$dataDocumento = $generarPdf->oficio($request->codigo, 'S');
+			$dataDocumento = $generarPdf->constancia($request->codigo, 'S');
 			return response()->json(["data" => $dataDocumento]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -479,10 +420,10 @@ class OficioController extends Controller
     //Funcion que permite obtener el consecutivo del documento
 	public function obtenerConsecutivo($sigla, $anioActual)
 	{
-		$consecutivoTpDoc = DB::table('coddocumprocesooficio')->select('codopoconsecutivo')
-								->where('codopoanio', $anioActual)->where('codoposigla', $sigla)
-								->orderBy('codopoid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopoconsecutivo + 1;
+		$consecutivoTpDoc = DB::table('coddocumprocesoconstancia')->select('codopnconsecutivo')
+								->where('codopnanio', $anioActual)->where('codopnsigla', $sigla)
+								->orderBy('codopnid', 'desc')->first();
+        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopnconsecutivo + 1;
 
 		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
 	}

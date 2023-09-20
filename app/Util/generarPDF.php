@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class generarPDF
 {
-    function oficio($id, $metodo = 'I')
+	function constancia($id, $metodo = 'I')
 	{
         $funcion          = new generales();
 		$encrypt          = new encrypt();
@@ -37,40 +37,27 @@ class generarPDF
 		$siglaEmpresa     = $empresa->emprsigla;
 		$logoEmpresa      = $empresa->emprlogo;
 
-		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);		
+		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
   		$anioDocumento        = $infodocumento->codopoanio;
   		$tipoDocumento        = $infodocumento->tipdoccodigo;
   		$siglaDependencia     = $infodocumento->codoposigla;
   		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
-		$estadoDocumento      = $infodocumento->tiesdoid;			
-			
-		$titulo               = $infodocumento->codopotitulo;	
-		$nombreDirigido       = $infodocumento->codoprnombredirigido;	
-		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;	
-		$ciudad               = $infodocumento->codopociudad;	
-		$asunto               = $infodocumento->codoprasunto;	
-		$saludo               = $infodocumento->tipsalnombre;		
-		$contenido            = $infodocumento->codoprcontenido;
-		$despedida            = $infodocumento->tipdesnombre;
-		$tipoDestino          = $infodocumento->tipdetid;
+		$estadoDocumento      = $infodocumento->tiesdoid;
 
-		$empresaOficio        = $infodocumento->codopoempresa;		
-		$direreccionOficio    = $infodocumento->codopodireccion;
-		$telefonoOficio       = $infodocumento->codopotelefono; 
+		$titulo               = $infodocumento->codopntitulo;
+		$contenido            = '<p style="text-align:justify">'.$infodocumento->tipedonombre.' <b>'.$infodocumento->codoprnombredirigido.'</b>'.$infodocumento->codopncontenidoinicial.'</p>';
+		$contenidoAdicional   = $infodocumento->contenido;
+		$remitente            = $infodocumento->persnombre.' '.$infodocumento->persapellidouno.' '.$infodocumento->persapellidodos;
+		$cargoRemitente       = $infodocumento->carlabnombre;
+		$firma                = $infodocumento->persfirma;
+		$tipoMedio            = $infodocumento->tipmedid;
+		$firmado              = $infodocumento->codoprfirmado;
+		$transcriptor         = $infodocumento->alias;	
+		$fechaDocumento       = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->fecha);  
 
-		$tieneCopia           = $infodocumento->codoprtienecopia; 
-		$tieneAnexo     	  = $infodocumento->codoprtieneanexo;
-		$nombreAnexo    	  = $infodocumento->codopranexonombre;
-		$nombreCopia    	  = $infodocumento->codoprcopianombre; 	
-	
-		$tipoMedio      	  = $infodocumento->tipmedid;
-		$firmado        	  = $infodocumento->codoprfirmado;		
-		$transcriptor   	  = $infodocumento->alias;	
-		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
-
-        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($asunto);
 		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$asunto);
@@ -85,7 +72,7 @@ class generarPDF
 			PDF::SetFont('helvetica','B',14);
 		    PDF::Cell(144,5,$nombreEmpresa,0,0,'C');
 		    PDF::SetFont('helvetica','I',12);
-		    PDF::Ln(6); 		    
+		    PDF::Ln(6);
 		    PDF::SetX(46);
 		    PDF::Cell(144,4,$lemaEmpresa,0,0,'C');
 		    PDF::Ln(4);
@@ -93,16 +80,16 @@ class generarPDF
 		    PDF::Cell(170,5,$linea,'0',0,'C');
 		    PDF::Ln(6);
 		    PDF::SetFont('helvetica','I',9);
-		    PDF::SetX(25);								
-			PDF::Cell(25,4,$codigoInstitucional,0,0,'');	
+		    PDF::SetX(25);
+			PDF::Cell(25,4,$codigoInstitucional,0,0,'');
 			PDF::Ln(4);
-			PDF::SetX(25);								
+			PDF::SetX(25);
 			PDF::Cell(25,4,$codigoDocumental,0,0,'');
 			PDF::SetY(22);
         	PDF::SetX(180);
 			PDF::Cell(0, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
 			}
-		);		
+		);
 
 		//Pie de pagina
 		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento){
@@ -110,7 +97,7 @@ class generarPDF
 			PDF::SetFont('helvetica','I',12);
 			PDF::Ln(2);
 			PDF::SetY(268);	
-			PDF::SetX(30);			
+			PDF::SetX(30);
 			PDF::Cell(165,4,$linea,0,0,'C');
 			PDF::Ln(5);
 			PDF::SetX(30);
@@ -146,7 +133,200 @@ class generarPDF
 			}
 		});
 
-		//PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(24, 36 , 20);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(32); 
+		PDF::SetFont('helvetica','B',14);
+		PDF::Ln(24);
+		PDF::Cell(175,5,$titulo,0,0,'C'); 
+		PDF::Ln(20);
+		PDF::Cell(175,4,'HACER CONSTAR QUE: ',0,0,'C');
+		PDF::SetFont('helvetica','',12); 
+		PDF::Ln(20);
+		PDF::writeHTML($contenido, true, 1, true, true);
+		PDF::Ln(4);
+		PDF::writeHTML($contenidoAdicional, true, 1, true, true);
+		PDF::Ln(4);
+		PDF::Cell(60,4,$fechaDocumento,0,0,'');
+		PDF::Ln(26);
+
+		if($firmado == 1){
+			PDF::Image('images/firma/'.$firma, 80, PDF::GetY(),46,13);
+			PDF::Ln(6);
+		}else{	
+			PDF::SetFont('helvetica', 'B', 12);
+			PDF::SetTextColor(255, 0, 0);
+			PDF::Cell(165,4,'Documento pendiente por firmar',0,0,'C');
+			PDF::SetTextColor(0, 0, 0);
+			PDF::SetFont('helvetica', '', 12);	
+		}
+
+		PDF::Ln(8);
+		PDF::SetFont('helvetica','B',12); 
+		PDF::Cell(165,4,$remitente,0,0,'C'); 
+		PDF::Ln(4);
+		PDF::Cell(165,4,$cargoRemitente,0,0,'C'); 
+		PDF::SetFont('helvetica','',9);
+		PDF::Ln(8);
+		PDF::Cell(30,4,$transcriptor,0,0,'');
+
+	    //Informacion para visualizar o descargar el pdf
+		$nombrePdf = $codigoInstitucional.'-'.$fechaActualDocumento.'.pdf';	
+        $tituloPdf = $codigoDocumental.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/produccionDocumental/digitalizados/'.$siglaDependencia.'/'.$anioDocumento;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $carpetaServe.'/'.$nombrePdf;
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
+
+    function oficio($id, $metodo = 'I')
+	{
+        $funcion          = new generales();
+		$encrypt          = new encrypt();
+        $fechaHoraActual  = Carbon::now();
+		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+	    $visualizar       = new showTipoDocumental();
+		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
+
+		$empresa          = DB::table('empresa as e')
+									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 
+											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre')
+									->join('municipio as m', 'm.muniid', '=', 'e.emprmuniid')
+									->where('e.emprid', 1)
+									->first();
+
+		$direccionEmpresa = $empresa->emprdireccion;
+		$cidudadEmpresa   = $empresa->muninombre;
+		$barrioEmpresa    = 'Santa clara'; 
+		$telefonoEmpresa  = $empresa->emprtelefonofijo;
+		$celularEmpresa   = $empresa->emprtelefonocelular;
+		$urlEmpresa       = $empresa->emprurl;
+		$nombreEmpresa    = $empresa->emprnombre;
+		$lemaEmpresa      = $empresa->emprlema;
+		$siglaEmpresa     = $empresa->emprsigla;
+		$logoEmpresa      = $empresa->emprlogo;
+
+		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
+		$fechaActualDocumento = $infodocumento->codoprfecha;
+  		$anioDocumento        = $infodocumento->codopoanio;
+  		$tipoDocumento        = $infodocumento->tipdoccodigo;
+  		$siglaDependencia     = $infodocumento->codoposigla;
+  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
+		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
+		$estadoDocumento      = $infodocumento->tiesdoid;
+			
+		$titulo               = $infodocumento->codopotitulo;
+		$nombreDirigido       = $infodocumento->codoprnombredirigido;
+		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;
+		$ciudad               = $infodocumento->codopociudad;
+		$asunto               = $infodocumento->codoprasunto;
+		$saludo               = $infodocumento->tipsalnombre;
+		$contenido            = $infodocumento->codoprcontenido;
+		$despedida            = $infodocumento->tipdesnombre;
+		$tipoDestino          = $infodocumento->tipdetid;
+
+		$empresaOficio        = $infodocumento->codopoempresa;
+		$direreccionOficio    = $infodocumento->codopodireccion;
+		$telefonoOficio       = $infodocumento->codopotelefono; 
+
+		$tieneCopia           = $infodocumento->codoprtienecopia; 
+		$tieneAnexo     	  = $infodocumento->codoprtieneanexo;
+		$nombreAnexo    	  = $infodocumento->codopranexonombre;
+		$nombreCopia    	  = $infodocumento->codoprcopianombre; 	
+	
+		$tipoMedio      	  = $infodocumento->tipmedid;
+		$firmado        	  = $infodocumento->codoprfirmado;
+		$transcriptor   	  = $infodocumento->alias;
+		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($asunto);
+		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$asunto);
+        PDF::SetTitle($codigoInstitucional);
+
+		//Encabezado
+		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){	
+			$linea = str_pad('',  70, "_", STR_PAD_LEFT); //Diibuja la linea
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,24,18);
+			PDF::SetY(8);
+            PDF::SetX(46);
+			PDF::SetFont('helvetica','B',14);
+		    PDF::Cell(144,5,$nombreEmpresa,0,0,'C');
+		    PDF::SetFont('helvetica','I',12);
+		    PDF::Ln(6);
+		    PDF::SetX(46);
+		    PDF::Cell(144,4,$lemaEmpresa,0,0,'C');
+		    PDF::Ln(4);
+			PDF::SetX(24);	
+		    PDF::Cell(170,5,$linea,'0',0,'C');
+		    PDF::Ln(6);
+		    PDF::SetFont('helvetica','I',9);
+		    PDF::SetX(25);
+			PDF::Cell(25,4,$codigoInstitucional,0,0,'');
+			PDF::Ln(4);
+			PDF::SetX(25);
+			PDF::Cell(25,4,$codigoDocumental,0,0,'');
+			PDF::SetY(22);
+        	PDF::SetX(180);
+			PDF::Cell(0, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+			}
+		);
+
+		//Pie de pagina
+		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento){
+			$linea = str_pad('',  52, "_", STR_PAD_LEFT); //Diibuja la linea
+			PDF::SetFont('helvetica','I',12);
+			PDF::Ln(2);
+			PDF::SetY(268);
+			PDF::SetX(30);
+			PDF::Cell(165,4,$linea,0,0,'C');
+			PDF::Ln(5);
+			PDF::SetX(30);
+			PDF::Cell(165,4,$direccionEmpresa.' | '.$barrioEmpresa,0,0,'C');
+			PDF::Ln(5);
+			PDF::SetX(30);
+			PDF::Cell(165,4,'Teléfono: '.$telefonoEmpresa.' | Celular: '.$celularEmpresa.'',0,0,'C'); 
+			PDF::Ln(5);
+			PDF::SetX(30);
+			PDF::Cell(165,4,$urlEmpresa.' '.$idCifrado,0,0,'C');
+
+			$style = array(
+				'border' => 0,
+				'vpadding' => 'auto',
+				'hpadding' => 'auto',
+				'fgcolor' => array(0,0,0),
+				'bgcolor' => false, 
+				'module_width' => 1, 
+				'module_height' => 1
+			);
+
+			//Crypt::encrypt($id)
+			$url = asset('verificar/documento/'.urlencode($idCifrado));
+			PDF::write2DBarcode($url, 'QRCODE,H', 20, 264, 30, 30, $style, 'N');
+
+			if($estadoDocumento === 10){
+				PDF::SetFont('helvetica', 'B', 70);
+				PDF::SetTextColor(229, 229, 229);
+				PDF::StartTransform();	
+				PDF::Rotate(52);
+				PDF::Text(74, 240, 'Documento anulado');
+				PDF::StopTransform();
+			}
+		});
+
+		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		PDF::SetMargins(24, 36 , 20);
@@ -220,7 +400,7 @@ class generarPDF
 			    PDF::writeHTMLCell(86, 4, 24, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
 			    $cont += 1;
 			}else{
-				PDF::Image($rutaFirma, 114, PDF::GetY() -7,50,8);	
+				PDF::Image($rutaFirma, 114, PDF::GetY() -7,50,8);
 			    PDF::writeHTMLCell(86, 4, 112, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
 			    PDF::Ln(24);
 			    $cont = 0;
@@ -268,7 +448,7 @@ EOD;
 			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);
 	        }
 		}
-		
+
 		PDF::Ln(10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
@@ -280,12 +460,12 @@ EOD;
 		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
 			$rutaCarpeta  = public_path().'/archivos/produccionDocumental/digitalizados/'.$siglaDependencia.'/'.$anioDocumento;
 			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-			$rutaPdf      = $carpetaServe.'/'.$nombrePdf;		
+			$rutaPdf      = $carpetaServe.'/'.$nombrePdf;
 			PDF::output($rutaPdf, 'F');
 			return $rutaPdf;
 		}else{
 			PDF::output($tituloPdf, $metodo);
 		}
-    }	
-	
+    }
+
 }

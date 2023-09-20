@@ -22,20 +22,24 @@ class ConstanciaRequests extends FormRequest
     public function rules(): array
     {
         return [
-            'subSerie'         => 'required',
-            'fecha'            => 'required|date|date_format:Y-m-d',
-            'tipoMedio'        => 'required',
-            'tipoDestino'      => 'required',
-            'correo'           => 'required_if:tipo_medio,2|required_if:tipo_medio,3|email',
-            'tipoTramite'      => 'required',
-            'titulo'           => 'required',
-            'tipoPersona'      => 'required',
-            'dirigidoA'        => 'required',
-            'contenido'        => 'required',
-            'nombreRemitente'  => 'required',
-            'cargoRemitente'   => 'required',
-            'depeidproductora' => 'required',
-            'depeproductora'   => 'required'
+            'idCD'                  => 'required|numeric',
+            'dependencia'           => 'required|numeric',
+            'serie'                 => 'required|numeric',
+            'subSerie'              => 'required|numeric',
+            'tipoMedio'             => 'required|numeric',
+            'tipoTramite'           => 'required|numeric',
+            'tipoDestino'           => 'required|numeric',
+
+            'idCDP'                 => 'required|numeric',
+            'fecha'                 => 'required|date|date_format:Y-m-d',
+            'nombreDirigido'        => 'required|string|min:4|max:100',
+            'correo'                => 'required_if:tipo_medio,2|required_if:tipo_medio,3',
+
+            'idCDPO'                => 'required|numeric',
+            'contenidoAdicional'    => 'required|string|min:4|max:1000',
+            'tipoPersona'           => 'required|numeric',
+            'tituloPersona'         => 'nullable|string|min:4|max:200',
+            'firmaPersona'          => 'required|array|min:1',
         ];
     }
 }

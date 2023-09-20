@@ -6,6 +6,47 @@ use Auth, DB;
 
 class showTipoDocumental
 {
+	function constancia($id)
+	{
+		$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
+						->select('cdpc.codopnid as id','cdpc.tipedoid', DB::raw("CONCAT(cdpc.codopoanio,' - ', cdpc.codopnconsecutivo) as consecutivogenerado"),
+						'cdpc.codopnconsecutivo','cdpc.codoposigla','cdpc.codopnanio', 'cdpc.codopntitulo','cdpc.codopncontenidoinicial','cdp.tiesdoid',
+						DB::raw("if(cdpc.codoporesponderadicado = 1 ,'Sí', 'No') as responderadicado"), 'tpd.tipedonombre','cdp.codoprid','cdp.codoprfecha',
+						'cdp.codoprnombredirigido','cdp.codoprcorreo',	'cdp.codoprcontenido','cdp.codoprtieneanexo','cdp.codoprtienecopia',
+						'cdp.codoprsolicitafirma', 'cdp.codoprfirmado','cdp.coddocid',
+						DB::raw("if(cdp.codoprtieneanexo = 1 ,'Sí', 'No') as tieneanexo"),
+						DB::raw("if(cdp.codoprtienecopia = 1 ,'Sí', 'No') as tienecopia"),
+						'ted.tiesdonombre as estado',
+						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
+						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias',
+						DB::raw('(SELECT COUNT(codopxid) AS codopxid FROM coddocumprocesoanexo WHERE codoprid = cdp.codoprid) AS totalAnexos'))
+						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
+	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
+						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
+						->join('tipopersonadocumental as tpd', 'tpd.tipedoid', '=', 'cdpc.tipedoid')
+						->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
+						->join('seriedocumental as sd', 'sd.serdocid', '=', 'cd.serdocid')
+						->join('subseriedocumental as ssd', function($join)
+							{
+								$join->on('ssd.susedoid', '=', 'cd.susedoid');
+								$join->on('ssd.serdocid', '=', 'cd.serdocid'); 
+							})
+						->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
+						->join('usuario as u', 'u.usuaid', '=', 'cd.usuaid')
+						->where('cdpc.codopnid', $id)->first();
+
+		$firmas = DB::table('coddocumprocesofirma as cdpf')
+						->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid', 
+						 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado')
+						->join('persona as p', 'p.persid', '=', 'cdpf.persid')
+						->join('cargolaboral as cl', 'cl.carlabid', '=', 'cdpf.carlabid')
+						->where('cdpf.codoprid', $infodocumento->codoprid)->get();
+
+		return array ($infodocumento, $firmas);
+	}
+	
     function oficio($id)
 	{
         $infodocumento =  DB::table('coddocumprocesooficio as cdpo')
