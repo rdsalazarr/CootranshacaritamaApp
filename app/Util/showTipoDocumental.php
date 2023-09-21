@@ -2,18 +2,17 @@
 
 namespace App\Util;
 use App\Util\generales;
-use Auth, DB;
+use Auth, URL, DB;
 
 class showTipoDocumental
 {
 	function constancia($id)
-	{
+	{	
 		$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
-						->select('cdpc.codopnid as id','cdpc.tipedoid', DB::raw("CONCAT(cdpc.codopoanio,' - ', cdpc.codopnconsecutivo) as consecutivogenerado"),
-						'cdpc.codopnconsecutivo','cdpc.codoposigla','cdpc.codopnanio', 'cdpc.codopntitulo','cdpc.codopncontenidoinicial','cdp.tiesdoid',
-						DB::raw("if(cdpc.codoporesponderadicado = 1 ,'Sí', 'No') as responderadicado"), 'tpd.tipedonombre','cdp.codoprid','cdp.codoprfecha',
-						'cdp.codoprnombredirigido','cdp.codoprcorreo',	'cdp.codoprcontenido','cdp.codoprtieneanexo','cdp.codoprtienecopia',
-						'cdp.codoprsolicitafirma', 'cdp.codoprfirmado','cdp.coddocid',
+						->select('cdpc.codopnid as id','cdpc.tipedoid', DB::raw("CONCAT(cdpc.codopnanio,' - ', cdpc.codopnconsecutivo) as consecutivogenerado"),
+						'cdpc.codopnconsecutivo','cdpc.codopnsigla','cdpc.codopnanio', 'cdpc.codopntitulo','cdpc.codopncontenidoinicial','cdp.tiesdoid',
+						'tpd.tipedonombre','cdp.codoprid','cdp.codoprfecha','cdp.codoprnombredirigido','cdp.codoprcorreo',	'cdp.codoprcontenido',
+						'cdp.codoprtieneanexo','cdp.codoprtienecopia','cdp.codoprsolicitafirma', 'cdp.codoprfirmado','cdp.coddocid',
 						DB::raw("if(cdp.codoprtieneanexo = 1 ,'Sí', 'No') as tieneanexo"),
 						DB::raw("if(cdp.codoprtienecopia = 1 ,'Sí', 'No') as tienecopia"),
 						'ted.tiesdonombre as estado',
@@ -39,7 +38,7 @@ class showTipoDocumental
 		$firmas = DB::table('coddocumprocesofirma as cdpf')
 						->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid', 
 						 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado')
+						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado', DB::raw("CONCAT('/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"))
 						->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 						->join('cargolaboral as cl', 'cl.carlabid', '=', 'cdpf.carlabid')
 						->where('cdpf.codoprid', $infodocumento->codoprid)->get();
@@ -83,7 +82,7 @@ class showTipoDocumental
 		$firmas = DB::table('coddocumprocesofirma as cdpf')
 						->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid', 
 						 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado')
+						'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado', DB::raw("CONCAT('/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"))
 						->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 						->join('cargolaboral as cl', 'cl.carlabid', '=', 'cdpf.carlabid')  					
 						->where('cdpf.codoprid', $infodocumento->codoprid)->get(); 	

@@ -19,11 +19,10 @@ return new class extends Migration
             $table->string('codopcconsecutivo', 4)->comment('Consecutivo de la certificado');
             $table->string('codopcsigla', 3)->comment('Sigla de la dependencia productora de la certificado');
             $table->string('codopcanio', 4)->comment('Año en el cual se crea la certificado');  
-            $table->string('codopctitulo', 200)->comment('Título con el que se crea la certificado'); 
-            $table->string('codopcnombredirigido', 80)->comment('Persona a la que va dirigida la certificado');  
+            $table->string('codopctitulo', 200)->comment('Título con el que se crea la certificado');
             $table->string('codopccontenidoinicial', 1000)->comment('contenido incial de la certificado');  
             $table->timestamps();
-            $table->unique(['codopcconsecutivo','codopcsigla','codopcanio'],'uk_coddocumprocesocertificado');           
+            $table->unique(['codopcconsecutivo','codopcsigla','codopcanio'],'uk_coddocumprocesocertificado');
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopc'); 
             $table->foreign('tipedoid')->references('tipedoid')->on('tipopersonadocumental')->onUpdate('cascade')->index('fk_tippedocodopc');
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacodopc');  

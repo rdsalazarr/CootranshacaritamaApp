@@ -23,10 +23,10 @@ export default function New({id, area, tipo}){
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
                                         dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',     subSerie: '6',       tipoMedio: '1',     tipoTramite: '1', 
-                                        tipoDestino: '1',       fecha: '',      nombreDirigido: 'ramon salazar',  cargoDirigido: 'CArgo de ramon',  asunto: 'Asunto de prueba',  
-                                        correo: '',            contenido: 'abc del contenido',  tieneAnexo: '1',      nombreAnexo: '',    tieneCopia: '1', 
-                                        nombreCopia: '',       saludo: '1',     despedida: 1,              tituloPersona: 'ingeniero de sistema',  ciudad: 'Ocaña',    
-                                        cargoDestinatario: 'desarrollador', empresa: 'ufpso',     direccionDestinatario: 'calle principal', telefono: '5612333',       responderRadicado: '0',
+                                        tipoDestino: '1',       fecha: '',      nombreDirigido: '',  cargoDirigido: '',  asunto: '',  
+                                        correo: '',            contenido: '',  tieneAnexo: '',      nombreAnexo: '',    tieneCopia: '', 
+                                        nombreCopia: '',       saludo: '',     despedida: '',              tituloPersona: '',  ciudad: '',    
+                                        cargoDestinatario: '', empresa: '',     direccionDestinatario: '', telefono: '',       responderRadicado: '0',
                                         tipo:tipo
                                 }); 
 
@@ -198,8 +198,8 @@ export default function New({id, area, tipo}){
             setPersonas(res.personas);
             setCargoLaborales(res.cargoLaborales);
             newFormData.fecha = res.fechaActual;
-          
-            if(tipo === 'U'){     
+
+            if(tipo === 'U'){
                 let tpDocumental                  = res.data;
                 let firmasDocumento               = res.firmasDocumento;
                 let copiaDependenciaMarcadas      = res.copiaDependencias;
@@ -232,7 +232,7 @@ export default function New({id, area, tipo}){
                 newFormData.empresa               = (tpDocumental.codopoempresa !== null) ? tpDocumental.codopoempresa : '';
                 newFormData.direccionDestinatario = tpDocumental.codopodireccion;
                 newFormData.telefono              = (tpDocumental.codopotelefono !== null) ? tpDocumental.codopotelefono : '';
-                newFormData.totalAdjuntoSubido    = tpDocumental.totalAnexos;    
+                newFormData.totalAdjuntoSubido    = tpDocumental.totalAnexos;
 
                 let newFirmasDocumento = [];
                 firmasDocumento.forEach(function(frm){
@@ -477,7 +477,7 @@ export default function New({id, area, tipo}){
                     />
                 </Grid>
 
-                <Grid item md={12} xl={12} sm={12}>
+                <Grid item xl={12} md={12} sm={12} xs={12}>
                     <label className={'labelEditor'}> Contenido </label> 
                     <Editor 
                         onInit={(evt, editor) => editorTexto.current = editor}
@@ -661,7 +661,7 @@ export default function New({id, area, tipo}){
                     <Table key={'tableFirmaPersona'}  className={'tableAdicional'} style={{marginTop: '5px'}} >
                         <TableHead>
                             <TableRow>
-                                <TableCell style={{width: '60%'}}>Nombre de la persona</TableCell>
+                                <TableCell style={{width: '50%'}}>Nombre de la persona</TableCell>
                                 <TableCell style={{width: '40%'}}>Cargo </TableCell> 
                                 <TableCell style={{width: '10%'}} className='cell-center'>Acción </TableCell>
                             </TableRow>
@@ -709,7 +709,7 @@ export default function New({id, area, tipo}){
                                         })}
                                         </SelectValidator>
                                     </TableCell>
-                                
+
                                     <TableCell className='cell-center'>
                                         {(a !== 0)?
                                         <Icon key={'iconDelete'+a} className={'icon top red'}

@@ -12,5 +12,5 @@ class CodigoDocumentalProcesoConstancia extends Model
     protected $table      = 'coddocumprocesoconstancia';	 
 	protected $primaryKey = 'codopnid';
     protected $fillable   = ['codoprid', 'tipedoid', 'usuaid', 'codopnconsecutivo', 'codopnsigla',
-    					    'codopnanio', 'codopntitulo', 'codopnnombredirigido', 'codopncontenidoinicial'];
+    					    'codopnanio', 'codopntitulo',  'codopncontenidoinicial'];
 }

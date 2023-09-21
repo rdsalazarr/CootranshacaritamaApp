@@ -79,7 +79,7 @@ export default function Producir(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista === 2 || modal.vista === 3) ? inicio() : null;}}
+                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista === 1 || modal.vista === 2 || modal.vista === 3) ? inicio() : null;}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

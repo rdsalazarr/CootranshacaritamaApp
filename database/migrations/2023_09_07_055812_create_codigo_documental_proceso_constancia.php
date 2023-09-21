@@ -19,8 +19,7 @@ return new class extends Migration
             $table->string('codopnconsecutivo', 4)->comment('Consecutivo de la constancia');
             $table->string('codopnsigla', 3)->comment('Sigla de la dependencia productora de la constancia');
             $table->string('codopnanio', 4)->comment('Año en el cual se crea la constancia');  
-            $table->string('codopntitulo', 200)->comment('Título con el que se crea la constancia'); 
-            $table->string('codopnnombredirigido', 80)->comment('Persona a la que va dirigida la constancia');  
+            $table->string('codopntitulo', 200)->comment('Título con el que se crea la constancia');
             $table->string('codopncontenidoinicial', 1000)->comment('contenido incial de la constancia');  
             $table->timestamps();
             $table->unique(['codopnconsecutivo','codopnsigla','codopnanio'],'uk_coddocumprocesocontancia');           

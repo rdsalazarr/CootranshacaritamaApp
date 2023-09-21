@@ -18,10 +18,10 @@ export default function Verificar(){
     }
 
     const modales = [
-                        <AnularSolicitarFirma id={modal.data.id } ruta={'oficio'} cerrarModal={cerrarModal} />,
-                        <SellarDocumento id={modal.data.id } ruta={'oficio'} cerrarModal={cerrarModal} />,
-                        <AnularDocumento id={modal.data.id } ruta={'oficio'} cerrarModal={cerrarModal} />,
-                        <VisualizarPdf id={modal.data.id } ruta={'oficio'} />
+                        <AnularSolicitarFirma id={modal.data.id } ruta={'constancia'} cerrarModal={cerrarModal} />,
+                        <SellarDocumento id={modal.data.id } ruta={'constancia'} cerrarModal={cerrarModal} />,
+                        <AnularDocumento id={modal.data.id } ruta={'constancia'} cerrarModal={cerrarModal} />,
+                        <VisualizarPdf id={modal.data.id } ruta={'constancia'} />
                     ];
 
     const tituloModal = ['Anular solicitud firma del tipo documental',
@@ -35,7 +35,7 @@ export default function Verificar(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/producion/documental/oficio/list', {tipo:'VERIFICAR'}).then(res=>{
+        instance.post('/admin/producion/documental/constancia/list', {tipo:'VERIFICAR'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -52,7 +52,7 @@ export default function Verificar(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Asunto','Dirigido','Estado','Anular firma', 'Sellar', 'Anular documento','PDF']}
+                    titulo={['Consecutivo', 'Dependencia','Fecha','Título','Dirigido','Estado','Anular firma', 'Sellar', 'Anular documento','PDF']}
                     ver={["consecutivo", "dependencia","fecha", "asunto","nombredirigido", "estado"]}
                     accion={[
                         {tipo: 'B', icono : 'clear_icon',        color: 'red',    funcion : (data)=>{edit(data,0)} },

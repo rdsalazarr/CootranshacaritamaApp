@@ -12,5 +12,5 @@ class CodigoDocumentalProcesoCertificado extends Model
     protected $table      = 'coddocumprocesocertificado';
 	protected $primaryKey = 'codopcid';
     protected $fillable   = ['codoprid', 'tipedoid', 'usuaid', 'codopcconsecutivo', 'codopcsigla',
-    					   'codopcanio', 'codopctitulo', 'codopcnombredirigido', 'codopccontenidoinicial'];
+    					   'codopcanio', 'codopctitulo',  'codopccontenidoinicial'];
 }

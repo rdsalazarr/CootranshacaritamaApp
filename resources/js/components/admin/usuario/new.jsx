@@ -25,8 +25,8 @@ export default function New({data, tipo}){
     }
 
     const handleInputChange = (e) => {
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
-    };
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}));
+    }
 
     const handleSubmit = () =>{
         setLoader(true); 

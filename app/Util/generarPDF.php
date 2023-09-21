@@ -17,7 +17,7 @@ class generarPDF
         $fechaHoraActual  = Carbon::now();
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
-		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
+		list($infodocumento, $firmasDocumento) =  $visualizar->constancia($id);
 		
 		$empresa          = DB::table('empresa as e')
 									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 
@@ -39,33 +39,30 @@ class generarPDF
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
-  		$anioDocumento        = $infodocumento->codopoanio;
+  		$anioDocumento        = $infodocumento->codopnanio;
   		$tipoDocumento        = $infodocumento->tipdoccodigo;
-  		$siglaDependencia     = $infodocumento->codoposigla;
-  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
+  		$siglaDependencia     = $infodocumento->codopnsigla;
+  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopnconsecutivo;
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
 		$estadoDocumento      = $infodocumento->tiesdoid;
 
 		$titulo               = $infodocumento->codopntitulo;
-		$contenido            = '<p style="text-align:justify">'.$infodocumento->tipedonombre.' <b>'.$infodocumento->codoprnombredirigido.'</b>'.$infodocumento->codopncontenidoinicial.'</p>';
-		$contenidoAdicional   = $infodocumento->contenido;
-		$remitente            = $infodocumento->persnombre.' '.$infodocumento->persapellidouno.' '.$infodocumento->persapellidodos;
-		$cargoRemitente       = $infodocumento->carlabnombre;
-		$firma                = $infodocumento->persfirma;
+		$contenido            = '<p style="text-align:justify">'.$infodocumento->tipedonombre.' <b>'.$infodocumento->codoprnombredirigido.'</b>, '.$infodocumento->codopncontenidoinicial.'</p>';
+		$contenidoAdicional   = $infodocumento->codoprcontenido;	
 		$tipoMedio            = $infodocumento->tipmedid;
 		$firmado              = $infodocumento->codoprfirmado;
-		$transcriptor         = $infodocumento->alias;	
-		$fechaDocumento       = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->fecha);  
+		$transcriptor         = $infodocumento->alias;
+		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
-		PDF::SetSubject($asunto);
-		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$asunto);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$titulo);
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado
 		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){	
-			$linea = str_pad('',  70, "_", STR_PAD_LEFT); //Diibuja la linea
+			$linea = str_pad('',  71, "_", STR_PAD_LEFT); //Diibuja la linea
 			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,24,18);
 			PDF::SetY(8);
             PDF::SetX(46);
@@ -86,10 +83,9 @@ class generarPDF
 			PDF::SetX(25);
 			PDF::Cell(25,4,$codigoDocumental,0,0,'');
 			PDF::SetY(22);
-        	PDF::SetX(180);
-			PDF::Cell(0, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
-			}
-		);
+        	PDF::SetX(191);
+			PDF::Cell(4, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		});
 
 		//Pie de pagina
 		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento){
@@ -107,7 +103,7 @@ class generarPDF
 			PDF::Cell(165,4,'Teléfono: '.$telefonoEmpresa.' | Celular: '.$celularEmpresa.'',0,0,'C'); 
 			PDF::Ln(5);
 			PDF::SetX(30);
-			PDF::Cell(165,4,$urlEmpresa.' '.$idCifrado,0,0,'C');
+			PDF::Cell(165,4,$urlEmpresa,0,0,'C');
 	
 			$style = array(
 				'border' => 0,
@@ -153,25 +149,26 @@ class generarPDF
 		PDF::Ln(4);
 		PDF::Cell(60,4,$fechaDocumento,0,0,'');
 		PDF::Ln(26);
+		
+		foreach ($firmasDocumento as $firma)
+		{
+			$remitente      = $firma->nombrePersona;
+			$cargoRemitente = $firma->carlabnombre;
+			$rutaFirma      = $firma->firmaPersona;
+			$firmado        = $firma->codopffirmado;
 
-		if($firmado == 1){
-			PDF::Image('images/firma/'.$firma, 80, PDF::GetY(),46,13);
-			PDF::Ln(6);
-		}else{	
-			PDF::SetFont('helvetica', 'B', 12);
-			PDF::SetTextColor(255, 0, 0);
-			PDF::Cell(165,4,'Documento pendiente por firmar',0,0,'C');
-			PDF::SetTextColor(0, 0, 0);
-			PDF::SetFont('helvetica', '', 12);	
-		}
+			($firmado == 1) ? PDF::Image($rutaFirma, 80, PDF::GetY(), 46, 13) : $this->mensajeFirmarCentro(); 
+			PDF::Ln(($firmado == 1) ? 6 : 0);
 
-		PDF::Ln(8);
-		PDF::SetFont('helvetica','B',12); 
-		PDF::Cell(165,4,$remitente,0,0,'C'); 
-		PDF::Ln(4);
-		PDF::Cell(165,4,$cargoRemitente,0,0,'C'); 
-		PDF::SetFont('helvetica','',9);
-		PDF::Ln(8);
+			PDF::Ln(8);
+			PDF::SetFont('helvetica','B',12); 
+			PDF::Cell(165,4,$remitente,0,0,'C'); 
+			PDF::Ln(4);
+			PDF::Cell(165,4,$cargoRemitente,0,0,'C');
+		}		
+
+		PDF::Ln(12);
+		PDF::SetFont('helvetica','',9);		
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
 	    //Informacion para visualizar o descargar el pdf
@@ -258,7 +255,7 @@ class generarPDF
 
 		//Encabezado
 		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){	
-			$linea = str_pad('',  70, "_", STR_PAD_LEFT); //Diibuja la linea
+			$linea = str_pad('',  71, "_", STR_PAD_LEFT); //Diibuja la linea
 			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,24,18);
 			PDF::SetY(8);
             PDF::SetX(46);
@@ -279,10 +276,9 @@ class generarPDF
 			PDF::SetX(25);
 			PDF::Cell(25,4,$codigoDocumental,0,0,'');
 			PDF::SetY(22);
-        	PDF::SetX(180);
-			PDF::Cell(0, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
-			}
-		);
+        	PDF::SetX(191);
+			PDF::Cell(4, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		});
 
 		//Pie de pagina
 		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento){
@@ -389,11 +385,7 @@ class generarPDF
 			$remitente = $firma->nombrePersona;
 			$cargo     = $firma->carlabnombre;
 			$firmado   = $firma->codopffirmado;
-			if($firmado == 1){
-				$rutaFirma = 'images/firma/'.$firma->persrutafirma;
-			}else{
-				$rutaFirma = 'images/documentoSinFirma.png';
-			}
+			$rutaFirma = ($firmado == 1) ? $firma->firmaPersona : 'images/documentoSinFirma.png';
 
 			if($cont == 0){
 				PDF::Image($rutaFirma, 28, PDF::GetY() -7,50,8);//le quito -7 a la posicion y
@@ -467,5 +459,12 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
     }
+
+	function mensajeFirmarCentro(){
+		PDF::SetFont('helvetica', 'B', 12);
+		PDF::SetTextColor(255, 0, 0);
+		PDF::Cell(165,4,'Documento pendiente por firmar',0,0,'C');
+		PDF::SetTextColor(0, 0, 0);
+	}
 
 }

@@ -18,7 +18,7 @@ export default function List(){
         <Box>
             <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Tipo documental oficio</Typography>
             </Box>
-            
+
             <Tabs value={value} onChange={handleChangeTab} 
                 sx={{background: '#e2e2e2'}}
                 indicatorColor="secondary"

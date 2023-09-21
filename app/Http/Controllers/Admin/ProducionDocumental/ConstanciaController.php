@@ -10,7 +10,7 @@ use App\Models\CodigoDocumentalProcesoCompartido;
 use App\Models\CodigoDocumentalProcesoConstancia;
 use App\Models\CodigoDocumentalProcesoFirma;
 use App\Models\CodigoDocumentalProceso;
-use App\Http\Requests\OficioRequests;
+use App\Http\Requests\ConstanciaRequests;
 use App\Models\CodigoDocumental;
 use App\Util\showTipoDocumental;
 use App\Util\generarPdf;
@@ -19,7 +19,7 @@ use App\Util\generales;
 use Auth, DB, File;
 use Carbon\Carbon;
 
-class OficioController extends Controller
+class ConstanciaController extends Controller
 {
     public function index(Request $request)
 	{
@@ -27,7 +27,7 @@ class OficioController extends Controller
 
 		$consulta   = DB::table('coddocumprocesoconstancia as cdpc')
 						->select('cdpc.codopnid as id', 'cdpc.codoprid', DB::raw("CONCAT(cdpc.codopnanio,' - ', cdpc.codopnconsecutivo) as consecutivo"),
-								'cdp.codoprfecha as fecha', 'cdpc.codopntitulo as asunto','cdpc.codopnnombredirigido as nombredirigido', 
+								'cdp.codoprfecha as fecha', 'cdpc.codopntitulo as asunto','cdp.codoprnombredirigido as nombredirigido', 
 								'd.depenombre as dependencia', 'ted.tiesdonombre as estado')
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
@@ -71,32 +71,30 @@ class OficioController extends Controller
 		$tipo              = $request->tipo;
 		$data              = '';
 		$firmasDocumento   = [] ;
-		$copiaDependencias = [] ;
-		$anexosDocumento   = [] ;
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
-			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
+			list($data, $firmasDocumento) = $visualizar->constancia($id);
 		}
 
 		$fechaActual             = Carbon::now()->format('Y-m-d');
 		$tipoDestinos            = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
 		$tipoMedios              = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
-		$tipopersonadocumentales = DB::table('tipopersonadocumental')->select('tipedoid','tipedonombre')->where('tipedoactivo', true)->orderBy('tipedonombre')->get();    
+		$tipoPersonaDocumentales = DB::table('tipopersonadocumental')->select('tipedoid','tipedonombre')->where('tipedoactivo', true)->orderBy('tipedonombre')->get();    
  		$personas                = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
 														->orderBy('nombrePersona')
 														->whereIn('carlabid', [1, 2])->get();
         $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
 
         return response()->json(["fechaActual"            => $fechaActual,             "tipoDestinos"    => $tipoDestinos,   "tipoMedios"      => $tipoMedios,
-                                "tipopersonadocumentales" => $tipopersonadocumentales, "personas"        => $personas,       "cargoLaborales"    => $cargoLaborales,
+                                "tipoPersonaDocumentales" => $tipoPersonaDocumentales, "personas"        => $personas,       "cargoLaborales"  => $cargoLaborales,
 								"data"                    => $data,					   "firmasDocumento" => $firmasDocumento ]);
 	}
 
-    public function salve(OficioRequests $request){
+    public function salve(ConstanciaRequests $request){
 
         $coddocid      				   = $request->idCD;
 	    $codoprid      				   = $request->idCDP;
-	    $codopnid      				   = $request->idcdpc;
+	    $codopnid      				   = $request->idCDPC;
         $codigodocumental              = ($coddocid != 000) ? CodigoDocumental::findOrFail($coddocid) : new CodigoDocumental();
 		$codigodocumentalproceso       = ($codoprid != 000) ? CodigoDocumentalProceso::findOrFail($codoprid) : new CodigoDocumentalProceso();
 		$coddocumprocesoconstancia     = ($codopnid != 000) ? CodigoDocumentalProcesoConstancia::findOrFail($codopnid) : new CodigoDocumentalProcesoConstancia();
@@ -149,9 +147,8 @@ class OficioController extends Controller
 			}
 
 			$coddocumprocesoconstancia->tipedoid                = $request->tipoPersona;
-		   	$coddocumprocesoconstancia->codopntitulo            = $request->tituloPersona;
-		   	$coddocumprocesoconstancia->codopnnombredirigido    = $request->nombreDirigido;
-		   	$coddocumprocesoconstancia->codopncontenidoinicial  = $request->contenidoinicial;
+		   	$coddocumprocesoconstancia->codopntitulo            = $request->tituloDocumento;
+		   	$coddocumprocesoconstancia->codopncontenidoinicial  = $request->contenidoInicial;
 		   	$coddocumprocesoconstancia->save();
 
 			foreach($request->firmaPersona as $firmaPersona){
