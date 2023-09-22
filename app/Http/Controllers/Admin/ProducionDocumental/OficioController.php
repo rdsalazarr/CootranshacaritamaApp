@@ -113,7 +113,7 @@ class OficioController extends Controller
             $anioActual      = Carbon::now()->year;
 
 			//Consulto la sigla
-			$dependencia    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeid',$request->dependencia)->first();
+			$dependencia    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeid', $request->dependencia)->first();
 			$sigla          = $dependencia->depesigla;
 			
 			if($request->tipo === 'I'){
@@ -194,7 +194,7 @@ class OficioController extends Controller
 				}
 			}
 		
-			foreach($request->firmaPersona as $firmaPersona){
+			foreach($request->firmaPersonas as $firmaPersona){
 				$identificadorFirma = $firmaPersona['identificador'];
 				$personaFirma       = $firmaPersona['persona'];
 				$personaCargo       = $firmaPersona['cargo'];
@@ -292,9 +292,9 @@ class OficioController extends Controller
 			$observacion      = ($request->tipo === 'S') ? 'Solicitud de firma de documento realizada por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual : $request->observacionCambio;
 			$idCorreo         = ($request->tipo === 'S') ? 'solicitaFirmaDocumento' : 'anularSolicitudFirmaDocumento';
 
-			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);
-			$codigodocumentalproceso->tiesdoid = $estado;
-			$codigodocumentalproceso->save();
+			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
+			$codigodocumentalproceso->codoprsolicitafirma = true;
+			$codigodocumentalproceso->tiesdoid            = $estado;
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();

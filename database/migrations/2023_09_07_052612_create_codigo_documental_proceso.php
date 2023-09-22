@@ -16,8 +16,8 @@ return new class extends Migration
             $table->bigInteger('coddocid')->unsigned()->comment('Identificador de la tabla codigo documental');
             $table->tinyInteger('tiesdoid')->unsigned()->comment('Identificador de la tabla tipo estado documento');           
             $table->date('codoprfecha')->comment('Fecha en la cual se crea el documento');
-            $table->string('codoprnombredirigido', 2000)->nullable()->comment('Nombre o nombres de la persona a quien va dirigido el documento');
-            $table->string('codoprcargonombredirigido', 100)->nullable()->comment('Cargo de la persona a quien va dirigido el documento');
+            $table->string('codoprnombredirigido', 4000)->nullable()->comment('Nombre o nombres de la persona a quien va dirigido el documento');
+            $table->string('codoprcargonombredirigido', 1000)->nullable()->comment('Cargo de la persona a quien va dirigido el documento');
             $table->string('codoprasunto', 200)->nullable()->comment('Asunto por el cual se crea el documento o título de la resolución');
             $table->string('codoprcorreo', 1000)->nullable()->comment('Correo de la persona o personas a quien van dirigir el documento');
             $table->longText('codoprcontenido')->nullable()->comment('Contenido del documento');

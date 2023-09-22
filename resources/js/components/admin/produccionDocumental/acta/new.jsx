@@ -9,8 +9,8 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
-import Files from "react-files";
-import Anexos from '../anexos';
+
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -41,8 +41,7 @@ export default function New({id, area, tipo}){
     const [personas, setPersonas] = useState([]);
     const [cargoLaborales, setCargoLaborales] = useState([]);
    
-    const [formDataFile, setFormDataFile] = useState({ archivos : []});
-    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_OFICIO);
+
     const [totalAdjuntoSubido, setTotalAdjuntoSubido] = useState(0);    
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
     const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
@@ -109,13 +108,11 @@ export default function New({id, area, tipo}){
 
         let newFormData                = {...formData};
         newFormData.contenido          = editorTexto.current.getContent()
-        newFormData.firmaPersonas      = firmaPersona;
-        newFormData.archivos           = formDataFile.archivos;
-        newFormData.copiasDependencia  = formDataDependencia;
+        newFormData.firmaPersona       = firmaPersona;  
 
         setLoader(true);
         setFormData(formDataCopia);
-        instance.post('/admin/producion/documental/oficio/salve', newFormData).then(res=>{
+        instance.post('/admin/producion/documental/acta/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -126,17 +123,7 @@ export default function New({id, area, tipo}){
                                                                     nombreCopia: '',       saludo: '',     despedida: '',             tituloPersona: '',  ciudad: '', 
                                                                     cargoDestinatario: '', empresa: '',    direccionDestinatario: '', telefono: '',       responderRadicado: '0',
                                                                     tipo:tipo}) : null;
-
-            if(formData.tipo === 'I' && res.success){
-                let newFormDataDependencia = [];
-                formDataDependencia.forEach(function(dep){
-                    newFormDataDependencia.push({
-                        depeid: dep.depeid
-                    });
-                });
-                setDependenciaMarcada(newFormDataDependencia);
-            }
-
+      
            setLoader(false);
         })
     }
@@ -188,7 +175,7 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/oficio/listar/datos', {id: id, tipo: tipo}).then(res=>{
+        instance.post('/admin/producion/documental/acta/listar/datos', {id: id, tipo: tipo}).then(res=>{
             setFechaActual(res.fechaActual);
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
@@ -201,9 +188,7 @@ export default function New({id, area, tipo}){
 
             if(tipo === 'U'){
                 let tpDocumental                  = res.data;
-                let firmasDocumento               = res.firmasDocumento;
-                let copiaDependenciaMarcadas      = res.copiaDependencias;
-                let anexosDocumento               = res.anexosDocumento;
+                let firmasDocumento               = res.firmasDocumento;         
   
                 newFormData.idCD                  = tpDocumental.coddocid;
                 newFormData.idCDP                 = tpDocumental.codoprid;
@@ -243,19 +228,9 @@ export default function New({id, area, tipo}){
                         estado: 'U'
                     });
                 }); 
-
-                let newFormDataDependencia = [];
-                setDependenciaMarcada(copiaDependenciaMarcadas);
-                copiaDependenciaMarcadas.forEach(function(dep){
-                    newFormDataDependencia.push({
-                        depeid: dep.depeid
-                    });
-                });
-    
-                setFormDataDependencia(newFormDataDependencia);
-                setTotalAdjuntoSubido(tpDocumental.totalAnexos);
-                setFirmaPersona(newFirmasDocumento);
-                setAnexosDocumento(anexosDocumento);
+          
+       
+                setFirmaPersona(newFirmasDocumento);            
             }
             setFormData(newFormData);
             setLoader(false);
@@ -548,113 +523,6 @@ export default function New({id, area, tipo}){
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
                 </Grid>
-
-                { (totalAdjuntoSubido > 0) ?
-                    <Grid item md={12} xl={12} sm={12} xs={12} >
-                        <Anexos data={anexosDocumento} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
-                    </Grid>
-                : null }
-
-                {(formData.tieneAnexo === '1') ?
-                    <Fragment>
-
-                        <Grid item md={12} xl={12} sm={12} xs={12}>
-                            <Box className='frmDivision'>
-                                Anexar documentos al tipo documental si se prosentan 
-                            </Box>
-                        </Grid>
-
-                        <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <TextValidator 
-                                multiline
-                                maxRows={2}
-                                name={'nombreAnexo'}
-                                value={formData.nombreAnexo}
-                                label={'Nombre del anexo'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        {(totalAdjunto > totalAdjuntoSubido) ?
-                            <Grid item md={5} xl={5} sm={12} xs={12}>
-                                <Files
-                                    className='files-dropzone'
-                                    onChange={(file ) =>{onFilesChange(file, 'archivos') }}
-                                    onError={onFilesError}
-                                    accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf','.ppt', '.pptx', '.xls', '.xlsx', '.xlsm', '.zip', '.rar']} 
-                                    multiple
-                                    maxFiles={totalAdjunto - totalAdjuntoSubido}
-                                    maxFileSize={1000000}
-                                    clickable
-                                    dropActiveClassName={"files-dropzone-active"}
-                                >
-                                <ButtonFileImg title={"Adicionar anexos"} />
-                                </Files>
-                            </Grid>
-                        : null }
-
-                        <Grid item md={6} xl={6} sm={12} xs={12}>
-                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                {formDataFile.archivos.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                })}
-                            </Box>
-                        </Grid> 
-
-                        <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <Box className={'msgAlert'}>
-                                <Avatar className={'avatar'}> <WarningIcon /></Avatar> 
-                                <p>Nota: Recuerde que puede subir como máximo ({totalAdjunto}) archivos, actualmente ha subido ({totalAdjuntoSubido}) archivos. Los formatos permitidos son .PDF, .DOCX, .DOC, .PPT, .PPTX, .XLS, XLSX, .ZIP, .RAR, .JPG y .PNG</p>
-                            </Box>
-                        </Grid>
-                    </Fragment>
-                : null}
-
-                {(formData.tieneCopia === '1') ?
-                    <Fragment>
-
-                        <Grid item md={12} xl={12} sm={12} xs={12}>
-                            <Box className='frmDivision'>
-                                Anexar copias al tipo documental si se prosentan 
-                            </Box>
-                        </Grid>
-
-                        <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <TextValidator 
-                                multiline
-                                maxRows={2}
-                                name={'nombreCopia'}
-                                value={formData.nombreCopia}
-                                label={'Nombre de la copia'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <FormLabel component="legend">Listado de dependencia para asignar copias al tipo documental</FormLabel>
-                            <FormGroup row name={"dependencias"} 
-                                value={formDataDependencia.depeid}
-                                onChange={handleChangeDependencia}
-                                >
-                                {dependencias.map(res=>{
-                                    const marcado  = dependenciaMarcada.find(resul => resul.depeid === res.depeid);
-                                    const checkbox = (marcado !== undefined) ? <Checkbox color="secondary" defaultChecked /> : <Checkbox color="secondary"  />;  
-                                
-                                    const frmCheckbox = <Grid item md={4} xl={4} sm={6} key={res.depenombre} >
-                                                            <FormControlLabel value={res.depeid} label={res.depenombre} control={checkbox} />
-                                                        </Grid>
-                                    return frmCheckbox;
-                                })}
-                            </FormGroup>
-                        </Grid>
-                    </Fragment>
-                : null}
 
                 <Grid item md={12} xl={12} sm={12}>
                     <Box className='frmDivision'>Adicionar personas que firma el tipo documental</Box>

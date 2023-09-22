@@ -12,7 +12,7 @@ export default function Verificar(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [ <Trazabilidad idProceso={modal.data.codoprid} idDocumento={modal.data.id} ruta={'constancia'} /> ];
+    const modales = [ <Trazabilidad idProceso={modal.data.codoprid} idDocumento={modal.data.id} ruta={'certificado'} /> ];
 
     const tituloModal = [  'Visualizar trazabilidad del documento'];
 
@@ -22,7 +22,7 @@ export default function Verificar(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/producion/documental/constancia/list', {tipo:'HISTORICOS'}).then(res=>{
+        instance.post('/admin/producion/documental/certificado/list', {tipo:'HISTORICOS'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 

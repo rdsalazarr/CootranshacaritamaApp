@@ -70,7 +70,8 @@ php artisan make:model TipoDestino
 php artisan make:model Dependencia
 php artisan make:model TipoRelacionLaboral
 php artisan make:model CargoLaboral
-php artisan make:model Persona
+php artisan make:model Persona 
+php artisan make:model TipoPersonaDocumental
 
 php artisan make:model DependenciaPersona
 php artisan make:model DependenciaSubSerieDocumental

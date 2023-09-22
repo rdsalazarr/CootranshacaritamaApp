@@ -4,17 +4,17 @@ import instancePdf from '../../layout/instancePdf';
 import {LoaderModal} from "../../layout/loader";
 import instance from '../../layout/instance';
 
-export default function Trazabilidad({id, ruta}){
+export default function Trazabilidad({idProceso, idDocumento, ruta}){
 
-    const [loader, setLoader] = useState(false); 
+    const [loader, setLoader] = useState(false);
     const [pdf, setPdf] = useState(); 
-    const [cambioEstados, setCambioEstados] = useState([]); 
+    const [cambioEstados, setCambioEstados] = useState([]);
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/producion/documental/trazabilidad/'+ruta, {codigo: id}).then(res=>{          
+        instance.post('/admin/producion/documental/trazabilidad/'+ruta, {codigo: idProceso}).then(res=>{
             setCambioEstados(res.cambioEstados);
-            instancePdf.post('/admin/producion/documental/'+ruta+'/visualizar/PDF', {codigo: id}).then(res=>{
+            instancePdf.post('/admin/producion/documental/'+ruta+'/visualizar/PDF', {codigo: idDocumento}).then(res=>{
                 let url = 'data:application/pdf;base64,'+res.data;
                 setPdf(url);
                 setLoader(false);

@@ -38,12 +38,10 @@ class SaludoController extends Controller
 
     public function destroy(Request $request)
 	{
-		$subseriedocumental = DB::table('subseriedocumental')
-					->select('serdocid')
-					->where('serdocid', $request->codigo)->first();
-
-		if($subseriedocumental){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una serie documental del sistema']);
+		$oficio   = DB::table('coddocumprocesooficio')->select('tipsalid')->where('tipdesid', $request->codigo)->first();
+		$circular = DB::table('coddocumprocesocircular')->select('tipsalid')->where('tipsalid', $request->codigo)->first();
+		if($oficio || $circular){
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un oficio o a una circular del sistema']);
 		}else{
 			try {
 				$tiposaludo = TipoSaludo::findOrFail($request->codigo);

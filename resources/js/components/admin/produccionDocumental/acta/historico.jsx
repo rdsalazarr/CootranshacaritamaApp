@@ -12,7 +12,7 @@ export default function Verificar(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [ <Trazabilidad idProceso={modal.data.codoprid} idDocumento={modal.data.id} ruta={'constancia'} /> ];
+    const modales = [ <Trazabilidad idProceso={modal.data.codoprid} idDocumento={modal.data.id} ruta={'acta'} /> ];
 
     const tituloModal = [  'Visualizar trazabilidad del documento'];
 
@@ -22,7 +22,7 @@ export default function Verificar(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/producion/documental/constancia/list', {tipo:'HISTORICOS'}).then(res=>{
+        instance.post('/admin/producion/documental/acta/list', {tipo:'HISTORICOS'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -39,8 +39,8 @@ export default function Verificar(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Título','Dirigido','Estado','Trazabilidad']}
-                    ver={["consecutivo", "dependencia","fecha", "asunto","nombredirigido", "estado"]}
+                    titulo={['Consecutivo', 'Dependencia','Fecha','Hora acta','Dirigido','Estado','Trazabilidad']}
+                    ver={["consecutivo", "dependencia","fecha", "horaActa","nombredirigido", "estado"]}
                     accion={[
                         {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data, 0)} },
                     ]}

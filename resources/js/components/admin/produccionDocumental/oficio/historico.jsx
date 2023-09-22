@@ -12,7 +12,7 @@ export default function Verificar(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [ <Trazabilidad id={modal.data.codoprid } ruta={'oficio'} /> ];
+    const modales = [ <Trazabilidad idProceso={modal.data.codoprid} idDocumento={modal.data.id}  ruta={'oficio'} /> ];
 
     const tituloModal = [  'Visualizar trazabilidad del documento'];
 

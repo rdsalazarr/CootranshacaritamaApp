@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\DatosGeograficos\MunicipioController;
 use App\Http\Controllers\Admin\EmpresaController;
 use App\Http\Controllers\Admin\Tipos\SaludoController;
 use App\Http\Controllers\Admin\Tipos\DespedidaController;
+use App\Http\Controllers\Admin\Tipos\CargoLaboralController;
+use App\Http\Controllers\Admin\Tipos\PersonaDocumentalController;
 use App\Http\Controllers\Admin\Series\SerieDocumentalController;
 use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
 use App\Http\Controllers\Admin\PersonaController;
@@ -25,6 +27,8 @@ use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
 
+use App\Http\Controllers\Admin\ProducionDocumental\ActaController; 
+use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController; 
 use App\Http\Controllers\Admin\ProducionDocumental\ConstanciaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController; 
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
@@ -93,9 +97,17 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/tipoSaludo/salve', [SaludoController::class, 'salve']);
         Route::post('/tipoSaludo/destroy', [SaludoController::class, 'destroy']);
 
-        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index']);   
+        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index']);
         Route::post('/tipoDespedida/salve', [DespedidaController::class, 'salve']);
         Route::post('/tipoDespedida/destroy', [DespedidaController::class, 'destroy']);
+        
+        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index']);
+        Route::post('/cargoLaboral/salve', [CargoLaboralController::class, 'salve']);
+        Route::post('/cargoLaboral/destroy', [CargoLaboralController::class, 'destroy']);
+
+        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index']);
+        Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
+        Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
         Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index']);   
         Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
@@ -118,7 +130,29 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
         Route::prefix('/producion/documental')->group(function(){
+
+            Route::post('/acta/list', [ActaController::class, 'index']);
+            Route::get('/acta/consultar/area', [ActaController::class, 'area']);
+            Route::post('/acta/listar/datos', [ActaController::class, 'datos']);
+            Route::post('/acta/salve', [ActaController::class, 'salve']);
+            Route::post('/acta/solicitar/firma', [ActaController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/acta', [ActaController::class, 'verificarSellado']);
+            Route::post('/sellar/acta', [ActaController::class, 'sellar']);
+            Route::post('/anular/acta', [ActaController::class, 'anular']);
+            Route::post('/acta/visualizar/PDF', [ActaController::class, 'showPdf']);
+            Route::post('/trazabilidad/acta', [ActaController::class, 'trazabilidad']);
             
+            Route::post('/certificado/list', [CertificadoController::class, 'index']);
+            Route::get('/certificado/consultar/area', [CertificadoController::class, 'area']);
+            Route::post('/certificado/listar/datos', [CertificadoController::class, 'datos']);
+            Route::post('/certificado/salve', [CertificadoController::class, 'salve']);
+            Route::post('/certificado/solicitar/firma', [CertificadoController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/certificado', [CertificadoController::class, 'verificarSellado']);
+            Route::post('/sellar/certificado', [CertificadoController::class, 'sellar']);
+            Route::post('/anular/certificado', [CertificadoController::class, 'anular']);
+            Route::post('/certificado/visualizar/PDF', [CertificadoController::class, 'showPdf']);
+            Route::post('/trazabilidad/certificado', [CertificadoController::class, 'trazabilidad']);
+
             Route::post('/constancia/list', [ConstanciaController::class, 'index']);
             Route::get('/constancia/consultar/area', [ConstanciaController::class, 'area']);
             Route::post('/constancia/listar/datos', [ConstanciaController::class, 'datos']);
@@ -129,7 +163,6 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/constancia', [ConstanciaController::class, 'anular']);
             Route::post('/constancia/visualizar/PDF', [ConstanciaController::class, 'showPdf']);
             Route::post('/trazabilidad/constancia', [ConstanciaController::class, 'trazabilidad']);
-
             
             Route::post('/oficio/list', [OficioController::class, 'index']);
             Route::get('/oficio/consultar/area', [OficioController::class, 'area']);

@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
 use App\Models\CodigoDocumentalProcesoCompartido;
-use App\Models\CodigoDocumentalProcesoConstancia;
+use App\Models\CodigoDocumentalProcesoCertificado;
 use App\Models\CodigoDocumentalProcesoFirma;
 use App\Models\CodigoDocumentalProceso;
-use App\Http\Requests\ConstanciaRequests;
+use App\Http\Requests\CertificadoRequests;
 use App\Models\CodigoDocumental;
 use App\Util\showTipoDocumental;
 use App\Util\generarPdf;
@@ -19,15 +19,15 @@ use App\Util\generales;
 use Auth, DB, File;
 use Carbon\Carbon;
 
-class ConstanciaController extends Controller
+class CertificadoController extends Controller
 {
     public function index(Request $request)
 	{
 		$this->validate(request(),['tipo' => 'required']);
 
-		$consulta   = DB::table('coddocumprocesoconstancia as cdpc')
-						->select('cdpc.codopnid as id', 'cdpc.codoprid', DB::raw("CONCAT(cdpc.codopnanio,' - ', cdpc.codopnconsecutivo) as consecutivo"),
-								'cdp.codoprfecha as fecha', 'cdpc.codopntitulo as asunto','cdp.codoprnombredirigido as nombredirigido', 
+		$consulta   = DB::table('coddocumprocesocertificado as cdpc')
+						->select('cdpc.codopcid as id', 'cdpc.codoprid', DB::raw("CONCAT(cdpc.codopcanio,' - ', cdpc.codopcconsecutivo) as consecutivo"),
+								'cdp.codoprfecha as fecha', 'cdpc.codopctitulo as asunto','cdp.codoprnombredirigido as nombredirigido', 
 								'd.depenombre as dependencia', 'ted.tiesdonombre as estado')
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
@@ -73,7 +73,7 @@ class ConstanciaController extends Controller
 		$firmasDocumento   = [] ;
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
-			list($data, $firmasDocumento) = $visualizar->constancia($id);
+			list($data, $firmasDocumento) = $visualizar->certificado($id);
 		}
 
 		$fechaActual             = Carbon::now()->format('Y-m-d');
@@ -90,14 +90,14 @@ class ConstanciaController extends Controller
 								"data"                    => $data,					   "firmasDocumento" => $firmasDocumento ]);
 	}
 
-    public function salve(ConstanciaRequests $request){
+    public function salve(CertificadoRequests $request){
 
         $coddocid      				   = $request->idCD;
 	    $codoprid      				   = $request->idCDP;
-	    $codopnid      				   = $request->idCDPC;
+	    $codopcid      				   = $request->idCDPC;
         $codigodocumental              = ($coddocid != 000) ? CodigoDocumental::findOrFail($coddocid) : new CodigoDocumental();
 		$codigodocumentalproceso       = ($codoprid != 000) ? CodigoDocumentalProceso::findOrFail($codoprid) : new CodigoDocumentalProceso();
-		$coddocumprocesoconstancia     = ($codopnid != 000) ? CodigoDocumentalProcesoConstancia::findOrFail($codopnid) : new CodigoDocumentalProcesoConstancia();
+		$coddocumprocesocertificado    = ($codopcid != 000) ? CodigoDocumentalProcesoCertificado::findOrFail($codopcid) : new CodigoDocumentalProcesoCertificado();
 
         DB::beginTransaction();
 		try {
@@ -113,7 +113,7 @@ class ConstanciaController extends Controller
 				$codigodocumental->depeid          = $request->dependencia;
 				$codigodocumental->serdocid        = $request->serie;
 				$codigodocumental->susedoid        = $request->subSerie;
-				$codigodocumental->tipdocid        = '5';//Constancia
+				$codigodocumental->tipdocid        = '2';//Certificado
 				$codigodocumental->tiptraid        = $request->tipoTramite;
 				$codigodocumental->usuaid          = $usuarioId;
 				$codigodocumental->coddocfechahora = $fechaHoraActual;
@@ -139,17 +139,17 @@ class ConstanciaController extends Controller
 			if($request->tipo === 'I'){
 				$codDocProcesoMaxConsecutio 				  = CodigoDocumentalProceso::latest('codoprid')->first();
 				$codoprid                   				  = $codDocProcesoMaxConsecutio->codoprid;
-				$coddocumprocesoconstancia->codoprid          = $codoprid;
-				$coddocumprocesoconstancia->usuaid            = $usuarioId;
-				$coddocumprocesoconstancia->codopnconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual);
-				$coddocumprocesoconstancia->codopnsigla       = $sigla;
-				$coddocumprocesoconstancia->codopnanio        = $anioActual;
+				$coddocumprocesocertificado->codoprid          = $codoprid;
+				$coddocumprocesocertificado->usuaid            = $usuarioId;
+				$coddocumprocesocertificado->codopcconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual);
+				$coddocumprocesocertificado->codopcsigla       = $sigla;
+				$coddocumprocesocertificado->codopcanio        = $anioActual;
 			}
 
-			$coddocumprocesoconstancia->tipedoid                = $request->tipoPersona;
-		   	$coddocumprocesoconstancia->codopntitulo            = $request->tituloDocumento;
-		   	$coddocumprocesoconstancia->codopncontenidoinicial  = $request->contenidoInicial;
-		   	$coddocumprocesoconstancia->save();
+			$coddocumprocesocertificado->tipedoid                = $request->tipoPersona;
+		   	$coddocumprocesocertificado->codopctitulo            = $request->tituloDocumento;
+		   	$coddocumprocesocertificado->codopccontenidoinicial  = $request->contenidoInicial;
+		   	$coddocumprocesocertificado->save();
 
 			foreach($request->firmaPersona as $firmaPersona){
 				$identificadorFirma = $firmaPersona['identificador'];
@@ -198,8 +198,8 @@ class ConstanciaController extends Controller
 
 		DB::beginTransaction();
 		try {
-			$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
-							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopnconsecutivo) as consecutivoDocumento"),
+			$infodocumento =  DB::table('coddocumprocesocertificado as cdpc')
+							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopcconsecutivo) as consecutivoDocumento"),
 										'tdc.tipdocnombre','cdp.codoprfecha','d.depecorreo','cl.carlabnombre',
 							DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
 							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
@@ -209,7 +209,7 @@ class ConstanciaController extends Controller
 							->join('usuario as u', 'u.usuaid', '=', 'cd.usuaid')
 							->join('persona as p', 'p.persid', '=', 'u.persid')
 							->join('cargolaboral as cl', 'cl.carlabid', '=', 'p.carlabid')
-							->where('cdpc.codopnid', $request->codigo)->first();
+							->where('cdpc.codopcid', $request->codigo)->first();
 
 			$firmaDocumentos =  DB::table('codigodocumentalproceso as cdp')
 							->select('cdp.codoprid','p.perscorreoelectronico',
@@ -233,6 +233,7 @@ class ConstanciaController extends Controller
 			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->codoprsolicitafirma = true;
 			$codigodocumentalproceso->tiesdoid            = $estado;
+			$codigodocumentalproceso->save();
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
@@ -272,11 +273,11 @@ class ConstanciaController extends Controller
 	{
 		$this->validate(request(),['codigo' => 'required']);
 		try {
-			$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
+			$infodocumento =  DB::table('coddocumprocesocertificado as cdpc')
 								->select('cdpc.codoprid', DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codopffirmado = 1) AS totalFirma'),
 								  DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codopffirmado = 1 AND codoprid = cdpc.codoprid) AS totalFirmaRealizadas'))
 								->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
-								->where('cdpc.codopnid', $request->codigo)->first();
+								->where('cdpc.codopcid', $request->codigo)->first();
 
 			$firmado = ($infodocumento->totalFirma = $infodocumento->totalFirmaRealizadas) ? true : false;
 
@@ -292,8 +293,8 @@ class ConstanciaController extends Controller
 		try {
 
 			$empresa       = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();
-			$infodocumento =  DB::table('coddocumprocesoconstancia as cdpc')
-							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopnconsecutivo) as consecutivoDocumento"),
+			$infodocumento =  DB::table('coddocumprocesocertificado as cdpc')
+							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopcconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
 							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
 							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
@@ -301,7 +302,7 @@ class ConstanciaController extends Controller
 							->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
 							->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
 							->join('persona as p', 'p.persid', '=', 'd.depejefeid')	
-							->where('cdpc.codopnid', $request->codigo)->first();
+							->where('cdpc.codopcid', $request->codigo)->first();
 
 			$codoprid          = $infodocumento->codoprid;
 			$numeroDocumental  = $infodocumento->consecutivoDocumento;
@@ -365,8 +366,8 @@ class ConstanciaController extends Controller
 			$fechaHoraActual  = Carbon::now();
 			$estado           = 10;
 
-			$coddocumprocesoconstancia =  CodigoDocumentalProcesoConstancia::findOrFail($request->codigo);
-			$codoprid = $coddocumprocesoconstancia->codoprid;
+			$coddocumprocesocertificado =  CodigoDocumentalProcesoCertificado::findOrFail($request->codigo);
+			$codoprid = $coddocumprocesocertificado->codoprid;
 
 			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->tiesdoid = $estado;
@@ -407,7 +408,7 @@ class ConstanciaController extends Controller
 		$this->validate(request(),['codigo' => 'required']);  
 		try {
 			$generarPdf    = new generarPdf();
-			$dataDocumento = $generarPdf->constancia($request->codigo, 'S');
+			$dataDocumento = $generarPdf->certificado($request->codigo, 'S');
 			return response()->json(["data" => $dataDocumento]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -417,10 +418,10 @@ class ConstanciaController extends Controller
     //Funcion que permite obtener el consecutivo del documento
 	public function obtenerConsecutivo($sigla, $anioActual)
 	{
-		$consecutivoTpDoc = DB::table('coddocumprocesoconstancia')->select('codopnconsecutivo')
-								->where('codopnanio', $anioActual)->where('codopnsigla', $sigla)
-								->orderBy('codopnid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopnconsecutivo + 1;
+		$consecutivoTpDoc = DB::table('coddocumprocesocertificado')->select('codopcconsecutivo')
+								->where('codopcanio', $anioActual)->where('codopcsigla', $sigla)
+								->orderBy('codopcid', 'desc')->first();
+        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopcconsecutivo + 1;
 
 		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
 	}
