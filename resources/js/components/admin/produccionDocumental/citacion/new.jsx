@@ -14,26 +14,25 @@ import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'date-fns/locale/es'; 
 import dayjs from 'dayjs';
 
-export default function New({id, area, tipo}){ 
+export default function New({id, area, tipo}){
     const editorTexto = useRef(null);
-    const quorum = "Se llama a lista y se comprueba que existe quorum reglamentario para deliberar y sesionar";
-    const [formData, setFormData] = useState( 
-                                {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPA:'000',
-                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '1',     subSerie: '1',         tipoMedio: '',    tipoTramite: '1', 
-                                        tipoDestino: '1',  fecha: '',              tipoActa: '',          correo: '',           horaInicial: '',  horaFinal: '',  
-                                        lugar: '',         convocatoria: '0',      asistentes: '',        invitados: '',        ausentes: '',     ordenDia: '', 
-                                        contenido: '',     convocatoriaLugar: '',  convocatoriaFecha: '', convocatoriaHora: '', quorum: quorum,   tipo:tipo
-                                }); 
-
+    const [formData, setFormData] = useState(
+                                {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
+                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '4', subSerie: '4', tipoMedio: '',    tipoTramite: '1', 
+                                        tipoDestino: '1',  fecha: '',              tipoCitacion: '',  correo: '',    horaInicial: '', lugar: '',
+                                        contenido: '',     tipo:tipo
+                                });
+  
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
     const [fechaActual, setFechaActual] = useState('');
     const [tipoMedios, setTipoMedios] = useState([]);
-    const [tipoActas, setTipoActas] = useState([]);
+    const [tipoCitaciones, setTipoCitaciones] = useState([]);
     const [personas, setPersonas] = useState([]);
     const [cargoLaborales, setCargoLaborales] = useState([]); 
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
-
+    const [firmaInvitados, setFirmaInvitados] = useState([]);
+    
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -43,9 +42,15 @@ export default function New({id, area, tipo}){
     };
 
     const handleChangeFirmaPersona = (e, index) =>{
-        let newFirmaPersona= [...firmaPersona];
+        let newFirmaPersona = [...firmaPersona];
         newFirmaPersona[index][e.target.name] = e.target.value; 
         setFirmaPersona(newFirmaPersona);
+    }
+
+    const handleChangeFirmaInvitado = (e, index) =>{
+        let newFirmaInvitados = [...firmaInvitados];
+        newFirmaInvitados[index][e.target.name] = e.target.value; 
+        setFirmaInvitados(newFirmaInvitados);
     }
 
     const handleSubmit = () =>{
@@ -70,21 +75,20 @@ export default function New({id, area, tipo}){
 
         let newFormData            = {...formData};
         newFormData.contenido      = editorTexto.current.getContent()
-        newFormData.firmaPersonas  = firmaPersona;  
-
+        newFormData.firmaPersonas  = firmaPersona;
+        newFormData.firmaInvitados = firmaInvitados;
         setLoader(true);
         setFormData(formDataCopia);
-        instance.post('/admin/producion/documental/acta/salve', newFormData).then(res=>{
+        instance.post('/admin/producion/documental/citacion/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPA:'000',
-                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '1',      subSerie: '1',       tipoMedio: '',    tipoTramite: '1', 
-                                                                    tipoDestino: '1',  fecha: '',              tipoActa: '',          correo: '',           horaInicial: '', horaFinal: '',  
-                                                                    lugar: '',         convocatoria: '0',       asistentes: '',       invitados: '',        ausentes: '',    ordenDia: '', 
-                                                                    contenido: '',     convocatoriaLugar: '',  convocatoriaFecha: '', convocatoriaHora: '', quorum: quorum,  tipo:tipo}) : null;
-            
+            (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
+                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '4',      subSerie: '4',       tipoMedio: '',    tipoTramite: '1', 
+                                                                    tipoDestino: '1',  fecha: '',  tipocitacion: '',    correo: '',  horaInicial: '', lugar: '',  contenido: '', tipo:tipo}) : null;
+
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
+            (formData.tipo === 'I' && res.success) ? setFirmaInvitados([]) : null;
             setLoader(false);
         })
     }
@@ -113,6 +117,30 @@ export default function New({id, area, tipo}){
         setFirmaPersona(newDatosFirmaPersona);
     }
 
+    const adicionarFilaFirmaInvitado = () =>{
+        let newFirmaInvitados = [...firmaInvitados];
+        newFirmaInvitados.push({identificador:'', persona:'',  cargo: '',  estado: 'I'});
+        setFirmaInvitados(newFirmaInvitados);
+    }
+
+    const eliminarFirmaInvitado = (id) =>{
+        let newDatosFirmaInvitados = []; 
+        firmaInvitados.map((res,i) =>{
+            if(res.estado === 'U' && i === id){
+                newDatosFirmaInvitados.push({ identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado: 'D' }); 
+            }else if(res.estado === 'D' && i === id){
+                newDatosFirmaInvitados.push({identificador:res.identificador,  persona: res.persona, cargo:res.cargo, estado: 'U'});
+            }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
+                newDatosFirmaInvitados.push({identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado:res.estado});
+            }else{
+                if(i != id){
+                    newDatosFirmaInvitados.push({identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado: 'I' });
+                }
+            }
+        })
+        setFirmaInvitados(newDatosFirmaInvitados);
+    }
+
     const validateCorreos = (cadena) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const correos = cadena.split(',').map(correo => correo.trim());
@@ -125,6 +153,7 @@ export default function New({id, area, tipo}){
     };
 
     const validateHora = (value) => {
+        console.log(value);
         const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/; // HH:mm format
         return regex.test(value);
     };
@@ -132,10 +161,10 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/acta/listar/datos', {id: id, tipo: tipo}).then(res=>{
+        instance.post('/admin/producion/documental/citacion/listar/datos', {id: id, tipo: tipo}).then(res=>{
             setFechaActual(res.fechaActual);
             setTipoMedios(res.tipoMedios);
-            setTipoActas(res.tipoActas);
+            setTipoCitaciones(res.tipoCitaciones);
             setPersonas(res.personas);
             setCargoLaborales(res.cargoLaborales);
             newFormData.fecha = res.fechaActual;
@@ -157,7 +186,7 @@ export default function New({id, area, tipo}){
                 newFormData.correo            = (tpDocumental.codoprcorreo !== null) ? tpDocumental.codoprcorreo : '';
                 newFormData.contenido         = tpDocumental.codoprcontenido;
 
-                newFormData.tipoActa          = tpDocumental.tipactid;
+                newFormData.tipocitacion          = tpDocumental.tipactid;
                 newFormData.horaInicial       = tpDocumental.codopahorainicio;
                 newFormData.horaFinal         = tpDocumental.codopahorafinal;
                 newFormData.lugar             = tpDocumental.codopalugar;
@@ -214,9 +243,9 @@ export default function New({id, area, tipo}){
 
                 <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
                     <SelectValidator
-                        name={'tipoActa'}
-                        value={formData.tipoActa}
-                        label={'Tipo de acta'}
+                        name={'tipoCitacion'}
+                        value={formData.tipoCitacion}
+                        label={'Tipo de citacion'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
@@ -225,7 +254,7 @@ export default function New({id, area, tipo}){
                         onChange={handleChange} 
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
-                        {tipoActas.map(res=>{
+                        {tipoCitaciones.map(res=>{
                             return <MenuItem value={res.tipactid} key={res.tipactid} >{res.tipactnombre}</MenuItem>
                         })}
                     </SelectValidator>
@@ -273,7 +302,7 @@ export default function New({id, area, tipo}){
 
             <Grid container spacing={2} style={{marginTop:'1px'}}>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={3} xs={12}>
                     <TextValidator
                         name={'horaInicial'}
                         value={formData.horaInicial}
@@ -292,124 +321,11 @@ export default function New({id, area, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'horaFinal'}
-                        value={formData.horaFinal}
-                        label={'Hora final'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 5}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                        onBlur={() => {
-                            if (formData.horaInicial && !validateHora(formData.horaInicial)) {
-                                showSimpleSnackbar("El formato de la hora final no es permitido", 'error');
-                            }
-                        }}
-                    />
-                </Grid>
-
-                <Grid item xl={5} md={5} sm={6} xs={12}>
-                    <TextValidator 
-                        multiline
-                        maxRows={3}
+                <Grid item xl={10} md={10} sm={9} xs={12}>
+                    <TextValidator
                         name={'lugar'}
                         value={formData.lugar}
                         label={'Lugar'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 200}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <SelectValidator
-                        name={'convocatoria'}
-                        value={formData.convocatoria}
-                        label={'¿Requiere convocatoria?'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange} 
-                    >
-                        <MenuItem value={""}>Seleccione</MenuItem>
-                        <MenuItem value={"1"}>Sí</MenuItem>
-                        <MenuItem value={"0"}>No</MenuItem>
-                    </SelectValidator>
-                </Grid>
-
-                <Grid item xl={6} md={6} sm={12} xs={12}>
-                    <TextValidator 
-                        multiline
-                        maxRows={5}
-                        name={'asistentes'}
-                        value={formData.asistentes}
-                        label={'Asistentes (Por cada uno utilice un enter)'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 4000}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-                
-                <Grid item xl={6} md={6} sm={12} xs={12}>
-                    <TextValidator 
-                        multiline
-                        maxRows={5}
-                        name={'invitados'}
-                        value={formData.invitados}
-                        label={'Invitados (Por cada uno utilice un enter)'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 4000}}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={6} md={6} sm={12} xs={12}>
-                    <TextValidator 
-                        multiline
-                        maxRows={5}
-                        name={'ausentes'}
-                        value={formData.ausentes}
-                        label={'Ausentes (Por cada uno utilice un enter)'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 4000}}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={6} md={6} sm={12} xs={12}>
-                    <TextValidator 
-                        multiline
-                        maxRows={5}
-                        name={'ordenDia'}
-                        value={formData.ordenDia}
-                        label={'Orden del día'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 4000}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={12} md={12} sm={12} xs={12}>
-                    <TextValidator
-                        name={'quorum'}
-                        value={formData.quorum}
-                        label={'Quorum'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 200}}
@@ -435,61 +351,6 @@ export default function New({id, area, tipo}){
                          }}
                     />
                 </Grid>
-
-                {(formData.convocatoria === 1 ) ?
-                    <Fragment>
-                        <Grid item xl={4} md={4} sm={6} xs={12}> 
-                            <TextValidator 
-                                name={'convocatoriaLugar'}
-                                value={formData.convocatoriaLugar}
-                                label={'Lugar de la convocatoria '}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 100}}
-                                validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xl={4} md={4} sm={6} xs={12}>
-                            <TextValidator 
-                                name={'convocatoriaFecha'}
-                                value={formData.convocatoriaFecha}
-                                label={'Fecha de la convocatoria '}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
-                                validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
-                                type={"date"}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Grid> 
-
-                        <Grid item xl={4} md={4} sm={6} xs={12}>
-                            <TextValidator 
-                                name={'convocatoriaHora'}
-                                value={formData.convocatoriaHora}
-                                label={'Hora de la convocatoria '}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 5}}
-                                validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
-                                onBlur={() => {
-                                    if (formData.horaInicial && !validateHora(formData.horaInicial)) {
-                                        showSimpleSnackbar("El formato de la hora convocatoria no es permitido", 'error');
-                                    }
-                                }}
-                            />
-                        </Grid>
-                    </Fragment>
-                : null}
 
                 <Grid item md={12} xl={12} sm={12}>
                     <Box className='frmDivision'>Adicionar personas que firma el tipo documental</Box>
@@ -563,7 +424,78 @@ export default function New({id, area, tipo}){
                         </TableBody>
                     </Table>
                 </Grid>
+                
+                <Grid item md={12} xl={12} sm={12}>
+                    <Box className='frmDivision'>Adicionar invitados que firma el tipo documental</Box>
+                    <Box className={'iconAdd'}>
+                        <Icon key={'iconAddIvitados'} className={'icon top green'}
+                            onClick={() => {adicionarFilaFirmaInvitado()}}
+                        >add</Icon>
+                    </Box>
 
+                    <Table key={'tableFirmaInvitados'}  className={'tableAdicional'} style={{marginTop: '5px'}} >
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={{width: '50%'}}>Nombre de la persona</TableCell>
+                                <TableCell style={{width: '40%'}}>Cargo </TableCell> 
+                                <TableCell style={{width: '10%'}} className='cellCenter'>Acción</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        { firmaInvitados.map((frmInv, a) => { 
+
+                            return(
+                                <TableRow key={'rowA-' +a} className={(frmInv.estado == 'D')? 'tachado': null}>
+                                    <TableCell>
+                                        <SelectValidator
+                                            name={'persona'}
+                                            value={frmInv['persona']}
+                                            label={'Nombre de la persona'}
+                                            className={'inputGeneral'} 
+                                            variant={"standard"} 
+                                            inputProps={{autoComplete: 'off'}}
+                                            validators={["required"]}
+                                            errorMessages={["Campo obligatorio"]}
+                                            onChange={(e) => {handleChangeFirmaInvitado(e, a)}}
+                                        >
+                                        <MenuItem value={""}>Seleccione</MenuItem>
+                                        {personas.map(res=>{
+                                            return <MenuItem value={res.persid} key={res.persid} >{res.nombrePersona}</MenuItem>
+                                        })}
+                                        </SelectValidator>
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <SelectValidator
+                                            name={'cargo'}
+                                            value={frmInv['cargo']}
+                                            label={'Cargo laboral'}
+                                            className={'inputGeneral'} 
+                                            variant={"standard"} 
+                                            inputProps={{autoComplete: 'off'}}
+                                            validators={["required"]}
+                                            errorMessages={["Campo obligatorio"]}
+                                            onChange={(e) => {handleChangeFirmaInvitado(e, a)}}
+                                        >
+                                        <MenuItem value={""}>Seleccione</MenuItem>
+                                        {cargoLaborales.map((res, i) =>{
+                                            return <MenuItem value={res.carlabid} key={res.carlabid} >{res.carlabnombre}</MenuItem>
+                                        })}
+                                        </SelectValidator>
+                                    </TableCell>
+
+                                    <TableCell className='cellCenter'>
+                                        <Icon key={'iconDelete'+a} className={'icon top red'}
+                                            onClick={() => {eliminarFirmaInvitado(a);}} title={'Eliminar registro'}
+                                        >clear</Icon>
+                                    </TableCell>
+                                 </TableRow>
+                                );
+                            })
+                        }
+                        </TableBody>
+                    </Table>
+                </Grid>
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">

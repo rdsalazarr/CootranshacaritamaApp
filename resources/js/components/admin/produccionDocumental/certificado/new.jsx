@@ -77,7 +77,9 @@ export default function New({id, area, tipo}){
                                                                     dependencia: (tipo === 'I') ? area.depeid: '',   serie: '5',      subSerie: '5',      tipoMedio: '',        tipoTramite: '1', 
                                                                     tipoDestino: '',       fecha: '',      nombreDirigido: '',        correo: '',         contenidoInicial: '', contenido: '',
                                                                     tipoPersona: '',       tituloDocumento: formData.tituloDocumento, tipo:tipo}) : null;
-           setLoader(false);
+            
+            (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
+            setLoader(false);
         })
     }        
 

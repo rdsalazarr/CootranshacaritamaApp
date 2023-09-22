@@ -42,7 +42,7 @@ export default function New({id, area, tipo}){
     const [cargoLaborales, setCargoLaborales] = useState([]);
    
     const [formDataFile, setFormDataFile] = useState({ archivos : []});
-    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_OFICIO);
+    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_circular);
     const [totalAdjuntoSubido, setTotalAdjuntoSubido] = useState(0);    
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
     const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
@@ -120,7 +120,7 @@ export default function New({id, area, tipo}){
 
         setLoader(true);
         setFormData(formDataCopia);
-        instance.post('/admin/producion/documental/oficio/salve', newFormData).then(res=>{
+        instance.post('/admin/producion/documental/circular/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -186,7 +186,7 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/oficio/listar/datos', {id: id, tipo: tipo}).then(res=>{
+        instance.post('/admin/producion/documental/circular/listar/datos', {id: id, tipo: tipo}).then(res=>{
             setFechaActual(res.fechaActual);
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);

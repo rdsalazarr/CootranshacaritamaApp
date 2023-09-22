@@ -367,7 +367,7 @@ export default function New({data, tipo}){
                             <TableRow>
                                 <TableCell style={{width: '60%'}}>Serie documental</TableCell>
                                 <TableCell style={{width: '40%'}}>Sub serie documental </TableCell> 
-                                <TableCell style={{width: '10%'}} className='cell-center'>Acción </TableCell>
+                                <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -383,7 +383,7 @@ export default function New({data, tipo}){
                                         <p>{subSerie['nombreSubSerie']}</p>
                                     </TableCell>
                                     
-                                    <TableCell className='cell-center'>
+                                    <TableCell className='cellCenter'>
                                         <Icon key={'iconDelete'+a} className={'icon top red'}
                                                 onClick={() => {eliminarFilaSubSerie(a);}}
                                             >clear</Icon>
@@ -439,7 +439,7 @@ export default function New({data, tipo}){
                         <TableHead>
                             <TableRow>
                                 <TableCell>Persona</TableCell>
-                                <TableCell style={{width: '10%'}} className='cell-center'>Acción </TableCell>
+                                <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -452,7 +452,7 @@ export default function New({data, tipo}){
                                         <p> {pers['nombrePersona']}</p>
                                     </TableCell>
                                     
-                                    <TableCell className='cell-center'>
+                                    <TableCell className='cellCenter'>
                                         <Icon key={'iconDelete'+a} className={'icon top red'}
                                                 onClick={() => {eliminarFilaPersona(a);}}
                                             >clear</Icon>

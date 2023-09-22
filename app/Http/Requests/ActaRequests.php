@@ -22,23 +22,34 @@ class ActaRequests extends FormRequest
     public function rules(): array
     {
         return [
-            'subSerie'          => 'required',
-            'fecha'             => 'required|date|date_format:Y-m-d',
-            'tipoMedio'         => 'required',
-            'correo'            => 'required_if:tipo_medio,2|required_if:tipo_medio,3|email',  
-            'tipoTramite'       => 'required',
-            'horaInicio'        => 'required|date_format:H:i',
-            'horaFinal'         => 'required|date_format:H:i|after:hora_inicio',
-            'lugar'             => 'required',
-            'tipoActa'          => 'required',
-            'asistentes'        => 'required',
-            'ordenDia'          => 'required',
-            'desarrollo'        => 'required',
-            'convocatoria'      => 'required',
+            'idCD'               => 'required|numeric',
+            'dependencia'        => 'required|numeric',
+            'serie'              => 'required|numeric',
+            'subSerie'           => 'required|numeric',
+            'tipoMedio'          => 'required|numeric',
+            'tipoTramite'        => 'required|numeric',
+            'tipoDestino'        => 'required|numeric',
+
+            'idCDP'              => 'required|numeric',
+            'fecha'              => 'required|date|date_format:Y-m-d',
+            'correo'             => 'nullable|string|min:4|max:1000|required_if:tipoMedio,2|required_if:tipoMedio,3',
+            'contenido'          => 'required',
+
+            'idCDPA'            => 'required|numeric',
+            'tipoActa'          => 'required|numeric',
+            'horaInicial'       => 'required|date_format:H:i',
+            'horaFinal'         => 'required|date_format:H:i|after:horaInicial',
+            'lugar'             => 'required|string|min:4|max:200',
+            'convocatoria'      => 'required|numeric',
+            'asistentes'        => 'required|string|min:4|max:4000',
+            'invitados'         => 'nullable|string|min:4|max:4000',
+            'ausentes'          => 'nullable|string|min:4|max:4000',
+            'ordenDia'          => 'required|string|min:4|max:4000',
+            'quorum'            => 'required|string|min:4|max:200', 
             'convocatoriaLugar' => 'required_if:convocatoria,1',
-         //   'convocatoriaFecha' => 'required_if:convocatoria,1|date|date_format:Y-m-d', 
-         //   'convocatoriaHora'  => 'required_if:convocatoria,1|date_format:H:i', 
-            'nombreRemitente'   => 'required|array|min:1'
+            'convocatoriaFecha' => 'nullable|date_format:Y-m-d|required_if:convocatoria,1',
+            'convocatoriaHora'  => 'nullable|date_format:H:i|required_if:convocatoria,1',
+            'firmaPersonas'     => 'required|array|min:1'
         ];
     }
 }

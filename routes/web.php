@@ -28,7 +28,9 @@ use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
 
 use App\Http\Controllers\Admin\ProducionDocumental\ActaController; 
-use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController; 
+use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController;
+use App\Http\Controllers\Admin\ProducionDocumental\CircularController;
+use App\Http\Controllers\Admin\ProducionDocumental\CitacionController;
 use App\Http\Controllers\Admin\ProducionDocumental\ConstanciaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController; 
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
@@ -141,7 +143,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/acta', [ActaController::class, 'anular']);
             Route::post('/acta/visualizar/PDF', [ActaController::class, 'showPdf']);
             Route::post('/trazabilidad/acta', [ActaController::class, 'trazabilidad']);
-            
+
             Route::post('/certificado/list', [CertificadoController::class, 'index']);
             Route::get('/certificado/consultar/area', [CertificadoController::class, 'area']);
             Route::post('/certificado/listar/datos', [CertificadoController::class, 'datos']);
@@ -153,6 +155,28 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/certificado/visualizar/PDF', [CertificadoController::class, 'showPdf']);
             Route::post('/trazabilidad/certificado', [CertificadoController::class, 'trazabilidad']);
 
+            Route::post('/Circular/list', [CircularController::class, 'index']);
+            Route::get('/Circular/consultar/area', [CircularController::class, 'area']);
+            Route::post('/Circular/listar/datos', [CircularController::class, 'datos']);
+            Route::post('/Circular/salve', [CircularController::class, 'salve']);
+            Route::post('/Circular/solicitar/firma', [CircularController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/Circular', [CircularController::class, 'verificarSellado']);
+            Route::post('/sellar/Circular', [CircularController::class, 'sellar']);
+            Route::post('/anular/Circular', [CircularController::class, 'anular']);
+            Route::post('/Circular/visualizar/PDF', [CircularController::class, 'showPdf']);
+            Route::post('/trazabilidad/Circular', [CircularController::class, 'trazabilidad']);
+            
+            Route::post('/citacion/list', [CitacionController::class, 'index']);
+            Route::get('/citacion/consultar/area', [CitacionController::class, 'area']);
+            Route::post('/citacion/listar/datos', [CitacionController::class, 'datos']);
+            Route::post('/citacion/salve', [CitacionController::class, 'salve']);
+            Route::post('/citacion/solicitar/firma', [CitacionController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/citacion', [CitacionController::class, 'verificarSellado']);
+            Route::post('/sellar/citacion', [CitacionController::class, 'sellar']);
+            Route::post('/anular/citacion', [CitacionController::class, 'anular']);
+            Route::post('/citacion/visualizar/PDF', [CitacionController::class, 'showPdf']);
+            Route::post('/trazabilidad/citacion', [CitacionController::class, 'trazabilidad']);
+
             Route::post('/constancia/list', [ConstanciaController::class, 'index']);
             Route::get('/constancia/consultar/area', [ConstanciaController::class, 'area']);
             Route::post('/constancia/listar/datos', [ConstanciaController::class, 'datos']);
@@ -163,7 +187,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/constancia', [ConstanciaController::class, 'anular']);
             Route::post('/constancia/visualizar/PDF', [ConstanciaController::class, 'showPdf']);
             Route::post('/trazabilidad/constancia', [ConstanciaController::class, 'trazabilidad']);
-            
+
             Route::post('/oficio/list', [OficioController::class, 'index']);
             Route::get('/oficio/consultar/area', [OficioController::class, 'area']);
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
@@ -174,7 +198,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/oficio', [OficioController::class, 'anular']);
             Route::post('/oficio/visualizar/PDF', [OficioController::class, 'showPdf']);
             Route::post('/trazabilidad/oficio', [OficioController::class, 'trazabilidad']);
-         
+
+        });
+
+        Route::prefix('/firma/documento')->group(function(){
+
+        });
+
+        Route::prefix('/radicar/documento')->group(function(){
+
         });
     });
         

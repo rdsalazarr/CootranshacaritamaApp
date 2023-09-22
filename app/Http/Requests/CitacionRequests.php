@@ -23,18 +23,22 @@ class CitacionRequests extends FormRequest
     {
        
         return [
-            'subSerie'         => 'required',
-            'fecha'            => 'required|date|date_format:Y-m-d',
-            'tipoMedio'        => 'required',
-            'correo'           => 'required_if:tipo_medio,2|required_if:tipo_medio,3|email',
-            'tipoTramite'      => 'required',
-            'tipoCitacion'     => 'required',
-            'horaInicial'      => 'required',
-            'lugar'            => 'required',
-            'ordenDia'         => 'required',
-            'depeidproductora' => 'required',
-            'depeproductora'   => 'required',
-            'nombreRemitente'  => 'required|array|min:1'  
+            'idCD'          => 'required|numeric',
+            'dependencia'   => 'required|numeric',
+            'serie'         => 'required|numeric',
+            'subSerie'      => 'required|numeric',
+            'tipoMedio'     => 'required|numeric',
+            'tipoTramite'   => 'required|numeric',
+            'tipoDestino'   => 'required|numeric',
+
+            'idCDP'         => 'required|numeric',
+            'fecha'         => 'required|date|date_format:Y-m-d',
+            'correo'        => 'nullable|string|min:4|max:1000|required_if:tipoMedio,2|required_if:tipoMedio,3',
+            'contenido'     => 'required',
+            'tipoCitacion'  => 'required|numeric',
+            'horaInicial'   => 'required|date_format:H:i',
+            'lugar'         => 'required|string|min:4|max:200',
+            'firmaPersonas' => 'required|array|min:1'
         ];
     }
 }

@@ -133,10 +133,10 @@ const componenteMenu = [
         icono : 'menu_book_icon',
         itemMenu: [
             {ruta : 'admin/produccion/documental/acta', menu: 'Acta', icono : 'local_library_icon', componente : <Acta /> }, 
-            {ruta : 'admin/produccion/documental/citacion', menu: 'Citación', icono : 'collections_bookmark_icon', componente : <Citacion /> },
-            {ruta : 'admin/produccion/documental/constancia', menu: 'Constancia', icono : 'import_contacts_icon', componente : <Constancia /> },
             {ruta : 'admin/produccion/documental/certificado', menu: 'Certificado', icono : 'note_icon', componente : <Certificado /> },
             {ruta : 'admin/produccion/documental/circular', menu: 'Circular', icono : 'menu_book_icon', componente : <Circular /> },
+            {ruta : 'admin/produccion/documental/citacion', menu: 'Citación', icono : 'collections_bookmark_icon', componente : <Citacion /> },           
+            {ruta : 'admin/produccion/documental/constancia', menu: 'Constancia', icono : 'import_contacts_icon', componente : <Constancia /> }, 
             {ruta : 'admin/produccion/documental/oficio', menu: 'Oficio', icono : 'library_books_icon', componente : <Oficio /> }, 
         ]
     },
