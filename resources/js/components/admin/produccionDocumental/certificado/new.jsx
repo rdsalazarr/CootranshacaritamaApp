@@ -65,7 +65,7 @@ export default function New({id, area, tipo}){
 
         let newFormData                  = {...formData};
         newFormData.contenido            = editorTexto.current.getContent()
-        newFormData.firmaPersona         = firmaPersona;
+        newFormData.firmaPersonas        = firmaPersona;
 
         setLoader(true);
         setFormData(formDataCopia);
@@ -74,8 +74,8 @@ export default function New({id, area, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '5',      subSerie: '5',      tipoMedio: '',        tipoTramite: '1', 
-                                                                    tipoDestino: '',       fecha: '',      nombreDirigido: '',        correo: '',         contenidoInicial: '', contenido: '',
+                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '2',      subSerie: '2',      tipoMedio: '',        tipoTramite: '1', 
+                                                                    tipoDestino: '',       fecha: fechaActual,      nombreDirigido: '',        correo: '',         contenidoInicial: '', contenido: '',
                                                                     tipoPersona: '',       tituloDocumento: formData.tituloDocumento, tipo:tipo}) : null;
             
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
@@ -88,6 +88,7 @@ export default function New({id, area, tipo}){
         let newFormData = {...formData}
         instance.post('/admin/producion/documental/certificado/listar/datos', {id: id, tipo: tipo}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
+            (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
             setTipoPersonaDocumentales(res.tipoPersonaDocumentales);
@@ -124,18 +125,12 @@ export default function New({id, area, tipo}){
                         cargo: frm.carlabid,
                         estado: 'U'
                     });
-                }); 
-
-                console.log(res.fechaActual);
-                console.log(tpDocumental.codoprfecha);
+                });
 
                 setFirmaPersona(newFirmasDocumento);
                 setFechaActual(tpDocumental.codoprfecha);
-                //2023-09-21
-              // setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-
-               //const fechaFormateada = dayjs(fechaDesdeBD, 'MM/DD/YYYY').format('YYYY-MM-DD');
-            }        
+                setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD'));
+            }
             setFormData(newFormData);
             setLoader(false);
         }) 
@@ -153,9 +148,9 @@ export default function New({id, area, tipo}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <label className={'labelEditor'}> Fecha del documento</label>
                     <LocalizationProvider dateAdapter={AdapterDayjs} >
-                        <DatePicker 
+                        <DatePicker
+                            label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']} 
                             minDate={fechaMinima}
@@ -166,7 +161,7 @@ export default function New({id, area, tipo}){
                     </LocalizationProvider>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha' >
+                <Grid item xl={2} md={2} sm={6} xs={12} >
                     <SelectValidator
                         name={'tipoDestino'}
                         value={formData.tipoDestino}
@@ -185,7 +180,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid> 
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoMedio'}
                         value={formData.tipoMedio}
@@ -204,7 +199,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         name={'correo'}
                         value={formData.correo}

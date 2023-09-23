@@ -35,6 +35,8 @@ class CitacionRequests extends FormRequest
             'fecha'         => 'required|date|date_format:Y-m-d',
             'correo'        => 'nullable|string|min:4|max:1000|required_if:tipoMedio,2|required_if:tipoMedio,3',
             'contenido'     => 'required',
+
+            'idCDPC'        => 'required|numeric',
             'tipoCitacion'  => 'required|numeric',
             'horaInicial'   => 'required|date_format:H:i',
             'lugar'         => 'required|string|min:4|max:200',

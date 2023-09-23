@@ -69,7 +69,9 @@ class ActaController extends Controller
 	}
 
 	public function datos(Request $request)
-	{ 
+	{
+		$this->validate(request(),['tipo' => 'required']);
+
 		$id                = $request->id;
 		$tipo              = $request->tipo;
 		$data              = '';
@@ -242,9 +244,9 @@ class ActaController extends Controller
 			$observacion      = ($request->tipo === 'S') ? 'Solicitud de firma de documento realizada por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual : $request->observacionCambio;
 			$idCorreo         = ($request->tipo === 'S') ? 'solicitaFirmaDocumento' : 'anularSolicitudFirmaDocumento';
 
-			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);
-			$codigodocumentalproceso->tiesdoid = $estado;
-			$codigodocumentalproceso->save();
+			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
+			$codigodocumentalproceso->codoprsolicitafirma = true;
+			$codigodocumentalproceso->tiesdoid            = $estado;
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();

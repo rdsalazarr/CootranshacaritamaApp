@@ -33,13 +33,13 @@ class CertificadoRequests extends FormRequest
             'idCDP'             => 'required|numeric',
             'fecha'             => 'required|date|date_format:Y-m-d',
             'nombreDirigido'    => 'required|string|min:4|max:100',
-            'correo'            => 'required_if:tipo_medio,2|required_if:tipo_medio,3',
+            'correo'            => 'nullable|email|string|max:80|required_if:tipo_medio,2|required_if:tipo_medio,3',
 
             'idCDPC'           => 'required|numeric',
             'contenidoInicial' => 'required|string|min:4|max:1000',
             'tipoPersona'      => 'required|numeric',
             'tituloDocumento'  => 'nullable|string|min:4|max:200',
-            'firmaPersona'     => 'required|array|min:1',
+            'firmaPersonas'    => 'required|array|min:1',
         ];
     }
 }

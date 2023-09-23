@@ -29,7 +29,7 @@ class CitacionController extends Controller
 
 		$consulta   = DB::table('coddocumprocesocitacion as cdpc')
 						->select('cdpc.codoptid as id', 'cdpc.codoprid', DB::raw("CONCAT(cdpc.codoptanio,' - ', cdpc.codoptconsecutivo) as consecutivo"),
-								'cdp.codoprfecha as fecha', 'cdp.codoprnombredirigido as nombredirigido', 
+								'cdp.codoprfecha as fecha', 'cdpc.codoptfecharealizacion as fechaRealizacion','cdpc.codopthora as hora', 'cdpc.codoptlugar as lugar',
 								DB::raw("CONCAT(cdpc.codopthora,' - ', cdpc.codoptlugar) as horaLugar"),
 								'd.depenombre as dependencia', 'ted.tiesdonombre as estado')
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
@@ -70,6 +70,8 @@ class CitacionController extends Controller
 
 	public function datos(Request $request)
 	{ 
+		$this->validate(request(),['tipo' => 'required']);
+
 		$id                = $request->id;
 		$tipo              = $request->tipo;
 		$data              = '';
@@ -77,7 +79,7 @@ class CitacionController extends Controller
 		$firmaInvitados    = [] ;
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
-			list($data, $firmasDocumento, $invitados) = $visualizar->Citacion($id);
+			list($data, $firmasDocumento, $firmaInvitados) = $visualizar->Citacion($id);
 		}
 
 		$fechaActual     = Carbon::now()->format('Y-m-d');
@@ -93,7 +95,6 @@ class CitacionController extends Controller
 	}
 
     public function salve(CitacionRequests $request){
-
         $coddocid      			 = $request->idCD;
 	    $codoprid      			 = $request->idCDP;
 	    $codoptid      			 = $request->idCDPC;
@@ -175,7 +176,7 @@ class CitacionController extends Controller
 				}
 			}
 
-			/*if(count($request->firmaInvitados) > 0){
+			if($request->firmaInvitados !== null){
 				foreach($request->firmaInvitados as $firmaInvitado){
 					$identificadorFirma = $firmaInvitado['identificador'];
 					$personaFirma       = $firmaInvitado['persona'];
@@ -198,7 +199,7 @@ class CitacionController extends Controller
 						$coddocumprocesofirma->save();
 					}
 				}
-			}*/
+			}
 
 			if($request->tipo === 'I'){
 				//Almaceno la trazabilidad del documento
@@ -257,9 +258,9 @@ class CitacionController extends Controller
 			$observacion      = ($request->tipo === 'S') ? 'Solicitud de firma de documento realizada por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual : $request->observacionCambio;
 			$idCorreo         = ($request->tipo === 'S') ? 'solicitaFirmaDocumento' : 'anularSolicitudFirmaDocumento';
 
-			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);
-			$codigodocumentalproceso->tiesdoid = $estado;
-			$codigodocumentalproceso->save();
+			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
+			$codigodocumentalproceso->codoprsolicitafirma = true;
+			$codigodocumentalproceso->tiesdoid            = $estado;
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();

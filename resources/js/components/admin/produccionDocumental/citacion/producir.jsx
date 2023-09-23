@@ -34,7 +34,7 @@ export default function Producir(){
                         <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} ruta={'citacion'} />
                     ];
 
-    const tituloModal = ['Selecionar área de produccion documental', 
+    const tituloModal = ['Selecionar área de producción documental', 
                         'Registrar nuevo tipo documental ',
                         'Editar tipo documental citación',
                         'Solicitar firma del tipo documental',
@@ -64,8 +64,8 @@ export default function Producir(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Hora citacion','Dirigido','Estado','Editar','Solicitar','PDF']}
-                    ver={["consecutivo", "dependencia","fecha", "horacitacion","nombredirigido", "estado"]}
+                    titulo={['Consecutivo', 'Dependencia','Fecha documento','Fecha citación','Hora', 'Lugar', 'Estado','Editar','Solicitar','PDF']}
+                    ver={["consecutivo", "dependencia","fecha", "fechaRealizacion", "hora", "lugar", "estado"]}
                     accion={[
                         {tipo: 'T', icono : 'add',                 color: 'green',  funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',                color: 'orange', funcion : (data)=>{edit(data,2)} },

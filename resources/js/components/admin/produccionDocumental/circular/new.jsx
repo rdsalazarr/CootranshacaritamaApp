@@ -21,13 +21,10 @@ import dayjs from 'dayjs';
 export default function New({id, area, tipo}){ 
     const editorTexto = useRef(null);
     const [formData, setFormData] = useState( 
-                                {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',     subSerie: '6',       tipoMedio: '',     tipoTramite: '1', 
-                                        tipoDestino: '',       fecha: '',      nombreDirigido: '',  cargoDirigido: '',  asunto: '',  
-                                        correo: '',            contenido: '',  tieneAnexo: '',      nombreAnexo: '',    tieneCopia: '', 
-                                        nombreCopia: '',       saludo: '',     despedida: '',              tituloPersona: '',  ciudad: '',    
-                                        cargoDestinatario: '', empresa: '',     direccionDestinatario: '', telefono: '',       responderRadicado: '0',
-                                        tipo:tipo
+                                {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
+                                        dependencia: (tipo === 'I') ? area.depeid: '',    serie: '3',     subSerie: '3',     tipoMedio: '',  tipoTramite: '1', 
+                                        tipoDestino: '',   fecha: '',      correo: '',     destinatarios: '', asunto: '',    contenido: '', 
+                                        tieneAnexo: '',   nombreAnexo: '', tieneCopia: '', nombreCopia: '',   despedida: '', tipo:tipo
                                 }); 
 
     const [loader, setLoader] = useState(false); 
@@ -35,20 +32,20 @@ export default function New({id, area, tipo}){
     const [fechaActual, setFechaActual] = useState('');
     const [tipoDestinos, setTipoDestinos] = useState([]);
     const [tipoMedios, setTipoMedios] = useState([]);
-    const [tipoSaludos, setTipoSaludos] = useState([]);
+
     const [tipoDespedidas, setTipoDespedidas] = useState([]);
     const [dependencias, setDependencias] = useState([]);
     const [personas, setPersonas] = useState([]);
     const [cargoLaborales, setCargoLaborales] = useState([]);
    
     const [formDataFile, setFormDataFile] = useState({ archivos : []});
-    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_circular);
+    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_CIRCULAR);
     const [totalAdjuntoSubido, setTotalAdjuntoSubido] = useState(0);    
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
     const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
     const [anexosDocumento, setAnexosDocumento] = useState([]);    
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
-    const minDate = dayjs();
+    const [fechaMinima, setFechaMinima] = useState(dayjs());
 
     const cantidadAdjunto = () =>{
         setTotalAdjuntoSubido(totalAdjuntoSubido - 1);
@@ -124,14 +121,11 @@ export default function New({id, area, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',      subSerie: '6',      tipoMedio: '',   tipoTramite: '1', 
-                                                                    tipoDestino: '',       fecha: '',      nombreDirigido: '',        cargoDirigido: '',  asunto: '',  
-                                                                    correo: '',            contenido: '',  tieneAnexo: '',            nombreAnexo: '',    tieneCopia: '',
-                                                                    nombreCopia: '',       saludo: '',     despedida: '',             tituloPersona: '',  ciudad: '', 
-                                                                    cargoDestinatario: '', empresa: '',    direccionDestinatario: '', telefono: '',       responderRadicado: '0',
-                                                                    tipo:tipo}) : null;
-            
+            (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
+                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '3',      subSerie: '3',      tipoMedio: '',   tipoTramite: '1', 
+                                                                    tipoDestino: '', fecha: fechaActual, correo: '',     destinatarios: '', asunto: '',    contenido: '',
+                                                                    tieneAnexo: '',  nombreAnexo: '',    tieneCopia: '', nombreCopia: '',   despedida: '', tipo:tipo}) : null;
+
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
 
             if(formData.tipo === 'I' && res.success){
@@ -186,11 +180,11 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/circular/listar/datos', {id: id, tipo: tipo}).then(res=>{
-            setFechaActual(res.fechaActual);
+        instance.post('/admin/producion/documental/circular/listar/datos', {id: id, tipo: tipo, dependencia: formData.dependencia}).then(res=>{
+            (tipo === 'I') ? setFechaActual(res.fechaActual): null;
+            (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
-            setTipoSaludos(res.tipoSaludos);
             setTipoDespedidas(res.tipoDespedidas);
             setDependencias(res.dependencias);
             setPersonas(res.personas);
@@ -198,39 +192,31 @@ export default function New({id, area, tipo}){
             newFormData.fecha = res.fechaActual;
 
             if(tipo === 'U'){
-                let tpDocumental                  = res.data;
-                let firmasDocumento               = res.firmasDocumento;
-                let copiaDependenciaMarcadas      = res.copiaDependencias;
-                let anexosDocumento               = res.anexosDocumento;
+                let tpDocumental               = res.data;
+                let firmasDocumento            = res.firmasDocumento;
+                let copiaDependenciaMarcadas   = res.copiaDependencias;
+                let anexosDocumento            = res.anexosDocumento;
   
-                newFormData.idCD                  = tpDocumental.coddocid;
-                newFormData.idCDP                 = tpDocumental.codoprid;
-                newFormData.idCDPO                = tpDocumental.id;
-                newFormData.dependencia           = tpDocumental.depeid;
-                newFormData.serie                 = tpDocumental.serdocid;
-                newFormData.subSerie              = tpDocumental.susedoid;
-                newFormData.tipoMedio             = tpDocumental.tipmedid;
-                newFormData.tipoTramite           = tpDocumental.tiptraid;
-                newFormData.tipoDestino           = tpDocumental.tipdetid;
-                newFormData.fecha                 = tpDocumental.codoprfecha;
-                newFormData.nombreDirigido        = tpDocumental.codoprnombredirigido; 
-                newFormData.cargoDirigido         = tpDocumental.codoprcargonombredirigido;
-                newFormData.asunto                = tpDocumental.codoprasunto;
-                newFormData.correo                = (tpDocumental.codoprcorreo !== null) ? tpDocumental.codoprcorreo : '';
-                newFormData.contenido             = tpDocumental.codoprcontenido;
-                newFormData.tieneAnexo            = tpDocumental.codoprtieneanexo.toString();
-                newFormData.nombreAnexo           = (tpDocumental.codopranexonombre !== null) ? tpDocumental.codopranexonombre : '';
-                newFormData.tieneCopia            = tpDocumental.codoprtienecopia.toString();
-                newFormData.nombreCopia           = (tpDocumental.codoprcopianombre !== null) ? tpDocumental.codoprcopianombre : '';
-                newFormData.saludo                = tpDocumental.tipsalid;
-                newFormData.despedida             = tpDocumental.tipdesid;
-                newFormData.tituloPersona         = tpDocumental.codopotitulo;
-                newFormData.ciudad                = tpDocumental.codopociudad;
-                newFormData.cargoDestinatario     = tpDocumental.codopocargodestinatario;
-                newFormData.empresa               = (tpDocumental.codopoempresa !== null) ? tpDocumental.codopoempresa : '';
-                newFormData.direccionDestinatario = tpDocumental.codopodireccion;
-                newFormData.telefono              = (tpDocumental.codopotelefono !== null) ? tpDocumental.codopotelefono : '';
-                newFormData.totalAdjuntoSubido    = tpDocumental.totalAnexos;
+                newFormData.idCD               = tpDocumental.coddocid;
+                newFormData.idCDP              = tpDocumental.codoprid;
+                newFormData.idCDPC             = tpDocumental.id;
+                newFormData.dependencia        = tpDocumental.depeid;
+                newFormData.serie              = tpDocumental.serdocid;
+                newFormData.subSerie           = tpDocumental.susedoid;
+                newFormData.tipoMedio          = tpDocumental.tipmedid;
+                newFormData.tipoTramite        = tpDocumental.tiptraid;
+                newFormData.tipoDestino        = tpDocumental.tipdetid;
+                newFormData.fecha              = tpDocumental.codoprfecha;
+                newFormData.destinatarios       = tpDocumental.codoprnombredirigido;            
+                newFormData.asunto             = tpDocumental.codoprasunto;
+                newFormData.correo             = (tpDocumental.codoprcorreo !== null) ? tpDocumental.codoprcorreo : '';
+                newFormData.contenido          = tpDocumental.codoprcontenido;
+                newFormData.tieneAnexo         = tpDocumental.codoprtieneanexo.toString();
+                newFormData.nombreAnexo        = (tpDocumental.codopranexonombre !== null) ? tpDocumental.codopranexonombre : '';
+                newFormData.tieneCopia         = tpDocumental.codoprtienecopia.toString();
+                newFormData.nombreCopia        = (tpDocumental.codoprcopianombre !== null) ? tpDocumental.codoprcopianombre : '';          
+                newFormData.despedida          = tpDocumental.tipdesid;
+                newFormData.totalAdjuntoSubido = tpDocumental.totalAnexos;
 
                 let newFirmasDocumento = [];
                 firmasDocumento.forEach(function(frm){
@@ -252,6 +238,8 @@ export default function New({id, area, tipo}){
     
                 setFormDataDependencia(newFormDataDependencia);
                 setTotalAdjuntoSubido(tpDocumental.totalAnexos);
+                setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD'));
+                setFechaActual(tpDocumental.codoprfecha);
                 setFirmaPersona(newFirmasDocumento);
                 setAnexosDocumento(anexosDocumento);
             }
@@ -272,12 +260,12 @@ export default function New({id, area, tipo}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <label className={'labelEditor'}> Fecha del documento </label> 
                     <LocalizationProvider dateAdapter={AdapterDayjs} >
                         <DatePicker 
+                            label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']} 
-                            minDate={minDate}
+                            minDate={fechaMinima}
                             locale={esLocale}
                             className={'inputGeneral'} 
                             onChange={handleChangeDate}
@@ -285,7 +273,7 @@ export default function New({id, area, tipo}){
                     </LocalizationProvider>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha' >
+                <Grid item xl={2} md={2} sm={6} xs={12} >
                     <SelectValidator
                         name={'tipoDestino'}
                         value={formData.tipoDestino}
@@ -304,7 +292,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid> 
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoMedio'}
                         value={formData.tipoMedio}
@@ -323,7 +311,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator
                         multiline
                         maxRows={3}
@@ -332,7 +320,7 @@ export default function New({id, area, tipo}){
                         label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
+                        inputProps={{autoComplete: 'off', maxLength: 2000}}
                         onChange={handleChange}
                         onBlur={() => {
                             if (formData.correo && !validateCorreos(formData.correo)) {
@@ -345,125 +333,23 @@ export default function New({id, area, tipo}){
             </Grid>
 
             <Grid container spacing={2} style={{marginTop:'1px'}}>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'tituloPersona'}
-                        value={formData.tituloPersona}
-                        label={'Título'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 80}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={7} md={7} sm={12} xs={12}>
                     <TextValidator 
                         multiline
-                        maxRows={3}
-                        name={'nombreDirigido'}
-                        value={formData.nombreDirigido}
-                        label={'Nombre de la persona que va dirigido'}
+                        maxRows={4}
+                        name={'destinatarios'}
+                        value={formData.destinatarios}
+                        label={'Destinatarios'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 2000}}
+                        inputProps={{autoComplete: 'off', maxLength: 4000}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
                     />
-                </Grid>
+                </Grid>                
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'cargoDirigido'}
-                        value={formData.cargoDirigido}
-                        label={'Cargo'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 100}}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                {(formData.tipoDestino !== 1) ? 
-                    <Fragment>
-
-                        <Grid item xl={4} md={4} sm={6} xs={12}>
-                            <TextValidator 
-                                name={'empresa'}
-                                value={formData.empresa}
-                                label={'Nomre de la empresa'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 80}}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xl={4} md={4} sm={6} xs={12}>
-                            <TextValidator 
-                                name={'direccionDestinatario'}
-                                value={formData.direccionDestinatario}
-                                label={'Direccion de la emprsa o destinatario'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 80}}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xl={4} md={4} sm={6} xs={12}>
-                            <TextValidator 
-                                name={'telefono'}
-                                value={formData.telefono}
-                                label={'Teléfono de la empresa o destinatario'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 20}}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                    </Fragment>
-                : null}
-
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <SelectValidator
-                        name={'saludo'}
-                        value={formData.saludo}
-                        label={'Saludo'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange} 
-                    >
-                        <MenuItem value={""}>Seleccione</MenuItem>
-                        {tipoSaludos.map(res=>{
-                            return <MenuItem value={res.tipsalid} key={res.tipsalid} >{res.tipsalnombre}</MenuItem>
-                        })}
-                    </SelectValidator>
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'ciudad'}
-                        value={formData.ciudad}
-                        label={'Ciudad'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 50}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
-
-                <Grid item xl={5} md={5} sm={6} xs={12}>
+                <Grid item xl={5} md={5} sm={12} xs={12}>
                     <TextValidator 
                         multiline
                         maxRows={2}
@@ -472,7 +358,7 @@ export default function New({id, area, tipo}){
                         label={'Asunto'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
+                        inputProps={{autoComplete: 'off', maxLength: 200}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}

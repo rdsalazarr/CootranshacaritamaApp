@@ -69,8 +69,11 @@ class CircularController extends Controller
 
 	public function datos(Request $request)
 	{ 
+		$this->validate(request(),['tipo' => 'required']);
+
 		$id                = $request->id;
 		$tipo              = $request->tipo;
+		$depeid            = $request->dependencia;
 		$data              = '';
 		$firmasDocumento   = [] ;
 		$copiaDependencias = [] ;
@@ -78,6 +81,7 @@ class CircularController extends Controller
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
 			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->circular($id);
+			$depeid      = $data->depeid;
 		}
 
 		$fechaActual     = Carbon::now()->format('Y-m-d');
@@ -85,16 +89,16 @@ class CircularController extends Controller
 		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
 		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
         $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
-        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->orderBy('depenombre')->get();
+        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->where('depeid', '!=', $depeid)->orderBy('depenombre')->get();
  		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
 														->orderBy('nombrePersona')
 														->whereIn('carlabid', [1, 2])->get();
         $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
 
-        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"       => $tipoDestinos,      "tipoMedios"      => $tipoMedios,
-                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"    => $tipoDespedidas,    "dependencias"    => $dependencias,
-								"personas"        => $personas,        "cargoLaborales"    => $cargoLaborales,    "data"            => $data,
-								"firmasDocumento" => $firmasDocumento, "copiaDependencias" => $copiaDependencias, "anexosDocumento" => $anexosDocumento ]);
+        return response()->json(["fechaActual"      => $fechaActual,       "tipoDestinos" => $tipoDestinos, "tipoMedios"      => $tipoMedios,
+                                "tipoDespedidas"    => $tipoDespedidas,    "dependencias" => $dependencias, "personas"        => $personas, 
+								"cargoLaborales"    => $cargoLaborales,    "data"         => $data,         "firmasDocumento" => $firmasDocumento,
+								"copiaDependencias" => $copiaDependencias, "anexosDocumento" => $anexosDocumento ]);
 	}
 
     public function salve(CircularRequests $request){
@@ -138,8 +142,7 @@ class CircularController extends Controller
 			}
 	    	
 	    	$codigodocumentalproceso->codoprfecha               = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido      = $request->nombreDirigido;
-	    	$codigodocumentalproceso->codoprcargonombredirigido = $request->cargoDirigido;
+	    	$codigodocumentalproceso->codoprnombredirigido      = $request->destinatarios;
 	      	$codigodocumentalproceso->codoprasunto              = $request->asunto;
 	    	$codigodocumentalproceso->codoprcorreo              = $request->correo;
 	    	$codigodocumentalproceso->codoprcontenido           = $request->contenido;
@@ -147,7 +150,7 @@ class CircularController extends Controller
 	    	$codigodocumentalproceso->codopranexonombre         = $request->nombreAnexo;
 	    	$codigodocumentalproceso->codoprtienecopia          = $request->tieneCopia;
 	    	$codigodocumentalproceso->codoprcopianombre         = $request->nombreCopia;
-	    	$codigodocumentalproceso->save();  
+	    	$codigodocumentalproceso->save();
 
 			if($request->tipo === 'I'){
 				$codDocProcesoMaxConsecutio 				= CodigoDocumentalProceso::latest('codoprid')->first();
@@ -159,9 +162,8 @@ class CircularController extends Controller
 				$coddocumprocesocircular->codoplanio        = $anioActual;
 			}
 
-			$coddocumprocesocircular->tipsalid  = $request->saludo;
-			$coddocumprocesocircular->tipdesid  = $request->despedida;		   
-		   	$coddocumprocesocircular->save();	
+			$coddocumprocesocircular->tipdesid  = $request->despedida;
+		   	$coddocumprocesocircular->save();
 
 			//Registramos los adjuntos
 			if($request->hasFile('archivos')){
@@ -186,7 +188,7 @@ class CircularController extends Controller
 					$coddocumprocesoanexo->save();
 				}
 			}
-		
+
 			foreach($request->firmaPersonas as $firmaPersona){
 				$identificadorFirma = $firmaPersona['identificador'];
 				$personaFirma       = $firmaPersona['persona'];

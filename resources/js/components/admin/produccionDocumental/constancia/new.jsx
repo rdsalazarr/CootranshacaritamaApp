@@ -6,15 +6,16 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers';
 import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'date-fns/locale/es'; 
 import dayjs from 'dayjs';
+dayjs.locale('esLocale')
 
 export default function New({id, area, tipo}){ 
-
     const editorTexto = useRef(null);
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
@@ -32,7 +33,7 @@ export default function New({id, area, tipo}){
     const [personas, setPersonas] = useState([]);
     const [cargoLaborales, setCargoLaborales] = useState([]);  
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
-    const [fechaMinima, setFechaMinima] = useState(dayjs());
+    const [fechaMinima, setFechaMinima] = useState();
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -65,7 +66,7 @@ export default function New({id, area, tipo}){
 
         let newFormData                  = {...formData};
         newFormData.contenido            = editorTexto.current.getContent()
-        newFormData.firmaPersona         = firmaPersona;
+        newFormData.firmaPersonas        = firmaPersona;
 
         setLoader(true);
         setFormData(formDataCopia);
@@ -75,7 +76,7 @@ export default function New({id, area, tipo}){
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
                                                                     dependencia: (tipo === 'I') ? area.depeid: '',   serie: '5',      subSerie: '5',      tipoMedio: '',        tipoTramite: '1', 
-                                                                    tipoDestino: '',       fecha: '',      nombreDirigido: '',        correo: '',         contenidoInicial: '', contenido: '',
+                                                                    tipoDestino: '',       fecha: fechaActual,  nombreDirigido: '',   correo: '',         contenidoInicial: '', contenido: '',
                                                                     tipoPersona: '',       tituloDocumento: formData.tituloDocumento, tipo:tipo}) : null;
 
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
@@ -88,6 +89,7 @@ export default function New({id, area, tipo}){
         let newFormData = {...formData}
         instance.post('/admin/producion/documental/constancia/listar/datos', {id: id, tipo: tipo}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
+            (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
             setTipoPersonaDocumentales(res.tipoPersonaDocumentales);
@@ -125,17 +127,11 @@ export default function New({id, area, tipo}){
                         estado: 'U'
                     });
                 }); 
-
-                console.log(res.fechaActual);
-                console.log(tpDocumental.codoprfecha);
-
+                
                 setFirmaPersona(newFirmasDocumento);
-                setFechaActual(tpDocumental.codoprfecha);
-                //2023-09-21
-               setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-
-               //const fechaFormateada = dayjs(fechaDesdeBD, 'MM/DD/YYYY').format('YYYY-MM-DD');
-            }        
+                setFechaActual(tpDocumental.codoprfecha); 
+                setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD'));
+            }
             setFormData(newFormData);
             setLoader(false);
         }) 
@@ -153,9 +149,9 @@ export default function New({id, area, tipo}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <label className={'labelEditor'}> Fecha del documento</label>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} >
-                        <DatePicker 
+                <LocalizationProvider dateAdapter={AdapterDayjs} >
+                        <DatePicker
+                            label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']} 
                             minDate={fechaMinima}
@@ -166,7 +162,7 @@ export default function New({id, area, tipo}){
                     </LocalizationProvider>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha' >
+                <Grid item xl={2} md={2} sm={6} xs={12} >
                     <SelectValidator
                         name={'tipoDestino'}
                         value={formData.tipoDestino}
@@ -185,7 +181,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid> 
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoMedio'}
                         value={formData.tipoMedio}
@@ -204,7 +200,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         name={'correo'}
                         value={formData.correo}
@@ -287,7 +283,7 @@ export default function New({id, area, tipo}){
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <label className={'labelEditor'}> Contenido adicional</label> 
-                    <Editor 
+                    <Editor
                         onInit={(evt, editor) => editorTexto.current = editor}
                         initialValue = {formData.contenido}
                         init={{

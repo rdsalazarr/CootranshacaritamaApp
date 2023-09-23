@@ -52,8 +52,8 @@ export default function Verificar(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Hora citacion','Dirigido','Estado','Anular firma', 'Sellar', 'Anular documento','PDF']}
-                    ver={["consecutivo", "dependencia","fecha", "horacitacion","nombredirigido", "estado"]}
+                    titulo={['Consecutivo', 'Dependencia','Fecha documento','Fecha citación','Hora', 'Lugar', 'Estado','Anular firma', 'Sellar', 'Anular documento','PDF']}
+                    ver={["consecutivo", "dependencia","fecha", "fechaRealizacion", "hora", "lugar", "estado"]}
                     accion={[
                         {tipo: 'B', icono : 'clear_icon',        color: 'red',    funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'lock_icon',         color: 'green',  funcion : (data)=>{edit(data,1)} },

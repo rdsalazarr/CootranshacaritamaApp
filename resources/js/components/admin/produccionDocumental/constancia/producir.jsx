@@ -34,7 +34,7 @@ export default function Producir(){
                         <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} ruta={'constancia'} />
                     ];
 
-    const tituloModal = ['Selecionar área de produccion documental', 
+    const tituloModal = ['Selecionar área de producción documental', 
                         'Registrar nuevo tipo documental ',
                         'Editar tipo documental constancia',
                         'Solicitar firma del tipo documental',

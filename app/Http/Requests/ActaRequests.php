@@ -46,7 +46,7 @@ class ActaRequests extends FormRequest
             'ausentes'          => 'nullable|string|min:4|max:4000',
             'ordenDia'          => 'required|string|min:4|max:4000',
             'quorum'            => 'required|string|min:4|max:200', 
-            'convocatoriaLugar' => 'required_if:convocatoria,1',
+            'convocatoriaLugar' => 'nullable|string|min:4|max:100|required_if:convocatoria,1',
             'convocatoriaFecha' => 'nullable|date_format:Y-m-d|required_if:convocatoria,1',
             'convocatoriaHora'  => 'nullable|date_format:H:i|required_if:convocatoria,1',
             'firmaPersonas'     => 'required|array|min:1'

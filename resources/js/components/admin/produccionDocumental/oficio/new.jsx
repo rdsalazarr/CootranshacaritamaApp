@@ -48,7 +48,7 @@ export default function New({id, area, tipo}){
     const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
     const [anexosDocumento, setAnexosDocumento] = useState([]);    
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
-    const minDate = dayjs();
+    const [fechaMinima, setFechaMinima] = useState(dayjs());
 
     const cantidadAdjunto = () =>{
         setTotalAdjuntoSubido(totalAdjuntoSubido - 1);
@@ -126,10 +126,10 @@ export default function New({id, area, tipo}){
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
                                                                     dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',      subSerie: '6',      tipoMedio: '',   tipoTramite: '1', 
-                                                                    tipoDestino: '',       fecha: '',      nombreDirigido: '',        cargoDirigido: '',  asunto: '',  
-                                                                    correo: '',            contenido: '',  tieneAnexo: '',            nombreAnexo: '',    tieneCopia: '',
-                                                                    nombreCopia: '',       saludo: '',     despedida: '',             tituloPersona: '',  ciudad: '', 
-                                                                    cargoDestinatario: '', empresa: '',    direccionDestinatario: '', telefono: '',       responderRadicado: '0',
+                                                                    tipoDestino: '',       fecha: fechaActual, nombreDirigido: '',        cargoDirigido: '',  asunto: '',  
+                                                                    correo: '',            contenido: '',      tieneAnexo: '',            nombreAnexo: '',    tieneCopia: '',
+                                                                    nombreCopia: '',       saludo: '',         despedida: '',             tituloPersona: '',  ciudad: '', 
+                                                                    cargoDestinatario: '', empresa: '',        direccionDestinatario: '', telefono: '',       responderRadicado: '0',
                                                                     tipo:tipo}) : null;
             
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
@@ -186,8 +186,9 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/oficio/listar/datos', {id: id, tipo: tipo}).then(res=>{
-            setFechaActual(res.fechaActual);
+        instance.post('/admin/producion/documental/oficio/listar/datos', {id: id, tipo: tipo, dependencia: formData.dependencia}).then(res=>{
+            (tipo === 'I') ? setFechaActual(res.fechaActual): null;
+            (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoDestinos(res.tipoDestinos);
             setTipoMedios(res.tipoMedios);
             setTipoSaludos(res.tipoSaludos);
@@ -252,6 +253,8 @@ export default function New({id, area, tipo}){
     
                 setFormDataDependencia(newFormDataDependencia);
                 setTotalAdjuntoSubido(tpDocumental.totalAnexos);
+                setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD'));
+                setFechaActual(tpDocumental.codoprfecha);
                 setFirmaPersona(newFirmasDocumento);
                 setAnexosDocumento(anexosDocumento);
             }
@@ -269,15 +272,15 @@ export default function New({id, area, tipo}){
     return (
         <ValidatorForm onSubmit={handleSubmit} >
 
-            <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
+            <Grid container spacing={2} style={{display: 'flex', justifyContent: 'space-between'}}>
 
-               <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <label className={'labelEditor'}> Fecha del documento </label> 
+               <Grid item xl={4} md={4} sm={6} xs={12}>                    
                     <LocalizationProvider dateAdapter={AdapterDayjs} >
                         <DatePicker 
+                            label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']} 
-                            minDate={minDate}
+                            minDate={fechaMinima}
                             locale={esLocale}
                             className={'inputGeneral'} 
                             onChange={handleChangeDate}
@@ -285,7 +288,7 @@ export default function New({id, area, tipo}){
                     </LocalizationProvider>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha' >
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoDestino'}
                         value={formData.tipoDestino}
@@ -304,7 +307,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid> 
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoMedio'}
                         value={formData.tipoMedio}
@@ -323,7 +326,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator
                         multiline
                         maxRows={3}
@@ -332,7 +335,7 @@ export default function New({id, area, tipo}){
                         label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
+                        inputProps={{autoComplete: 'off', maxLength: 1000}}
                         onChange={handleChange}
                         onBlur={() => {
                             if (formData.correo && !validateCorreos(formData.correo)) {
@@ -369,7 +372,7 @@ export default function New({id, area, tipo}){
                         label={'Nombre de la persona que va dirigido'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 2000}}
+                        inputProps={{autoComplete: 'off', maxLength: 4000}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -383,7 +386,7 @@ export default function New({id, area, tipo}){
                         label={'Cargo'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 100}}
+                        inputProps={{autoComplete: 'off', maxLength: 1000}}
                         onChange={handleChange}
                     />
                 </Grid>
@@ -456,7 +459,7 @@ export default function New({id, area, tipo}){
                         label={'Ciudad'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 50}}
+                        inputProps={{autoComplete: 'off', maxLength: 80}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -472,7 +475,7 @@ export default function New({id, area, tipo}){
                         label={'Asunto'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
+                        inputProps={{autoComplete: 'off', maxLength: 200}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -575,7 +578,7 @@ export default function New({id, area, tipo}){
                                 label={'Nombre del anexo'}
                                 className={'inputGeneral'} 
                                 variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
+                                inputProps={{autoComplete: 'off', maxLength: 300}}
                                 onChange={handleChange}
                             />
                         </Grid>
@@ -633,7 +636,7 @@ export default function New({id, area, tipo}){
                                 label={'Nombre de la copia'}
                                 className={'inputGeneral'} 
                                 variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
+                                inputProps={{autoComplete: 'off', maxLength: 300}}
                                 onChange={handleChange}
                             />
                         </Grid>

@@ -32,14 +32,14 @@ class OficioRequests extends FormRequest
 
             'idCDP'                 => 'required|numeric',
             'fecha'                 => 'required|date|date_format:Y-m-d',
-            'nombreDirigido'        => 'required|string|min:4|max:2000',
-            'cargoDirigido'         => 'nullable|string|min:4|max:100',
+            'nombreDirigido'        => 'required|string|min:4|max:4000',
+            'cargoDirigido'         => 'nullable|string|min:4|max:1000',
             'asunto'                => 'required|string|min:4|max:200',
-            'correo'                => 'required_if:tipo_medio,2|required_if:tipo_medio,3',
+            'correo'                => 'nullable|string|max:1000|required_if:tipo_medio,2|required_if:tipo_medio,3',
             'contenido'             => 'required',
-            'tieneAnexo'            => 'required|string',
+            'tieneAnexo'            => 'required|numeric',
             'nombreAnexo'           => 'nullable|string|min:4|max:300',
-            'tieneCopia'            => 'required|string',
+            'tieneCopia'            => 'required|numeric',
             'nombreCopia'           => 'nullable|string|min:4|max:300',
 
             'idCDPO'                => 'required|numeric',
@@ -51,9 +51,11 @@ class OficioRequests extends FormRequest
             'empresa'               => 'nullable|string|min:4|max:80',
             'direccionDestinatario' => 'nullable|string|min:4|max:80',
             'telefono'              => 'nullable|string|min:4|max:20',
-            'responderRadicado'     => 'required|string',
-            'firmaPersona'          => 'required|array|min:1',
-            //'archivos'              => 'nullable|array|mimes:jpg,png,jpeg,doc,docx,pdf,ppt,pptx,xls,xlsx,xlsm,zip,rar|max:2000'
+            'responderRadicado'     => 'required|numeric',
+            'firmaPersonas'         => 'required|array|min:1',
+            'archivos'              => 'nullable|array|max:2000',
+            //'archivos.*'            => 'file|mimetypes:application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.wordprocessingml.document|max:2000',
+            'archivos.*'            => 'nullable|mimes:jpg,png,jpeg,doc,docx,pdf,ppt,pptx,xls,xlsx,xlsm,zip,rar|max:2000'  
         ];
     }
 }

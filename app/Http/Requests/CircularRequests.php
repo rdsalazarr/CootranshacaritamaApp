@@ -36,18 +36,17 @@ class CircularRequests extends FormRequest
             'asunto'                => 'required|string|min:4|max:200',
             'correo'                => 'nullable|string|min:4|max:1000|required_if:tipo_medio,2|required_if:tipo_medio,3',
             'contenido'             => 'required',
-            'tieneAnexo'            => 'required|string',
+            'tieneAnexo'            => 'required|numeric',
             'nombreAnexo'           => 'nullable|string|min:4|max:300',
-            'tieneCopia'            => 'required|string',
+            'tieneCopia'            => 'required|numeric',
             'nombreCopia'           => 'nullable|string|min:4|max:300',
 
-            'idCDPC'                => 'required|numeric',            
-            'despedida'             => 'required|numeric',           
-            'firmaPersona'          => 'required|array|min:1',
-            //'archivos'              => 'nullable|mimes:jpg,png,jpeg,doc,docx,pdf,ppt,pptx,xls,xlsx,xlsm,zip,rar|max:2000'  
-           // 'depeidproductora' => 'required',
-            //'depeproductora'   => 'required',               
-           
+            'idCDPC'                => 'required|numeric',
+            'despedida'             => 'required|numeric',
+            'firmaPersonas'         => 'required|array|min:1',
+            'archivos'              => 'nullable|array|max:2000',
+            //'archivos.*'            => 'file|mimetypes:application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.wordprocessingml.document|max:2000',
+            'archivos.*'            => 'nullable|mimes:jpg,png,jpeg,doc,docx,pdf,ppt,pptx,xls,xlsx,xlsm,zip,rar|max:2000'  
         ];
     }
 }

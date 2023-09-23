@@ -62,7 +62,7 @@ class generarPDF
 		//PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36 , 20);
+		PDF::SetMargins(24, 36, 20);
 		PDF::AddPage('P', array(216,332));
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(24); 
@@ -137,7 +137,7 @@ class generarPDF
 			PDF::Ln(4);
 		}
 
-		$this->imprimirFirmasDocumento($firmasDocumento);
+		$this->imprimirFirmasDocumento($firmasDocumento, $estadoDocumento);
 
 		if(count($firmasDocumento) == 1){//Por si solo tiene una sola firma
 			PDF::Ln(20);
@@ -244,14 +244,15 @@ class generarPDF
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
-  		$anioDocumento        = $infodocumento->codopoanio;
+  		$anioDocumento        = $infodocumento->codoplanio;
   		$tipoDocumento        = $infodocumento->tipdoccodigo;
-  		$siglaDependencia     = $infodocumento->codoposigla;
-  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
+  		$siglaDependencia     = $infodocumento->codoplsigla;
+  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codoplconsecutivo;
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
 		$estadoDocumento      = $infodocumento->tiesdoid;
 
-		$circularNumero       = " CIRCULAR Nº  ".$infodocumento->codopoconsecutivo;
+		$circularNumero       = " CIRCULAR Nº  ".$infodocumento->codoplconsecutivo;
+		$correos              = $infodocumento->codoprcorreo;
 		$asunto               = $infodocumento->codoprasunto;
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;
 		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;	
@@ -284,16 +285,17 @@ class generarPDF
 		PDF::AddPage('P', 'Letter');
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(34);
-		PDF::Ln(20);
+		PDF::Ln(4);
 		PDF::Cell(0, 5, $circularNumero, 0, 0, 'C');
 	    PDF::Ln(12);
 	    PDF::SetFont('helvetica', 'I', 12);
 	    PDF::Cell(70, 4, $fechaDocumento, 0, 0, '');
-	    PDF::Ln(18);
-	    PDF::SetFont('helvetica', 'B', 12);
-	    PDF::Cell(14, 4, 'PARA', 0, 0, '');
-	    PDF::MultiCell(0, 4, $nombreDirigido."\n", 0, 'J', 0);
 	    PDF::Ln(12);
+	    PDF::SetFont('helvetica', '', 12);
+	    PDF::Cell(22, 4, 'PARA: ', 0, 0, '');
+		PDF::SetFont('helvetica', 'B', 12);
+	    PDF::MultiCell(0, 4, $nombreDirigido."\n", 0, 'J', 0);
+	    PDF::Ln(8);
 	    PDF::SetFont('helvetica', '', 12);
 	    PDF::Cell(22, 4, 'ASUNTO:', 0, 0, '');
 	    PDF::MultiCell(0, 4, $asunto."\n", 0, 'J', 0);
@@ -303,32 +305,27 @@ class generarPDF
 	    PDF::Cell(60, 4,$despedida, 0, 0, '');
 	    PDF::Ln(28);
 
+		$this->imprimirFirmasDocumento($firmasDocumento, $estadoDocumento);
+
+		if(count($firmasDocumento) == 1){//Por si solo tiene una sola firma
+			PDF::Ln(16);
+		}
+
 		//verifico si tiene adjunto
 		if($tieneAnexo == 1){
 			PDF::Cell(20, 4, 'Anexos:', 0, 0, '');
 			$this->imprimirRutaAnexo($anexosDocumento, $siglaDependencia, $anioDocumento);
 			if($nombreAnexo != '') {
 	            PDF::MultiCell(0, 4, $nombreAnexo, 0, '', 0);
+				PDF::Ln(4);
 	        }
 		}
 
 		//Verifico si tiene copia
-		if($tieneCopia == 1){
-			PDF::Ln(4);
-			PDF::Cell(20, 4, 'Copia:', 0, 0, '');
-			//imprimo las depedencias a las que va dirigida la copia
-			foreach ($copiaDependencias as $copiaDependencia)
-			{
-				PDF::MultiCell(140, 4, $copiaDependencia->depenombre, 0, '', 0);
-				PDF::Cell(20, 4, '', 0, 0, '');
-			}
-
-			if ($nombreCopia != '') {
-			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);
-	        }
+		if($tieneCopia == 1 || $correos !== ''){
+			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);			
 		}
 
-		PDF::Ln(10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
 	    //Imprimimos salida del pdf
@@ -348,15 +345,16 @@ class generarPDF
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
-  		$anioDocumento        = $infodocumento->codopaanio;
+  		$anioDocumento        = $infodocumento->codoptanio;
   		$tipoDocumento        = $infodocumento->tipdoccodigo;
-  		$siglaDependencia     = $infodocumento->codopasigla;
-		$consecutivo          = $infodocumento->codopaconsecutivo;
-  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopaconsecutivo;
+  		$siglaDependencia     = $infodocumento->codoptsigla;
+		$consecutivo          = $infodocumento->codoptconsecutivo;
+  		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codoptconsecutivo;
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
 		$estadoDocumento      = $infodocumento->tiesdoid;
 
-		$dependencia  		  = $infodocumento->depenombre;
+		$correos              = $infodocumento->codoprcorreo;
+		$dependencia  		  = $infodocumento->dependencia;
 		$tipactid     		  = $infodocumento->tipactid;
 		$tipoActa     		  = $infodocumento->tipactnombre;
 		$contenido    		  = $infodocumento->codoprcontenido;
@@ -383,18 +381,18 @@ class generarPDF
 		//PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36 , 20);
+		PDF::SetMargins(24, 36, 20);
 		PDF::AddPage('P', array(216,332));
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(24); 
 		PDF::SetFont('helvetica','B',14);
 		PDF::Ln(16);
 	    PDF::SetFont('helvetica', 'B', 12);
-	    PDF::MultiCell(165, 0, $dependencia, 0, 'C', false, 1);
-	    PDF::Cell(165, 4, 'CITACIÓN ' . $consecutivo, 0, 0, 'C');  
+	    PDF::MultiCell(170, 0, $dependencia, 0, 'C', false, 1);
+	    PDF::Cell(170, 4, 'CITACIÓN ' . $consecutivo, 0, 0, 'C');  
 	    if ($tipactid >= '2'){
 	    	PDF::Ln(5);
-	        PDF::Cell(0, 5, $tipo_acta, 0, 0, 'C');
+	        PDF::Cell(170, 5, $tipoActa, 0, 0, 'C');
 	        PDF::Ln(4);
 	    }
 
@@ -412,7 +410,7 @@ class generarPDF
 	    PDF::SetX(50);
 	    PDF::Cell(70, 4, $lugar, 0, 0, '');
 	    PDF::Ln(16); 
-	    PDF::Cell(30, 4, 'ORDEN DEL DÍA', 0, 0, '');
+	    PDF::Cell(170, 4, 'ORDEN DEL DÍA', 0, 0, '');
 	    PDF::Ln(8); 
 	    PDF::writeHTML($contenido, true, 0, true, true);
 	    PDF::Ln(8);
@@ -420,7 +418,7 @@ class generarPDF
 	    PDF::Ln(24);
 	    PDF::SetFont('helvetica', '', 11);
 
-		$this->imprimirFirmasDocumento($firmasDocumento);
+		$this->imprimirFirmasDocumento($firmasDocumento, $estadoDocumento);
 
 		if(count($firmasDocumento) == 1){//Por si solo tiene una sola firma
 			PDF::Ln(20);
@@ -433,11 +431,15 @@ class generarPDF
 			PDF::Cell(80, 4, 'INVITADOS', 0, 0, '');
 			PDF::Ln(20); 
 			PDF::SetFont('helvetica', '', 11);
-			$this->imprimirFirmasDocumento($firmaInvitados);
+			$this->imprimirFirmasDocumento($firmaInvitados, $estadoDocumento);
+			PDF::Ln(16);
 		}
 
-		PDF::SetFont('helvetica', '', 12);
-		PDF::Ln(10);
+		if($correos !== ''){
+			$this->imprimirCopiaDocumento([], '', $correos);
+		}
+
+		PDF::SetFont('helvetica', '', 11);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
 		//Imprimimos salida del pdf
@@ -449,7 +451,7 @@ class generarPDF
         $funcion          = new generales();
 		$encrypt          = new encrypt();
         $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->constancia($id);
 		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
@@ -548,6 +550,7 @@ class generarPDF
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
 		$estadoDocumento      = $infodocumento->tiesdoid;
 			
+		$correos              = $infodocumento->codoprcorreo;
 		$titulo               = $infodocumento->codopotitulo;
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;
 		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;
@@ -636,7 +639,7 @@ class generarPDF
 	    PDF::Cell(60, 4,$despedida, 0, 0, '');
 	    PDF::Ln(20);
 
-		$this->imprimirFirmasDocumento($firmasDocumento);
+		$this->imprimirFirmasDocumento($firmasDocumento, $estadoDocumento);
 
 		if(count($firmasDocumento) == 1){//Por si solo tiene una sola firma
 			PDF::Ln(20);
@@ -652,22 +655,10 @@ class generarPDF
 		}
 
 		//Verifico si tiene copia
-		if($tieneCopia == 1){
-			PDF::Ln(4);
-			PDF::Cell(20, 4, 'Copia:', 0, 0, '');
-			//imprimo las depedencias a las que va dirigida la copia
-			foreach ($copiaDependencias as $copiaDependencia)
-			{
-				PDF::MultiCell(140, 4, $copiaDependencia->depenombre, 0, '', 0);
-				PDF::Cell(20, 4, '', 0, 0, '');
-			}
-
-			if ($nombreCopia != '') {
-			    PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0);
-	        }
+		if($tieneCopia == 1 || $correos !== ''){
+			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);
 		}
-
-		PDF::Ln(10);
+	
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
 	    //Imprimimos salida del pdf
@@ -785,7 +776,7 @@ class generarPDF
 		return " La proxima reunión se realizará en ".$lugar." el día ".$fechaGenerada ." a partir de ".$hora." horas. ";
 	}
 
-	function imprimirFirmasDocumento($firmasDocumento){
+	function imprimirFirmasDocumento($firmasDocumento, $estadoDocumento){
 		$cont = 0;
 		foreach ($firmasDocumento as $firma)
 		{
@@ -795,11 +786,12 @@ class generarPDF
 			$rutaFirma = ($firmado == 1) ? $firma->firmaPersona : 'images/documentoSinFirma.png';
 
 			if($cont == 0){
-				PDF::Image($rutaFirma, 28, PDF::GetY() -7,50,8);//le quito -7 a la posicion y
+				//le quito -7 a la posicion y
+				($estadoDocumento !== 10) ? PDF::Image($rutaFirma, 28, PDF::GetY() -7,50,8) : '';
 			    PDF::writeHTMLCell(86, 4, 24, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
 			    $cont += 1;
 			}else{
-				PDF::Image($rutaFirma, 114, PDF::GetY() -7,50,8);
+				($estadoDocumento !== 10) ? PDF::Image($rutaFirma, 114, PDF::GetY() -7,50,8) : '';
 			    PDF::writeHTMLCell(86, 4, 112, '', "<b>".$remitente."</b><br>".$cargo."<br>", 0, 0, 0, true, 'J');
 			    PDF::Ln(24);
 			    $cont = 0;
@@ -810,14 +802,46 @@ class generarPDF
 	function imprimirRutaAnexo($anexosDocumento, $siglaDependencia, $anioDocumento){
 		foreach ($anexosDocumento as $anexo)
 		{
-			$nombreArchivo = $anexo->codopxnombreanexooriginal;
-			$nombreEditado = $anexo->codopxnombreanexoeditado;
-			$rutaAdjunto   = asset('/archivos/produccionDocumental/adjuntos/'.$siglaDependencia.'/'.$anioDocumento.'/'.Crypt::decrypt($anexo->codopxrutaanexo)); 
+			$nombreArchivo = $anexo->nombreOriginal;
+			$nombreEditado = $anexo->nombreEditado;
+			$rutaAdjunto   = asset('/archivos/produccionDocumental/adjuntos/'.$siglaDependencia.'/'.$anioDocumento.'/'.Crypt::decrypt($anexo->rutaAnexo)); 
 $html = <<<EOD
 	<a href="$rutaAdjunto" target="\_blank" title="$nombreArchivo">$nombreArchivo</a>
 EOD;
 			PDF::writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true); 
 			PDF::Cell(20, 4, '', 0, 0, '');
+		}
+	}
+
+	function imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos){
+		PDF::Ln(4);
+		PDF::Cell(20, 4, 'Copia:', 0, 0, '');
+		//imprimo las depedencias a las que va dirigida la copia
+		foreach ($copiaDependencias as $copiaDependencia)
+		{
+			PDF::MultiCell(140, 4, $copiaDependencia->depenombre, 0, '', 0);
+			PDF::Cell(20, 4, '', 0, 0, '');
+		}
+
+		($nombreCopia != '') ? PDF::MultiCell(140, 4, $nombreCopia, 0, '', 0) : '';	
+
+		if ($correos != '') {
+			$array = explode(',', $correos);
+			$conta = 1;
+			($nombreCopia != '') ? PDF::Cell(20, 4, '', 0, 0, '') : '';	
+			foreach ($array as $dato) {
+				//separación entre un correo y otro
+				PDF::Cell(80, 4, $dato, 0, 0, '');
+				if ($conta == 2) {
+					PDF::Ln(4);
+					PDF::SetX(30);
+					PDF::Cell(14, 4, '', 0, 0, '');
+					$conta = 1;
+				} else {
+					$conta++;
+				}
+			}
+			PDF::Ln(8);
 		}
 	}
 

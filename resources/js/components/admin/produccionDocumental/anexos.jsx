@@ -6,6 +6,8 @@ import { ModalDefaultAuto  } from '../../layout/modal';
 import ModalEliminar from './modalEliminar'
 
 export default function Anexos({data, eliminar, cantidadAdjunto}){
+
+    console.log(data);
    
     const [dataFiles, setDataFiles] = useState(data);
     const [dataModal, setDataModal] = useState([]);
@@ -25,16 +27,19 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
         dataFiles.map((res,i) =>{
             if(i != id){
                 newDataFiles.push({
-                    codopxid: res.codopxid,
-                    codopxnombreanexooriginal: res.codopxnombreanexooriginal,
-                    codopxnombreanexoeditado: res.codopxnombreanexoeditado,
-                    codopxrutaanexo: res.codopxrutaanexo,
-                    idFolder: res.idFolder
+                    id: res.id,
+                    nombreOriginal: res.nombreOriginal,
+                    nombreEditado:  res.nombreEditado,
+                    rutaDescargar:  res.rutaDescargar,
+                    rutaAnexo:      res.rutaAnexo,
+                    sigla:          res.sigla,
+                    anio:           res.anio,
+                    idFolder:       res.idFolder
                 });
             }
-        })  
+        })
         setDataFiles(newDataFiles);
-    } 
+    }
 
     return (
         <Grid container spacing={2}>
@@ -59,23 +64,23 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
 
                         {dataFiles.map((anexos, a) => {
                             let i = a + 1;
-                            let rutaAdjunto = '/download/adjunto/'+anexos['codoposigla']+'/'+anexos['codopoanio']+'/'+anexos['codopxrutaanexo']+'/'+anexos['idFolder'];
+                            let rutaAdjunto = '/download/adjunto/'+anexos['sigla']+'/'+anexos['anio']+'/'+anexos['rutaAnexo']+'/'+anexos['idFolder'];
                             return(
-                                    <TableRow key={'rowAne-' + a + anexos['codopxid']}>
+                                    <TableRow key={'rowAne-' + a + anexos['id']}>
                                         <TableCell>
                                             <p>{i}</p>
                                         </TableCell>
-                    
+
                                         <TableCell>
-                                            <p>{anexos['codopxnombreanexooriginal']}</p> 
+                                            <p>{anexos['nombreOriginal']}</p> 
                                         </TableCell>
-                    
+
                                         <TableCell className='cellCenter'> 
                                             <Link href={rutaAdjunto} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
                                         </TableCell>
 
                                         {(eliminar) ?  <TableCell className='cellCenter'>
-                                            <DeleteForeverIcon onClick={() => {eliminarAdjunto(a, anexos['codopxid'], anexos['codopxrutaanexo'], anexos['codoposigla'], anexos['codopoanio'], anexos['idFolder'] );}} className={'iconoDownload'}/>                                        
+                                            <DeleteForeverIcon onClick={() => {eliminarAdjunto(a, anexos['id'], anexos['rutaAnexo'], anexos['sigla'], anexos['anio'], anexos['idFolder'] );}} className={'iconoDownload'}/>                                        
                                             </TableCell> : null}
                                     </TableRow> 
                                 );

@@ -31,6 +31,8 @@ import Certificado from "../admin/produccionDocumental/certificado/list";
 import Circular from "../admin/produccionDocumental/circular/list";
 import Oficio from "../admin/produccionDocumental/oficio/list";
 
+import FirmarDocumento from "../admin/produccionDocumental/firmar/list";
+
 import Radicacion from "../admin/radicacion/documentoExterno/list";
 
 
@@ -121,12 +123,12 @@ const componenteMenu = [
     },
     {   nombre: 'Gestionar',
         icono : 'ac_unit_icon',
-        itemMenu: [
-            {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> }, 
+        itemMenu: [            
             {ruta : 'admin/gestionarTipos', menu: 'Tipos', icono : 'star_rate_icon', componente : <GestionTipos /> },
             {ruta : 'admin/gestionarSeriesDocumentales', menu: 'Series', icono : 'insert_chart_icon', componente : <SeriesDocumentales /> },
             {ruta : 'admin/gestionarDependencia', menu: 'Dependencia', icono : 'maps_home_work_icon', componente : <Dependencia /> },
             {ruta : 'admin/gestionarPersona', menu: 'Persona', icono : 'person_icon', componente : <Persona /> },
+            {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> }, 
         ]
     } ,
     {   nombre: 'Produccion documental',
@@ -140,10 +142,23 @@ const componenteMenu = [
             {ruta : 'admin/produccion/documental/oficio', menu: 'Oficio', icono : 'library_books_icon', componente : <Oficio /> }, 
         ]
     },
+    {   nombre: 'Firmar',
+        icono : 'folder_special_icon',
+        itemMenu: [       
+            {ruta : 'admin/produccion/documental/firmar', menu: 'Documentos ', icono : 'import_contacts_icon', componente : <FirmarDocumento /> },
+        ]
+    } ,
     {   nombre: 'Radicación',
         icono : 'folder_special_icon',
         itemMenu: [       
             {ruta : 'admin/radicacion/documento/externo', menu: 'Documento externo', icono : 'import_contacts_icon', componente : <Radicacion /> },
+        ]
+    } ,
+    {   nombre: 'Archivo Histórico',
+        icono : 'folder_special_icon',
+        itemMenu: [       
+            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <Radicacion /> },
+            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <Radicacion /> },
         ]
     } 
 ];

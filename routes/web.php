@@ -48,13 +48,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin/{id}', [DashboardController::class, 'index']);
 
+    //para recargar la pagina con f5
     //Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
     Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
+    Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
+    Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
 
     Route::get('reset', [DashboardController::class, 'reset']);
     Route::get('dataUsuario', [DashboardController::class, 'dataUsuario']);
-    Route::post('updatePassword',[DashboardController::class, 'updatePassword']);
-    
+    Route::post('updatePassword',[DashboardController::class, 'updatePassword']);    
         
     Route::prefix('admin')->group(function(){
         Route::get('/modulo/list', [ModuloController::class, 'index']); //->middleware('security:Admin/Modulo/List')
@@ -155,16 +157,16 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/certificado/visualizar/PDF', [CertificadoController::class, 'showPdf']);
             Route::post('/trazabilidad/certificado', [CertificadoController::class, 'trazabilidad']);
 
-            Route::post('/Circular/list', [CircularController::class, 'index']);
-            Route::get('/Circular/consultar/area', [CircularController::class, 'area']);
-            Route::post('/Circular/listar/datos', [CircularController::class, 'datos']);
-            Route::post('/Circular/salve', [CircularController::class, 'salve']);
-            Route::post('/Circular/solicitar/firma', [CircularController::class, 'solicitarFirma']);
-            Route::post('/verificar/sellado/Circular', [CircularController::class, 'verificarSellado']);
-            Route::post('/sellar/Circular', [CircularController::class, 'sellar']);
-            Route::post('/anular/Circular', [CircularController::class, 'anular']);
-            Route::post('/Circular/visualizar/PDF', [CircularController::class, 'showPdf']);
-            Route::post('/trazabilidad/Circular', [CircularController::class, 'trazabilidad']);
+            Route::post('/circular/list', [CircularController::class, 'index']);
+            Route::get('/circular/consultar/area', [CircularController::class, 'area']);
+            Route::post('/circular/listar/datos', [CircularController::class, 'datos']);
+            Route::post('/circular/salve', [CircularController::class, 'salve']);
+            Route::post('/circular/solicitar/firma', [CircularController::class, 'solicitarFirma']);
+            Route::post('/verificar/sellado/circular', [CircularController::class, 'verificarSellado']);
+            Route::post('/sellar/circular', [CircularController::class, 'sellar']);
+            Route::post('/anular/circular', [CircularController::class, 'anular']);
+            Route::post('/circular/visualizar/PDF', [CircularController::class, 'showPdf']);
+            Route::post('/trazabilidad/circular', [CircularController::class, 'trazabilidad']);
             
             Route::post('/citacion/list', [CitacionController::class, 'index']);
             Route::get('/citacion/consultar/area', [CitacionController::class, 'area']);

@@ -76,7 +76,7 @@ export default function New({id, area, tipo}){
         let newFormData            = {...formData};
         newFormData.contenido      = editorTexto.current.getContent()
         newFormData.firmaPersonas  = firmaPersona;
-        newFormData.firmaInvitados = firmaInvitados;
+        newFormData.firmaInvitados = firmaInvitados;  
         setLoader(true);
         setFormData(formDataCopia);
         instance.post('/admin/producion/documental/citacion/salve', newFormData).then(res=>{
@@ -84,8 +84,8 @@ export default function New({id, area, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
-                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '4',      subSerie: '4',       tipoMedio: '',    tipoTramite: '1', 
-                                                                    tipoDestino: '1',  fecha: '',  tipocitacion: '',    correo: '',  horaInicial: '', lugar: '',  contenido: '', tipo:tipo}) : null;
+                                                                    dependencia: (tipo === 'I') ? area.depeid: '', serie: '4',      subSerie: '4', tipoMedio: '',    tipoTramite: '1', 
+                                                                    tipoDestino: '1',  fecha: fechaActual,         tipocitacion: '', correo: '',    horaInicial: '', lugar: '',   contenido: '', tipo:tipo}) : null;
 
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
             (formData.tipo === 'I' && res.success) ? setFirmaInvitados([]) : null;
@@ -153,7 +153,6 @@ export default function New({id, area, tipo}){
     };
 
     const validateHora = (value) => {
-        console.log(value);
         const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/; // HH:mm format
         return regex.test(value);
     };
@@ -162,7 +161,7 @@ export default function New({id, area, tipo}){
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/producion/documental/citacion/listar/datos', {id: id, tipo: tipo}).then(res=>{
-            setFechaActual(res.fechaActual);
+            (tipo === 'I') ? setFechaActual(res.fechaActual): null;
             setTipoMedios(res.tipoMedios);
             setTipoCitaciones(res.tipoCitaciones);
             setPersonas(res.personas);
@@ -172,10 +171,11 @@ export default function New({id, area, tipo}){
             if(tipo === 'U'){
                 let tpDocumental              = res.data;
                 let firmasDocumento           = res.firmasDocumento;
+                let firmaInvitados            = res.firmaInvitados;
   
                 newFormData.idCD              = tpDocumental.coddocid;
                 newFormData.idCDP             = tpDocumental.codoprid;
-                newFormData.idCDPA            = tpDocumental.id;
+                newFormData.idCDPC            = tpDocumental.id;
                 newFormData.dependencia       = tpDocumental.depeid;
                 newFormData.serie             = tpDocumental.serdocid;
                 newFormData.subSerie          = tpDocumental.susedoid;
@@ -186,19 +186,9 @@ export default function New({id, area, tipo}){
                 newFormData.correo            = (tpDocumental.codoprcorreo !== null) ? tpDocumental.codoprcorreo : '';
                 newFormData.contenido         = tpDocumental.codoprcontenido;
 
-                newFormData.tipocitacion          = tpDocumental.tipactid;
-                newFormData.horaInicial       = tpDocumental.codopahorainicio;
-                newFormData.horaFinal         = tpDocumental.codopahorafinal;
-                newFormData.lugar             = tpDocumental.codopalugar;
-                newFormData.convocatoria      = tpDocumental.codopaconvocatoria;
-                newFormData.asistentes        = tpDocumental.codoprnombredirigido;
-                newFormData.invitados         = (tpDocumental.codopainvitado !== null) ? tpDocumental.codopainvitado : '';
-                newFormData.ausentes          = (tpDocumental.codopaausente !== null) ? tpDocumental.codopaausente : '';
-                newFormData.ordenDia          = tpDocumental.codopaordendeldia;
-                newFormData.quorum            = tpDocumental.codopaquorum;
-                newFormData.convocatoriaLugar = (tpDocumental.codopaconvocatorialugar !== null) ? tpDocumental.codopaconvocatorialugar : '';
-                newFormData.convocatoriaFecha = (tpDocumental.codopaconvocatoriafecha !== null) ? tpDocumental.codopaconvocatoriafecha : '';
-                newFormData.convocatoriaHora  = (tpDocumental.codopaconvocatoriahora !== null) ? tpDocumental.codopaconvocatoriahora : '';
+                newFormData.tipoCitacion      = tpDocumental.tipactid;
+                newFormData.horaInicial       = tpDocumental.codopthora;             
+                newFormData.lugar             = tpDocumental.codoptlugar;
 
                 let newFirmasDocumento = [];
                 firmasDocumento.forEach(function(frm){
@@ -209,8 +199,20 @@ export default function New({id, area, tipo}){
                         estado: 'U'
                     });
                 });
+
+                let newFirmasInvitado = [];
+                firmaInvitados.forEach(function(frm){
+                    newFirmasInvitado.push({
+                        identificador: frm.codopfid,
+                        persona: frm.persid,
+                        cargo: frm.carlabid,
+                        estado: 'U'
+                    });
+                });
        
                 setFirmaPersona(newFirmasDocumento);
+                setFirmaInvitados(newFirmasInvitado);
+                setFechaActual(tpDocumental.codoprfecha);
             }
             setFormData(newFormData);
             setLoader(false);
@@ -229,9 +231,9 @@ export default function New({id, area, tipo}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <label className={'labelEditor'}> Fecha del documento </label> 
                     <LocalizationProvider dateAdapter={AdapterDayjs} >
                         <DatePicker
+                            label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']}
                             locale={esLocale}
@@ -241,7 +243,7 @@ export default function New({id, area, tipo}){
                     </LocalizationProvider>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoCitacion'}
                         value={formData.tipoCitacion}
@@ -260,7 +262,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoMedio'}
                         value={formData.tipoMedio}
@@ -279,7 +281,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator
                         multiline
                         maxRows={3}
@@ -288,7 +290,7 @@ export default function New({id, area, tipo}){
                         label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
+                        inputProps={{autoComplete: 'off', maxLength: 1000}}
                         onChange={handleChange}
                         onBlur={() => {
                             if (formData.correo && !validateCorreos(formData.correo)) {

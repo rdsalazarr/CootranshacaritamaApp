@@ -80,8 +80,8 @@ export default function New({id, area, tipo}){
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPA:'000',
                                                                     dependencia: (tipo === 'I') ? area.depeid: '',   serie: '1',      subSerie: '1',       tipoMedio: '',    tipoTramite: '1', 
-                                                                    tipoDestino: '1',  fecha: '',              tipoActa: '',          correo: '',           horaInicial: '', horaFinal: '',  
-                                                                    lugar: '',         convocatoria: '0',       asistentes: '',       invitados: '',        ausentes: '',    ordenDia: '', 
+                                                                    tipoDestino: '1',  fecha: fechaActual,    tipoActa: '',          correo: '',           horaInicial: '', horaFinal: '',  
+                                                                    lugar: '',         convocatoria: '0',      asistentes: '',       invitados: '',        ausentes: '',    ordenDia: '', 
                                                                     contenido: '',     convocatoriaLugar: '',  convocatoriaFecha: '', convocatoriaHora: '', quorum: quorum,  tipo:tipo}) : null;
             
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
@@ -133,7 +133,7 @@ export default function New({id, area, tipo}){
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/producion/documental/acta/listar/datos', {id: id, tipo: tipo}).then(res=>{
-            setFechaActual(res.fechaActual);
+            (tipo === 'I') ? setFechaActual(res.fechaActual): null;
             setTipoMedios(res.tipoMedios);
             setTipoActas(res.tipoActas);
             setPersonas(res.personas);
@@ -182,6 +182,7 @@ export default function New({id, area, tipo}){
                 });
        
                 setFirmaPersona(newFirmasDocumento);
+                setFechaActual(tpDocumental.codoprfecha);
             }
             setFormData(newFormData);
             setLoader(false);
@@ -199,10 +200,10 @@ export default function New({id, area, tipo}){
 
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
-               <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <label className={'labelEditor'}> Fecha del documento </label> 
+               <Grid item xl={4} md={4} sm={6} xs={12}>            
                     <LocalizationProvider dateAdapter={AdapterDayjs} >
                         <DatePicker
+                            label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']}
                             locale={esLocale}
@@ -212,7 +213,7 @@ export default function New({id, area, tipo}){
                     </LocalizationProvider>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoActa'}
                         value={formData.tipoActa}
@@ -231,7 +232,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoMedio'}
                         value={formData.tipoMedio}
@@ -250,7 +251,7 @@ export default function New({id, area, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12} className='marginTopNofecha'>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator
                         multiline
                         maxRows={3}
@@ -259,7 +260,7 @@ export default function New({id, area, tipo}){
                         label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
+                        inputProps={{autoComplete: 'off', maxLength: 1000}}
                         onChange={handleChange}
                         onBlur={() => {
                             if (formData.correo && !validateCorreos(formData.correo)) {

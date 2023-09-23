@@ -38,8 +38,8 @@ export default function New({data}){
         Object.keys(formData).forEach(function(key) {
            dataFile.append(key, formData[key])
         })
-        dataFile.append('logo', logoEmpresa);
-       // setLoader(true);
+        dataFile.append('logo', (logoEmpresa !== undefined) ? logoEmpresa : '');
+        setLoader(true);
         instance.post('/admin/empresa/salve', dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);

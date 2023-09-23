@@ -67,6 +67,8 @@ class CertificadoController extends Controller
 
 	public function datos(Request $request)
 	{ 
+		$this->validate(request(),['tipo' => 'required']);
+	
 		$id                = $request->id;
 		$tipo              = $request->tipo;
 		$data              = '';

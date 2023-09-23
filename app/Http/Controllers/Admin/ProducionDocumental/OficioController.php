@@ -69,8 +69,11 @@ class OficioController extends Controller
 
 	public function datos(Request $request)
 	{ 
+		$this->validate(request(),['tipo' => 'required']);
+	
 		$id                = $request->id;
 		$tipo              = $request->tipo;
+		$depeid            = $request->dependencia;
 		$data              = '';
 		$firmasDocumento   = [] ;
 		$copiaDependencias = [] ;
@@ -78,6 +81,7 @@ class OficioController extends Controller
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
 			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
+			$depeid      = $data->depeid;
 		}
 
 		$fechaActual     = Carbon::now()->format('Y-m-d');
@@ -85,7 +89,7 @@ class OficioController extends Controller
 		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
 		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
         $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
-        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->orderBy('depenombre')->get();
+        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->where('depeid', '!=', $depeid)->orderBy('depenombre')->get();
  		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
 														->orderBy('nombrePersona')
 														->whereIn('carlabid', [1, 2])->get();

@@ -110,8 +110,8 @@ class showTipoDocumental
 		$copiaDependencias = $this->obtenerCopiaDocumento($infodocumento->codoprid);
 	
 		$anexosDocumento = DB::table('coddocumprocesoanexo as cdpa')
-						  ->select('cdpa.codopxid','cdpa.codopxnombreanexooriginal','cdpa.codopxnombreanexoeditado','cdpa.codopxrutaanexo',
-						  'cdpc.codoplsigla','cdpc.codoplanio',DB::raw("CONCAT('1') as idFolder"),
+						  ->select('cdpa.codopxid as id','cdpa.codopxnombreanexooriginal as nombreOriginal','cdpa.codopxnombreanexoeditado as nombreEditado',
+						  'cdpa.codopxrutaanexo as rutaAnexo', 'cdpc.codoplsigla as sigla','cdpc.codoplanio as anio',DB::raw("CONCAT('1') as idFolder"),
 						  	DB::raw("CONCAT('archivos/produccionDocumental/',cdpc.codoplsigla,'/',cdpc.codoplanio,'/', cdpa.codopxrutaanexo) as rutaDescargar"))	
 						  ->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
 						  ->join('coddocumprocesocircular as cdpc', 'cdpc.codoprid', '=', 'cdpa.codoprid')
@@ -124,8 +124,8 @@ class showTipoDocumental
 	{
         $infodocumento =  DB::table('coddocumprocesocitacion as cdpc')
 						->select('cdpc.codoptid as id','cdpc.tipactid', DB::raw("CONCAT(cdpc.codoptanio,' - ', cdpc.codoptconsecutivo) as consecutivogenerado"),
-						'cdpc.codoptconsecutivo','cdpc.codoptsigla','cdpc.codoptanio','cdpc.codopthora','cdpc.codoptlugar','cdpc.codoptordendeldia',
-						'cdpc.codoptfecharealizacion','cdp.tiesdoid','td.tipdesnombre','cdp.codoprid','cdp.codoprfecha','ta.tipactnombre',
+						'cdpc.codoptconsecutivo','cdpc.codoptsigla','cdpc.codoptanio','cdpc.codopthora','cdpc.codoptlugar',
+						'cdpc.codoptfecharealizacion','cdp.tiesdoid','cdp.codoprid','cdp.codoprfecha','ta.tipactnombre',
 						'cdp.codoprnombredirigido','cdp.codoprcargonombredirigido','cdp.codoprasunto','cdp.codoprcorreo','cdp.codoprcontenido','cdp.codoprtieneanexo',
 						'cdp.codoprtienecopia','cdp.codoprsolicitafirma','cdp.codopranexonombre','cdp.codoprcopianombre', 'cdp.codoprfirmado','cdp.coddocid',
 						DB::raw("if(cdp.codoprtieneanexo = 1 ,'Sí', 'No') as tieneanexo"),
@@ -223,9 +223,10 @@ class showTipoDocumental
 
 		$firmas            = $this->obtenerFirmaDocumento($infodocumento->codoprid);
 		$copiaDependencias = $this->obtenerCopiaDocumento($infodocumento->codoprid);
-	
+
 		$anexosDocumento = DB::table('coddocumprocesoanexo as cdpa')
-						  ->select('cdpa.codopxid','cdpa.codopxnombreanexooriginal','cdpa.codopxnombreanexoeditado','cdpa.codopxrutaanexo',
+						->select('cdpa.codopxid as id','cdpa.codopxnombreanexooriginal as nombreOriginal','cdpa.codopxnombreanexoeditado as nombreEditado',
+						'cdpa.codopxrutaanexo as rutaAnexo', 'cdpo.codoposigla as sigla','cdpo.codopoanio as anio',DB::raw("CONCAT('1') as idFolder"),
 						  'cdpo.codoposigla','cdpo.codopoanio',DB::raw("CONCAT('1') as idFolder"),
 						  	DB::raw("CONCAT('archivos/produccionDocumental/',cdpo.codoposigla,'/',cdpo.codopoanio,'/', cdpa.codopxrutaanexo) as rutaDescargar"))	
 						  ->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
