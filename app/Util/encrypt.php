@@ -2,7 +2,7 @@
 
 namespace App\Util;
 
-class Encrypt {
+class encrypt {
 
     private static $key  = "WGgyNEt0cGRvNDVDQnQy@";  
     private static $pass = "SGFDQDIwMjNyZFMu==";//Encriptamos en base 64 una frase

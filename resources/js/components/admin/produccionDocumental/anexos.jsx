@@ -5,10 +5,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import ModalEliminar from './modalEliminar'
 
-export default function Anexos({data, eliminar, cantidadAdjunto}){
-
-    console.log(data);
-   
+export default function Anexos({data, eliminar, cantidadAdjunto}){   
     const [dataFiles, setDataFiles] = useState(data);
     const [dataModal, setDataModal] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);

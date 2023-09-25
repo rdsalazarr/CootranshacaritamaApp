@@ -149,7 +149,7 @@ export default function New({id, area, tipo}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
+                    <LocalizationProvider dateAdapter={AdapterDayjs} >
                         <DatePicker
                             label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}

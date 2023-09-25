@@ -34,13 +34,16 @@ use App\Http\Controllers\Admin\ProducionDocumental\CitacionController;
 use App\Http\Controllers\Admin\ProducionDocumental\ConstanciaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController; 
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
+use App\Http\Controllers\Admin\ProducionDocumental\FirmarDocumentosController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
+Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
 Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}/{id}', [DownloadFileController::class, 'download']);
+Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);
 Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
 
 //'revalidate', verifySource
@@ -204,6 +207,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/firma/documento')->group(function(){
+            Route::post('/general', [FirmarDocumentosController::class, 'index']);
 
         });
 

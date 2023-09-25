@@ -73,6 +73,18 @@ $grisOscuro : var(--grisOscuro);
     }
 }
 
+.verificacionDocumento{
+    h1{
+        text-align: center;
+     }
+    .borderTitulo {
+        width: 50%;
+        height: 2px;
+        background-color: var(--verdeClaro);
+        margin: -16px auto 2em;
+    }
+}
+
 /*
 .react-datepicker-popper {
     z-index: 9999 !important;

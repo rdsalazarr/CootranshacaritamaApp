@@ -6,6 +6,6 @@
 
 @section('script')
     <script>
-        window.dataDocumento = {!! json_encode($dataDocumento) !!};
+        window.id = {!! json_encode($id) !!};
     </script>
 @endsection

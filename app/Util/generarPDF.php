@@ -853,7 +853,7 @@ EOD;
 		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
 			$rutaCarpeta  = public_path().'/archivos/produccionDocumental/digitalizados/'.$siglaDependencia.'/'.$anioDocumento;
 			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-			$rutaPdf      = $carpetaServe.'/'.$nombrePdf;
+			$rutaPdf      = $rutaCarpeta.'/'.$nombrePdf;
 			PDF::output($rutaPdf, 'F');
 			return $rutaPdf;
 		}else{

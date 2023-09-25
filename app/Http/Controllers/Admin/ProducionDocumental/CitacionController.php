@@ -323,7 +323,8 @@ class CitacionController extends Controller
 			$infodocumento =  DB::table('coddocumprocesocitacion as cdpc')
 							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codoptconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
-							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
+							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"),
+							 DB::raw("CONCAT(tdc.tipdoccodigo,'-', d.depesigla,'-', cdpc.codoptconsecutivo,'-', cdp.codoprfecha,'.pdf') as rutaDocumento"))
 							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 							->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 							->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
@@ -345,9 +346,10 @@ class CitacionController extends Controller
 			$estado            = 5; //Sellado
 			$mensajeCorreo     = '';
 	
-			$codigodocumentalproceso                = CodigoDocumentalProceso::findOrFail($codoprid);
-			$codigodocumentalproceso->tiesdoid      = $estado;
-			$codigodocumentalproceso->codoprsellado = true;
+			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
+			$codigodocumentalproceso->tiesdoid            = $estado;
+			$codigodocumentalproceso->codoprsellado       = true;
+			$codigodocumentalproceso->codoprrutadocumento = Crypt::encrypt($infodocumento->rutaDocumento);
 			$codigodocumentalproceso->save();
 
 			//Almaceno la trazabilidad del documento

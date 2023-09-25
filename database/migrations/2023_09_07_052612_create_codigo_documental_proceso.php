@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('codopranexonombre', 300)->nullable()->comment('Nombre del adjunto que se relaciona en el documento');
             $table->boolean('codoprtienecopia')->default(false)->comment('Determina si el documento tiene copia');
             $table->string('codoprcopianombre', 300)->nullable()->comment('Nombre de la persona a quien va dirigido el documento como copia');
-            $table->string('codoprrutadocumento', 100)->nullable()->comment('Nombre de la ruta al sellar el documento');
+            $table->string('codoprrutadocumento', 500)->nullable()->comment('Nombre de la ruta al sellar el documento');
             $table->boolean('codoprsolicitafirma')->default(false)->comment('Determina si el documento se le ha solicitado la firma');
             $table->boolean('codoprfirmado')->default(false)->comment('Determina si el documento ha sido firmado');
             $table->boolean('codoprsellado')->default(false)->comment('Determina si el documento esta sellado');

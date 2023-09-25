@@ -309,7 +309,8 @@ class ActaController extends Controller
 			$infodocumento =  DB::table('coddocumprocesoacta as cdpa')
 							->select('cdpa.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpa.codopaconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
-							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
+							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"),
+							 DB::raw("CONCAT(tdc.tipdoccodigo,'-', d.depesigla,'-', cdpa.codopaconsecutivo,'-', cdp.codoprfecha,'.pdf') as rutaDocumento"))
 							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
 							->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 							->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
@@ -331,9 +332,10 @@ class ActaController extends Controller
 			$estado            = 5; //Sellado
 			$mensajeCorreo     = '';
 	
-			$codigodocumentalproceso                = CodigoDocumentalProceso::findOrFail($codoprid);
-			$codigodocumentalproceso->tiesdoid      = $estado;
-			$codigodocumentalproceso->codoprsellado = true;
+			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
+			$codigodocumentalproceso->tiesdoid            = $estado;
+			$codigodocumentalproceso->codoprsellado       = true;
+			$codigodocumentalproceso->codoprrutadocumento = Crypt::encrypt($infodocumento->rutaDocumento);
 			$codigodocumentalproceso->save();
 
 			//Almaceno la trazabilidad del documento

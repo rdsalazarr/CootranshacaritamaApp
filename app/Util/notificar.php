@@ -5,7 +5,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use DB, URL;
 
-class Notificar
+class notificar
 {
 	//Funcion para enviar el correo
     public function correo($correo = [], $asunto = '', $msg = '', $adjunto = '', $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
