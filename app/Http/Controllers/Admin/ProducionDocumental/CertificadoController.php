@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoCompartido;
 use App\Models\CodigoDocumentalProcesoCertificado;
-use App\Models\CodigoDocumentalProcesoFirma;
-use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\CertificadoRequests;
-use App\Models\CodigoDocumental;
+use App\Models\CodigoDocumentalProceso;
+use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\Controller;
 use App\Util\showTipoDocumental;
+use App\Util\editarDocumentos;
+use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
@@ -56,11 +54,8 @@ class CertificadoController extends Controller
 
 	public function area()
 	{
-		$areas = DB::table('dependencia as d')
-						->select('d.depeid','d.depenombre','d.depesigla')
-						->join('dependenciapersona as dp', 'dp.depperdepeid', '=', 'd.depeid')
-						->where('dp.depperpersid', auth()->user()->persid)
-						->orderBy('d.depenombre')->get();
+		$editarDocumento = new editarDocumento();
+		$areas = $editarDocumento->consultarAreaTrabajo();
 
 		return response()->json(["areas" => $areas]);
 	}
@@ -93,105 +88,8 @@ class CertificadoController extends Controller
 	}
 
     public function salve(CertificadoRequests $request){
-
-        $coddocid      				   = $request->idCD;
-	    $codoprid      				   = $request->idCDP;
-	    $codopcid      				   = $request->idCDPC;
-        $codigodocumental              = ($coddocid != 000) ? CodigoDocumental::findOrFail($coddocid) : new CodigoDocumental();
-		$codigodocumentalproceso       = ($codoprid != 000) ? CodigoDocumentalProceso::findOrFail($codoprid) : new CodigoDocumentalProceso();
-		$coddocumprocesocertificado    = ($codopcid != 000) ? CodigoDocumentalProcesoCertificado::findOrFail($codopcid) : new CodigoDocumentalProcesoCertificado();
-
-        DB::beginTransaction();
-		try {
-            $usuarioId       = Auth::id();
-            $fechaHoraActual = Carbon::now();
-            $anioActual      = Carbon::now()->year;
-
-			//Consulto la sigla
-			$dependencia    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeid', $request->dependencia)->first();
-			$sigla          = $dependencia->depesigla;
-
-			if($request->tipo === 'I'){
-				$codigodocumental->depeid          = $request->dependencia;
-				$codigodocumental->serdocid        = $request->serie;
-				$codigodocumental->susedoid        = $request->subSerie;
-				$codigodocumental->tipdocid        = '2';//Certificado
-				$codigodocumental->tiptraid        = $request->tipoTramite;
-				$codigodocumental->usuaid          = $usuarioId;
-				$codigodocumental->coddocfechahora = $fechaHoraActual;
-			}
-			$codigodocumental->tipmedid            = $request->tipoMedio;
-			$codigodocumental->tipdetid            = $request->tipoDestino;
-		   	$codigodocumental->save();
-
-			if($request->tipo === 'I'){
-				//Consulto el ultimo identificador de los codigos documentales
-				$codDocMaxConsecutio               = CodigoDocumental::latest('coddocid')->first();
-				$coddocid                          = $codDocMaxConsecutio->coddocid;
-				$codigodocumentalproceso->coddocid = $coddocid;
-	    		$codigodocumentalproceso->tiesdoid = '1'; //Inicial
-			}
-	    	
-	    	$codigodocumentalproceso->codoprfecha            = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido   = $request->nombreDirigido;
-	    	$codigodocumentalproceso->codoprcorreo           = $request->correo;
-	    	$codigodocumentalproceso->codoprcontenido        = $request->contenido;
-	    	$codigodocumentalproceso->save();  
-
-			if($request->tipo === 'I'){
-				$codDocProcesoMaxConsecutio 				  = CodigoDocumentalProceso::latest('codoprid')->first();
-				$codoprid                   				  = $codDocProcesoMaxConsecutio->codoprid;
-				$coddocumprocesocertificado->codoprid          = $codoprid;
-				$coddocumprocesocertificado->usuaid            = $usuarioId;
-				$coddocumprocesocertificado->codopcconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual);
-				$coddocumprocesocertificado->codopcsigla       = $sigla;
-				$coddocumprocesocertificado->codopcanio        = $anioActual;
-			}
-
-			$coddocumprocesocertificado->tipedoid                = $request->tipoPersona;
-		   	$coddocumprocesocertificado->codopctitulo            = $request->tituloDocumento;
-		   	$coddocumprocesocertificado->codopccontenidoinicial  = $request->contenidoInicial;
-		   	$coddocumprocesocertificado->save();
-
-			foreach($request->firmaPersona as $firmaPersona){
-				$identificadorFirma = $firmaPersona['identificador'];
-				$personaFirma       = $firmaPersona['persona'];
-				$personaCargo       = $firmaPersona['cargo'];
-				$personaEstado      = $firmaPersona['estado'];
-				if($personaEstado === 'I'){
-					$coddocumprocesofirma = new CodigoDocumentalProcesoFirma();
-					$coddocumprocesofirma->codoprid  = $codoprid;
-					$coddocumprocesofirma->persid    = $personaFirma;
-					$coddocumprocesofirma->carlabid  = $personaCargo;
-					$coddocumprocesofirma->save();
-				}else if($personaEstado === 'D'){
-					$coddocumprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($identificadorFirma);
-					$coddocumprocesofirma->delete();
-				}else{
-					$coddocumprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($identificadorFirma);
-					$coddocumprocesofirma->persid    = $personaFirma;
-					$coddocumprocesofirma->carlabid  = $personaCargo;
-					$coddocumprocesofirma->save();
-				}
-			}
-
-			if($request->tipo === 'I'){
-				//Almaceno la trazabilidad del documento
-				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
-				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
-				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
-				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
-				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
-				$codigodocumentalprocesocambioestado->save(); 
-			}
-
-			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
-		} catch (Exception $error){
-			DB::rollback();
-			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-		}
+		$editarDocumento = new editarDocumento();
+		return $editarDocumento->certificado($request);
 	}
 
 	public function solicitarFirma(Request $request)
@@ -247,7 +145,7 @@ class CertificadoController extends Controller
 			$codigodocumentalprocesocambioestado->save(); 
 
 			//Enviamos la notificacion
-			$notificar         = new Notificar();
+			$notificar         = new notificar();
 			$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', $idCorreo)->first();
 			$correoNotificados = '';
 			foreach($firmaDocumentos as $firmaDocumento){
@@ -340,7 +238,7 @@ class CertificadoController extends Controller
 			$generarPdf = new generarPdf();
 			$rutaPdf    = $generarPdf->oficio($request->codigo, 'F');
 			if($email != null or $email != ''){//Enviamos la notificacion al usuario
-				$notificar         = new Notificar();
+				$notificar         = new notificar();
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarEnvioDocumento')->first();
 				$buscar            = Array('numeroDocumental', 'nombreUsuario', 'jefeDependencia', 'nombreEmpresa','nombreDependencia');
 				$remplazo          = Array($numeroDocumental, $nombreUsuario,  $jefeDependencia, $nombreEmpresa, $nombreDependencia); 
@@ -417,16 +315,5 @@ class CertificadoController extends Controller
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}
-
-    //Funcion que permite obtener el consecutivo del documento
-	public function obtenerConsecutivo($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesocertificado')->select('codopcconsecutivo')
-								->where('codopcanio', $anioActual)->where('codopcsigla', $sigla)
-								->orderBy('codopcid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopcconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
 	}
 }

@@ -30,7 +30,7 @@ php artisan make:migration create_tipo_medio
 php artisan make:migration create_tipo_acta
 php artisan make:migration create_tipo_tramite
 php artisan make:migration create_tipo_persona_documental
-
+php artisan make:migration create_token_firma
 
 php artisan make:migration create_codigo_documental
 php artisan make:migration create_codigo_documental_proceso
@@ -48,7 +48,7 @@ php artisan make:migration create_codigo_documental_proceso_compartido
 php artisan make:migration create_codigo_documental_proceso_radicado
 
 
-
+php artisan make:model TokenFirma
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
 php artisan make:model HistorialContrasena

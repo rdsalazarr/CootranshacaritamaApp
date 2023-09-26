@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoCompartido;
 use App\Models\CodigoDocumentalProcesoCircular;
-use App\Models\CodigoDocumentalProcesoFirma;
-use App\Models\CodigoDocumentalProcesoAnexo;
-use App\Models\CodigoDocumentalProcesoCopia;
 use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\CircularRequests;
-use App\Models\CodigoDocumental;
+use Illuminate\Support\Facades\Crypt;
+use App\Http\Controllers\Controller;
 use App\Util\showTipoDocumental;
+use App\Util\editarDocumentos;
+use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
@@ -58,11 +54,8 @@ class CircularController extends Controller
 
 	public function area()
 	{
-		$areas = DB::table('dependencia as d')
-						->select('d.depeid','d.depenombre','d.depesigla')
-						->join('dependenciapersona as dp', 'dp.depperdepeid', '=', 'd.depeid')
-						->where('dp.depperpersid', auth()->user()->persid)
-						->orderBy('d.depenombre')->get();
+		$editarDocumentos = new editarDocumentos();
+		$areas = $editarDocumentos->consultarAreaTrabajo();
 
 		return response()->json(["areas" => $areas]);
 	}
@@ -102,151 +95,8 @@ class CircularController extends Controller
 	}
 
     public function salve(CircularRequests $request){
-
-        $coddocid      			 = $request->idCD;
-	    $codoprid      			 = $request->idCDP;
-	    $codoplid      			 = $request->idCDPC;
-        $codigodocumental        = ($coddocid != 000) ? CodigoDocumental::findOrFail($coddocid) : new CodigoDocumental();
-		$codigodocumentalproceso = ($codoprid != 000) ? CodigoDocumentalProceso::findOrFail($codoprid) : new CodigoDocumentalProceso();
-		$coddocumprocesocircular = ($codoplid != 000) ? CodigoDocumentalProcesoCircular::findOrFail($codoplid) : new CodigoDocumentalProcesoCircular();
-
-        DB::beginTransaction();
-		try {
-            $usuarioId       = Auth::id();
-            $fechaHoraActual = Carbon::now();
-            $anioActual      = Carbon::now()->year;
-
-			//Consulto la sigla
-			$dependencia    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeid', $request->dependencia)->first();
-			$sigla          = $dependencia->depesigla;
-			
-			if($request->tipo === 'I'){
-				$codigodocumental->depeid          = $request->dependencia;
-				$codigodocumental->serdocid        = $request->serie;
-				$codigodocumental->susedoid        = $request->subSerie;
-				$codigodocumental->tipdocid        = '3';//Circular
-				$codigodocumental->tiptraid        = $request->tipoTramite;
-				$codigodocumental->usuaid          = $usuarioId;
-				$codigodocumental->coddocfechahora = $fechaHoraActual;
-			}
-			$codigodocumental->tipmedid            = $request->tipoMedio;
-			$codigodocumental->tipdetid            = $request->tipoDestino;
-		   	$codigodocumental->save();
-
-			if($request->tipo === 'I'){
-				//Consulto el ultimo identificador de los codigos documentales
-				$codDocMaxConsecutio               = CodigoDocumental::latest('coddocid')->first();
-				$coddocid                          = $codDocMaxConsecutio->coddocid;
-				$codigodocumentalproceso->coddocid = $coddocid;
-	    		$codigodocumentalproceso->tiesdoid = '1'; //Inicial
-			}
-	    	
-	    	$codigodocumentalproceso->codoprfecha               = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido      = $request->destinatarios;
-	      	$codigodocumentalproceso->codoprasunto              = $request->asunto;
-	    	$codigodocumentalproceso->codoprcorreo              = $request->correo;
-	    	$codigodocumentalproceso->codoprcontenido           = $request->contenido;
-	    	$codigodocumentalproceso->codoprtieneanexo          = $request->tieneAnexo;
-	    	$codigodocumentalproceso->codopranexonombre         = $request->nombreAnexo;
-	    	$codigodocumentalproceso->codoprtienecopia          = $request->tieneCopia;
-	    	$codigodocumentalproceso->codoprcopianombre         = $request->nombreCopia;
-	    	$codigodocumentalproceso->save();
-
-			if($request->tipo === 'I'){
-				$codDocProcesoMaxConsecutio 				= CodigoDocumentalProceso::latest('codoprid')->first();
-				$codoprid                   				= $codDocProcesoMaxConsecutio->codoprid;
-				$coddocumprocesocircular->codoprid          = $codoprid;
-				$coddocumprocesocircular->usuaid            = $usuarioId;
-				$coddocumprocesocircular->codoplconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual);
-				$coddocumprocesocircular->codoplsigla       = $sigla;
-				$coddocumprocesocircular->codoplanio        = $anioActual;
-			}
-
-			$coddocumprocesocircular->tipdesid  = $request->despedida;
-		   	$coddocumprocesocircular->save();
-
-			//Registramos los adjuntos
-			if($request->hasFile('archivos')){
-				$numeroAleatorio = rand(100, 1000);
-				$funcion         = new generales();
-				$rutaCarpeta     = public_path().'/archivos/produccionDocumental/adjuntos/'.$sigla.'/'.$anioActual;
-				$carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-				$files           = $request->file('archivos');
-				foreach($files as $file){
-					$nombreOriginal = $file->getclientOriginalName();
-					$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-					$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-					$nombreArchivo  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-					$file->move($rutaCarpeta, $nombreArchivo);
-					$rutaArchivo = Crypt::encrypt($nombreArchivo);
-
-					$coddocumprocesoanexo = new CodigoDocumentalProcesoAnexo();
-					$coddocumprocesoanexo->codoprid                  = $codoprid;
-					$coddocumprocesoanexo->codopxnombreanexooriginal = $nombreOriginal;
-					$coddocumprocesoanexo->codopxnombreanexoeditado  = $nombreArchivo;
-					$coddocumprocesoanexo->codopxrutaanexo           = $rutaArchivo;
-					$coddocumprocesoanexo->save();
-				}
-			}
-
-			foreach($request->firmaPersonas as $firmaPersona){
-				$identificadorFirma = $firmaPersona['identificador'];
-				$personaFirma       = $firmaPersona['persona'];
-				$personaCargo       = $firmaPersona['cargo'];
-				$personaEstado      = $firmaPersona['estado'];
-				if($personaEstado === 'I'){
-					$coddocumprocesofirma = new CodigoDocumentalProcesoFirma();
-					$coddocumprocesofirma->codoprid  = $codoprid;
-					$coddocumprocesofirma->persid    = $personaFirma;
-					$coddocumprocesofirma->carlabid  = $personaCargo;
-					$coddocumprocesofirma->save();
-				}else if($personaEstado === 'D'){
-					$coddocumprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($identificadorFirma);
-					$coddocumprocesofirma->delete();
-				}else{
-					$coddocumprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($identificadorFirma);
-					$coddocumprocesofirma->persid    = $personaFirma;
-					$coddocumprocesofirma->carlabid  = $personaCargo;
-					$coddocumprocesofirma->save();
-				}
-			}
-
-			if($request->tipo === 'U'){
-				//Elimino las dependencia que esten en el documento
-				$coddocumprocesocopiaConsultas = DB::table('coddocumprocesocopia')->select('codoppid')->where('codoprid', $codoprid)->get();
-				foreach($coddocumprocesocopiaConsultas as $coddocumprocesocop){
-					$coddocumprocesocopiaDelete = CodigoDocumentalProcesoCopia::findOrFail($coddocumprocesocop->codoppid);
-					$coddocumprocesocopiaDelete->delete();
-				}
-			}
-
-			if($request->copiasDependencia !== null){
-				foreach($request->copiasDependencia as $copiaDependencia){
-					$coddocumprocesocopia                         = new CodigoDocumentalProcesoCopia();
-					$coddocumprocesocopia->codoprid               = $codoprid;
-					$coddocumprocesocopia->depeid                 = $copiaDependencia['depeid'];
-					$coddocumprocesocopia->codoppescopiadocumento = true;
-					$coddocumprocesocopia->save();
-				}
-			}
-
-			if($request->tipo === 'I'){
-				//Almaceno la trazabilidad del documento
-				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
-				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
-				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
-				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
-				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
-				$codigodocumentalprocesocambioestado->save(); 
-			}
-
-			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
-		} catch (Exception $error){
-			DB::rollback();
-			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-		}
+		$editarDocumentos = new editarDocumentos();
+		return $editarDocumentos->circular($request);
 	}
 
 	public function solicitarFirma(Request $request)
@@ -301,7 +151,7 @@ class CircularController extends Controller
 			$codigodocumentalprocesocambioestado->save(); 
 
 			//Enviamos la notificacion
-			$notificar         = new Notificar();
+			$notificar         = new notificar();
 			$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', $idCorreo)->first();
 			$correoNotificados = '';
 			foreach($firmaDocumentos as $firmaDocumento){
@@ -394,7 +244,7 @@ class CircularController extends Controller
 			$generarPdf = new generarPdf();
 			$rutaPdf    = $generarPdf->circular($request->codigo, 'F');
 			if($email != null or $email != ''){//Enviamos la notificacion al usuario
-				$notificar         = new Notificar();
+				$notificar         = new notificar();
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarEnvioDocumento')->first();
 				$buscar            = Array('numeroDocumental', 'nombreUsuario', 'jefeDependencia', 'nombreEmpresa','nombreDependencia');
 				$remplazo          = Array($numeroDocumental, $nombreUsuario,  $jefeDependencia, $nombreEmpresa, $nombreDependencia); 
@@ -471,16 +321,5 @@ class CircularController extends Controller
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}
-
-    //Funcion que permite obtener el consecutivo del documento
-	public function obtenerConsecutivo($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesocircular')->select('codoplconsecutivo')
-								->where('codoplanio', $anioActual)->where('codoplsigla', $sigla)
-								->orderBy('codoplid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codoplconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
 	}
 }

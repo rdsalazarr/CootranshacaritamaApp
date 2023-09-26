@@ -49,7 +49,7 @@ class MantenimientoController extends Controller
     }
 
     public function email(){
-        $notificar       = new Notificar();
+        $notificar       = new notificar();
         $fechaHoraActual = Carbon::now();
 
         $email             = 'rdsalazarr@ufpso.edu.co';

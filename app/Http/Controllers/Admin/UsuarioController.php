@@ -87,7 +87,7 @@ class UsuarioController extends Controller
 
 			$mensajeCorreo      = '';
 			if ($request->tipo  === 'I' ){
-				$notificar         = new Notificar();
+				$notificar         = new notificar();
 				$nombreUsuario     = $nombre.' '. $apellido;
 
 				$empresa           = DB::table('empresa as e')
