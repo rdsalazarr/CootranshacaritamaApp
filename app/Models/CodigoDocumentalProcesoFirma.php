@@ -11,5 +11,6 @@ class CodigoDocumentalProcesoFirma extends Model
 
     protected $table      = 'coddocumprocesofirma';
     protected $primaryKey = 'codopfid';
-    protected $fillable   = ['codoprid', 'persid','carlabid', 'codopffirmado','codopfesinvitado'];
+    protected $fillable   = ['codoprid', 'persid','carlabid','codopftoken','codopffechahoranotificacion',
+                            'codopffechahoramaxvalidez','codopfmsjcorreo','codopfmsjcelular','codopffirmado','codopfesinvitado'];
 }

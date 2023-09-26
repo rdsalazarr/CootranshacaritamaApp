@@ -8,8 +8,8 @@ use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\OficioRequests;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
+use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
-use App\Util\editarDocumentos;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
@@ -54,8 +54,8 @@ class OficioController extends Controller
 
 	public function area()
 	{
-		$editarDocumentos = new editarDocumentos();
-		$areas = $editarDocumentos->consultarAreaTrabajo();
+		$manejadorDocumentos = new manejadorDocumentos();
+		$areas = $manejadorDocumentos->consultarAreaTrabajo();
 
 		return response()->json(["areas" => $areas]);
 	}
@@ -77,16 +77,9 @@ class OficioController extends Controller
 			$depeid      = $data->depeid;
 		}
 
-		$fechaActual     = Carbon::now()->format('Y-m-d');
-		$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
-		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
-		$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
-        $tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
-        $dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->where('depeid', '!=', $depeid)->orderBy('depenombre')->get();
- 		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
-														->orderBy('nombrePersona')
-														->whereIn('carlabid', [1, 2])->get();
-        $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
+		$manejadorDocumentos = new manejadorDocumentos();
+		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
+		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('O', $depeid);
 
         return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"       => $tipoDestinos,      "tipoMedios"      => $tipoMedios,
                                 "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"    => $tipoDespedidas,    "dependencias"    => $dependencias,
@@ -95,8 +88,8 @@ class OficioController extends Controller
 	}
 
     public function salve(OficioRequests $request){
-		$editarDocumentos = new editarDocumentos();
-		return $editarDocumentos->oficio($request);
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->oficio($request);
 	}
 
 	public function solicitarFirma(Request $request)
@@ -120,7 +113,7 @@ class OficioController extends Controller
 
 			$firmaDocumentos =  DB::table('codigodocumentalproceso as cdp')
 							->select('cdp.codoprid','p.perscorreoelectronico',
-							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))							
+							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
 							->join('coddocumprocesofirma as cdpf', 'cdpf.codoprid', '=', 'cdp.codoprid')
 							->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 							->where('cdp.codoprid', $infodocumento->codoprid)->get();
@@ -140,6 +133,7 @@ class OficioController extends Controller
 			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->codoprsolicitafirma = true;
 			$codigodocumentalproceso->tiesdoid            = $estado;
+			$codigodocumentalproceso->save(); 
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();

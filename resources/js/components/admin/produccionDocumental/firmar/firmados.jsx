@@ -6,7 +6,7 @@ import instance from '../../../layout/instance';
 import Trazabilidad from '../trazabilidad';
 import { Box} from '@mui/material';
 
-export default function Verificar(){
+export default function Firmados(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
@@ -22,7 +22,7 @@ export default function Verificar(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/producion/documental/acta/list', {tipo:'HISTORICOS'}).then(res=>{
+        instance.post('/admin/firmar/documento/list', {tipo:'FIRMADOS'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -39,8 +39,8 @@ export default function Verificar(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Hora acta','Dirigido','Estado','Trazabilidad']}
-                    ver={["consecutivo", "dependencia","fecha", "horaActa","nombredirigido", "estado"]}
+                    titulo={['Consecutivo', 'Fecha','Tipo documento','Nombre dirigido','Estado','Trazabilidad']}
+                    ver={["codigoDocumental", "fecha", "tipoDocumento","nombreDirigido", "nombreEstado"]}
                     accion={[
                         {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data, 0)} },
                     ]}

@@ -14,7 +14,7 @@ import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'date-fns/locale/es'; 
 import dayjs from 'dayjs';
 
-export default function New({id, area, tipo}){
+export default function New({id, area, tipo, ruta}){
     const editorTexto = useRef(null);
     const [formData, setFormData] = useState(
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
@@ -79,6 +79,7 @@ export default function New({id, area, tipo}){
         newFormData.firmaInvitados = firmaInvitados;  
         setLoader(true);
         setFormData(formDataCopia);
+        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/oficio/salve' : '/admin/firmar/documento/oficio/salve';
         instance.post('/admin/producion/documental/citacion/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
@@ -160,6 +161,7 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
+        let rutaData    = (ruta === 'P') ? '/admin/producion/documental/oficio/listar/datos' : '/admin/firmar/documento/editar/documento';
         instance.post('/admin/producion/documental/citacion/listar/datos', {id: id, tipo: tipo}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
             setTipoMedios(res.tipoMedios);

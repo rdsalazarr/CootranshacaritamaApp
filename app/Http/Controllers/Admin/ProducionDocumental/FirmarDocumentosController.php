@@ -4,44 +4,82 @@ namespace App\Http\Controllers\Admin\ProducionDocumental;
 
 use App\Models\CodigoDocumentalProcesoCambioEstado;
 use App\Models\CodigoDocumentalProcesoFirma;
+use App\Http\Requests\CertificadoRequests;
+use App\Http\Requests\ConstanciaRequests;
+use App\Http\Requests\CircularRequests;
+use App\Http\Requests\CitacionRequests;
 use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\OficioRequests;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ActaRequests;
+use App\Util\manejadorDocumentos;
+use App\Util\showTipoDocumental;
 use Illuminate\Http\Request;
 use App\Models\TokenFirma;
+use App\Util\generarPdf;
 use App\Util\notificar;
 use Auth, DB;
 
 class FirmarDocumentosController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 	{
-        $data = DB::table('codigodocumentalproceso as cdp')	
-					 		->select('cd.coddocid','cdp.codoprid','cdp.tiesdoid as estado','cdp.codoprfecha as fecha',
+        $this->validate(request(),['tipo' => 'required']);
+
+        $consulta = DB::table('codigodocumentalproceso as cdp')	
+					 		->select('cd.coddocid','cdp.codoprid',
+                                'cdp.tiesdoid as estado','cdp.codoprfecha as fecha',
 					 			'ted.tiesdonombre as nombreEstado','td.tipdocnombre as tipoDocumento','td.tipdoccodigo as codigoDocumental',
-					 			'cdp.codoprasunto as asunto','cdp.codoprnombredirigido as nombreDirigido','d.depenombre')
+					 			'cdp.codoprasunto as asunto','cdp.codoprnombredirigido as nombreDirigido','d.depenombre',
+                                'codopa.codopaid as actaId','codopc.codopcid as certificadoId','codopl.codoplid as circularId',
+                                'codopt.codoptid as citacionId','codopn.codopnid as constanciaId','codopo.codopoid as oficioId'
+                                )
 	  						->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 	  						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
 	  						->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
-	  						->join('tipodocumento as td', 'td.tipdocid', '=', 'cd.tipdocid')
+	  						->join('tipodocumental as td', 'td.tipdocid', '=', 'cd.tipdocid')
 	  						->join('coddocumprocesofirma as cdpf', 'cdpf.codoprid', '=', 'cdp.codoprid')
-							->where('cdpf.persid', auth()->user()->persid)
-							->where('cdpf.codopffirmado', false)
-							->where('cdp.tiesdoid', 2)//Solicita firma
-	  						->orderBy('cdp.created_at')->get();	
-        
+
+                            ->leftJoin('coddocumprocesoacta as codopa', 'codopa.codoprid', '=', 'cdp.codoprid')
+                            ->leftJoin('coddocumprocesocertificado as codopc', 'codopc.codoprid', '=', 'cdp.codoprid')
+                            ->leftJoin('coddocumprocesocircular as codopl', 'codopl.codoprid', '=', 'cdp.codoprid')
+                            ->leftJoin('coddocumprocesocitacion as codopt', 'codopt.codoprid', '=', 'cdp.codoprid')
+                            ->leftJoin('coddocumprocesoconstancia as codopn', 'codopn.codoprid', '=', 'cdp.codoprid')
+                            ->leftJoin('coddocumprocesooficio as codopo', 'codopo.codoprid', '=', 'cdp.codoprid')
+
+							->where('cdpf.persid', auth()->user()->persid);
+
+                            if($request->tipo === 'PENDIENTE')
+							    $consulta = $consulta->where('cdpf.codopffirmado', false);
+                                                     // ->where('cdp.tiesdoid', 2);
+
+                           if($request->tipo === 'FIRMADOS')
+                                $consulta = $consulta->where('cdpf.codopffirmado', true);
+
+                    $data = $consulta->orderBy('cd.coddocfechahora')->get();
+
         return response()->json(["data" => $data]);
     }
 
+    public function verificar(Request $request)
+	{
+        $this->validate(request(),['id' => 'required', 'tipo' => 'required']);
+        $codoprid       = $request->id;
+        $tipoDocumental = $request->tipo;
+
+
+        dd($request->id);
+    }
+
     //Funcion para solicitar firma
-    public function solicitarFirma($soliid)
+    public function solicitarToken(Request $request)
     {
         DB::beginTransaction();
 		try {
             $tokenGenerado   = strtoupper(strtr(substr(md5(microtime()), 0, 8),"01","97"));
             $fechaHoraActual = Carbon::now();  
-            $tiempoToken     = 10;
-            $fechaHoraMaxima = Carbon::now()->addMinutes($tiempo_token);
+            $tiempoToken     = 5;
+            $fechaHoraMaxima = Carbon::now()->addMinutes($tiempoToken);
             $solicitud       =  DB::table('solicitud')->select('soliid','soliconsecutivo','solifechahora','solifecharespuesta',
                                     'solidescripcion')
                                 ->where('soliid', $soliid)->first();
@@ -69,25 +107,22 @@ class FirmarDocumentosController extends Controller
             $tokenfirma->tokfirmsjcelular            = '';
             $tokenfirma->save();
 
-           
-            $asunto         = "Envió del token para firmar la solicitud número ".$solicitud->soliconsecutivo;
-            $msg            = "El código para continuar con la firma del documento es ".$tokenGenerado;
-           
-
-            $mensajeMostrar  = 'El código para continuar con el proceso de firma fue enviado a '.$correoUsuario;
-            $mensajeMostrar .= ($celularUsuario != '') ? ' y al celular con número '.$celularUsuario :'';
-            $mensajeMostrar .= ', recuerde que solo tiene '.$tiempoToken.' minutos para realizar el ';
-            $mensajeMostrar .= 'proceso de lo contrario deberá solicitar un nuevo token.';
+            $mensajeMostrar  = 'Para continuar con el proceso de firmado electrónico de este documento, ';
+            $mensajeMostrar  .= 'se ha generado un código el cual fue enviado al correo '.$correoUsuario;
+            $mensajeMostrar .= ($celularUsuario != '') ? ' y al celular con número '.$celularUsuario :'.';
+            $mensajeMostrar .= 'Este token es necesario para completar su proceso de verificación y garantizar la seguridad de su cuenta.';
+            $mensajeMostrar .= 'Por favor, tenga en cuenta que este token será válido durante los próximos '.$tiempoToken.' minutos.';
+            $mensajeMostrar .= 'Si excede este tiempo o cierra la ventana sin completar el proceso, deberá solicitar un nuevo token.';
+            $mensajeMostrar .= 'Si no ha recibido el correo electrónico con el token, le recomendamos verificar su carpeta de spam o solicitar uno nuevo.';
+            $mensajeMostrar .= '¡Gracias por su colaboración y compromiso con la seguridad de nuestros servicios!';
 
             $notificar         = new notificar();
-            $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', $idCorreo)->first();
-            $correoNotificados = '';
-            foreach($firmaDocumentos as $firmaDocumento){
-                $email              = $firmaDocumento->perscorreoelectronico;
-                $correoNotificados .= $email.', ';
+            $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarFirmadoDocumento')->first();
+               foreach($firmaDocumentos as $firmaDocumento){
+                $email              = $firmaDocumento->perscorreoelectronico;        
                 $nombreFeje         = $firmaDocumento->nombreJefe;
-                $buscar             = Array('numeroDocumental', 'nombreFeje', 'tipoDocumental', 'fechaDocumento','nombreUsuario','cargoUsuario','observacionAnulacionFirma');
-                $remplazo           = Array($numeroDocumental, $nombreFeje,  $tipoDocumental, $fechaDocumento, $nombreUsuario, $cargoUsuario, $request->observacionCambio); 
+                $buscar             = Array('numeroDocumental', 'nombreFeje', 'tokenAcceso');
+                $remplazo           = Array($numeroDocumental, $nombreFeje,  $tokenAcceso); 
                 $asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
                 $msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
                 $enviarcopia        = $informacioncorreo->innocoenviarcopia;
@@ -104,9 +139,8 @@ class FirmarDocumentosController extends Controller
 		}      
     }
 
-
     //Funcion que firma el documento
-	public function firmar(Request $request){ 
+	public function procesar(Request $request){ 
 		$idUser = Auth::id();
 		DB::beginTransaction();
 		try {
@@ -122,7 +156,7 @@ class FirmarDocumentosController extends Controller
                                     ->first();
 
             if(!$tokenfirma){
-                return response()->json(['msgError' => 'El token con número '.$request->token.', no concuerda o el tiempo de activad expiro.']);
+                return response()->json(['msgError' => 'El token con número '.$request->token.', no concuerda o el tiempo de actividad expiro']);
             }   
 
             $tokenfirma = TokenFirma::findOrFail($tokenfirma->tokfirid);               
@@ -188,9 +222,95 @@ class FirmarDocumentosController extends Controller
 		}
 	}
 
-    public function editarOficio(OficioRequests $request){ 
+    public function editarDocumentos(Request $request)
+	{
+		$this->validate(request(),['id' => 'required','tipo' => 'required']);
+	
+		$id                = $request->id;
+		$tipoDocumental    = $request->tipo;
+        $visualizar        = new showTipoDocumental();
+        $data              = '';
+		$firmasDocumento   = [] ;
+		$copiaDependencias = [] ;
+		$anexosDocumento   = [] ;
 
+        if($tipoDocumental === 'A'){
+            list($data, $firmasDocumento) = $visualizar->acta($id);
+        }else if($tipoDocumental === 'B'){
+            list($data, $firmasDocumento) = $visualizar->certificado($id);
+        }else if($tipoDocumental === 'C'){
+            list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->circular($id);
+        }else if($tipoDocumental === 'H'){
+            list($data, $firmasDocumento, $firmaInvitados) = $visualizar->citacion($id);
+        }else if($tipoDocumental === 'T'){
+            list($data, $firmasDocumento) = $visualizar->constancia($id);
+        }else{
+            list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
+        }
+        $depeid      = $data->depeid;
 
+		$manejadorDocumentos = new manejadorDocumentos();
+		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
+		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra($tipoDocumental, $depeid);
+
+        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"            => $tipoDestinos,            "tipoMedios"      => $tipoMedios,
+                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"          => $tipoDespedidas,         "dependencias"    => $dependencias,
+								"personas"        => $personas,        "cargoLaborales"          => $cargoLaborales,         "data"            => $data,
+								"firmasDocumento" => $firmasDocumento, "copiaDependencias"       => $copiaDependencias,      "anexosDocumento" => $anexosDocumento,
+                                "tipoActas"       => $tipoActas,       "tipoPersonaDocumentales" => $tipoPersonaDocumentales ]);
+	}
+
+    public function salvarActa(ActaRequests $request){
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->acta($request);
+	}
+
+    public function salvarCertificado(CertificadoRequests $request){
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->certificado($request);
+	}
+
+    public function salvarCircular(CircularRequests $request){
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->circular($request);
+	}
+
+    public function salvarCitacion(CitacionRequests $request){
+        $manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->citacion($request);
+	}
+
+    public function salvarConstancia(ConstanciaRequests $request){
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->constancia($request);
+	}
+
+    public function salvarOficio(OficioRequests $request){ 
+        $manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->oficio($request);
     }
 
+    public function showPdf(Request $request)
+	{
+		$this->validate(request(),['codigo' => 'required', 'tipo' => 'required']);  
+		try {
+			$generarPdf    = new generarPdf();
+            if($tipoDocumental === 'A'){
+                $dataDocumento = $generarPdf->acta($request->codigo, 'S');
+            }else if($tipoDocumental === 'B'){
+                $dataDocumento = $generarPdf->certificado($request->codigo, 'S');
+            }else if($tipoDocumental === 'C'){
+                $dataDocumento = $generarPdf->circular($request->codigo, 'S');
+            }else if($tipoDocumental === 'H'){
+                $dataDocumento = $generarPdf->citacion($request->codigo, 'S');
+            }else if($tipoDocumental === 'T'){
+                $dataDocumento = $generarPdf->constancia($request->codigo, 'S');
+            }else {
+                $dataDocumento = $generarPdf->oficio($request->codigo, 'S');
+            }
+			return response()->json(["data" => $dataDocumento]);
+		} catch (Exception $error){
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+	}
 }

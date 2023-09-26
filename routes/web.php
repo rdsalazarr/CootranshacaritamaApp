@@ -203,12 +203,22 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/oficio', [OficioController::class, 'anular']);
             Route::post('/oficio/visualizar/PDF', [OficioController::class, 'showPdf']);
             Route::post('/trazabilidad/oficio', [OficioController::class, 'trazabilidad']);
-
         });
 
-        Route::prefix('/firma/documento')->group(function(){
-            Route::post('/general', [FirmarDocumentosController::class, 'index']);
+        Route::prefix('/firmar/documento')->group(function(){
+            Route::post('/list', [FirmarDocumentosController::class, 'index']);
+            Route::post('/verificar', [FirmarDocumentosController::class, 'verificar']);
+            Route::post('/solicitar/token', [FirmarDocumentosController::class, 'solicitarToken']);
+            Route::post('/procesar', [FirmarDocumentosController::class, 'procesar']);        
 
+            Route::post('/editar/documento', [FirmarDocumentosController::class, 'editarDocumentos']);
+            Route::post('/acta/salve', [FirmarDocumentosController::class, 'salvarActa']);
+            Route::post('/certificado/salve', [FirmarDocumentosController::class, 'salvarCertificado']);
+            Route::post('/cirular/salve', [FirmarDocumentosController::class, 'salvarCircular']);
+            Route::post('/citacion/salve', [FirmarDocumentosController::class, 'salvarCitacion']);
+            Route::post('/contancia/salve', [FirmarDocumentosController::class, 'salvarConstancia']);
+            Route::post('/oficio/salve', [FirmarDocumentosController::class, 'salvarOficio']);
+            Route::post('/visualizar/documento/PDF', [FirmarDocumentosController::class, 'showPdf']);
         });
 
         Route::prefix('/radicar/documento')->group(function(){

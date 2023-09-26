@@ -8,8 +8,8 @@ use App\Http\Requests\CertificadoRequests;
 use App\Models\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
+use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
-use App\Util\editarDocumentos;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
@@ -54,33 +54,28 @@ class CertificadoController extends Controller
 
 	public function area()
 	{
-		$editarDocumento = new editarDocumento();
-		$areas = $editarDocumento->consultarAreaTrabajo();
+		$manejadorDocumentos = new manejadorDocumentos();
+		$areas = $manejadorDocumentos->consultarAreaTrabajo();
 
 		return response()->json(["areas" => $areas]);
 	}
 
 	public function datos(Request $request)
-	{ 
+	{
 		$this->validate(request(),['tipo' => 'required']);
 	
 		$id                = $request->id;
 		$tipo              = $request->tipo;
 		$data              = '';
-		$firmasDocumento   = [] ;
+		$firmasDocumento   = [] ;	
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
 			list($data, $firmasDocumento) = $visualizar->certificado($id);
 		}
 
-		$fechaActual             = Carbon::now()->format('Y-m-d');
-		$tipoDestinos            = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
-		$tipoMedios              = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
-		$tipoPersonaDocumentales = DB::table('tipopersonadocumental')->select('tipedoid','tipedonombre')->where('tipedoactivo', true)->orderBy('tipedonombre')->get();    
- 		$personas                = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
-														->orderBy('nombrePersona')
-														->whereIn('carlabid', [1, 2])->get();
-        $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
+		$manejadorDocumentos = new manejadorDocumentos();
+		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
+		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('B', '');
 
         return response()->json(["fechaActual"            => $fechaActual,             "tipoDestinos"    => $tipoDestinos,   "tipoMedios"      => $tipoMedios,
                                 "tipoPersonaDocumentales" => $tipoPersonaDocumentales, "personas"        => $personas,       "cargoLaborales"  => $cargoLaborales,
@@ -88,8 +83,8 @@ class CertificadoController extends Controller
 	}
 
     public function salve(CertificadoRequests $request){
-		$editarDocumento = new editarDocumento();
-		return $editarDocumento->certificado($request);
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->certificado($request);
 	}
 
 	public function solicitarFirma(Request $request)
@@ -113,7 +108,7 @@ class CertificadoController extends Controller
 
 			$firmaDocumentos =  DB::table('codigodocumentalproceso as cdp')
 							->select('cdp.codoprid','p.perscorreoelectronico',
-							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))							
+							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
 							->join('coddocumprocesofirma as cdpf', 'cdpf.codoprid', '=', 'cdp.codoprid')
 							->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 							->where('cdp.codoprid', $infodocumento->codoprid)->get();

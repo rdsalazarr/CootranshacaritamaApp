@@ -18,7 +18,7 @@ import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'date-fns/locale/es'; 
 import dayjs from 'dayjs';
 
-export default function New({id, area, tipo}){ 
+export default function New({id, area, tipo, ruta}){ 
     const editorTexto = useRef(null);
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
@@ -120,7 +120,8 @@ export default function New({id, area, tipo}){
 
         setLoader(true);
         setFormData(formDataCopia);
-        instance.post('/admin/producion/documental/oficio/salve', newFormData).then(res=>{
+        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/oficio/salve' : '/admin/firmar/documento/oficio/salve';
+        instance.post(rutaSalve, newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -186,7 +187,8 @@ export default function New({id, area, tipo}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/producion/documental/oficio/listar/datos', {id: id, tipo: tipo, dependencia: formData.dependencia}).then(res=>{
+        let rutaData    = (ruta === 'P') ? '/admin/producion/documental/oficio/listar/datos' : '/admin/firmar/documento/editar/documento';
+        instance.post(rutaData, {id: id, tipo: tipo, dependencia: formData.dependencia, tipoDocumental: 'O'}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
             (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoDestinos(res.tipoDestinos);

@@ -7,12 +7,12 @@ use App\Models\CodigoDocumentalProcesoCertificado;
 use App\Models\CodigoDocumentalProcesoConstancia;
 use App\Models\CodigoDocumentalProcesoCompartido;
 use App\Models\CodigoDocumentalProcesoCircular;
+use App\Models\CodigoDocumentalProcesoCitacion;
 use App\Models\CodigoDocumentalProcesoOficio;
 use App\Models\CodigoDocumentalProcesoFirma;
 use App\Models\CodigoDocumentalProcesoAnexo;
 use App\Models\CodigoDocumentalProcesoCopia;
 use App\Models\CodigoDocumentalProcesoActa;
-
 use App\Models\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\CodigoDocumental;
@@ -20,7 +20,47 @@ use App\Util\generales;
 use Auth, DB, File;
 use Carbon\Carbon;
 
-class editarDocumentos {
+class manejadorDocumentos {
+
+	public function consultarInformacionMaestra($tipoDocumental, $depeid){	
+		
+		$tipoActas               = [];
+		$tipoDestinos            = [];
+		$tipoSaludos    		 = [];
+		$tipoPersonaDocumentales = [];
+		$tipoDespedidas  		 = []; 
+		$dependencias    		 = [];
+
+		//Actas y citacion	
+		if($tipoDocumental === 'A'  || $tipoDocumental === 'H'){
+			$tipoActas       = DB::table('tipoacta')->select('tipactid','tipactnombre')->orderBy('tipactnombre')->get();
+		}
+
+		//certificado y constancia
+		if($tipoDocumental === 'C'  || $tipoDocumental === 'T'){
+			$tipoDestinos            = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
+			$tipoPersonaDocumentales = DB::table('tipopersonadocumental')->select('tipedoid','tipedonombre')->where('tipedoactivo', true)->orderBy('tipedonombre')->get();	
+		}
+
+		//Circular y oficio
+		if($tipoDocumental === 'C'  || $tipoDocumental === 'O'){
+			$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();		
+			$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
+			$tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
+			$dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->where('depeid', '!=', $depeid)->orderBy('depenombre')->get();
+		}
+
+		//Lo requieren todos
+		$fechaActual     = Carbon::now()->format('Y-m-d');
+		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
+		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
+														->orderBy('nombrePersona')
+														->whereIn('carlabid', [1, 2])->get();
+        $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
+
+		return array ($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias, $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales);
+	}
+
    
     public function acta($request){
 
@@ -73,7 +113,7 @@ class editarDocumentos {
 				$codoprid                   					= $codDocProcesoMaxConsecutio->codoprid;
 				$codigodocumentalprocesoacta->codoprid          = $codoprid;
 				$codigodocumentalprocesoacta->usuaid            = $usuarioId;
-				$codigodocumentalprocesoacta->codopaconsecutivo = $this->obtenerConsecutivoActa($sigla, $anioActual);
+				$codigodocumentalprocesoacta->codopaconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual, 'A');
 				$codigodocumentalprocesoacta->codopasigla       = $sigla;
 				$codigodocumentalprocesoacta->codopaanio        = $anioActual;
 			}
@@ -184,7 +224,7 @@ class editarDocumentos {
 				$codoprid                   				  = $codDocProcesoMaxConsecutio->codoprid;
 				$coddocumprocesocertificado->codoprid          = $codoprid;
 				$coddocumprocesocertificado->usuaid            = $usuarioId;
-				$coddocumprocesocertificado->codopcconsecutivo = $this->obtenerConsecutivoCertificado($sigla, $anioActual);
+				$coddocumprocesocertificado->codopcconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual, 'B');
 				$coddocumprocesocertificado->codopcsigla       = $sigla;
 				$coddocumprocesocertificado->codopcanio        = $anioActual;
 			}
@@ -291,7 +331,7 @@ class editarDocumentos {
 				$codoprid                   				= $codDocProcesoMaxConsecutio->codoprid;
 				$coddocumprocesocircular->codoprid          = $codoprid;
 				$coddocumprocesocircular->usuaid            = $usuarioId;
-				$coddocumprocesocircular->codoplconsecutivo = $this->obtenerConsecutivoCircular($sigla, $anioActual);
+				$coddocumprocesocircular->codoplconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual, 'C');
 				$coddocumprocesocircular->codoplsigla       = $sigla;
 				$coddocumprocesocircular->codoplanio        = $anioActual;
 			}
@@ -432,7 +472,7 @@ class editarDocumentos {
 				$codoprid                   				= $codDocProcesoMaxConsecutio->codoprid;
 				$coddocumprocesocitacion->codoprid          = $codoprid;
 				$coddocumprocesocitacion->usuaid            = $usuarioId;
-				$coddocumprocesocitacion->codoptconsecutivo = $this->obtenerConsecutivoCitacion($sigla, $anioActual);
+				$coddocumprocesocitacion->codoptconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual, 'H');
 				$coddocumprocesocitacion->codoptsigla       = $sigla;
 				$coddocumprocesocitacion->codoptanio        = $anioActual;
 			}
@@ -509,7 +549,7 @@ class editarDocumentos {
 		}
 	}
 
-	public function constanci($request){
+	public function constancia($request){
 
         $coddocid      				   = $request->idCD;
 	    $codoprid      				   = $request->idCDP;
@@ -560,7 +600,7 @@ class editarDocumentos {
 				$codoprid                   				  = $codDocProcesoMaxConsecutio->codoprid;
 				$coddocumprocesoconstancia->codoprid          = $codoprid;
 				$coddocumprocesoconstancia->usuaid            = $usuarioId;
-				$coddocumprocesoconstancia->codopnconsecutivo = $this->obtenerConsecutivoConstancia($sigla, $anioActual);
+				$coddocumprocesoconstancia->codopnconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual, 'T');
 				$coddocumprocesoconstancia->codopnsigla       = $sigla;
 				$coddocumprocesoconstancia->codopnanio        = $anioActual;
 			}
@@ -668,7 +708,7 @@ class editarDocumentos {
 				$codoprid                   					  = $codDocProcesoMaxConsecutio->codoprid;
 				$codigodocumentalprocesooficio->codoprid          = $codoprid;
 				$codigodocumentalprocesooficio->usuaid            = $usuarioId;
-				$codigodocumentalprocesooficio->codopoconsecutivo = $this->obtenerConsecutivoOficio($sigla, $anioActual);
+				$codigodocumentalprocesooficio->codopoconsecutivo = $this->obtenerConsecutivo($sigla, $anioActual, 'O');
 				$codigodocumentalprocesooficio->codoposigla       = $sigla;
 				$codigodocumentalprocesooficio->codopoanio        = $anioActual;
 			}
@@ -776,65 +816,31 @@ class editarDocumentos {
 						->where('dp.depperpersid', auth()->user()->persid)
 						->orderBy('d.depenombre')->get();
 	}
- 
-	public function obtenerConsecutivoActa($sigla, $anioActual)
+	 
+	public function obtenerConsecutivo($sigla, $anioActual, $tipoDocumental)
 	{
-		$consecutivoTpDoc = DB::table('coddocumprocesoacta')->select('codopaconsecutivo')
-								->where('codopaanio', $anioActual)->where('codopasigla', $sigla)
-								->orderBy('codopaid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopaconsecutivo + 1;
+		if($tipoDocumental === 'A'){ //Acta
+			$consecutivoTpDoc = DB::table('coddocumprocesoacta')->select('codopaconsecutivo as consecutivo')
+								->where('codopaanio', $anioActual)->where('codopasigla', $sigla)->orderBy('codopaid', 'desc')->first();
+		}else if($tipoDocumental === 'B'){//Certificado
+			$consecutivoTpDoc = DB::table('coddocumprocesocertificado')->select('codopcconsecutivo as consecutivo')
+								->where('codopcanio', $anioActual)->where('codopcsigla', $sigla)->orderBy('codopcid', 'desc')->first();
+		}else if($tipoDocumental === 'C'){//Circular
+			$consecutivoTpDoc = DB::table('coddocumprocesocircular')->select('codoplconsecutivo as consecutivo')
+								->where('codoplanio', $anioActual)->where('codoplsigla', $sigla)->orderBy('codoplid', 'desc')->first();
+		}else if($tipoDocumental === 'H'){//Citación
+			$consecutivoTpDoc = DB::table('coddocumprocesocitacion')->select('codoptconsecutivo as consecutivo')
+								->where('codoptanio', $anioActual)->where('codoptsigla', $sigla)->orderBy('codoptid', 'desc')->first();
+		}else if($tipoDocumental === 'T'){//Constancia
+			$consecutivoTpDoc = DB::table('coddocumprocesoconstancia')->select('codopnconsecutivo as consecutivo')
+								->where('codopnanio', $anioActual)->where('codopnsigla', $sigla)->orderBy('codopnid', 'desc')->first();
+		}else { //Oficio
+			$consecutivoTpDoc = DB::table('coddocumprocesooficio')->select('codopoconsecutivo as consecutivo')
+								->where('codopoanio', $anioActual)->where('codoposigla', $sigla)->orderBy('codopoid', 'desc')->first();
+		}
+		
+        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->consecutivo + 1;
 
 		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
 	}
-
-	public function obtenerConsecutivoCertificado($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesocertificado')->select('codopcconsecutivo')
-								->where('codopcanio', $anioActual)->where('codopcsigla', $sigla)
-								->orderBy('codopcid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopcconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
-	}
-
-    public function obtenerConsecutivoCircular($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesocircular')->select('codoplconsecutivo')
-								->where('codoplanio', $anioActual)->where('codoplsigla', $sigla)
-								->orderBy('codoplid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codoplconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
-	}
-
-	public function obtenerConsecutivoCitacion($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesocitacion')->select('codoptconsecutivo')
-								->where('codoptanio', $anioActual)->where('codoptsigla', $sigla)
-								->orderBy('codoptid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codoptconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
-	}
-
-	public function obtenerConsecutivoConstancia($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesoconstancia')->select('codopnconsecutivo')
-								->where('codopnanio', $anioActual)->where('codopnsigla', $sigla)
-								->orderBy('codopnid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopnconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
-	}
-
-	public function obtenerConsecutivoOficio($sigla, $anioActual)
-	{
-		$consecutivoTpDoc = DB::table('coddocumprocesooficio')->select('codopoconsecutivo')
-								->where('codopoanio', $anioActual)->where('codoposigla', $sigla)
-								->orderBy('codopoid', 'desc')->first();
-        $consecutivo = ($consecutivoTpDoc === null) ? 1 : $consecutivoTpDoc->codopoconsecutivo + 1;
-
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
-	}
-
 }

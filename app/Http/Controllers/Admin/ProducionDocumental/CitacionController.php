@@ -8,8 +8,8 @@ use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\CitacionRequests;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
+use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
-use App\Util\editarDocumentos;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
@@ -55,14 +55,14 @@ class CitacionController extends Controller
 
 	public function area()
 	{
-		$editarDocumentos = new editarDocumentos();
-		$areas = $editarDocumentos->consultarAreaTrabajo();
+		$manejadorDocumentos = new manejadorDocumentos();
+		$areas = $manejadorDocumentos->consultarAreaTrabajo();
 
 		return response()->json(["areas" => $areas]);
 	}
 
 	public function datos(Request $request)
-	{ 
+	{
 		$this->validate(request(),['tipo' => 'required']);
 
 		$id                = $request->id;
@@ -72,24 +72,20 @@ class CitacionController extends Controller
 		$firmaInvitados    = [] ;
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
-			list($data, $firmasDocumento, $firmaInvitados) = $visualizar->Citacion($id);
+			list($data, $firmasDocumento, $firmaInvitados) = $visualizar->citacion($id);
 		}
 
-		$fechaActual     = Carbon::now()->format('Y-m-d');
-		$tipoActas       = DB::table('tipoacta')->select('tipactid','tipactnombre')->orderBy('tipactnombre')->get();	
-		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();		
- 		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
-														->orderBy('nombrePersona')
-														->whereIn('carlabid', [1, 2])->get();
-        $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
+		$manejadorDocumentos = new manejadorDocumentos();
+		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
+		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('T', '');
 
         return response()->json(["fechaActual"   => $fechaActual,    "tipoMedios" => $tipoMedios, "personas"        => $personas,       "tipoCitaciones"  => $tipoActas,
 								"cargoLaborales" => $cargoLaborales, "data"      => $data,		  "firmasDocumento" => $firmasDocumento, "firmaInvitados" => $firmaInvitados ]);
 	}
 
     public function salve(CitacionRequests $request){
-        $editarDocumentos = new editarDocumentos();
-		return $editarDocumentos->citacion($request);
+        $manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->citacion($request);
 	}
 
 	public function solicitarFirma(Request $request)
@@ -113,7 +109,7 @@ class CitacionController extends Controller
 
 			$firmaDocumentos =  DB::table('codigodocumentalproceso as cdp')
 							->select('cdp.codoprid','p.perscorreoelectronico',
-							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))							
+							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))
 							->join('coddocumprocesofirma as cdpf', 'cdpf.codoprid', '=', 'cdp.codoprid')
 							->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 							->where('cdp.codoprid', $infodocumento->codoprid)->get();
@@ -133,6 +129,7 @@ class CitacionController extends Controller
 			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->codoprsolicitafirma = true;
 			$codigodocumentalproceso->tiesdoid            = $estado;
+			$codigodocumentalproceso->save(); 
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();

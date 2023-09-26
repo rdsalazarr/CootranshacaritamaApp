@@ -8,8 +8,8 @@ use App\Models\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActaRequests;
+use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
-use App\Util\editarDocumentos;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
@@ -55,8 +55,8 @@ class ActaController extends Controller
 
 	public function area()
 	{
-		$editarDocumentos = new editarDocumentos();
-		$areas = $editarDocumentos->consultarAreaTrabajo();
+		$manejadorDocumentos = new manejadorDocumentos();
+		$areas = $manejadorDocumentos->consultarAreaTrabajo();
 
 		return response()->json(["areas" => $areas]);
 	}
@@ -69,28 +69,22 @@ class ActaController extends Controller
 		$tipo              = $request->tipo;
 		$data              = '';
 		$firmasDocumento   = [] ;
-		$copiaDependencias = [] ;
-		$anexosDocumento   = [] ;
 		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
 			list($data, $firmasDocumento) = $visualizar->acta($id);
 		}
 
-		$fechaActual     = Carbon::now()->format('Y-m-d');
-		$tipoMedios      = DB::table('tipomedio')->select('tipmedid','tipmednombre')->whereIn('tipmedid', [1,2,3])->orderBy('tipmednombre')->get();
-		$tipoActas       = DB::table('tipoacta')->select('tipactid','tipactnombre')->orderBy('tipactnombre')->get();	
- 		$personas        = DB::table('persona')->select('persid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
-														->orderBy('nombrePersona')
-														->whereIn('carlabid', [1, 2])->get();
-        $cargoLaborales  = DB::table('cargolaboral')->select('carlabid','carlabnombre')->orderBy('carlabnombre')->whereIn('carlabid', [1, 2])->get();
+		$manejadorDocumentos = new manejadorDocumentos();
+		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
+		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('A', '');
 
         return response()->json(["fechaActual"    => $fechaActual,     "tipoMedios" => $tipoMedios,  "tipoActas"   => $tipoActas,          "personas"        => $personas, 
 								"cargoLaborales"   => $cargoLaborales,  "data"       => $data,		 "firmasDocumento" => $firmasDocumento,  ]);
 	}
 
     public function salve(ActaRequests $request){
-		$editarDocumentos = new editarDocumentos();
-		return $editarDocumentos->acta($request);
+		$manejadorDocumentos = new manejadorDocumentos();
+		return $manejadorDocumentos->acta($request);
 	}
 
 	public function solicitarFirma(Request $request)
