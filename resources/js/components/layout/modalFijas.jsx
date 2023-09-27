@@ -353,12 +353,14 @@ export function AnularDocumento({id, ruta, cerrarModal}){
     )
 }
 
-export function FirmarDocumento({id, ruta, cerrarModal}){
+export function FirmarDocumento({id, cerrarModal}){
 
-    const [formData, setFormData] = useState( {codigo: id, observacionCambio: ''});
-
+    const [formData, setFormData] = useState( {id: id, token: ''});
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
+    const [mensaje, setMensaje] = useState('');
+    const [fechaHoraActual, setFechaHoraActual] = useState('');
+    const [firma, setFirma] = useState(''); 
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -366,13 +368,26 @@ export function FirmarDocumento({id, ruta, cerrarModal}){
 
     const continuar = () =>{
         setLoader(true);
-        instance.post('/admin/producion/documental/firmar/'+ruta, formData).then(res=>{
+        instance.post('/admin/firmar/documento/solicitar/token/procesar', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setHabilitado(false) : null;
             setLoader(false);
         })
     }
+
+    const inicio = () =>{
+        setLoader(true);
+        instance.post('/admin/firmar/documento/solicitar/token', {id: id}).then(res=>{
+            setMensaje(res.mensajeMostrar);
+            setFechaHoraActual(res.fechaHoraActual);
+            setFirma(res.firma);
+            setLoader(false);
+        }) 
+    }
+
+    useEffect(()=>{inicio();}, []);
+
 
     if(loader){
         return <LoaderModal />
@@ -393,17 +408,21 @@ export function FirmarDocumento({id, ruta, cerrarModal}){
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
-                        Antes de anular este tipo documental, verifique cuidadosamente este proceso, ya que no se puede revertir bajo ninguna circunstancia.
+                        <span dangerouslySetInnerHTML={{__html: mensaje}} /> 
                     </p>
                 </Grid>
 
-                <Grid item xl={12} md={12} sm={12} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={0}>
+
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
                         multiline
                         maxRows={4}
-                        name={'observacionCambio'}
-                        value={formData.observacionCambio}
-                        label={'Observación de la analuación del tipo documental'}
+                        name={'token'}
+                        value={formData.token}
+                        label={'Token'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 500}}

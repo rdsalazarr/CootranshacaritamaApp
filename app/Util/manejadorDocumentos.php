@@ -234,7 +234,7 @@ class manejadorDocumentos {
 		   	$coddocumprocesocertificado->codopccontenidoinicial  = $request->contenidoInicial;
 		   	$coddocumprocesocertificado->save();
 
-			foreach($request->firmaPersona as $firmaPersona){
+			foreach($request->firmaPersonas as $firmaPersona){
 				$identificadorFirma = $firmaPersona['identificador'];
 				$personaFirma       = $firmaPersona['persona'];
 				$personaCargo       = $firmaPersona['cargo'];
@@ -610,7 +610,7 @@ class manejadorDocumentos {
 		   	$coddocumprocesoconstancia->codopncontenidoinicial  = $request->contenidoInicial;
 		   	$coddocumprocesoconstancia->save();
 
-			foreach($request->firmaPersona as $firmaPersona){
+			foreach($request->firmaPersonas as $firmaPersona){
 				$identificadorFirma = $firmaPersona['identificador'];
 				$personaFirma       = $firmaPersona['persona'];
 				$personaCargo       = $firmaPersona['cargo'];

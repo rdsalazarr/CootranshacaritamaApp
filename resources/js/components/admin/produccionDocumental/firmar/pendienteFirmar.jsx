@@ -19,25 +19,20 @@ export default function PendienteFirmar(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
-    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
-
-    const cerrarModal = () =>{
-        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
-    }
-
-    const cargar = () =>{
-        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
-    }
-
+    const [modal, setModal] = useState({open : false, vista:8, data:{}, titulo:'', tamano:'bigFlot'});
     const tipoDocumental = ['A','B','C','H','T','O'];
 
-    const modales = [ 
-                    <Acta tipo={'U'} id={modal.data.actaId} ruta='JEFE'/>,
-                    <Certificado tipo={'U'} id={modal.data.certificadoId} ruta='JEFE'/>,
-                    <Circular tipo={'U'} id={modal.data.circularId} ruta='JEFE'/>,
-                    <Citacion tipo={'U'} id={modal.data.citacionId} ruta='JEFE'/>,
-                    <Constancia tipo={'U'} id={modal.data.constanciaId} ruta='JEFE'/>,
-                    <Oficio tipo={'U'} id={modal.data.oficioId} ruta='JEFE'/>,                    
+    const cerrarModal = () =>{
+        setModal({open : false, vista:8, data:{}, titulo:'', tamano:'bigFlot'});
+    }
+
+    const modales = [
+                    <Acta tipo={'U'} id={modal.data.actaId} ruta='JEFE' />,
+                    <Certificado tipo={'U'} id={modal.data.certificadoId} ruta='JEFE' />,
+                    <Circular tipo={'U'} id={modal.data.circularId} ruta='JEFE' />,
+                    <Citacion tipo={'U'} id={modal.data.citacionId} ruta='JEFE' />,
+                    <Constancia tipo={'U'} id={modal.data.constanciaId} ruta='JEFE' />,
+                    <Oficio tipo={'U'} id={modal.data.oficioId} ruta='JEFE' />,
                     <FirmarDocumento id={modal.data.codoprid} cerrarModal={cerrarModal} />,
                     <VisualizarPdf data={modal.data} /> ];
 
@@ -45,13 +40,9 @@ export default function PendienteFirmar(){
                         'Firma el tipo documental',
                         'Visualizar el tipo documental en formato PDF'];
 
-    const edit = (data, tipo, vista) =>{
-        const posicion = tipoDocumental.indexOf(data.codigoDocumental);
-        console.log(posicion);
-
-        //codigoDocumental
-       
-        //setModal({open: true, vista: 6, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : ((tipo === 1) ? 'smallFlot' :'mediumFlot')});
+    const edit = (data, tipo, dato) =>{
+        let  vista = (dato === 1) ? tipoDocumental.indexOf(data.codigoDocumental) : ((dato === 2) ? 6 : 7)
+        setModal({open: true, vista: vista, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : ((tipo === 1) ? 'smallFlot' :'mediumFlot')});
     }
 
     const inicio = () =>{
@@ -87,7 +78,7 @@ export default function PendienteFirmar(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''})}}
+                close={() =>{setModal({open : false, vista:8, data:{}, titulo:'', tamano: ''}), (modal.vista !== 7) ? inicio() : null;}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />
