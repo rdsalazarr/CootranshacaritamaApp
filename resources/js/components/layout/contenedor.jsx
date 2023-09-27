@@ -152,6 +152,7 @@ const componenteMenu = [
         icono : 'folder_special_icon',
         itemMenu: [       
             {ruta : 'admin/radicacion/documento/externo', menu: 'Documento externo', icono : 'import_contacts_icon', componente : <Radicacion /> },
+            {ruta : 'admin/radicacionDocumento/gestionar', menu: 'Documento externo', icono : 'import_contacts_icon', componente : <Radicacion /> },
         ]
     } ,
     {   nombre: 'Archivo Histórico',

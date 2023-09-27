@@ -140,7 +140,7 @@ class CircularController extends Controller
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 			$codigodocumentalprocesocambioestado->codoprid          = $codoprid;
 			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
-			$codigodocumentalprocesocambioestado->codpceuserid      = Auth::id();
+			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 			$codigodocumentalprocesocambioestado->codpceobservacion = $observacion;
 			$codigodocumentalprocesocambioestado->save(); 
@@ -230,7 +230,7 @@ class CircularController extends Controller
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 			$codigodocumentalprocesocambioestado->codoprid          = $codoprid;
 			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
-			$codigodocumentalprocesocambioestado->codpceuserid      = Auth::id();
+			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 			$codigodocumentalprocesocambioestado->codpceobservacion = 'Solicitud de sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
 			$codigodocumentalprocesocambioestado->save();
@@ -280,7 +280,7 @@ class CircularController extends Controller
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 			$codigodocumentalprocesocambioestado->codoprid          = $codoprid;
 			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
-			$codigodocumentalprocesocambioestado->codpceuserid      = Auth::id();
+			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 			$codigodocumentalprocesocambioestado->codpceobservacion = $request->observacionCambio;
 			$codigodocumentalprocesocambioestado->save();
@@ -300,7 +300,7 @@ class CircularController extends Controller
 						->select('cdpce.codpcefechahora','cdpce.codpceobservacion','ted.tiesdonombre',
 						DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdpce.tiesdoid')
-						->join('usuario as u', 'u.usuaid', '=', 'cdpce.codpceuserid')
+						->join('usuario as u', 'u.usuaid', '=', 'cdpce.codpceusuaid')
 						->where('cdpce.codoprid', $request->codigo)->get();
 
 		return response()->json(['cambioEstados' => $cambioEstados]);

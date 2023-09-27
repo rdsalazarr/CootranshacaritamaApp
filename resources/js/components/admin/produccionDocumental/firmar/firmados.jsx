@@ -3,7 +3,7 @@ import { ModalDefaultAuto  } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import Trazabilidad from '../trazabilidad';
+import VisualizarPdf from './visualizarPdf';
 import { Box} from '@mui/material';
 
 export default function Firmados(){
@@ -12,7 +12,7 @@ export default function Firmados(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [ <Trazabilidad idProceso={modal.data.codoprid} idDocumento={modal.data.id} ruta={'acta'} /> ];
+    const modales = [ <VisualizarPdf data={modal.data} /> ];
 
     const tituloModal = [  'Visualizar trazabilidad del documento'];
 
@@ -39,8 +39,8 @@ export default function Firmados(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Consecutivo', 'Fecha','Tipo documento','Nombre dirigido','Estado','Trazabilidad']}
-                    ver={["codigoDocumental", "fecha", "tipoDocumento","nombreDirigido", "nombreEstado"]}
+                    titulo={['Fecha','Tipo documento','Nombre dirigido','Estado','PDF']}
+                    ver={[ "fecha", "tipoDocumento","nombreDirigido", "nombreEstado"]}
                     accion={[
                         {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data, 0)} },
                     ]}

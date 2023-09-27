@@ -12,8 +12,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 import showSimpleSnackbar from './snackBar';
+import RelojDigital from './relojDigital';
 import {LoaderModal} from "./loader";
 import instance from './instance';
+
 
 export default function Eliminar({id, ruta, cerrarModal}){
 
@@ -358,9 +360,9 @@ export function FirmarDocumento({id, cerrarModal}){
     const [formData, setFormData] = useState( {id: id, token: ''});
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
+    const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [mensaje, setMensaje] = useState('');
-    const [fechaHoraActual, setFechaHoraActual] = useState('');
-    const [firma, setFirma] = useState(''); 
+    const [tiempoRestante, setTiempoRestante] = useState(0);    
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -368,7 +370,7 @@ export function FirmarDocumento({id, cerrarModal}){
 
     const continuar = () =>{
         setLoader(true);
-        instance.post('/admin/firmar/documento/solicitar/token/procesar', formData).then(res=>{
+        instance.post('/admin/firmar/documento/procesar', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setHabilitado(false) : null;
@@ -378,71 +380,115 @@ export function FirmarDocumento({id, cerrarModal}){
 
     const inicio = () =>{
         setLoader(true);
+        let newFormData = {...formData}
         instance.post('/admin/firmar/documento/solicitar/token', {id: id}).then(res=>{
-            setMensaje(res.mensajeMostrar);
-            setFechaHoraActual(res.fechaHoraActual);
-            setFirma(res.firma);
+            if(res.success){
+                newFormData.fechaHoraToken = res.fechaHoraToken;
+                newFormData.firma = res.firma;
+                setMensaje(res.mensajeMostrar);
+                setTiempoRestante(res.tiempoToken);
+                setDatosEncontrados(true);
+                setFormData(newFormData);
+            }
             setLoader(false);
         }) 
     }
 
     useEffect(()=>{inicio();}, []);
 
-
     if(loader){
         return <LoaderModal />
-    }    
+    }
 
     return (
         <ValidatorForm onSubmit={continuar} >
 
             <Grid container spacing={2}>
 
-                <Box style={{width: '20%', margin: 'auto'}}>
-                    <Grid item xl={12} md={12} sm={12} xs={12}>
-                        <Box className='animate__animated animate__rotateIn'>
-                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={firmarDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                {(datosEncontrados) ?
+                    <Fragment>
+
+                        <Box style={{width: '20%', margin: 'auto'}}>
+                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                <Box className='animate__animated animate__rotateIn'>
+                                    <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={firmarDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                                </Box>
+                            </Grid>
                         </Box>
-                    </Grid>
-                </Box>
 
-                <Grid item xl={12} md={12} sm={12} xs={12}>
-                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
-                        <span dangerouslySetInnerHTML={{__html: mensaje}} /> 
-                    </p>
-                </Grid>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                                <span dangerouslySetInnerHTML={{__html: mensaje}} /> 
+                            </p>
+                        </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={0}>
 
-                </Grid>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box className='tiepoRestante'> Tiempo restante:<Box className="tiempoevaluacion">
+                                {(tiempoRestante > 0) ?
+                                    <RelojDigital tiempoInicial={tiempoRestante} onTiempoFinalizado={cerrarModal} />
+                                : <Box className="tiempoevaluacion">0</Box>  }
+                                </Box>
+                            </Box>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <TextValidator 
-                        multiline
-                        maxRows={4}
-                        name={'token'}
-                        value={formData.token}
-                        label={'Token'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 500}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange}
-                    />
-                </Grid>
+                        </Grid>
 
-                <Grid item xl={6} md={6} sm={6} xs={6}>
-                    <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
-                        startIcon={<ClearIcon />}> Cancelar
-                    </Button>
-                </Grid> 
+                        <Grid item xl={4} md={4} sm={6} xs={0}>
 
-                <Grid item xl={6} md={6} sm={6} xs={6}>
-                    <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
-                        startIcon={<SaveIcon />}>Continuar
-                    </Button>
-                </Grid>
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                multiline
+                                maxRows={4}
+                                name={'token'}
+                                value={formData.token}
+                                label={'Token'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 20}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={6} md={6} sm={6} xs={6}>
+                            <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                                startIcon={<ClearIcon />}> Cancelar
+                            </Button>
+                        </Grid>
+
+                        <Grid item xl={6} md={6} sm={6} xs={6}>
+                            <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
+                                startIcon={<SaveIcon />}>Continuar
+                            </Button>
+                        </Grid>
+                    </Fragment>
+                : 
+                    <Fragment>
+                        <Box style={{width: '20%', margin: 'auto'}}>
+                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                <Box className='animate__animated animate__rotateIn'>
+                                    <Avatar style={{marginTop: '0.8em', width:'110px', height:'110px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={errorTotalizarFirmas} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 1px 10px 12px'}} /> </Avatar>  
+                                </Box>
+                            </Grid>
+                        </Box>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box style={{backgroundColor: '#f23501',  border: '1px solid rgb(131, 131, 131)', padding: '5px', color: '#fdfdfd',  borderRadius: '10px'}}>
+                                Disculpe, ha ocurrido un error interno al generar el token. 
+                                Por favor, intente nuevamente más tarde o póngase en contacto con nuestro equipo de soporte para recibir asistencia
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={6} md={6} sm={6} xs={6}>
+                            <Button onClick={cerrarModal} className='modalBtnRojo'
+                                startIcon={<ClearIcon />}> Cancelar
+                            </Button>
+                        </Grid>
+
+                    </Fragment>
+                }
 
             </Grid>
         </ValidatorForm> 

@@ -206,9 +206,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/firmar/documento')->group(function(){
-            Route::post('/list', [FirmarDocumentosController::class, 'index']);          
+            Route::post('/list', [FirmarDocumentosController::class, 'index']);
             Route::post('/solicitar/token', [FirmarDocumentosController::class, 'solicitarToken']);
-            Route::post('/procesar', [FirmarDocumentosController::class, 'procesar']);        
+            Route::post('/procesar', [FirmarDocumentosController::class, 'procesar']);
 
             Route::post('/editar/documento', [FirmarDocumentosController::class, 'editarDocumentos']);
             Route::post('/acta/salve', [FirmarDocumentosController::class, 'salvarActa']);

@@ -4,7 +4,6 @@ import { ModalDefaultAuto  } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import Verificar from './verificar';
 import VisualizarPdf from './visualizarPdf';
 import { Box} from '@mui/material';
 
@@ -42,7 +41,7 @@ export default function PendienteFirmar(){
 
     const edit = (data, tipo, dato) =>{
         let  vista = (dato === 1) ? tipoDocumental.indexOf(data.codigoDocumental) : ((dato === 2) ? 6 : 7)
-        setModal({open: true, vista: vista, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : ((tipo === 1) ? 'smallFlot' :'mediumFlot')});
+        setModal({open: true, vista: vista, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : 'mediumFlot' });
     }
 
     const inicio = () =>{

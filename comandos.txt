@@ -7,6 +7,7 @@ php artisan make:migration create_modulo
 php artisan make:migration create_rol
 php artisan make:migration create_funcionalidad
 php artisan make:migration create_rol_funcionalidad
+php artisan make:migration create_usuario_rol
 php artisan make:migration create_informacion_notificacion_correo
 php artisan make:migration create_empresa
 php artisan make:migration create_departamento
@@ -30,7 +31,7 @@ php artisan make:migration create_tipo_medio
 php artisan make:migration create_tipo_acta
 php artisan make:migration create_tipo_tramite
 php artisan make:migration create_tipo_persona_documental
-php artisan make:migration create_token_firma
+php artisan make:migration create_token_firma_persona
 
 php artisan make:migration create_codigo_documental
 php artisan make:migration create_codigo_documental_proceso
@@ -47,8 +48,16 @@ php artisan make:migration create_codigo_documental_proceso_cambio_estado
 php artisan make:migration create_codigo_documental_proceso_compartido
 php artisan make:migration create_codigo_documental_proceso_radicado
 
+php artisan make:migration create_persona_radica_documento
+php artisan make:migration create_tipo_estado_radicacion_documento_entrante
+php artisan make:migration create_radicacion_documento_entrante
+php artisan make:migration create_radicacion_documento_entrante_anexo
+php artisan make:migration create_radicacion_documento_entrante_dependencia
+php artisan make:migration create_radicacion_documento_entrante_cambio_estado
 
-php artisan make:model TokenFirma
+
+
+php artisan make:model TokenFirmaPersona
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
 php artisan make:model HistorialContrasena
@@ -56,6 +65,7 @@ php artisan make:model Modulo
 php artisan make:model Rol
 php artisan make:model Funcionalidad
 php artisan make:model RolFuncionalidad
+php artisan make:model UsuarioRol
 php artisan make:model InformacionNotificacionCorreo
 php artisan make:model Empresa
 php artisan make:model Departamento
@@ -91,6 +101,12 @@ php artisan make:model CodigoDocumentalProcesoCambioEstado
 php artisan make:model CodigoDocumentalProcesoCompartido
 php artisan make:model CodigoDocumentalProcesoRadicado
 
+php artisan make:model PersonaRadicaDocumento
+php artisan make:model RadicacionDocumentoEntrante
+php artisan make:model RadicacionDocumentoEntranteDependencia
+php artisan make:model RadicacionDocumentoEntranteCambioEstado
+
+
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
 php artisan make:seeder TipoDocumentalSeeder
@@ -107,6 +123,9 @@ php artisan make:seeder TipoActaSeeder
 php artisan make:seeder TipoMedioSeeder
 php artisan make:seeder TipoTramiteSeeder
 php artisan make:seeder TipoPersonaDocumentalSeeder
+php artisan make:seeder TipoEstadoDocumentoEntranteSeeder
+
+
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests

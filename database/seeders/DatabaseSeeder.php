@@ -28,5 +28,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoTramiteSeeder::class);
         $this->call(PersonaSeeder::class); 
         $this->call(UsuarioSeeder::class);
+        $this->call(TipoEstadoDocumentoEntranteSeeder::class);        
     }
 }

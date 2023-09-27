@@ -111,7 +111,7 @@ export default function New({data}){
                     <TextValidator 
                         name={'digitoVerificacion'}
                         value={formData.digitoVerificacion}
-                        label={'NIT'}
+                        label={'Dígito de verificación'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}

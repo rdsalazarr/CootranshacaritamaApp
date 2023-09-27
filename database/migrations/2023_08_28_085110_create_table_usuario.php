@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('usuario', function (Blueprint $table) {
             $table->smallIncrements('usuaid')->comment('Identificador de la tabla usuario');
-            $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
+            $table->integer('persid')->unsigned()->comment('Identificador de la persona');
             $table->string('usuanombre', 50)->comment('Nombre del usuario');
             $table->string('usuaapellidos', 50)->comment('Apellidos del usuario');
             $table->string('usuaemail', 80)->unique('uk_usuario')->comment('Correo del usuario');

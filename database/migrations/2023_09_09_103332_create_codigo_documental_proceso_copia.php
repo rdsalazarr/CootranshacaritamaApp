@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('coddocumprocesocopia', function (Blueprint $table) {
             $table->bigIncrements('codoppid')->unsigned()->comment('Identificador de la tabla codigo documental proceso copia');
             $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
-            $table->smallInteger('depeid')->unsigned()->nullable()->comment('Identificador de la dependencia');           
+            $table->smallInteger('depeid')->unsigned()->nullable()->comment('Identificador de la dependencia');
             $table->boolean('codoppescopiadocumento')->default(false)->comment('Determina si es una copia en el documento');
             $table->datetime('codoppfechacompartido')->nullable()->comment('Fecha y hora en la cual se comparte el documento');
             $table->datetime('codoppfechaleido')->nullable()->comment('Fecha y hora en la cual se lee el documento'); 

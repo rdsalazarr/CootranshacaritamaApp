@@ -159,7 +159,7 @@ class manejadorDocumentos {
 				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
 				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
+				$codigodocumentalprocesocambioestado->codpceusuaid      = $usuarioId;
 				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
 				$codigodocumentalprocesocambioestado->save(); 
@@ -261,7 +261,7 @@ class manejadorDocumentos {
 				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
 				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
+				$codigodocumentalprocesocambioestado->codpceusuaid      = $usuarioId;
 				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
 				$codigodocumentalprocesocambioestado->save(); 
@@ -409,7 +409,7 @@ class manejadorDocumentos {
 				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
 				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
+				$codigodocumentalprocesocambioestado->codpceusuaid      = $usuarioId;
 				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
 				$codigodocumentalprocesocambioestado->save(); 
@@ -535,7 +535,7 @@ class manejadorDocumentos {
 				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
 				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
+				$codigodocumentalprocesocambioestado->codpceusuaid      = $usuarioId;
 				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
 				$codigodocumentalprocesocambioestado->save(); 
@@ -637,7 +637,7 @@ class manejadorDocumentos {
 				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
 				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
+				$codigodocumentalprocesocambioestado->codpceusuaid      = $usuarioId;
 				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
 				$codigodocumentalprocesocambioestado->save(); 
@@ -794,7 +794,7 @@ class manejadorDocumentos {
 				$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
 				$codigodocumentalprocesocambioestado->codoprid          = $codigodocumentalproceso->codoprid;
 				$codigodocumentalprocesocambioestado->tiesdoid          = '1';//Inicial
-				$codigodocumentalprocesocambioestado->codpceuserid      = $usuarioId;
+				$codigodocumentalprocesocambioestado->codpceusuaid      = $usuarioId;
 				$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 				$codigodocumentalprocesocambioestado->codpceobservacion = 'Creación del documento por '.auth()->user()->usuanombre;
 				$codigodocumentalprocesocambioestado->save(); 
