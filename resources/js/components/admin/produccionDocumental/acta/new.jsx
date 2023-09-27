@@ -74,8 +74,8 @@ export default function New({id, area, tipo, ruta}){
 
         setLoader(true);
         setFormData(formDataCopia);
-        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/oficio/salve' : '/admin/firmar/documento/oficio/salve';
-        instance.post('/admin/producion/documental/acta/salve', newFormData).then(res=>{
+        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/acta/salve' : '/admin/firmar/documento/acta/salve';
+        instance.post(rutaSalve, newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 

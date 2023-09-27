@@ -5,6 +5,7 @@ import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import Verificar from './verificar';
+import VisualizarPdf from './visualizarPdf';
 import { Box} from '@mui/material';
 
 import Acta from '../acta/new';
@@ -36,18 +37,21 @@ export default function PendienteFirmar(){
                     <Circular tipo={'U'} id={modal.data.circularId} ruta='JEFE'/>,
                     <Citacion tipo={'U'} id={modal.data.citacionId} ruta='JEFE'/>,
                     <Constancia tipo={'U'} id={modal.data.constanciaId} ruta='JEFE'/>,
-                    <Oficio tipo={'U'} id={modal.data.oficioId} ruta='JEFE'/>,
-                    <Verificar data={modal.data} />,
+                    <Oficio tipo={'U'} id={modal.data.oficioId} ruta='JEFE'/>,                    
                     <FirmarDocumento id={modal.data.codoprid} cerrarModal={cerrarModal} />,
-                    <Verificar data={modal.data.codoprid} /> ];
+                    <VisualizarPdf data={modal.data} /> ];
 
     const tituloModal = ['Editar el tipo documental',
                         'Firma el tipo documental',
                         'Visualizar el tipo documental en formato PDF'];
 
-    const edit = (data, tipo) =>{
+    const edit = (data, tipo, vista) =>{
+        const posicion = tipoDocumental.indexOf(data.codigoDocumental);
+        console.log(posicion);
+
+        //codigoDocumental
        
-        setModal({open: true, vista: 6, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : ((tipo === 1) ? 'smallFlot' :'mediumFlot')});
+        //setModal({open: true, vista: 6, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : ((tipo === 1) ? 'smallFlot' :'mediumFlot')});
     }
 
     const inicio = () =>{
@@ -72,9 +76,9 @@ export default function PendienteFirmar(){
                     titulo={['Fecha','Tipo documento','Nombre dirigido','Estado','Editar','Firmar','PDF']}
                     ver={[ "fecha", "tipoDocumento","nombreDirigido", "nombreEstado"]}
                     accion={[
-                        {tipo: 'B', icono : 'edit',                color: 'orange', funcion : (data)=>{edit(data, 0)} },
-                        {tipo: 'B', icono : 'signal_cellular_alt', color: 'red',    funcion : (data)=>{edit(data, 1)} },
-                        {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data, 2)} },
+                        {tipo: 'B', icono : 'edit',                color: 'orange', funcion : (data)=>{edit(data, 0, 1)} },
+                        {tipo: 'B', icono : 'signal_cellular_alt', color: 'red',    funcion : (data)=>{edit(data, 1, 2)} },
+                        {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data, 2, 3)} },
                     ]}
                     funciones={{orderBy: true, search: true, pagination:true}}
                 />

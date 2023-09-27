@@ -28,8 +28,8 @@ export default function Producir(){
 
     const modales = [
                         <Verificar cerrarModal={cerrarModal} verificarArea={verificarArea} ruta={'certificado'} />,
-                        <NewEdit tipo={'I'} area={areaSeleccionada} />,
-                        <NewEdit tipo={'U'} id={(tipo !== 0) ? modal.data.id : null} /> ,
+                        <NewEdit tipo={'I'} area={areaSeleccionada} ruta='P' />,
+                        <NewEdit tipo={'U'} id={(tipo !== 0) ? modal.data.id : null} ruta='P' /> ,
                         <SolicitarFirma id={(tipo !== 0) ? modal.data.id : null} ruta={'certificado'} cerrarModal={cerrarModal} />,
                         <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} ruta={'certificado'} />
                     ];

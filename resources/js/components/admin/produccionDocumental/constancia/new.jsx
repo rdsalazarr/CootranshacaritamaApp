@@ -70,7 +70,7 @@ export default function New({id, area, tipo, ruta}){
 
         setLoader(true);
         setFormData(formDataCopia);
-        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/constancia/salve' : '/admin/firmar/documento/oficio/salve';
+        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/constancia/salve' : '/admin/firmar/documento/constancia/salve';
         instance.post(rutaSalve, newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
@@ -89,7 +89,7 @@ export default function New({id, area, tipo, ruta}){
         setLoader(true);
         let newFormData = {...formData}       
         let rutaData    = (ruta === 'P') ? '/admin/producion/documental/constancia/listar/datos' : '/admin/firmar/documento/editar/documento';
-        instance.post(rutaData, {id: id, tipo: tipo}).then(res=>{
+        instance.post(rutaData, {id: id, tipo: tipo, tipoDocumental: 'T'}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
             (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoDestinos(res.tipoDestinos);

@@ -79,8 +79,8 @@ export default function New({id, area, tipo, ruta}){
         newFormData.firmaInvitados = firmaInvitados;  
         setLoader(true);
         setFormData(formDataCopia);
-        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/oficio/salve' : '/admin/firmar/documento/oficio/salve';
-        instance.post('/admin/producion/documental/citacion/salve', newFormData).then(res=>{
+        let rutaSalve    = (ruta === 'P') ? '/admin/producion/documental/citacion/salve' : '/admin/firmar/documento/citacion/salve';
+        instance.post(rutaSalve, newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -161,8 +161,8 @@ export default function New({id, area, tipo, ruta}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        let rutaData    = (ruta === 'P') ? '/admin/producion/documental/oficio/listar/datos' : '/admin/firmar/documento/editar/documento';
-        instance.post('/admin/producion/documental/citacion/listar/datos', {id: id, tipo: tipo}).then(res=>{
+        let rutaData    = (ruta === 'P') ? '/admin/producion/documental/citacion/listar/datos' : '/admin/firmar/documento/editar/documento';
+        instance.post(rutaData, {id: id, tipo: tipo, tipoDocumental: 'H'}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
             setTipoMedios(res.tipoMedios);
             setTipoCitaciones(res.tipoCitaciones);
