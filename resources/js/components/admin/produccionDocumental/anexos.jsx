@@ -41,7 +41,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
     return (
         <Grid container spacing={2}>
             <Grid item xs={12} sm={12} md={12} xl={12}>
-                <Box className='subTituloFormulario'>
+                <Box className='divisionFormulario'>
                     Anexos presentandos en el tipo documental
                 </Box>
             </Grid>

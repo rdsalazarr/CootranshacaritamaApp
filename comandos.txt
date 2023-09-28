@@ -140,6 +140,7 @@ php artisan make:seeder TipoEstadoDocumentoEntranteSeeder
 
 php artisan make:seeder TipoCajaUbicacionSeeder
 php artisan make:seeder TipoCarpetaUbicacionSeeder
+php artisan make:seeder TipoEstanteArchivadorSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -163,6 +164,9 @@ php artisan make:controller Admin\Tipos\TipoDespedidaController
 php artisan make:controller Admin\Tipos\TipoSaludoController
 php artisan make:controller Admin\PersonaController
 php artisan make:controller Admin\ProducionDocumental\OficioController
+
+php artisan make:controller Admin\Radicacion\DocumentoEntranteController
+
 
 
 php artisan db:seed

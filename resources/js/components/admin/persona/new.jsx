@@ -130,7 +130,7 @@ export default function New({data, tipo}){
                     muninombre: muni.muninombre
                 });
             }
-        });        
+        });
         setMunicipiosNacimiento(munNacimiento);
     }
 

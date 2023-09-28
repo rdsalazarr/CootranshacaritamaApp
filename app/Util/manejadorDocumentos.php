@@ -44,7 +44,7 @@ class manejadorDocumentos {
 
 		//Circular y oficio
 		if($tipoDocumental === 'C'  || $tipoDocumental === 'O'){
-			$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();		
+			$tipoDestinos    = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
 			$tipoSaludos     = DB::table('tiposaludo')->select('tipsalid','tipsalnombre')->orderBy('tipsalnombre')->get();
 			$tipoDespedidas  = DB::table('tipodespedida')->select('tipdesid','tipdesnombre')->orderBy('tipdesnombre')->get();
 			$dependencias    = DB::table('dependencia')->select('depeid','depesigla','depenombre')->where('depeactiva', true)->where('depeid', '!=', $depeid)->orderBy('depenombre')->get();

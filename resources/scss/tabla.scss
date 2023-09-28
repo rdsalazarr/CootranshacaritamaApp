@@ -145,36 +145,6 @@ $grisOscuro : var(--grisOscuro);
   margin-right: 2em;
 }
 
-.titleGeneral {
-  color: #6a6969;
-  display: inline-block;
-  font-size: 2em !important; 
-  text-shadow: -0.03px 0.03px #fff6e6, -1px 1px #e7dcd7;
-  font-weight: bold !important;
-  line-height: 0.5 !important;
-}
-
-.subTituloFormulario {
-  background-color: $verdeOscuro;
-  text-align: left;
-  padding: 5px 0px 5px 10px;
-  color: $colorBlanco;
-  margin-top: 1em;
-  font-weight: 600;
-  border-radius: 4px;
-}
-
-.frmDivision {
-  background-color: $grisClaro;
-  text-align: left;
-  padding: 5px 0px 5px 10px;
-  color: #747171;;
-  margin-top: 1em;
-  font-weight: 600;
-  border-radius: 4px;
-  text-shadow: -0.03px 0.03px #43ab33, -1px 1px #f1f7f1;
-}
-
 /*md*/
 @media (max-width: 768px) { 
   .tableGeneral { 

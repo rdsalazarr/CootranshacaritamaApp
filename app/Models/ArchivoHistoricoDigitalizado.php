@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ArchivoHistoricoDigitalizado extends Model
 {
     use HasFactory;
+
+    protected $table      = 'archivohistoricodigitalizado';	 
+	protected $primaryKey = 'arhidiid';
+    protected $fillable   = ['archisid', 'arhidinombrearchivooriginal','arhidinombrearchivoeditado', 'arhidirutaarchivo'];
 }

@@ -14,12 +14,12 @@ class TipoActaSeeder extends Seeder
     public function run(): void
     {
         DB::table('tipoacta')->insert([
-            'tipactid' => '1',
+            'tipactid'     => '1',
             'tipactnombre' => 'Ordinaria'
         ]);
 
         DB::table('tipoacta')->insert([
-            'tipactid' => '2',
+            'tipactid'     => '2',
             'tipactnombre' => 'Extra Ordinaria'
         ]);
     }

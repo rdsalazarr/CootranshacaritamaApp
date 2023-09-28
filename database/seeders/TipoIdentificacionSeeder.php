@@ -38,5 +38,11 @@ class TipoIdentificacionSeeder extends Seeder
             'tipidesigla' => 'CE',
             'tipidenombre' => 'Cédula de extranjería'
         ]);
+
+        DB::table('tipoidentificacion')->insert([
+            'tipideid' => '5',
+            'tipidesigla' => 'NIT',
+            'tipidenombre' => 'Número de identificación tributaria'
+        ]);
     }
 }

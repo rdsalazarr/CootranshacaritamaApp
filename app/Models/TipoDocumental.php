@@ -11,5 +11,5 @@ class TipoDocumental extends Model
 
     protected $table      = 'tipodocumental';
     protected $primaryKey = 'tipdocid';
-    protected $fillable   = ['tipdoccodigo','tipdocnombre','tipdocactivo'];
+    protected $fillable   = ['tipdoccodigo','tipdocnombre','tipdocproducedocumento','tipdocactivo'];
 }

@@ -33,7 +33,9 @@ import Oficio from "../admin/produccionDocumental/oficio/list";
 
 import FirmarDocumento from "../admin/produccionDocumental/firmar/list";
 
-import Radicacion from "../admin/radicacion/documentoExterno/list";
+import RegistrarRadicadoEntrante from "../admin/radicacion/documentoEntrante/registrar/new";
+import VerificarRadicadoEntrante from "../admin/radicacion/documentoEntrante/verificar/list";
+import AnularRadicadoEntrante from "../admin/radicacion/documentoEntrante/anular/list";
 
 
 const HeaderMenu = ({open , setOpen}) =>{
@@ -149,17 +151,18 @@ const componenteMenu = [
         ]
     } ,
     {   nombre: 'Radicación',
-        icono : 'folder_special_icon',
+        icono : 'insert_page_break_icon',
         itemMenu: [       
-            {ruta : 'admin/radicacion/documento/externo', menu: 'Documento externo', icono : 'import_contacts_icon', componente : <Radicacion /> },
-            {ruta : 'admin/radicacionDocumento/gestionar', menu: 'Documento externo', icono : 'import_contacts_icon', componente : <Radicacion /> },
+            {ruta : 'admin/radicacion/documento/entrante', menu: 'Registrar Doc. Ent', icono : 'post_add_icon', componente : <RegistrarRadicadoEntrante /> },
+            {ruta : 'admin/radicacion/documento/verificar', menu: 'Verificar  Doc. Ent', icono : 'bookmark_added_icon', componente : <VerificarRadicadoEntrante /> },
+            {ruta : 'admin/radicacion/documento/anular', menu: 'Anular radicado', icono : 'layers_clear_icon', componente : <AnularRadicadoEntrante /> },
         ]
     } ,
     {   nombre: 'Archivo Histórico',
-        icono : 'folder_special_icon',
+        icono : 'forward_to_inbox_icon',
         itemMenu: [       
-            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <Radicacion /> },
-            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <Radicacion /> },
+            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <RegistrarRadicadoEntrante /> },
+            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <RegistrarRadicadoEntrante /> },
         ]
     } 
 ];

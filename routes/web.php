@@ -36,6 +36,8 @@ use App\Http\Controllers\Admin\ProducionDocumental\OficioController;
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
 use App\Http\Controllers\Admin\ProducionDocumental\FirmarDocumentosController;
 
+use App\Http\Controllers\Admin\Radicacion\DocumentoEntranteController;
+
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
@@ -220,7 +222,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/visualizar/documento/PDF', [FirmarDocumentosController::class, 'showPdf']);
         });
 
-        Route::prefix('/radicar/documento')->group(function(){
+        Route::prefix('/radicacion/documento')->group(function(){
+            Route::get('/entrante', [DocumentoEntranteController::class, 'index']);
+            Route::post('/entrante/datos', [DocumentoEntranteController::class, 'datos']);
+            Route::post('/entrante/consultar/persona', [DocumentoEntranteController::class, 'consultarPersona']);
+            Route::post('/entrante/salve', [DocumentoEntranteController::class, 'salve']);
 
         });
     });

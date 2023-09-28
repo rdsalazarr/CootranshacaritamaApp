@@ -179,6 +179,36 @@ body{
   right: 0;
 }
 
+.titleGeneral {
+  color: #6a6969;
+  display: inline-block;
+  font-size: 2em !important; 
+  text-shadow: -0.03px 0.03px #fff6e6, -1px 1px #e7dcd7;
+  font-weight: bold !important;
+  line-height: 0.5 !important;
+}
+
+.divisionFormulario {
+  background-color: $verdeOscuro;
+  text-align: left;
+  padding: 5px 0px 5px 10px;
+  color: $colorBlanco;
+  margin-top: 1em;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.frmDivision {
+  background-color: $grisClaro;
+  text-align: left;
+  padding: 5px 0px 5px 10px;
+  color: #747171;;
+  margin-top: 1em;
+  font-weight: 600;
+  border-radius: 4px;
+  text-shadow: -0.03px 0.03px #43ab33, -1px 1px #f1f7f1;
+}
+
 .frm-division{       
   min-height: 20px;   
   max-height: 100px;
@@ -190,6 +220,7 @@ body{
   font-weight: 700;
   text-shadow: -0.03px 0.03px #1a1a19, -1px 1px #282625;
 }
+
 
 .frmTexto {
   width: 100%;
@@ -271,9 +302,9 @@ body{
 
   @font-face {
     font-family: 'Material Icons';
-     font-style: normal;
-     font-weight: 400;
-     src: url(../fonts/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    src: url(../fonts/MaterialIcons-Regular.woff2) format('woff2');
  }
 
 .material-icons {

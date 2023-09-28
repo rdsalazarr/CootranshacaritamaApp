@@ -356,7 +356,7 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Box className='subTituloFormulario'>
+                    <Box className='divisionFormulario'>
                         Series y sub series documentales adiconada a la dependencia
                     </Box>
                 </Grid>
@@ -429,7 +429,7 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Box className='subTituloFormulario'>
+                    <Box className='divisionFormulario'>
                         Personas adicionadas a la dependencia
                     </Box>
                 </Grid>
