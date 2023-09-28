@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('serdocnombre', 80)->comment('Nombre de la serie');
             $table->smallInteger('serdoctiempoarchivogestion')->comment('Tiempo en el archivo de gestión');
             $table->smallInteger('serdoctiempoarchivocentral')->comment('Tiempo en el archivo central');
-            $table->smallInteger('serdoctiempoarchivohistorico')->comment('Tiempo en el archivo historico');
+            $table->smallInteger('serdoctiempoarchivohistorico')->comment('Tiempo en el archivo histórico');
             $table->boolean('serdocpermiteeliminar')->default(true)->comment('Determina si la serie se puede eliminar');
             $table->boolean('serdocactiva')->default(false)->comment('Determina si la serie esta activa');
             $table->timestamps();

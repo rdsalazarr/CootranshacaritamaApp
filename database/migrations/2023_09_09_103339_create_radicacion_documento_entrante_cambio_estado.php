@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('radoenid')->unsigned()->comment('Identificador del radicado del documento entrante');
             $table->tinyInteger('tierdeid')->unsigned()->comment('Identificador del tipo de estado radicación documento entrante');
             $table->smallInteger('radeceusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del radicado');
-            $table->dateTime('radecefechahora')->comment('Fecha y hora en la cual se crea el cambio estado del radicado');            
+            $table->dateTime('radecefechahora')->comment('Fecha y hora en la cual se crea el cambio estado del radicado');
             $table->string('radeceobservacion', 500)->nullable()->comment('Observación del cambio estado radicado');
             $table->timestamps();
             $table->foreign('radoenid')->references('radoenid')->on('radicaciondocumentoentrante')->onUpdate('cascade')->index('fk_radoenradece'); 

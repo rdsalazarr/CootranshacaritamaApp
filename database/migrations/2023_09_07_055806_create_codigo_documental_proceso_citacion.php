@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('coddocumprocesocitacion', function (Blueprint $table) {
-            $table->bigIncrements('codoptid')->unsigned()->comment('Identificador de la tabla codigo documental proceso citación');       
+            $table->bigIncrements('codoptid')->unsigned()->comment('Identificador de la tabla codigo documental proceso citación');
             $table->bigInteger('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el documento');
             $table->tinyInteger('tipactid')->unsigned()->comment('Identificador del tipo de acta');  
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('codoptlugar', 80)->comment('Lugar donde se realiza el citación');
             $table->date('codoptfecharealizacion')->comment('Fecha para la conovocatoria del citación');
             $table->timestamps();
-            $table->unique(['codoptconsecutivo','codoptsigla','codoptanio'],'uk_coddocumprocesocitacion');       
+            $table->unique(['codoptconsecutivo','codoptsigla','codoptanio'],'uk_coddocumprocesocitacion');
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopt');  
             $table->foreign('tipactid')->references('tipactid')->on('tipoacta')->onUpdate('cascade')->index('fk_tipactcodopt'); 
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacodopt'); 

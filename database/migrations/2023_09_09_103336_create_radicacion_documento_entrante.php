@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('peradoid')->unsigned()->comment('Identificador de la persona que radica el documento');
             $table->tinyInteger('tipmedid')->unsigned()->comment('Identificador del tipo de medio');
             $table->tinyInteger('tierdeid')->unsigned()->comment('Identificador del tipo de estado radicación documento entrante');
-            $table->smallInteger('radoenusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del documento');
+            $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el estado del documento');
             $table->string('radoenconsecutivo', 4)->comment('Consecutivo del radicado');
             $table->string('radoenanio', 4)->comment('Año en el cual se crea el radicado');
             $table->dateTime('radoenfechahoraradicado')->comment('Fecha y hora en la cual se radica el documento');
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->foreign('peradoid')->references('peradoid')->on('personaradicadocumento')->onUpdate('cascade')->index('fk_peradoradoen');
             $table->foreign('tipmedid')->references('tipmedid')->on('tipomedio')->onUpdate('cascade')->index('fk_tipmedradoen');
             $table->foreign('tierdeid')->references('tierdeid')->on('tipoestadoraddocentrante')->onUpdate('cascade')->index('fk_tierderadoen');
-            $table->foreign('radoenusuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_radoen');  
+            $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_radoen');  
         });
     }
 

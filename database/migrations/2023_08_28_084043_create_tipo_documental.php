@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipodocumental', function (Blueprint $table) {
-            $table->tinyInteger('tipdocid')->unsigned()->comment('Identificador de la tabla tipo documental');
+            $table->tinyIncrements('tipdocid')->unsigned()->comment('Identificador de la tabla tipo documental');
             $table->string('tipdoccodigo', 2)->unique('uk_tipodocumental')->comment('Código del tipo documental');
             $table->string('tipdocnombre', 50)->comment('Nombre del tipo documental');
-            $table->boolean('tipdocactivo')->default(true)->comment('Determina si el tipo de documento se encuentra activo'); 
-            $table->primary('tipdocid')->index('pk_tipdoc');
+            $table->boolean('tipdocproducedocumento')->default(false)->comment('Determina si el tipo documental produce documento');
+            $table->boolean('tipdocactivo')->default(true)->comment('Determina si el tipo de documento se encuentra activo');
         });
     }
 

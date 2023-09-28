@@ -21,7 +21,7 @@ return new class extends Migration
             $table->tinyInteger('tiptraid')->unsigned()->comment('Identificador del tipo de trámite');
             $table->tinyInteger('tipdetid')->unsigned()->comment('Identificador del tipo de destino');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario');
-            $table->date('coddocfechahora')->comment('Fecha y hora actual en el que se crea el documento');
+            $table->dateTime('coddocfechahora')->comment('Fecha y hora actual en el que se crea el documento');
             $table->timestamps();
             $table->foreign('depeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_depecoddoc');
             $table->foreign('serdocid')->references('serdocid')->on('seriedocumental')->onUpdate('cascade')->index('fk_serdoccoddoc'); 

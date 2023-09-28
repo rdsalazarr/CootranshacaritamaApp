@@ -24,6 +24,13 @@ php artisan make:migration create_persona
 php artisan make:migration create_dependencia
 php artisan make:migration create_cargo_laboral
 
+php artisan make:migration create_tipo_estante_archivador
+php artisan make:migration create_tipo_caja_ubicacion
+php artisan make:migration create_tipo_carpeta_ubicacion
+php artisan make:migration create_archivo_historico
+php artisan make:migration create_archivo_historico_digitalizado
+
+
 php artisan make:migration create_dependencia_persona
 php artisan make:migration create_dependencia_sub_serie_documental
 
@@ -106,6 +113,12 @@ php artisan make:model RadicacionDocumentoEntrante
 php artisan make:model RadicacionDocumentoEntranteDependencia
 php artisan make:model RadicacionDocumentoEntranteCambioEstado
 
+php artisan make:model TipoEstanteArchivador
+php artisan make:model ArchivoHistorico
+php artisan make:model ArchivoHistoricoDigitalizado
+
+php artisan make:migration create_archivo_historico
+php artisan make:migration create_archivo_historico_digitalizado
 
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
@@ -125,7 +138,8 @@ php artisan make:seeder TipoTramiteSeeder
 php artisan make:seeder TipoPersonaDocumentalSeeder
 php artisan make:seeder TipoEstadoDocumentoEntranteSeeder
 
-
+php artisan make:seeder TipoCajaUbicacionSeeder
+php artisan make:seeder TipoCarpetaUbicacionSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests

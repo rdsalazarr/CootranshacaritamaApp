@@ -19,17 +19,16 @@ return new class extends Migration
             $table->smallInteger('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
             $table->string('codopoconsecutivo', 4)->comment('Consecutivo de la oficio');
             $table->string('codoposigla', 3)->comment('Sigla de la dependencia productora de la oficio');
-            $table->string('codopoanio', 4)->comment('Año en el cual se crea la oficio'); 
+            $table->string('codopoanio', 4)->comment('Año en el cual se crea la oficio');
             $table->string('codopotitulo', 80)->nullable()->comment('Título de la persona a la que va dirigido el ofico');  
-            $table->string('codopociudad', 80)->comment('Ciudad a la que va dirigido el oficio');  
+            $table->string('codopociudad', 80)->comment('Ciudad a la que va dirigido el oficio');
             $table->string('codopocargodestinatario', 80)->nullable()->comment('Nombre del cargo de la persona ala que va dirigido el oficio'); 
             $table->string('codopoempresa', 80)->nullable()->comment('Nombre de la persona o empresa a la que va dirigido el oficio'); 
             $table->string('codopodireccion', 80)->nullable()->comment('direción de la persona o empresa a la que va dirigido el oficio'); 
             $table->string('codopotelefono', 20)->nullable()->comment('Telefono de la persona o empresa a la que va dirigido el oficio'); 
-            $table->boolean('codoporesponderadicado')->default(false)->comment('Determina si se esta respondiendo radicados en el oficio');           
+            $table->boolean('codoporesponderadicado')->default(false)->comment('Determina si se esta respondiendo radicados en el oficio');
             $table->timestamps();
-
-            $table->unique(['codopoconsecutivo','codoposigla','codopoanio'],'uk_coddocumprocesooficio');           
+            $table->unique(['codopoconsecutivo','codoposigla','codopoanio'],'uk_coddocumprocesooficio');
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopo'); 
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacodopo'); 
             $table->foreign('tipsalid')->references('tipsalid')->on('tiposaludo')->onUpdate('cascade')->index('fk_tipsalcodopo');

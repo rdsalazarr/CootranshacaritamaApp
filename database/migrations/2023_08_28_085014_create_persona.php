@@ -37,7 +37,7 @@ return new class extends Migration
             $table->boolean('persactiva')->default(true)->comment('Determina si la persona se encuentra activa');
             $table->timestamps();
             $table->unique(['tipideid','persdocumento'],'uk_personatipoidentificacion');
-            $table->foreign('carlabid')->references('carlabid')->on('cargolaboral')->onUpdate('cascade')->index('fk_carglabpers');   
+            $table->foreign('carlabid')->references('carlabid')->on('cargolaboral')->onUpdate('cascade')->index('fk_carglabpers');
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipidepers');
             $table->foreign('tirelaid')->references('tirelaid')->on('tiporelacionlaboral')->onUpdate('cascade')->index('fk_tirelapers');
             $table->foreign('persdepaidnacimiento')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapersnac');

@@ -16,44 +16,51 @@ class TipoDocumentalSeeder extends Seeder
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '1',
             'tipdoccodigo' => 'A',
-            'tipdocnombre' => 'Acta'
+            'tipdocnombre' => 'Acta',
+            'tipdocproducedocumento' => '1'
         ]);
 
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '2',
             'tipdoccodigo' => 'B',
-            'tipdocnombre' => 'Certificado'
+            'tipdocnombre' => 'Certificado',
+            'tipdocproducedocumento' => '1'
         ]);
 
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '3',
             'tipdoccodigo' => 'C',
-            'tipdocnombre' => 'Circular'
+            'tipdocnombre' => 'Circular',
+            'tipdocproducedocumento' => '1'
         ]);
 
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '4',
             'tipdoccodigo' => 'H',
-            'tipdocnombre' => 'Citación'
+            'tipdocnombre' => 'Citación',
+            'tipdocproducedocumento' => '1'
         ]);
 
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '5',
             'tipdoccodigo' => 'T',
-            'tipdocnombre' => 'Constancia'
+            'tipdocnombre' => 'Constancia',
+            'tipdocproducedocumento' => '1'
         ]);
 
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '6',
             'tipdoccodigo' => 'O',
-            'tipdocnombre' => 'Oficio'
+            'tipdocnombre' => 'Oficio',
+            'tipdocproducedocumento' => '1'
         ]);
 
         DB::table('tipodocumental')->insert([
             'tipdocid'     => '7',
             'tipdoccodigo' => 'R',
             'tipdocnombre' => 'Resolución',
-            'tipdocactivo' => '0'
+            'tipdocactivo' => '0',
+            'tipdocproducedocumento' => '1'
         ]); 
     }
 }

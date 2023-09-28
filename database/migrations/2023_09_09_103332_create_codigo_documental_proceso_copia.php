@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('codoppescopiadocumento')->default(false)->comment('Determina si es una copia en el documento');
             $table->datetime('codoppfechacompartido')->nullable()->comment('Fecha y hora en la cual se comparte el documento');
             $table->datetime('codoppfechaleido')->nullable()->comment('Fecha y hora en la cual se lee el documento'); 
-            $table->timestamps();            
+            $table->timestamps();
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopp'); 
             $table->foreign('depeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_depecodopp'); 
         });

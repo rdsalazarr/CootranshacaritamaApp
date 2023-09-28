@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('dependenciapersona', function (Blueprint $table) {
             $table->increments('depperid')->unsigned()->comment('Identificador de la tabla dependencia persona');  
             $table->smallInteger('depperdepeid')->unsigned()->comment('Identificador de la dependencia');
-            $table->integer('depperpersid')->unsigned()->comment('Identificador del persona asignado a la dependencia');  
-            
-            $table->unique(['depperdepeid','depperpersid'],'uk_dependenciapersona');            
+            $table->integer('depperpersid')->unsigned()->comment('Identificador del persona asignado a la dependencia');
+
+            $table->unique(['depperdepeid','depperpersid'],'uk_dependenciapersona');
             $table->foreign('depperdepeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_depedepper'); 
             $table->foreign('depperpersid')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persdepper'); 
         });

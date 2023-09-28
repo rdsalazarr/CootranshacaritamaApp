@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('codopxnombreanexooriginal', 200)->comment('Nombre con el cual se ha subido el documento'); 
             $table->string('codopxnombreanexoeditado', 200)->comment('Nombre con el cual se ha subido el documento pero editado');
             $table->string('codopxrutaanexo', 500)->comment('Ruta enfuscada del anexo para el documento');
-            $table->timestamps();            
+            $table->timestamps();
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopx'); 
         });
     }

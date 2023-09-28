@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('informacionnotificacioncorreo', function (Blueprint $table) {
-            $table->tinyIncrements('innocoid')->comment('Identificador de la tabla informacion notificacion correo ');
+            $table->tinyIncrements('innocoid')->comment('Identificador de la tabla informacion notificación correo ');
             $table->string('innoconombre', 50)->unique('uk_infornotificacioncorreo')->comment('Nombre con el cual se consulta desde el sistema'); 
             $table->string('innocoasunto', 100)->comment('Asunto de la información que lleva notificación del correo'); 
             $table->longText('innococontenido')->comment('Contenido de la información que lleva notificación del correo');

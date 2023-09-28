@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tiporelacionlaboral', function (Blueprint $table) {
-            $table->tinyInteger('tirelaid')->unsigned()->comment('Identificador del tipo de realacion laboral');
+            $table->tinyInteger('tirelaid')->unsigned()->comment('Identificador del tipo de realación laboral');
             $table->string('tirelanombre', 30)->comment('Nombre del tipo de relación laboral');
             $table->primary('tirelaid')->index('pk_tirela');
         });

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('codoplsigla', 3)->comment('Sigla de la dependencia productora de la circular');
             $table->string('codoplanio', 4)->comment('Año en el cual se crea la circular'); 
             $table->timestamps();
-            $table->unique(['codoplconsecutivo','codoplsigla','codoplanio'],'uk_coddocumprocesocircular');           
+            $table->unique(['codoplconsecutivo','codoplsigla','codoplanio'],'uk_coddocumprocesocircular');
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodopl'); 
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacodopl');
             $table->foreign('tipdesid')->references('tipdesid')->on('tipodespedida')->onUpdate('cascade')->index('fk_tipdescodopl');  

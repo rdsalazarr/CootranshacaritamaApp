@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ingresosistema', function (Blueprint $table) {   
+        Schema::create('ingresosistema', function (Blueprint $table) {
             $table->bigIncrements('ingsisid')->unsigned()->comment('Identificador de la tabla ingreso sistema');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario');
             $table->string('ingsisipacceso', 20)->comment('Ip de la cual accede el usuario al sistema');

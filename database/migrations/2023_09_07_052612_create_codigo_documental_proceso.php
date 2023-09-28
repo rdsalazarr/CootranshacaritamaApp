@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('codigodocumentalproceso', function (Blueprint $table) {
             $table->bigIncrements('codoprid')->unsigned()->comment('Identificador de la tabla codigo documental proceso');
             $table->bigInteger('coddocid')->unsigned()->comment('Identificador de la tabla codigo documental');
-            $table->tinyInteger('tiesdoid')->unsigned()->comment('Identificador de la tabla tipo estado documento');           
+            $table->tinyInteger('tiesdoid')->unsigned()->comment('Identificador de la tabla tipo estado documento');
             $table->date('codoprfecha')->comment('Fecha en la cual se crea el documento');
             $table->string('codoprnombredirigido', 4000)->nullable()->comment('Nombre o nombres de la persona a quien va dirigido el documento');
             $table->string('codoprcargonombredirigido', 1000)->nullable()->comment('Cargo de la persona a quien va dirigido el documento');
@@ -29,10 +29,10 @@ return new class extends Migration
             $table->boolean('codoprsolicitafirma')->default(false)->comment('Determina si el documento se le ha solicitado la firma');
             $table->boolean('codoprfirmado')->default(false)->comment('Determina si el documento ha sido firmado');
             $table->boolean('codoprsellado')->default(false)->comment('Determina si el documento esta sellado');
-            $table->boolean('codoprradicado')->default(false)->comment('Determina si el documento fue radicado en ventanilla única');         
+            $table->boolean('codoprradicado')->default(false)->comment('Determina si el documento fue radicado en ventanilla única'); 
             $table->timestamps();
             $table->foreign('coddocid')->references('coddocid')->on('codigodocumental')->onUpdate('cascade')->index('fk_coddoccodopr'); 
-            $table->foreign('tiesdoid')->references('tiesdoid')->on('tipoestadodocumento')->onUpdate('cascade')->index('fk_tiesdocodopr');           
+            $table->foreign('tiesdoid')->references('tiesdoid')->on('tipoestadodocumento')->onUpdate('cascade')->index('fk_tiesdocodopr'); 
         });
     }
 

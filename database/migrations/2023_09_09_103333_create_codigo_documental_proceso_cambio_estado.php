@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('codoprid')->references('codoprid')->on('codigodocumentalproceso')->onUpdate('cascade')->index('fk_codoprcodpce'); 
             $table->foreign('tiesdoid')->references('tiesdoid')->on('tipoestadodocumento')->onUpdate('cascade')->index('fk_tiesdocodpce'); 
-            $table->foreign('codpceusuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usercodpce');
+            $table->foreign('codpceusuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacodpce');
         });
     }
 
