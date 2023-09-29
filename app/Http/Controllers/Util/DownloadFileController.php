@@ -12,19 +12,26 @@ class DownloadFileController extends Controller
 	{
 		$this->middleware('auth');
 	}
-    
-    public function download($sigla, $anyo, $ruta, $id){
-        $array = array(
-            '' => 0, 
-            '/archivos/produccionDocumental/adjuntos/' => 1,
-            '/archivos/beneficiario/' => 2, 
-            '/archivos/inmueble/' => 3,
-            '/archivos/' => 4 //Descarga los contratos
-        );
-    
+
+    public function download($sigla, $anyo, $ruta){
         try {
 	    	$ruta    = Crypt::decrypt($ruta);
-            $carpeta = array_search($id, $array).$sigla.'/'.$anyo.'/';
+            $carpeta = '/archivos/produccionDocumental/adjuntos/'.$sigla.'/'.$anyo.'/';
+            $file = public_path().$carpeta.$ruta;
+            if (file_exists($file)) {
+                return response()->download($file, $ruta);
+            } else {
+                return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
+            }
+		} catch (DecryptException $e) {
+		   return redirect('/error/url');
+		}
+    }
+
+    public function radicadoEntrante($anyo, $ruta){
+        try {
+	    	$ruta    = Crypt::decrypt($ruta);
+            $carpeta = '/archivos/radicacion/documentoEntrante/'.$anyo.'/';
             $file = public_path().$carpeta.$ruta;
             if (file_exists($file)) {
                 return response()->download($file, $ruta);

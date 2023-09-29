@@ -18,7 +18,7 @@ class generarPDF
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->acta($id);
-		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
@@ -155,7 +155,7 @@ class generarPDF
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->certificado($id);
-		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
@@ -173,7 +173,7 @@ class generarPDF
 		$tipoMedio            = $infodocumento->tipmedid;
 		$firmado              = $infodocumento->codoprfirmado;
 		$transcriptor         = $infodocumento->alias;
-		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -239,7 +239,7 @@ class generarPDF
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->circular($id);
-		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
@@ -266,7 +266,7 @@ class generarPDF
 		$tipoMedio      	  = $infodocumento->tipmedid;
 		$firmado        	  = $infodocumento->codoprfirmado;
 		$transcriptor   	  = $infodocumento->alias;
-		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 		
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -340,7 +340,7 @@ class generarPDF
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $firmaInvitados) = $visualizar->citacion($id);
-		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
@@ -365,7 +365,7 @@ class generarPDF
 		$tipoMedio      	  = $infodocumento->tipmedid;
 		$firmado        	  = $infodocumento->codoprfirmado;
 		$transcriptor   	  = $infodocumento->alias;
-		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 		$fechaRealizacion     = $funcion->formatearFecha($infodocumento->codoptfecharealizacion);
 
 		PDF::SetAuthor('IMPLESOFT');
@@ -454,7 +454,7 @@ class generarPDF
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->constancia($id);
-		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
@@ -472,7 +472,7 @@ class generarPDF
 		$tipoMedio            = $infodocumento->tipmedid;
 		$firmado              = $infodocumento->codoprfirmado;
 		$transcriptor         = $infodocumento->alias;
-		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -538,7 +538,7 @@ class generarPDF
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
-		list($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
@@ -570,7 +570,7 @@ class generarPDF
 		$tipoMedio      	  = $infodocumento->tipmedid;
 		$firmado        	  = $infodocumento->codoprfirmado;
 		$transcriptor   	  = $infodocumento->alias;
-		$fechaDocumento 	  = $cidudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -674,7 +674,7 @@ class generarPDF
 									->first();
 
 		$direccionEmpresa = $empresa->emprdireccion;
-		$cidudadEmpresa   = $empresa->muninombre;
+		$ciudadEmpresa    = $empresa->muninombre;
 		$barrioEmpresa    = 'Santa clara'; 
 		$telefonoEmpresa  = $empresa->emprtelefonofijo;
 		$celularEmpresa   = $empresa->emprtelefonocelular;
@@ -684,7 +684,7 @@ class generarPDF
 		$siglaEmpresa     = $empresa->emprsigla;
 		$logoEmpresa      = $empresa->emprlogo;
 
-		return array ($direccionEmpresa, $cidudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $logoEmpresa);
+		return array ($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $logoEmpresa);
 	}
 	
 	function headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
@@ -860,4 +860,250 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
+
+	/*Para la radicacion de documentos*/
+	public function validarPuedeAbrirPdf($ruta){
+        try {
+            $tcpdf = new Fpdi(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $pageCount = $tcpdf->setSourceFile($ruta);
+            return true;
+		} catch (Exception $e) {
+            return false;
+		}
+    }
+
+    public function radicarDocumentoExterno($ruta, $consecutivo, $fecha, $dependencia, $correo, $funcionario, $dataCopia, $descargarPdf = false){
+        $documentoRadicado = true;
+        $mensajeRadicar    = '';
+        $tcpdf = new Fpdi(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $tcpdf->SetAuthor('Divisis');
+        $tcpdf->SetCreator('Oficina de atención al ciudadano');
+        $tcpdf->SetTitle($consecutivo);
+        $tcpdf->SetSubject('Formato de registro de radicado externo');
+        $tcpdf->SetKeywords('Radicacion, UFPS Ocaña, '.$consecutivo);  
+        $tcpdf->SetProtection(array('copy'), '', null, 0, null);
+        $tcpdf->SetPrintHeader(false);
+        $tcpdf->SetPrintFooter(false);
+        //$pageCount = $tcpdf->setSourceFile('./archivos/procedimiento.pdf');
+
+        try {
+            $pageCount = $tcpdf->setSourceFile($ruta);
+		} catch (Exception $e) {
+            $mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();
+            $documentoRadicado = false;
+		}
+
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+			$tcpdf->addPage();
+
+			try {
+				$templateId = $tcpdf->importPage($pageNo);
+				$tcpdf->useTemplate($templateId, 0, 0, 210);
+			} catch (Exception $e) {
+                $mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();
+                $documentoRadicado = false;
+			}
+
+            $tcpdf->SetFillColor(255, 255, 255);
+            $tcpdf->SetFont('Helvetica','B',6);
+            $tcpdf->SetY(8);
+            $tcpdf->Cell(115,1,'',0,0,'',false);
+            $tcpdf->Cell(82,3,'UNIVERSIDAD FRANCISCO DE PAULA SANTANDER','LTR',0,'C',true);
+            $tcpdf->Ln(3);
+            $tcpdf->Cell(115,3,'',0,0,'');
+            $tcpdf->Cell(82,3,'OCAÑA','LR',0,'C',true);
+            $tcpdf->Ln(3);
+            $tcpdf->SetFont('Helvetica','',7);
+            $tcpdf->Cell(115,3,'',0,0,'');
+            $tcpdf->Cell(12,3,'Radicado: ','L',0,'',true);
+            $tcpdf->Cell(70,3,$consecutivo,'R',0,'',true);
+            $tcpdf->Ln(3);
+            $tcpdf->Cell(115,3,'',0,0,'');
+            $tcpdf->Cell(12,3,'Fecha: ','L',0,'',true);
+            $tcpdf->Cell(70,3,$fecha,'R',0,'',true);
+            $tcpdf->Ln(3);
+            $tcpdf->Cell(115,3,'',0,0,'');
+            $tcpdf->Cell(12,3,'Destino: ','L',0,'',true);
+            $tcpdf->Cell(70,3,substr($dependencia, 0, 47),'R',0,'',true);
+            if($correo !=''){
+                $tcpdf->Ln(3);
+                $tcpdf->Cell(115,3,'',0,0,'');
+                $tcpdf->Cell(12,3,'Correo: ','L',0,'',true);
+                $tcpdf->Cell(70,3,$correo,'R',0,'',true);
+            }
+            $tcpdf->Ln(3);
+            $tcpdf->Cell(115,3,'',0,0,'');
+            $tcpdf->Cell(12,3,'Usuario: ','L',0,'',true);
+            $tcpdf->Cell(70,3,$funcionario,'R',0,'',true);
+            $tcpdf->Ln(3);
+            $tcpdf->SetFont('Helvetica','',6);
+            $tcpdf->Cell(115,3,'',0,0,'');
+            $tcpdf->Cell(82,3,'www.ufpso.edu.co ','LBR',0,'R',true);
+            $tcpdf->Ln(8);
+
+            //Genero las copias solo en la pagina uno
+            if(count($dataCopia) > 0 and $pageNo === 1){
+                $tcpdf->SetFont('Helvetica','B',6);
+                $tcpdf->Cell(115,1,'',0,0,'',false);
+                $tcpdf->Cell(82,3,'UNIVERSIDAD FRANCISCO DE PAULA SANTANDER','LTR',0,'C',true);
+                $tcpdf->Ln(3);
+                $tcpdf->Cell(115,3,'',0,0,'');
+                $tcpdf->Cell(82,3,'OCAÑA','LR',0,'C',true);
+                $tcpdf->Ln(3);
+                $tcpdf->SetFont('Helvetica','',7);
+                $tcpdf->Cell(115,3,'',0,0,'');
+                $tcpdf->Cell(12,3,'Radicado: ','L',0,'',true);
+                $tcpdf->Cell(70,3,$consecutivo,'R',0,'',true);
+                $tcpdf->Ln(3);
+                $tcpdf->Cell(115,3,'',0,0,'');
+                $tcpdf->Cell(12,3,'Fecha: ','L',0,'',true);
+                $tcpdf->Cell(70,3,$fecha,'R',0,'',true);
+                $tcpdf->Ln(3);
+
+                foreach($dataCopia as $copia){
+                    $tcpdf->Cell(115,3,'',0,0,'');
+                    $tcpdf->Cell(12,3,'Copia: ','L',0,'',true);
+                    $tcpdf->Cell(70,3,substr($copia['DEPENDENCIA'], 0, 47),'R',0,'',true);
+                    $tcpdf->Ln(3);
+                }
+
+                if($correo !=''){
+                    $tcpdf->Cell(115,3,'',0,0,'');
+                    $tcpdf->Cell(12,3,'Correo: ','L',0,'',true);
+                    $tcpdf->Cell(70,3,$correo,'R',0,'',true);
+                }
+                $tcpdf->Ln(3);
+                $tcpdf->Cell(115,3,'',0,0,'');
+                $tcpdf->Cell(12,3,'Usuario: ','L',0,'',true);
+                $tcpdf->Cell(70,3,$funcionario,'R',0,'',true);
+                $tcpdf->Ln(3);
+                $tcpdf->SetFont('Helvetica','',6);
+                $tcpdf->Cell(115,3,'',0,0,'');
+                $tcpdf->Cell(82,3,'www.ufpso.edu.co ','LBR',0,'R',true);
+                $tcpdf->Ln(12);
+            }
+        }
+
+        $nombrePDF       = 'Rad-'.$consecutivo.'.pdf';
+        if($descargarPdf){
+            $rutaPdfGenerado = sys_get_temp_dir().'/'.$nombrePDF;
+            fopen($rutaPdfGenerado, "w+"); 
+            $metodo    = 'F';
+            $nombrePDF = $rutaPdfGenerado;
+        }else{
+            $metodo          = 'S';
+            $rutaPdfGenerado = '';
+        }
+
+        $pdfGenerado = $tcpdf->Output($nombrePDF, $metodo);
+
+        $datos = array(
+                    'documentoRadicado' => $documentoRadicado,
+                    'mensajeRadicar'    => $mensajeRadicar,
+                    'rutaPdfRadicado'   => ($descargarPdf) ?  $rutaPdfGenerado :  base64_encode($pdfGenerado),
+                    );
+       
+        return json_encode($datos);
+    }
+
+    public function generarStickersRadicado($data, $dataCopia, $descargarPdf = false){
+        $consecutivo    = $data->consecutivo;
+        $fecha          = $data->fechaRadicado;
+        $dependencia    = $data->dependencia;
+		$asuntoRadicado = $data->asunto;
+        $correo         = $data->correo;
+        $funcionario    = $data->usuario;		
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+				
+		PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($asuntoRadicado);
+		PDF::SetKeywords('Certificado, documento,'.$siglaEmpresa.', '.$asuntoRadicado);
+        PDF::SetTitle($consecutivo);
+        PDF::SetKeywords('Radicado, '.$siglaEmpresa.',  Stickers, '.$consecutivo);  
+        PDF::SetProtection(array('copy'), '', null, 0, null);
+        PDF::SetPrintHeader(false);
+        PDF::SetPrintFooter(false); 
+        PDF::AddPage('L', array(110,35));
+   
+        PDF::SetMargins(25, 1, 0);//Funciona con la impresora propia 25
+		PDF::Image('archivos/logoEmpresa/'.$logoEmpresa, 90, 4, 15, 10);
+        PDF::SetAutoPageBreak(true, 1);
+        PDF::SetFont('Helvetica','B',6);
+        PDF::SetY(0.5);
+        PDF::Cell(45,4,$nombreEmpresa,0,0,'');     
+        PDF::Ln(3);
+        PDF::SetFont('Helvetica','',7);
+        PDF::Cell(12,4,'Radicado: ',0,0,'');
+        PDF::Cell(30,4,$consecutivo,0,0,'');
+        PDF::Ln(2.8);
+        PDF::Cell(12,4,'Fecha: ',0,0,'');
+        PDF::Cell(30,4,$fecha,0,0,'');
+        PDF::Ln(2.8);
+        PDF::Cell(12,4,'Destino: ',0,0,'');
+        PDF::Cell(30,4,$dependencia,0,0,'');
+        if($correo!=''){
+            PDF::Ln(2.8);
+            PDF::Cell(12,4,'Correo: ',0,0,'');
+            PDF::Cell(30,4,$correo,0,0,'');
+        }
+        PDF::Ln(2.8);
+        PDF::Cell(12,4,'Usuario: ',0,0,'');
+        PDF::Cell(30,4,$funcionario,0,0,'');
+        PDF::Ln(2.8);
+        PDF::SetFont('Helvetica','',6);
+        PDF::Cell(56,2, $urlEmpresa ,0,0,'R');
+
+        if(count($dataCopia) > 0 ){ 
+            PDF::AddPage('L', array(110,35));
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa, 90, 4, 15, 10);
+            PDF::SetFont('Helvetica','B',6);
+            PDF::SetY(2.6);
+            PDF::Cell(45,4, $nombreEmpresa ,0,0,'');         
+            PDF::Ln(3);
+            PDF::SetFont('Helvetica','',7);
+            PDF::Cell(12,4,'Radicado: ',0,0,'');
+            PDF::Cell(15,4,$consecutivo,0,0,'');
+            PDF::Ln(2.3);
+            PDF::Cell(12,4,'Fecha: ',0,0,'');
+            PDF::Cell(30,4,$fecha,0,0,'');
+            PDF::Ln(2.4);           
+            foreach($dataCopia as $copia){
+                PDF::SetFont('Helvetica','',6);
+                PDF::Cell(12,4,'Copia: ',0,0,'');
+                PDF::SetFont('Helvetica','',5);
+                PDF::Cell(60,4,$copia->dependencia,0,0,'');
+                PDF::Ln(2.4);
+            }    
+            PDF::SetFont('Helvetica','',6);
+            if($correo !=''){
+                PDF::Cell(12,4,'Correo: ',0,0,'');
+                PDF::Cell(30,4,$correo,0,0,'');
+            }
+            PDF::Ln(2.5);
+            PDF::Cell(12,4,'Usuario: ',0,0,'');
+            PDF::Cell(30,4,$funcionario,0,0,'');
+            PDF::Ln(2.5);
+            PDF::SetFont('Helvetica','',5);
+            PDF::Cell(56,2, $urlEmpresa ,0,0,'R');
+        }
+
+        $nombrePDF       = 'Stickers-'.$consecutivo.'.pdf';
+        if($descargarPdf){
+            $rutaPdfGenerado = sys_get_temp_dir().'/'.$nombrePDF;
+            fopen($rutaPdfGenerado, "w+"); 
+            $metodo    = 'F';
+            $nombrePDF = $rutaPdfGenerado;
+        }else{
+            $metodo          = 'S';
+            $rutaPdfGenerado = '';
+        }
+
+        $pdfGenerado = PDF::Output($nombrePDF, $metodo);
+
+        return ($descargarPdf) ?  $rutaPdfGenerado :  base64_encode($pdfGenerado);
+    }
+
 }

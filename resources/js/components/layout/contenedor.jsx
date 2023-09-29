@@ -33,9 +33,9 @@ import Oficio from "../admin/produccionDocumental/oficio/list";
 
 import FirmarDocumento from "../admin/produccionDocumental/firmar/list";
 
-import RegistrarRadicadoEntrante from "../admin/radicacion/documentoEntrante/registrar/new";
-import VerificarRadicadoEntrante from "../admin/radicacion/documentoEntrante/verificar/list";
+import RadicadoEntrante from "../admin/radicacion/documentoEntrante/gestionar/list";
 import AnularRadicadoEntrante from "../admin/radicacion/documentoEntrante/anular/list";
+import BandejaRadicadoEntrante from "../admin/radicacion/documentoEntrante/bandeja/list";
 
 
 const HeaderMenu = ({open , setOpen}) =>{
@@ -151,18 +151,18 @@ const componenteMenu = [
         ]
     } ,
     {   nombre: 'Radicación',
-        icono : 'insert_page_break_icon',
-        itemMenu: [       
-            {ruta : 'admin/radicacion/documento/entrante', menu: 'Registrar Doc. Ent', icono : 'post_add_icon', componente : <RegistrarRadicadoEntrante /> },
-            {ruta : 'admin/radicacion/documento/verificar', menu: 'Verificar  Doc. Ent', icono : 'bookmark_added_icon', componente : <VerificarRadicadoEntrante /> },
+        icono : 'insert_page_break_icon', //post_add_icon  bookmark_added_icon layers_clear_icon
+        itemMenu: [  
+            {ruta : 'admin/radicacion/documento/entrante', menu: 'Documento entrante', icono : 'post_add_icon', componente : <RadicadoEntrante /> },
             {ruta : 'admin/radicacion/documento/anular', menu: 'Anular radicado', icono : 'layers_clear_icon', componente : <AnularRadicadoEntrante /> },
+            {ruta : 'admin/radicacion/documento/bandeja', menu: 'Bandeja de radicado', icono : 'content_paste_go_icon', componente : <BandejaRadicadoEntrante /> },
         ]
     } ,
     {   nombre: 'Archivo Histórico',
         icono : 'forward_to_inbox_icon',
         itemMenu: [       
-            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <RegistrarRadicadoEntrante /> },
-            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <RegistrarRadicadoEntrante /> },
+            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <BandejaRadicadoEntrante /> },
+            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <BandejaRadicadoEntrante /> },
         ]
     } 
 ];

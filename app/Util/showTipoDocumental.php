@@ -111,8 +111,8 @@ class showTipoDocumental
 	
 		$anexosDocumento = DB::table('coddocumprocesoanexo as cdpa')
 						  ->select('cdpa.codopxid as id','cdpa.codopxnombreanexooriginal as nombreOriginal','cdpa.codopxnombreanexoeditado as nombreEditado',
-						  'cdpa.codopxrutaanexo as rutaAnexo', 'cdpc.codoplsigla as sigla','cdpc.codoplanio as anio',DB::raw("CONCAT('1') as idFolder"),
-						  	DB::raw("CONCAT('archivos/produccionDocumental/',cdpc.codoplsigla,'/',cdpc.codoplanio,'/', cdpa.codopxrutaanexo) as rutaDescargar"))	
+						  'cdpa.codopxrutaanexo as rutaAnexo', 'cdpc.codoplsigla as sigla','cdpc.codoplanio as anio',
+						  	DB::raw("CONCAT('archivos/produccionDocumental/',cdpc.codoplsigla,'/',cdpc.codoplanio,'/', cdpa.codopxrutaanexo) as rutaDescargar"))
 						  ->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
 						  ->join('coddocumprocesocircular as cdpc', 'cdpc.codoprid', '=', 'cdpa.codoprid')
 						  ->where('cdpa.codoprid', $infodocumento->codoprid)->get();

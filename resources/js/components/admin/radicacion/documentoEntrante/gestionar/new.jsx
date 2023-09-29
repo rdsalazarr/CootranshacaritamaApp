@@ -2,24 +2,24 @@ import React, {useState, useEffect, Fragment} from 'react';
 import {Card, Typography, Button, Grid, MenuItem, Box, Stack, FormGroup, FormControlLabel, Checkbox, Avatar } from '@mui/material';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {ButtonFileImg, ButtonFilePdf, ContentFile} from "../../../../layout/files";
-import { ModalDefaultAuto } from '../../../../layout/modal';
-import {LoaderModal} from "../../../../layout/loader";
-
-import SaveIcon from '@mui/icons-material/Save';
-import WarningIcon from '@mui/icons-material/Warning';
 import showSimpleSnackbar from '../../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../../layout/modal';
+import WarningIcon from '@mui/icons-material/Warning';
+import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
+import SaveIcon from '@mui/icons-material/Save';
 import PdfStickers from '../pdfStickers';
 import Files from "react-files";
+import Anexos from '../anexos';
 
-export default function New(){
+export default function New({data, tipo}){
 
-    const tipo = 'I';
-    const [formData, setFormData] = useState({ tipoIdentificacion: '',    numeroIdentificacion: '',   primerNombre: '',       segundoNombre: '',     primerApellido: '', 
-                                                segundoApellido: '',      direccionFisica: '',        correoElectronico: '',  numeroContacto: '',    codigoDocumental: '',
-                                                fechaLlegadaDocumento:'', fechaDocumento: '',         dependencia: '',        departamento: '',      municipio: '',
-                                                asuntoRadicado: '',       personaEntregaDocumento:'', tieneAnexos :'',        descripcionAnexos:'',  tieneCopia: '',
-                                                tipoMedio:'',             observacionGeneral:'',      personaId:'',            archivos:[]
+    const [formData, setFormData] = useState({ codigo: (tipo === 'U') ? data.id : '000',
+                                                tipoIdentificacion: '',    numeroIdentificacion: '',    primerNombre: '',      segundoNombre: '',     primerApellido: '', 
+                                                segundoApellido: '',       direccionFisica: '',         correoElectronico: '', numeroContacto: '',    codigoDocumental: '',
+                                                fechaLlegadaDocumento: '', fechaDocumento: '',          dependencia: '',       departamento: '',      municipio: '',
+                                                asuntoRadicado: '',        personaEntregaDocumento: '', tieneAnexos: '',       descripcionAnexos: '',  tieneCopia: '',
+                                                tipoMedio: '',             observacionGeneral: '',      personaId: '',         tipo:tipo,             archivos:[]
                                             });
 
     const [formDataFilePdf, setFormDataFilePdf] = useState({archivos : []}); 
@@ -35,9 +35,12 @@ export default function New(){
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
     const [deptoMunicipios, setDeptoMunicipios] = useState([]);
-    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_RADICDO);
+    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_RADICADO);
     const [checkedDependencias, setCheckedDependencias] = useState([]);
-    const [accion , setAccion] = useState('');
+    const [totalAdjuntoSubido , setTotalAdjuntoSubido] = useState(0);
+    const [anexosRadicado, setAnexosRadicado] = useState([]);
+    const [idRadicado , setIdRadicado] = useState(0);    
+    const [abrirModal, setAbrirModal] = useState(false);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
@@ -54,6 +57,11 @@ export default function New(){
           setCheckedDependencias(checkedDependencias.filter(item => item !== dep));
         }
     };
+
+    const cantidadAdjunto = () =>{
+        let totalAdjSubido = parseInt(totalAdjuntoSubido) - 1 ;
+        setTotalAdjuntoSubido(totalAdjSubido);
+    }
 
     const onFilesChangePdf = (files, nombre) =>  {
         setFormDataFilePdf(prev => ({...prev, [nombre]: files}));
@@ -76,7 +84,7 @@ export default function New(){
 
     const handleSubmit = () =>{
 
-        if(formDataFilePdf.archivos.length === 0 ){
+        if(tipo === 'I' && formDataFilePdf.archivos.length === 0 ){
             showSimpleSnackbar("Debe adjuntar el documento PDF que se desea radicar", 'error');
             return;
         }
@@ -86,20 +94,26 @@ export default function New(){
             return;
         }
 
-        let newFormData         = {...formData};  
-        newFormData.PdfRadicar  = formDataFilePdf;
+        let newFormData               = {...formData};
+        newFormData.pdfRadicar        = formDataFilePdf.archivos;
+        newFormData.copiasDependencia = checkedDependencias;
        // setLoader(true);
         instance.post('/admin/radicacion/documento/entrante/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-           /* (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000',
-                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '1',      subSerie: '1',       tipoMedio: '',    tipoTramite: '1', 
-                                                                    tipoDestino: '1',  fecha: fechaActual,    tipoActa: '',          correo: '',           horaInicial: '', horaFinal: '',  
-                                                                    lugar: '',         convocatoria: '0',      asistentes: '',       invitados: '',        ausentes: '',    ordenDia: '', 
-                                                                    contenido: '',     convocatoriaLugar: '',  convocatoriaFecha: '', convocatoriaHora: '', quorum: quorum,  tipo:tipo}) : null;
-            */
-       
+            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
+            if(formData.tipo === 'U' && res.success){
+                setFormData({codigo: (tipo === 'U') ? data.id : '000',
+                            tipoIdentificacion: '',    numeroIdentificacion: '',    primerNombre: '',      segundoNombre: '',     primerApellido: '', 
+                            segundoApellido: '',       direccionFisica: '',         correoElectronico: '', numeroContacto: '',    codigoDocumental: '',
+                            fechaLlegadaDocumento: '', fechaDocumento: '',          dependencia: '',       departamento: '',      municipio: '',
+                            asuntoRadicado: '',        personaEntregaDocumento: '', tieneAnexos: '',       descripcionAnexos: '',  tieneCopia: '',
+                            tipoMedio: '',             observacionGeneral: '',      personaId: '',         tipo:tipo,             archivos:[]})
+
+                setIdRadicado(res.idRadicado);
+                setAbrirModal(true);
+            }
+
             setLoader(false);
         })
     }
@@ -107,8 +121,52 @@ export default function New(){
     const inicio = () =>{ 
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/radicacion/documento/entrante/datos').then(res=>{
+        instance.post('/admin/radicacion/documento/entrante/datos', {codigo: formData.codigo, tipo: formData.tipo}).then(res=>{
             newFormData.fechaLlegadaDocumento = res.fechaActual;
+
+            if(tipo === 'U'){
+                let radicado                        = res.data;
+                newFormData.personaId               = radicado.peradoid;
+                newFormData.tipoIdentificacion      = radicado.tipideid;
+                newFormData.numeroIdentificacion    = radicado.peradodocumento;
+                newFormData.primerNombre            = radicado.peradoprimernombre; 
+                newFormData.segundoNombre           = (radicado.peradosegundonombre !== null) ? radicado.peradosegundonombre : '';
+                newFormData.primerApellido          = (radicado.peradoprimerapellido !== null) ? radicado.peradoprimerapellido : '';
+                newFormData.segundoApellido         = (radicado.peradosegundoapellido !== null) ? radicado.peradosegundoapellido : '';
+                newFormData.direccionFisica         = (radicado.peradodireccion !== null) ? radicado.peradodireccion : '';
+                newFormData.correoElectronico       = (radicado.peradocorreo !== null) ? radicado.peradocorreo : '';
+                newFormData.numeroContacto          = (radicado.peradotelefono !== null) ? radicado.peradotelefono : '';
+                newFormData.codigoDocumental        = (radicado.peradocodigodocumental !== null) ? radicado.peradocodigodocumental : '';
+                newFormData.fechaLlegadaDocumento   = radicado.radoenfechallegada;
+                newFormData.fechaDocumento          = radicado.radoenfechadocumento;
+                newFormData.dependencia             = radicado.depeid;
+                newFormData.departamento            = radicado.depaid;
+                newFormData.municipio               = radicado.muniid;
+                newFormData.asuntoRadicado          = radicado.radoenasunto;
+                newFormData.personaEntregaDocumento = radicado.radoenpersonaentregadocumento;
+                newFormData.tieneAnexos             = radicado.radoentieneanexo;
+                newFormData.descripcionAnexos       = (radicado.radoendescripcionanexo !== null) ? radicado.radoendescripcionanexo : '';
+                newFormData.tieneCopia              = radicado.radoentienecopia;
+                newFormData.tipoMedio               = radicado.tipmedid;
+                newFormData.observacionGeneral      = (radicado.radoenobservacion !== null) ? radicado.radoenobservacion : '';
+
+                let newMunicipios = [];
+                let deptoId       = radicado.depaid;
+                res.municipios.forEach(function(muni){
+                    if(muni.munidepaid === deptoId){
+                        newMunicipios.push({
+                            muniid: muni.muniid,
+                            muninombre: muni.muninombre
+                        });
+                    }
+                });
+                
+                setDeptoMunicipios(newMunicipios);
+                setTotalAdjuntoSubido(radicado.totalAnexos);
+                setAnexosRadicado(res.anexosRadicados);
+                setHabilitarAnexos((parseInt(radicado.totalAnexos) > 0) ? true : false);
+            }
+
             setTipoMedios(res.tipoMedios);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setDepartamentos(res.departamentos);
@@ -197,8 +255,7 @@ export default function New(){
     }
 
     return ( 
-        <Box>
-            <Box><Typography component={'h2'} className={'titleGeneral'}>Registrar radicado de documento entrante</Typography></Box>
+        <Box>           
             <ValidatorForm onSubmit={handleSubmit} >
                 <Card style={{padding: '6px', marginTop: '1em' }}>
                     <Grid container spacing={2} >
@@ -521,13 +578,13 @@ export default function New(){
                             </SelectValidator>
                         </Grid>
 
-                        {habilitarAnexos ?
+                        {parseInt(formData.tieneAnexos) === 1 ?
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <TextValidator 
                                     name={'descripcionAnexos'}
                                     value={formData.descripcionAnexos}
                                     label={'Descripción de los anexos'}
-                                    className={'inputGeneral'} 
+                                    className={'inputGeneral'}
                                     variant={"standard"} 
                                     inputProps={{autoComplete: 'off', maxLength: 300}}
                                     onChange={handleChange}
@@ -602,7 +659,7 @@ export default function New(){
                                         return(
                                             <Grid item xl={4} md={4} sm={12} xs={12} key={a}>
                                                 <FormGroup id={dep.depeid}>
-                                                    <FormControlLabel required control={<Checkbox color="secondary" onChange={(e) => handleCheckboxChange(e, dep)} />} label={dep.depenombre} />
+                                                    <FormControlLabel control={<Checkbox color="secondary" onChange={(e) => handleCheckboxChange(e, dep)} />} label={dep.depenombre} />
                                                 </FormGroup>
                                             </Grid>
                                         )
@@ -629,7 +686,13 @@ export default function New(){
                         </Box>
                     : null}
 
-                    {habilitarAnexos ?
+                    { (totalAdjuntoSubido > 0) ?
+                        <Grid item md={12} xl={12} sm={12} xs={12} >
+                            <Anexos data={anexosRadicado} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
+                        </Grid>
+                    : null }
+
+                    {((tipo=== 'I' && habilitarAnexos) || (tipo=== 'U' && habilitarAnexos && (totalAdjunto - totalAdjuntoSubido) > 0) )  ?
                         <Grid container spacing = {2} style={{ transition: 'all .2s ease-in-out'}}>
                             <Grid item md={12} xl={12} sm={12} xs={12}>
                                 <Box className='divisionFormulario'>
@@ -642,9 +705,9 @@ export default function New(){
                                     className='files-dropzone'
                                     onChange={(file ) =>{onFilesChange(file, 'archivos') }}
                                     onError={onFilesError}
-                                    accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf', '.xls', '.xlsx', '.mp3', '.mp4']} 
+                                    accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf', '.xls', '.xlsx', '.ppt', '.pptx','.xlsm','.zip','.rar']} 
                                     multiple
-                                    maxFiles={totalAdjunto}
+                                    maxFiles={totalAdjunto - totalAdjuntoSubido}
                                     maxFileSize={2000000}
                                     minFileSize={0}
                                     clickable
@@ -665,7 +728,7 @@ export default function New(){
                             <Grid item md={6} xl={6} sm={12}>
                                 <Box className={'msgAlert'}>
                                     <Avatar className={'avatar'}> <WarningIcon /></Avatar> 
-                                    <p>Nota: Recuerde que puede subir como máximo ({totalAdjunto}) archivos, en los formatos tipo .PDF, .DOCX, .DOC, .XLS, XLSX, .JPG y .PNG</p>
+                                    <p>Nota: Recuerde que pueden subir como máximos ({totalAdjunto}) archivos, actualmente ha subido ({totalAdjuntoSubido}) archivos. Solo es permitido los formatos tipo .PDF, .DOCX, .DOC, .XLS, XLSX, .PPT, .PPTX .JPG .PNG, ZIP, y .RAR</p>
                                 </Box>
                             </Grid>
 
@@ -684,14 +747,13 @@ export default function New(){
             
             </ValidatorForm>
 
-            {accion !== ''? 
-                <ModalDefaultAuto 
+            {<ModalDefaultAuto 
                     title={'Visualizar formato en PDF del stickers del radicado'} 
-                    content={<PdfStickers idRadicado={idRadicado} />} 
-                    close={() =>{setAccion(''); setIdRadicado(''); }}
-                    tam = {'smallFlot'}
-                /> 
-            : null }
+                    content={<PdfStickers id={idRadicado} />} 
+                    close={() =>{setAbrirModal(false);}} 
+                    tam= 'smallFlot' 
+                    abrir= {abrirModal}
+                />}
         </Box>
     )
 }

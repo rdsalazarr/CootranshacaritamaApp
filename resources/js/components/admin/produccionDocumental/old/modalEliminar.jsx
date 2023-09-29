@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import {Grid, Button, Avatar, Box } from "@mui/material";
-import showSimpleSnackbar from '../../layout/snackBar';
+import showSimpleSnackbar from '../../../layout/snackBar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
-import {LoaderModal} from "../../layout/loader";
-import instance from '../../layout/instance';
+import {LoaderModal} from "../../../layout/loader";
+import instance from '../../../layout/instance';
 
 export default function ModalEliminar({data, eliminarFilasAdjunto, cerrarModal, cantidadAdjunto}){   
     const [loader, setLoader] = useState(false);

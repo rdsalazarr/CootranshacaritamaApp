@@ -90,7 +90,7 @@ export default function New({data, tipo}){
 
             if(tipo !== 'I'){
                 let munNacimiento   = [];
-                let deptoNacimiento = data.persdepaidnacimiento;          
+                let deptoNacimiento = data.persdepaidnacimiento;
                 res.municipios.forEach(function(muni){ 
                     if(muni.munidepaid === deptoNacimiento){
                         munNacimiento.push({

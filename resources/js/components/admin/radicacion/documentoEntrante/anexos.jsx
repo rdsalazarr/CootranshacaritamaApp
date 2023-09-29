@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {Table, TableHead, TableBody, TableRow, TableCell, Grid, Box, Link} from "@mui/material";
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { EliminarAdjunto } from '../../layout/modalFijas';
-import { ModalDefaultAuto  } from '../../layout/modal';
+import { EliminarAdjunto } from '../../../layout/modalFijas';
+import { ModalDefaultAuto } from '../../../layout/modal';
 
-export default function Anexos({data, eliminar, cantidadAdjunto}){   
+export default function Anexos({data, eliminar, cantidadAdjunto}){
     const [dataFiles, setDataFiles] = useState(data);
     const [dataModal, setDataModal] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
@@ -14,8 +14,8 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
         setAbrirModal(false);
     }
 
-    const eliminarAdjunto = (id, codigo, rutaFile, sigla, anyo) =>{
-        setDataModal({id: id, codigo:codigo, rutaFile: rutaFile, sigla: sigla, anyo: anyo});
+    const eliminarAdjuntoSeleccionado = (id, codigo, rutaFile,  anyo) =>{
+        setDataModal({id: id, codigo:codigo, rutaFile: rutaFile, anyo: anyo});
         setAbrirModal(true); 
     }
 
@@ -24,13 +24,13 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
         dataFiles.map((res,i) =>{
             if(i != id){
                 newDataFiles.push({
-                    id:             res.id,
-                    nombreOriginal: res.nombreOriginal,
-                    nombreEditado:  res.nombreEditado,
-                    rutaDescargar:  res.rutaDescargar,
-                    rutaAnexo:      res.rutaAnexo,
-                    sigla:          res.sigla,
-                    anio:           res.anio
+                    id:               res.id,
+                    nombreOriginal:   res.nombreOriginal,
+                    nombreEditado:    res.nombreEditado,
+                    rutaDescargar:    res.rutaDescargar,
+                    rutaAnexo:        res.rutaAnexo,
+                    radicarDocumento: res.radicarDocumento,
+                    anio:             res.anio
                 });
             }
         })
@@ -41,7 +41,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
         <Grid container spacing={2}>
             <Grid item xs={12} sm={12} md={12} xl={12}>
                 <Box className='divisionFormulario'>
-                    Anexos presentandos en el tipo documental
+                    Anexos presentandos en la radicación del documento externo
                 </Box>
             </Grid>
 
@@ -52,6 +52,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                             <TableRow>
                                 <TableCell style={{width: '5%'}}>Ítem</TableCell>
                                 <TableCell>Nombre</TableCell> 
+                                <TableCell>¿Documento para radicar?</TableCell> 
                                 <TableCell className='cellCenter'>Descargar</TableCell>
                                 {(eliminar) ?  <TableCell className='cellCenter'>Eliminar</TableCell> : null}
                             </TableRow>
@@ -60,7 +61,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
 
                         {dataFiles.map((anexos, a) => {
                             let i = a + 1;
-                            let rutaAdjunto = '/download/adjunto/'+anexos['sigla']+'/'+anexos['anio']+'/'+anexos['rutaAnexo'];
+                            let rutaAdjunto = '/download/adjunto/radicado/'+anexos['anio']+'/'+anexos['rutaAnexo'];
                             return(
                                     <TableRow key={'rowAne-' + a + anexos['id']}>
                                         <TableCell>
@@ -68,7 +69,11 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                                         </TableCell>
 
                                         <TableCell>
-                                            <p>{anexos['nombreOriginal']}</p>
+                                            <p>{anexos['nombreOriginal']}</p> 
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <p>{anexos['radicarDocumento']}</p> 
                                         </TableCell>
 
                                         <TableCell className='cellCenter'> 
@@ -76,7 +81,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                                         </TableCell>
 
                                         {(eliminar) ?  <TableCell className='cellCenter'>
-                                            <DeleteForeverIcon onClick={() => {eliminarAdjunto(a, anexos['id'], anexos['rutaAnexo'], anexos['sigla'], anexos['anio']);}} className={'iconoDownload'}/>                                        
+                                            <DeleteForeverIcon onClick={() => {eliminarAdjuntoSeleccionado(a, anexos['id'], anexos['rutaAnexo'], anexos['anio'] );}} className={'iconoDownload'}/>                                        
                                             </TableCell> : null}
                                     </TableRow> 
                                 );
@@ -89,7 +94,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
 
             {<ModalDefaultAuto
                 title={""}
-                content={<EliminarAdjunto data={dataModal} eliminarFilasAdjunto={eliminarFilasAdjunto} cerrarModal={cerrarModal} cantidadAdjunto={cantidadAdjunto} ruta='/admin/eliminar/archivo' />}
+                content={<EliminarAdjunto data={dataModal} eliminarFilasAdjunto={eliminarFilasAdjunto} cerrarModal={cerrarModal} cantidadAdjunto={cantidadAdjunto} ruta='/admin/eliminar/archivo/radicado/entrante' />}
                 close={() =>{setAbrirModal(false);}} 
                 tam= 'smallFlot' 
                 abrir= {abrirModal}

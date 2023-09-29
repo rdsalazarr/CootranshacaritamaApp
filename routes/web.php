@@ -44,9 +44,13 @@ Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
-Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}/{id}', [DownloadFileController::class, 'download']);
-Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);
+Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
+Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}', [DownloadFileController::class, 'download']);
+Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);//Decarga el documento con el QR
 Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
+Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
+
+
 
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -223,10 +227,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/radicacion/documento')->group(function(){
-            Route::get('/entrante', [DocumentoEntranteController::class, 'index']);
+            Route::post('/entrante', [DocumentoEntranteController::class, 'index']);
             Route::post('/entrante/datos', [DocumentoEntranteController::class, 'datos']);
             Route::post('/entrante/consultar/persona', [DocumentoEntranteController::class, 'consultarPersona']);
             Route::post('/entrante/salve', [DocumentoEntranteController::class, 'salve']);
+            Route::post('/entrante/imprimir', [DocumentoEntranteController::class, 'imprimir']);
 
         });
     });

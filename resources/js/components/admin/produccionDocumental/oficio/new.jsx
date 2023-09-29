@@ -51,7 +51,8 @@ export default function New({id, area, tipo, ruta}){
     const [fechaMinima, setFechaMinima] = useState(dayjs());
 
     const cantidadAdjunto = () =>{
-        setTotalAdjuntoSubido(totalAdjuntoSubido - 1);
+        let totalAdjSubido = parseInt(totalAdjuntoSubido) - 1 ;
+        setTotalAdjuntoSubido(totalAdjSubido);
     }
 
     const handleChange = (e) =>{
