@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('peradoid')->unsigned()->comment('Identificador de la tabla persona radica documento');
             $table->tinyInteger('tipideid')->unsigned()->comment('Identificador del tipo de identificación');
             $table->string('peradodocumento', 15)->comment('Número de documento de la persona');
-            $table->string('peradoprimernombre', 40)->comment('Nombre de la persona que radica el documento');
+            $table->string('peradoprimernombre', 70)->comment('Nombre de la persona que radica el documento');
             $table->string('peradosegundonombre', 40)->nullable()->comment('Nombre de la persona que radica el documento');
             $table->string('peradoprimerapellido', 40)->nullable()->comment('Nombre de la persona que radica el documento');
             $table->string('peradosegundoapellido', 40)->nullable()->comment('Nombre de la persona que radica el documento');

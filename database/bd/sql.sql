@@ -1173,24 +1173,23 @@ emprnombre,emprsigla,emprlema,emprdireccion, emprcorreo, emprtelefonofijo,emprte
 emprhorarioatencion,emprurl,emprcodigopostal, emprlogo) VALUES
 (1, 2, 18, 804, '890505424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'La cooperativa de transporte del catatumbo', 
 'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
- 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '890505424_logo-hacaritama.png');
+ 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '890505424_logo-hacaritama.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
 
 /*
 
 INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
-(1, 1, '500', 'CON', 'CONTABILIDAD', 'radasa10@hotmail.com', 1, '2023-09-18 12:24:13', '2023-09-18 12:24:13');
+(1, 1, '500', 'GER', 'GERENCIA', 'rdsalazarr@ufpso.edu.co', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
+(2, 1, '600', 'CON', 'CONTABILIDAD', 'radasa10@hotmail.com', 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `dependenciapersona` (`depperid`, `depperdepeid`, `depperpersid`) VALUES
-(1, 1, 1);
+(1, 1, 1),(2, 2, 1);
 
 INSERT INTO `dependenciasubseriedocumental` (`desusdid`, `desusdsusedoid`, `desusddepeid`) VALUES
-(1, 1, 1);
-
-INSERT INTO `empresa` (`emprid`, `persidrepresentantelegal`, `emprdepaid`, `emprmuniid`, `emprnit`, `emprdigitoverificacion`, `emprnombre`, `emprsigla`, `emprlema`, `emprdireccion`, `emprcorreo`, `emprtelefonofijo`, `emprtelefonocelular`, `emprhorarioatencion`, `emprurl`, `emprcodigopostal`, `emprlogo`, `created_at`, `updated_at`) VALUES
-(1, 2, 18, 804, '890505424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'la cooperativa de transporte del catatumbo', 'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '890505424_logo-coopigon-v2.png', NULL, NULL);
-
+(1, 1, 1),(2, 2, 2);
 
 INSERT INTO `empresa` VALUES (1,'COOPERATIVA DE TRANSPORTADORES HACARITAMA','COOTRANSHACARITAMA','890505424',7,'LUIS MANUEL ASCANIO CLARO',
 '5036123',54498,'DIRECCIÓN',54498,'3142197149',NULL,

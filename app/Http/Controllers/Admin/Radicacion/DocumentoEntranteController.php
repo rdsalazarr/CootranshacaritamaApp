@@ -46,41 +46,41 @@ class DocumentoEntranteController extends Controller
 
     public function salve(Request $request)
 	{
-        $id      = $request->codigo;
-        $persona = ($id != 000) ? Persona::findOrFail($id) : new Persona();
-
 	    $this->validate(request(),[
-                'documento'              => 'required|string|max:15|unique:persona,persdocumento,'.$id.',persid,tipideid,'.$request->tipoIdentificacion, 
-                'cargo'                  => 'required|numeric',
-                'tipoIdentificacion'     => 'required|numeric',
-                'tipoRelacionLaboral'    => 'required|numeric',
-                'departamentoNacimiento' => 'required|numeric',
-                'municipioNacimiento'    => 'required|numeric',
-                'departamentoExpedicion' => 'required|numeric',
-                'municipioExpedicion'    => 'required|numeric',
-                'primerNombre'           => 'required|string|min:4|max:40',
-                'segundoNombre'          => 'nullable|string|min:4|max:40',
-                'primerApellido'         => 'required|string|min:4|max:40',
-                'segundoApellido'        => 'nullable|string|min:4|max:40',
-                'fechaNacimiento' 	     => 'nullable|date|date_format:Y-m-d',
-                'direccion'              => 'required|string|min:4|max:100',
-                'correo'                 => 'nullable|email|string|max:80',
-                'fechaExpedicion' 	     => 'nullable|date|date_format:Y-m-d',
-                'telefonoFijo'           => 'nullable|string|max:20',
-                'numeroCelular'          => 'nullable|string|max:20',
-                'genero'                 => 'required',
-	            'estado'                 => 'required',
-                'firma' 	             => 'nullable|mimes:png,PNG|max:1000',
-                'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000'
+                'tipoIdentificacion'      => 'required|numeric',
+                'numeroIdentificacion'    => 'required|string|max:15',                
+                'primerNombre'            => 'required|string|min:4|max:70',
+                'segundoNombre'           => 'nullable|string|min:4|max:40',
+                'primerApellido'          => 'nullable|string|min:4|max:40',
+                'segundoApellido'         => 'nullable|string|min:4|max:40',
+                'direccionFisica'         => 'required|string|min:4|max:100',
+                'correoElectronico'       => 'nullable|email|string|max:80',
+                'numeroContacto'          => 'nullable|string|max:20',
+                'codigoDocumental'        => 'nullable|string|max:20',
+
+                'fechaLlegadaDocumento'   => 'required|date|date_format:Y-m-d',
+                'fechaDocumento'          => 'required|date|date_format:Y-m-d',
+                'dependencia'             => 'required|numeric',        
+                'departamento'            => 'required|numeric',
+                'municipio'               => 'required|numeric',
+                'asuntoRadicado'          => 'required|string|min:4|max:500',
+                'personaEntregaDocumento' => 'required|string|min:4|max:100',
+                'tieneAnexos'             => 'nullable|numeric',
+                'descripcionAnexos'       => 'nullable|string|min:4|max:300',
+                'tieneCopia'              => 'nullable|numeric',
+                'observacionGeneral'      => 'nullable|string|min:4|max:300',
+                'personaId'               => 'nullable|numeric',
+                //'archivos'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000'
 	        ]);
-  
+
+        DB::beginTransaction();
         try {
 
             $estado              = '1'; //Recibido
             $fechaHoraActual     = Carbon::now();
             $anioActual          = Carbon::now()->year;
             $funcion 		     = new generales();
-            $rutaCarpeta         = public_path().'/archivos/persona/'.$request->documento;
+            /*$rutaCarpeta         = public_path().'/archivos/persona/'.$request->documento;
             $carpetaServe        = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
             if($request->hasFile('firma')){
 				$file = $request->file('firma');
@@ -103,26 +103,31 @@ class DocumentoEntranteController extends Controller
                 $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaFotografia, 210, 270);//Se redimenciona a un solo tipo
 			}else{
 				$rutaFotografia = $request->rutaFoto_old;
-			}
+			}*/
 
-            $personaradicadocumento = new PersonaRadicaDocumento();
+            $personaradicadocumento                         = new PersonaRadicaDocumento();
             $personaradicadocumento->tipideid               = $request->tipoIdentificacion;
             $personaradicadocumento->peradodocumento        = $request->numeroIdentificacion;
-            $personaradicadocumento->peradoprimernombre     = $request->primerNombre; 
-            $personaradicadocumento->peradosegundonombre    = $request->segundoNombre; 
-            $personaradicadocumento->peradoprimerapellido   = $request->primerApellido; 
+            $personaradicadocumento->peradoprimernombre     = $request->primerNombre;
+            $personaradicadocumento->peradosegundonombre    = $request->segundoNombre;
+            $personaradicadocumento->peradoprimerapellido   = $request->primerApellido;
             $personaradicadocumento->peradosegundoapellido  = $request->segundoApellido;
             $personaradicadocumento->peradodireccion        = $request->direccionFisica; 
             $personaradicadocumento->peradotelefono         = $request->numeroContacto; 
-            $personaradicadocumento->peradocorreo           = $request->correoElectronico; 
+            $personaradicadocumento->peradocorreo           = $request->correoElectronico;
             $personaradicadocumento->peradocodigodocumental = $request->codigoDocumental;
             $personaradicadocumento->save();
 
-            $radicaciondocumentoentrante = new RadicacionDocumentoEntrante();
-            $radicaciondocumentoentrante->peradoid                      = $request->tipoIdentificacion;
+            //Consulto el ultimo identificador de la persona 
+            $perRadDocumentoMaxConsecutio  = PersonaRadicaDocumento::latest('peradoid')->first();
+            $peradoid                      = $perRadDocumentoMaxConsecutio->peradoid;
+
+            $radicaciondocumentoentrante                                = new RadicacionDocumentoEntrante();
+            $radicaciondocumentoentrante->peradoid                      = $peradoid;
             $radicaciondocumentoentrante->tipmedid                      = $request->tipoMedio;
             $radicaciondocumentoentrante->tierdeid                      = $estado;
-            $radicaciondocumentoentrante->radoenusuaid                  = Auth::id();
+            $radicaciondocumentoentrante->depeid                        = $request->dependencia;
+            $radicaciondocumentoentrante->usuaid                        = Auth::id();
             $radicaciondocumentoentrante->depaid                        = $request->departamento;
             $radicaciondocumentoentrante->muniid                        = $request->municipio;
             $radicaciondocumentoentrante->radoenconsecutivo             = $this->obtenerConsecutivo($anioActual);
@@ -131,24 +136,30 @@ class DocumentoEntranteController extends Controller
             $radicaciondocumentoentrante->radoenfechadocumento          = $request->fechaDocumento;
             $radicaciondocumentoentrante->radoenfechallegada            = $request->fechaLlegadaDocumento;
             $radicaciondocumentoentrante->radoenpersonaentregadocumento = $request->personaEntregaDocumento;
-            $radicaciondocumentoentrante->radoenasunto                  = $request->descripcion;
+            $radicaciondocumentoentrante->radoenasunto                  = $request->asuntoRadicado;
             $radicaciondocumentoentrante->radoentieneanexo              = $request->tieneAnexos;
             $radicaciondocumentoentrante->radoendescripcionanexo        = $request->descripcionAnexos;
             $radicaciondocumentoentrante->radoentienecopia              = $request->tieneCopia;
             $radicaciondocumentoentrante->radoenobservacion             = $request->observacionGeneral;
             $radicaciondocumentoentrante->save();
 
+            //Consulto el ultimo identificador de la persona 
+            $radDocumentoMaxConsecutio  = RadicacionDocumentoEntrante::latest('radoenid')->first();
+            $radoenid                   = $radDocumentoMaxConsecutio->radoenid;
+
             //Almaceno la trazabilidad del documento
 			$radicaciondocentcambioestado 					 = new RadicacionDocumentoEntranteCambioEstado();
-			$radicaciondocentcambioestado->radoenid          = $codoprid;
+			$radicaciondocentcambioestado->radoenid          = $radoenid;
 			$radicaciondocentcambioestado->tierdeid          = $estado;
 			$radicaciondocentcambioestado->radeceusuaid      = Auth::id();
 			$radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
-			$radicaciondocentcambioestado->radeceobservacion = "Registro del documento";
-			$radicaciondocentcambioestado->save(); 
+			$radicaciondocentcambioestado->radeceobservacion = 'Documento radicado por '.auth()->user()->usuanombre.'  en la fecha '.$fechaHoraActual;
+			$radicaciondocentcambioestado->save();
 
+            DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
+            DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
 	}

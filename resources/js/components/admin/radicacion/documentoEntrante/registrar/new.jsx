@@ -15,11 +15,11 @@ import Files from "react-files";
 export default function New(){
 
     const tipo = 'I';
-    const [formData, setFormData] = useState({ tipoIdentificacion: '', numeroIdentificacion: '', primerNombre: '', segundoNombre: '',  primerApellido: '', 
-                                                segundoApellido: '',direccionFisica: '',  correoElectronico: '', codigoDocumental: '',  numeroContacto: '', 
-                                                fechaLlegadaDocumento:'', fechaDocumento: '', tieneCopia: '',  dependencia: '',  departamento: '',
-                                                municipio: '', descripcion: '', personaEntregaDocumento:'',  
-                                                tieneAnexos :'', descripcionAnexos:'', tipoMedio:'', observacionGeneral:'', archivos:[]
+    const [formData, setFormData] = useState({ tipoIdentificacion: '',    numeroIdentificacion: '',   primerNombre: '',       segundoNombre: '',     primerApellido: '', 
+                                                segundoApellido: '',      direccionFisica: '',        correoElectronico: '',  numeroContacto: '',    codigoDocumental: '',
+                                                fechaLlegadaDocumento:'', fechaDocumento: '',         dependencia: '',        departamento: '',      municipio: '',
+                                                asuntoRadicado: '',       personaEntregaDocumento:'', tieneAnexos :'',        descripcionAnexos:'',  tieneCopia: '',
+                                                tipoMedio:'',             observacionGeneral:'',      personaId:'',            archivos:[]
                                             });
 
     const [formDataFilePdf, setFormDataFilePdf] = useState({archivos : []}); 
@@ -35,10 +35,9 @@ export default function New(){
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
     const [deptoMunicipios, setDeptoMunicipios] = useState([]);
-    const [totalAdjunto, setTotalAdjunto] = useState(0);
+    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_RADICDO);
     const [checkedDependencias, setCheckedDependencias] = useState([]);
     const [accion , setAccion] = useState('');
-
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
@@ -82,16 +81,15 @@ export default function New(){
             return;
         }
 
-        if(formData.tieneCopia === 'S' && checkedDependencias.length === 0){
+        if(formData.tieneCopia === '1' && checkedDependencias.length === 0){
             showSimpleSnackbar("Debe marcar cómo mínimo una dependencia par enviar la copia", 'error');
             return;
         }
 
-        let newFormData         = {...formData};
-        newFormData.contenido   = editorTexto.current.getContent()
+        let newFormData         = {...formData};  
         newFormData.PdfRadicar  = formDataFilePdf;
        // setLoader(true);
-        instance.post('admin/radicacion/documento/entrante/salve', newFormData).then(res=>{
+        instance.post('/admin/radicacion/documento/entrante/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -108,12 +106,15 @@ export default function New(){
 
     const inicio = () =>{ 
         setLoader(true);
+        let newFormData = {...formData}
         instance.post('/admin/radicacion/documento/entrante/datos').then(res=>{
+            newFormData.fechaLlegadaDocumento = res.fechaActual;
             setTipoMedios(res.tipoMedios);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setDepartamentos(res.departamentos);
             setMunicipios(res.municipios)
             setDependencias(res.dependencias);
+            setFormData(newFormData);
             setLoader(false);
         })
     }
@@ -122,8 +123,8 @@ export default function New(){
         let newFormData        = {...formData}
         let tieneCopia         = (e.target.name === 'tieneCopia' ) ? e.target.value : formData.tieneCopia ;
         newFormData.tieneCopia = tieneCopia;
-        setTieneCopia((e.target.value === 'S') ? true : false);
-        (e.target.value === 'N') ? setCheckedDependencias([]): null;
+        setTieneCopia((e.target.value === '1') ? true : false);
+        (e.target.value === '0') ? setCheckedDependencias([]): null;
         setFormData(newFormData);
     }
     
@@ -131,7 +132,7 @@ export default function New(){
         let newFormData        = {...formData}
         let tieneAnexos        = (e.target.name === 'tieneAnexos' ) ? e.target.value : formData.tieneAnexos ;
         newFormData.tieneAnexos = tieneAnexos;
-        setHabilitarAnexos((e.target.value === 'S') ? true : false);
+        setHabilitarAnexos((e.target.value === '1') ? true : false);
         setFormData(newFormData);
     }
 
@@ -264,7 +265,7 @@ export default function New(){
                                         label={'Segundo nombre'}
                                         className={'inputGeneral'} 
                                         variant={"standard"} 
-                                        inputProps={{ maxLength: 50}}
+                                        inputProps={{ maxLength: 40}}
                                         onChange={handleInputChange}
                                     />
                                 </Grid>
@@ -276,7 +277,7 @@ export default function New(){
                                         label={'Primer apellido'}
                                         className={'inputGeneral'} 
                                         variant={"standard"} 
-                                        inputProps={{autoComplete: 'off', maxLength: 50}}
+                                        inputProps={{autoComplete: 'off', maxLength: 40}}
                                         validators={["required"]}
                                         errorMessages={["Campo obligatorio"]}
                                         onChange={handleInputChange}
@@ -290,7 +291,7 @@ export default function New(){
                                         label={'Segundo apellido'}
                                         className={'inputGeneral'} 
                                         variant={"standard"} 
-                                        inputProps={{ maxLength: 50}}
+                                        inputProps={{ maxLength: 40}}
                                         onChange={handleInputChange}
                                     />
                                 </Grid>
@@ -497,8 +498,8 @@ export default function New(){
                                 onChange={verificarSiTieneCopia}
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
-                                <MenuItem value={"S"}>Sí</MenuItem>
-                                <MenuItem value={"N"}>No</MenuItem>
+                                <MenuItem value={"1"}>Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
                             </SelectValidator>
                         </Grid>
 
@@ -515,8 +516,8 @@ export default function New(){
                                 onChange={verificarSiTieneAnexos}
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
-                                <MenuItem value={"S"}>Sí</MenuItem>
-                                <MenuItem value={"N"}>No</MenuItem>
+                                <MenuItem value={"1"}>Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
                             </SelectValidator>
                         </Grid>
 
@@ -550,12 +551,12 @@ export default function New(){
                             <TextValidator
                                 multiline
                                 maxRows={10}
-                                name={'descripcion'}
-                                value={formData.descripcion}
-                                label={'Motivo de la solicitud'}
+                                name={'asuntoRadicado'}
+                                value={formData.asuntoRadicado}
+                                label={'Asunto del radicado'}
                                 className={'inputGeneral'} 
                                 variant={"standard"}
-                                inputProps={{autoComplete: 'off', maxLength: 4000}}
+                                inputProps={{autoComplete: 'off', maxLength: 500}}
                                 validators={["required"]}
                                 errorMessages={["Campo obligatorio"]}
                                 onChange={handleChange}
