@@ -146,7 +146,7 @@ class FirmarDocumentosController extends Controller
             $msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
             $enviarcopia        = $informacioncorreo->innocoenviarcopia;
             $enviarpiepagina    = $informacioncorreo->innocoenviarpiepagina;
-            $notificar->correo([$correoUsuario], $asunto, $msg, '', $correoEmpresa, $enviarcopia, $enviarpiepagina);           
+            $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);           
 
         	DB::commit();
 			return response()->json(['success' => true, 'message' => 'Proceso realizado con éxito', 'mensajeMostrar' => $mensajeMostrar, 

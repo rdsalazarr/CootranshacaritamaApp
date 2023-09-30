@@ -154,7 +154,7 @@ class CitacionController extends Controller
 				$msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
 				$enviarcopia        = $informacioncorreo->innocoenviarcopia;
 				$enviarpiepagina    = $informacioncorreo->innocoenviarpiepagina;
-				$notificar->correo([$email], $asunto, $msg, '', $emailDependencia, $enviarcopia, $enviarpiepagina);
+				$notificar->correo([$email], $asunto, $msg, [], $emailDependencia, $enviarcopia, $enviarpiepagina);
 			}
 
 			DB::commit();
@@ -242,7 +242,7 @@ class CitacionController extends Controller
 				$msg               = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
 				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
 				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
-				$notificar->correo($email, $asunto, $msg, $rutaPdf, $emailDependencia, $enviarcopia, $enviarpiepagina);
+				$notificar->correo($email, $asunto, $msg, [$rutaPdf], $emailDependencia, $enviarcopia, $enviarpiepagina);
 				$mensajeCorreo     = ', Se ha enviado notificación al correo  '.$correoNotificados;
 			}
 
@@ -290,12 +290,9 @@ class CitacionController extends Controller
 	public function trazabilidad(Request $request)
 	{
 		$this->validate(request(),['codigo' => 'required']);
-		$cambioEstados = DB::table('coddocumprocesocambioestado as cdpce')
-						->select('cdpce.codpcefechahora','cdpce.codpceobservacion','ted.tiesdonombre',
-						DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
-						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdpce.tiesdoid')
-						->join('usuario as u', 'u.usuaid', '=', 'cdpce.codpceusuaid')
-						->where('cdpce.codoprid', $request->codigo)->get();
+
+		$manejadorDocumentos = new manejadorDocumentos();
+		$cambioEstados = $manejadorDocumentos->trazabilidad($request->codigo);
 
 		return response()->json(['cambioEstados' => $cambioEstados]);
 	}

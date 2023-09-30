@@ -843,4 +843,14 @@ class manejadorDocumentos {
 
 		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
 	}
+
+	public function trazabilidad($codigo)
+	{	
+		return DB::table('coddocumprocesocambioestado as cdpce')
+						->select('cdpce.codpcefechahora','cdpce.codpceobservacion','ted.tiesdonombre',
+						DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdpce.tiesdoid')
+						->join('usuario as u', 'u.usuaid', '=', 'cdpce.codpceusuaid')
+						->where('cdpce.codoprid', $codigo)->get();
+	}
 }

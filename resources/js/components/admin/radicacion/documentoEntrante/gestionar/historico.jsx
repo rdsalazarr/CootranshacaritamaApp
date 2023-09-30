@@ -4,7 +4,7 @@ import TablaGeneral from '../../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import { Box} from '@mui/material';
-import Show from '../show/list';
+import Show from '../show';
 
 export default function Producir(){
 

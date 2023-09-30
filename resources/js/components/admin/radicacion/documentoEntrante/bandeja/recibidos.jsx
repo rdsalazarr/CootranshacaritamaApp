@@ -6,7 +6,7 @@ import instance from '../../../../layout/instance';
 import { Box} from '@mui/material';
 import Show from '../show';
 
-export default function Producir(){
+export default function Recibidos(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
@@ -24,7 +24,7 @@ export default function Producir(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/radicacion/documento/entrante', {tipo:'VERIFICAR'}).then(res=>{
+        instance.post('/admin/radicacion/documento/entrante/bandeja', {tipo:'RECIBIDOS'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 

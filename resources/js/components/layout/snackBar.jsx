@@ -115,5 +115,9 @@ export function SimpleSnackbar({icon, msg}) {
 
 export default function showSimpleSnackbar(msj, icono){
     const notificacion = createRoot(document.getElementById("snake"));
-    notificacion.render( <SimpleSnackbar msg={msj} icon={icono} />);  
+    notificacion.render( <SimpleSnackbar msg={msj} icon={icono} />); 
+   
+    setTimeout(function(){
+        notificacion.unmount(); 
+    }, 2000);
 }

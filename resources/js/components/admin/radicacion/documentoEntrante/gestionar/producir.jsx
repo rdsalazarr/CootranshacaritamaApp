@@ -1,14 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {SolicitarFirma} from '../../../../layout/modalFijas';
+import {EnviarRadicado} from '../../../../layout/modalFijas';
 import { ModalDefaultAuto  } from '../../../../layout/modal';
 import TablaGeneral from '../../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import PdfStickers from '../pdfStickers';
 import { Box} from '@mui/material';
-import Show from '../show/list';
 import NewEdit from './new';
-
+import Show from '../show';
 
 export default function Producir(){
 
@@ -25,7 +24,7 @@ export default function Producir(){
                         <NewEdit data={modal.data} tipo={'I'} />,
                         <PdfStickers id={(tipo !== 0) ? modal.data.id : null}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <SolicitarFirma id={modal.data} cerrarModal={cerrarModal} />,
+                        <EnviarRadicado id={(tipo !== 0) ? modal.data.id : null} ruta='/admin/radicacion/documento/entrante/enviar' cerrarModal={cerrarModal} />,
                         <Show id={(tipo !== 0) ? modal.data.id : null}  />
                     ];
 
@@ -37,8 +36,8 @@ export default function Producir(){
                     ];
 
     const edit = (data, tipo) =>{
-        setTipo(tipo); //smallFlot
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 || tipo === 2) ? 'bigFlot' : ((tipo === 1) ? 'smallFlot' :'mediumFlot')});
+        setTipo(tipo);
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 || tipo === 2 || tipo === 4) ? 'bigFlot' : ((tipo === 1 || tipo === 3) ? 'smallFlot' :'mediumFlot')});
     }
 
     const inicio = () =>{

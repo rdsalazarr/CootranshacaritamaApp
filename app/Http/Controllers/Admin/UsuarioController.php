@@ -112,7 +112,7 @@ class UsuarioController extends Controller
 				$msg               = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido); 
 				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
 				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
-				$mensajeCorreo     = ', Se ha enviado notificacion al correo  '.$notificar->correo([$email], $asunto, $msg, '', $emailEmpresa, $enviarcopia, $enviarpiepagina);
+				$mensajeCorreo     = ', Se ha enviado notificacion al correo  '.$notificar->correo([$email], $asunto, $msg, [], $emailEmpresa, $enviarcopia, $enviarpiepagina);
 			}
 
             DB::commit();

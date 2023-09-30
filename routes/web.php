@@ -37,6 +37,10 @@ use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosControlle
 use App\Http\Controllers\Admin\ProducionDocumental\FirmarDocumentosController;
 
 use App\Http\Controllers\Admin\Radicacion\DocumentoEntranteController;
+use App\Http\Controllers\Admin\Radicacion\ShowDocumentoEntranteController;
+use App\Http\Controllers\Admin\Radicacion\AnularDocumentoEntranteController;
+use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteController;
+
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -49,7 +53,6 @@ Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}', [DownloadFileController::c
 Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);//Decarga el documento con el QR
 Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
 Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
-
 
 
 //'revalidate', verifySource
@@ -232,7 +235,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/entrante/consultar/persona', [DocumentoEntranteController::class, 'consultarPersona']);
             Route::post('/entrante/salve', [DocumentoEntranteController::class, 'salve']);
             Route::post('/entrante/imprimir', [DocumentoEntranteController::class, 'imprimir']);
+            Route::post('/entrante/enviar', [DocumentoEntranteController::class, 'enviar']);
 
+            Route::post('/entrante/consultar/radicado', [AnularDocumentoEntranteController::class, 'index']);
+            Route::post('/entrante/anular', [AnularDocumentoEntranteController::class, 'anular']);
+
+            Route::post('/entrante/bandeja', [BandejaRadicadoDocumentoEntranteController::class, 'index']);
+            Route::post('/entrante/recibir', [BandejaRadicadoDocumentoEntranteController::class, 'recibir']);
+
+            Route::post('/entrante/show', [ShowDocumentoEntranteController::class, 'index']);
         });
     });
         

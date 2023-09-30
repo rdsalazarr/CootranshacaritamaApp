@@ -102,7 +102,7 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
-            if(formData.tipo === 'U' && res.success){
+            if(formData.tipo === 'I' && res.success){
                 setFormData({codigo: (tipo === 'U') ? data.id : '000',
                             tipoIdentificacion: '',    numeroIdentificacion: '',    primerNombre: '',      segundoNombre: '',     primerApellido: '', 
                             segundoApellido: '',       direccionFisica: '',         correoElectronico: '', numeroContacto: '',    codigoDocumental: '',
@@ -670,7 +670,7 @@ export default function New({data, tipo}){
                             {(checkedDependencias.length > 0) ?
                                 <Grid container spacing = {2}  style={{marginTop:'1em'}}>
                                     <Grid item md={12} xl={12} sm={12} xs={12}>
-                                        <Box className='divisionFormulario'>
+                                        <Box className='frmDivision'>
                                             Dependencia marcadas para enviar copia del documento
                                         </Box>
                                         <Box>

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('radoenconsecutivo', 4)->comment('Consecutivo del radicado');
             $table->string('radoenanio', 4)->comment('Año en el cual se crea el radicado');
             $table->dateTime('radoenfechahoraradicado')->comment('Fecha y hora en la cual se radica el documento');
+            $table->date('radoenfechamaximarespuesta')->comment('Fecha máxima para emitir la respuesta del radicado del documento');
             $table->date('radoenfechadocumento')->comment('Fecha que contiene el documento');
             $table->date('radoenfechallegada')->comment('Fecha de llegada del documento');
             $table->string('radoenpersonaentregadocumento', 100)->comment('Nombre de la persona que radica el documento');
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->string('radoendescripcionanexo', 300)->nullable()->comment('Descripción del anexo');
             $table->boolean('radoentienecopia')->default(false)->comment('Determina si el radicado tiene copia');
             $table->string('radoenobservacion', 300)->nullable()->comment('Observación general del radicado del documento');
+            $table->boolean('radoenrequiererespuesta')->default(false)->comment('Determina si el radicado requiere una respuesta');
             $table->timestamps();
             $table->unique(['radoenconsecutivo','radoenanio'],'uk_radicaciondocumentoentrante');
             $table->foreign('peradoid')->references('peradoid')->on('personaradicadocumento')->onUpdate('cascade')->index('fk_peradoradoen');

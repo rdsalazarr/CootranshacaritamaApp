@@ -4,7 +4,6 @@ import { TabPanel } from '../../../../layout/general';
 import Verificar from "./verificar";
 import Historico from "./historico";
 import Producir from "./producir";
-import Anulados from "./producir";
 
 export default function List(){
 

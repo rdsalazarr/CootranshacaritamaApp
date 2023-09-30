@@ -8,7 +8,7 @@ use DB, URL;
 class notificar
 {
 	//Funcion para enviar el correo
-    public function correo($correo = [], $asunto = '', $msg = '', $adjunto = '', $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
+    public function correo($correo = [], $asunto = '', $msg = '', $adjuntos = [], $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
 	
 		$mail = new PHPMailer(true);	
 		$usuario    = 'notificacioncootranshacaritama@gmail.com';
@@ -38,16 +38,15 @@ class notificar
 			if($enviarCopia == 1){//copia de la oculta
 				$mail->addBCC($correoDependencia);
 			}
+
+			if(count($adjuntos) > 0){
+				foreach ($adjuntos as $i => $adjunto) {
+					$mail->addAttachment($adjunto[$i]);
+				}
+			}
+
+			$piePagina = ($enviarPiePagina == 1) ? $this->consultarPiePagina() : '';
 		
-			if($adjunto !== '') {
-				$mail->addAttachment($adjunto);
-			}
-
-			$piePagina = '';
-			if($enviarPiePagina == 1){
-				$piePagina = $this->consultarPiePagina();
-			}
-
 			$mail->isHTML(true);
 			$mail->Subject = utf8_decode($asunto);
 			$mail->Body    = utf8_decode($this->htmlCorreo($msg, $piePagina));

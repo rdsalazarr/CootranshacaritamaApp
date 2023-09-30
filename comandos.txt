@@ -166,7 +166,8 @@ php artisan make:controller Admin\PersonaController
 php artisan make:controller Admin\ProducionDocumental\OficioController
 
 php artisan make:controller Admin\Radicacion\DocumentoEntranteController
-
-
+php artisan make:controller Admin\Radicacion\ShowDocumentoEntranteController
+php artisan make:controller Admin\Radicacion\AnularDocumentoEntranteController
+php artisan make:controller Admin\Radicacion\BandejaRadicadoDocumentoEntranteController
 
 php artisan db:seed
