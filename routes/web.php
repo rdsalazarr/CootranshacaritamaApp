@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
+use App\Http\Controllers\Util\FestivoController;
 
 use App\Http\Controllers\Admin\ProducionDocumental\ActaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController;
@@ -144,6 +145,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
+
+        Route::get('/festivo/list', [festivoController::class, 'index']);
+        Route::post('/festivo/salve', [festivoController::class, 'salve']);
+
 
         Route::prefix('/producion/documental')->group(function(){
 

@@ -39,6 +39,7 @@ php artisan make:migration create_tipo_acta
 php artisan make:migration create_tipo_tramite
 php artisan make:migration create_tipo_persona_documental
 php artisan make:migration create_token_firma_persona
+php artisan make:migration create_festivo
 
 php artisan make:migration create_codigo_documental
 php artisan make:migration create_codigo_documental_proceso
@@ -63,7 +64,7 @@ php artisan make:migration create_radicacion_documento_entrante_dependencia
 php artisan make:migration create_radicacion_documento_entrante_cambio_estado
 
 
-
+php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
 php artisan make:model IngresoSistema
 php artisan make:model IntentosFallidos
@@ -149,7 +150,7 @@ php artisan make:request CitacionRequests
 php artisan make:request ConstanciaRequests
 php artisan make:request OficioRequests
 
-php artisan make:controller Admin\EleccionDeelegadoAspiranteController
+php artisan make:controller Admin\FestivoController
 php artisan make:controller Admin\ModuloController
 php artisan make:controller Admin\FuncionalidadController
 php artisan make:controller Admin\RolController

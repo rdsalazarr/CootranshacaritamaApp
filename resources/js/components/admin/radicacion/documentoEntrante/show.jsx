@@ -31,7 +31,7 @@ export default function Show({id}){
             let anexosRadicado   = res.anexos;
             let copiasRadicado   = res.copias;
 
-            //Informacion del peticionario
+            //Informacion de la persona
             newDataUsuario.tipoIdentificacion   = radicado.tipoIdentificacion;
             newDataUsuario.numeroIdentificacion = radicado.peradodocumento;
             newDataUsuario.esEmpresa            = (radicado.tipideid === '5' ) ? true : false;
@@ -43,7 +43,6 @@ export default function Show({id}){
             newDataUsuario.direccionElectronica = radicado.peradocorreo;
             newDataUsuario.numeroContacto       = radicado.peradotelefono;
             newDataUsuario.empresaCodigo        = radicado.peradocodigodocumental;
-
 
             //Informacion del radicado
             newDataRadicado.fechaRadicado           = radicado.radoenfechahoraradicado;
@@ -62,7 +61,7 @@ export default function Show({id}){
             newDataRadicado.descripcionAnexos       = radicado.radoendescripcionanexo;
             newDataRadicado.observacionGeneral      = radicado.radoenobservacion;
             newDataRadicado.descripcion             = radicado.radoenasunto;
-            newDataRadicado.requiereRespuesta       = radicado.requiereRespuesta;        
+            newDataRadicado.requiereRespuesta       = radicado.requiereRespuesta;
             newFormData.totalCopias                 = radicado.totalCopias;
 
            setDataPersona(newDataUsuario);

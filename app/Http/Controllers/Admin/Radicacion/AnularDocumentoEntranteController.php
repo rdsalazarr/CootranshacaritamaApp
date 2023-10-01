@@ -14,12 +14,12 @@ class AnularDocumentoEntranteController extends Controller
 {
     public function index(Request $request)
 	{
-        $this->validate(request(),['codigo' => 'required|numeric', 'anio' => 'required|numeric']);
-        $consecutivo = str_pad( $request->codigo,  4, "0", STR_PAD_LEFT);
-        $anio        = $request->anio;
+        $this->validate(request(),['consecutivo' => 'required|numeric', 'anyo' => 'required|numeric']);
+        $consecutivo = str_pad( $request->consecutivo,  4, "0", STR_PAD_LEFT);
+        $anyo        = $request->anyo;
 
         $radicado   = DB::table('radicaciondocumentoentrante as rde')
-                        ->select('tm.tipmednombre as nombreTipoMedio','terde.tierdenombre as estadoActual','d.depenombre as dependencia',
+                        ->select('rde.radoenid','tm.tipmednombre as nombreTipoMedio','terde.tierdenombre as estadoActual','d.depenombre as dependencia',
                                 'm.muninombre as municipio','dp.depanombre as depertamento','rde.radoenfechadocumento','rde.radoenfechallegada',
                                 'rde.radoenpersonaentregadocumento','rde.radoenasunto', 'rde.radoendescripcionanexo','rde.radoenobservacion',
                                 DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'radoenfechahoraradicado','radoenfechamaximarespuesta',
@@ -40,10 +40,12 @@ class AnularDocumentoEntranteController extends Controller
                                 $join->on('m.munidepaid', '=', 'rde.depaid'); 
                             })
                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'prd.tipideid')
-                        ->where('rde.radoenanio', $anio)
+                        ->whereNotIn('terde.tierdeid', [4, 5])
+                        ->where('rde.radoenanio', $anyo)
                         ->where('rde.radoenconsecutivo', $consecutivo)->first();
 
-        return response()->json(["data" => $data]);      
+        $array = ($radicado !== null) ? ['success' => true, "data" => $radicado] : ['success' => false, "data" => "No se encontro información con los datos suministrados"];
+        return response()->json($array);      
     }
 
     public function anular(Request $request)

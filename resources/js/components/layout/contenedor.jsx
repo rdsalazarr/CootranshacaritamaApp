@@ -15,6 +15,9 @@ import Welcome from "../admin/welcome";
 import Usuario from "../admin/usuario/list";
 import NotificarCorreo from "../admin/notificar/correo/list";
 
+import Festivos from "../admin/festivo/list";
+
+
 import Menu from "../admin/menu/list";
 import DatosGeograficos from "../admin/datosGeograficos/list";
 import Empresa from "../admin/empresa/list";
@@ -131,6 +134,7 @@ const componenteMenu = [
             {ruta : 'admin/gestionarDependencia', menu: 'Dependencia', icono : 'maps_home_work_icon', componente : <Dependencia /> },
             {ruta : 'admin/gestionarPersona', menu: 'Persona', icono : 'person_icon', componente : <Persona /> },
             {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> }, 
+            {ruta : 'admin/festivos', menu: 'Festivos', icono : 'calendar_month_icon', componente : <Festivos /> }, 
         ]
     } ,
     {   nombre: 'Produccion documental',
