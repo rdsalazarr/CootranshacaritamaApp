@@ -25,7 +25,7 @@ class MantenimientoController extends Controller
         Artisan::call('config:clear');
         Artisan::call('cache:clear');
         Artisan::call('config:cache'); 
-        Artisan::call('optimize');
+       // Artisan::call('optimize');
         return "Datos eliminados";
     }
     

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Util;
+use DB;
 
 class generales
 {
@@ -151,4 +152,53 @@ class generales
 		return array($success, $message );
 	}
 
+	public function obtenerFechaMaxima($tiempoRespuesta, $fechaProcesar){
+        $listaFestivos = DB::table('festivo')->select('festfecha')
+	    					->whereDate('festfecha', '>=', $fechaProcesar)
+				            ->orderBy('festfecha')->get();
+		$festivos = [];
+		foreach ($listaFestivos as $fest) {
+			$festivos[] = $fest->festfecha;
+		}
+
+		//Realizamos el proceso para asignar la posible fecha
+		$fecha_procesar = date("Y-m-d",strtotime($fechaProcesar."+ 1 days"));	
+
+		//Iniciamos a recorre para calcular la fecha de respuesta
+		$contador = 1;
+		for($i=0; $i<100; $i++){
+		     $fecha_procesar = date("Y-m-d",strtotime($fecha_procesar."+ 1 days"));  
+		     $verificarFecha = $this->validarFecha($fecha_procesar,  $festivos);
+
+		     if($verificarFecha == 1){
+		         $contador += 1;
+		     }
+
+		     if($tiempoRespuesta == $contador){       
+		         break;//termine el ciclo
+		     }
+		 }
+
+		return $fecha_procesar;
+    }
+
+	//Funcion para validar la fecha 
+	function validarFecha($fecha, $festivos) {
+	    $dias = array('', 'Lunes','Martes','Miercoles','Jueves','Viernes','Sabado', 'Domingo');
+	    $diaActual = $dias[date('N', strtotime($fecha))];
+
+	    $diasValidos = array('Lunes','Martes','Miercoles','Jueves','Viernes');
+	    $fechaValida = 0;
+	    if(in_array($diaActual, $diasValidos)) {
+	        $fechaValida = 1;
+	    }
+	    
+	    if($fechaValida == 1){
+	        if(in_array($fecha, $festivos)) { //No se puede asignar la fecha
+	            $fechaValida = 0;
+	        }
+	    } 
+
+	    return $fechaValida;
+	}
 }

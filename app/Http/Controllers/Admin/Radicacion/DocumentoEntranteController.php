@@ -178,11 +178,12 @@ class DocumentoEntranteController extends Controller
       
             $radicaciondocumentoentrante       = ($request->tipo === 'U') ? RadicacionDocumentoEntrante::findOrFail($radoenid) : new RadicacionDocumentoEntrante();
             if($request->tipo === 'I'){
-                $radicaciondocumentoentrante->tierdeid                  = $estado;
-                $radicaciondocumentoentrante->usuaid                    = Auth::id();
-                $radicaciondocumentoentrante->radoenconsecutivo         = $this->obtenerConsecutivo($anioActual);
-                $radicaciondocumentoentrante->radoenanio                = $anioActual;
-                $radicaciondocumentoentrante->radoenfechahoraradicado   = $fechaHoraActual;
+                $radicaciondocumentoentrante->tierdeid                   = $estado;
+                $radicaciondocumentoentrante->usuaid                     = Auth::id();
+                $radicaciondocumentoentrante->radoenconsecutivo          = $this->obtenerConsecutivo($anioActual);
+                $radicaciondocumentoentrante->radoenanio                 = $anioActual;
+                $radicaciondocumentoentrante->radoenfechahoraradicado    = $fechaHoraActual;
+                $radicaciondocumentoentrante->radoenfechamaximarespuesta = $funcion->obtenerFechaMaxima(15, Carbon::now()->format('Y-m-d'));
             }
 
             $radicaciondocumentoentrante->peradoid                      = $peradoid;

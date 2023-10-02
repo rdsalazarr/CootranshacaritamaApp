@@ -22,11 +22,11 @@ use App\Http\Controllers\Admin\Tipos\PersonaDocumentalController;
 use App\Http\Controllers\Admin\Series\SerieDocumentalController;
 use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
 use App\Http\Controllers\Admin\PersonaController;
+use App\Http\Controllers\Admin\FestivoController;
 use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
-use App\Http\Controllers\Util\FestivoController;
 
 use App\Http\Controllers\Admin\ProducionDocumental\ActaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController;
@@ -146,9 +146,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/festivo/list', [festivoController::class, 'index']);
-        Route::post('/festivo/salve', [festivoController::class, 'salve']);
-
+        Route::get('/festivo/list', [FestivoController::class, 'index']);
+        Route::post('/festivo/salve', [FestivoController::class, 'salve']);
 
         Route::prefix('/producion/documental')->group(function(){
 
