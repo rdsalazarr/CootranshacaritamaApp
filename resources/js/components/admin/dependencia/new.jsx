@@ -30,7 +30,7 @@ export default function New({data, tipo}){
 
     const handleChangeAdicionar = (e) =>{
         setFormDataAdicionar(prev => ({...prev, [e.target.name]: e.target.value}))
-     }
+    }
 
     const handleInputChange = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))

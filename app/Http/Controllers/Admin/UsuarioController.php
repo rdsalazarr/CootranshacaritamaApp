@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HistorialContrasena;
 use Illuminate\Http\Request;
+use App\Models\UsuarioRol;
+use App\Models\Persona;
 use App\Util\notificar;
 use App\Models\User;
 use Auth, DB, URL;
@@ -26,10 +28,20 @@ class UsuarioController extends Controller
 		return response()->json(['success' => true, "data" => $data]);
 	}
 
-	public function datos()
+	public function datos(Request $request)
 	{
+		$this->validate(request(),['codigo' => 'required','tipo' => 'required']);
+
 		$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
-        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones]);
+		$roles                = DB::table('rol')->select('rolid','rolnombre')->orderBy('rolnombre')->get();
+		$usuariosRoles        = [];
+		if($request->tipo === 'U'){
+			$usuariosRoles = DB::table('usuariorol as ur')->select('r.rolid','r.rolnombre', 'ur.usurolid')
+									->join('rol as r', 'r.rolid', '=', 'ur.usurolrolid')
+									->where('ur.usurolusuaid', $request->codigo)->get();
+		}
+
+        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles' => $roles, 'usuariosRoles' => $usuariosRoles]);
 	}
 
 	public function consultar(Request $request)
@@ -45,14 +57,14 @@ class UsuarioController extends Controller
 															)
 														->where('tipideid', $request->tipoIdentificacion)
 														->where('persdocumento', $request->documento)->first();
-
-        return response()->json(['success' => true,'personas' => $personas]);
+		$array = ($personas !== null) ? ['success' => true,'personas' => $personas] : ['success' => false,'message' => 'No se encontró la persona. Por favor adicione la persona primero'];
+        return response()->json($array);
 	}
 
 	public function salve(Request $request)
 	{
-        $id      = $request->codigo;
-        $usuario = ($id != 000) ? User::findOrFail($id) : new User();
+        $usuaid  = $request->codigo;
+        $usuario = ($usuaid != 000) ? User::findOrFail($usuaid) : new User();
 
 	    $this->validate(request(),[
             'tipoIdentificacion'=> 'required',
@@ -64,7 +76,8 @@ class UsuarioController extends Controller
             'correo'            => 'required|email|string|max:80|unique:usuario,usuaemail,'.$usuario->usuaid.',usuaid',
 			'cambiarPassword'   => 'required|numeric',
 			'bloqueado'         => 'required|numeric',
-            'estado'            => 'required|numeric'
+            'estado'            => 'required|numeric',
+			'roles'             => 'required|array|min:1'
         ]);
 
         DB::beginTransaction();
@@ -85,6 +98,28 @@ class UsuarioController extends Controller
             ($request->tipo  === 'I' ) ? $usuario->password = bcrypt($request->documento): '';
             $usuario->save();
 
+			if($request->tipo  === 'I'){
+				//Consulto el ultimo identificador del usuario
+				$usuarioConsecutivo = User::latest('usuaid')->first();
+				$usuaid             = $usuarioConsecutivo->usuaid;
+			}
+
+			foreach($request->roles as $dataRol){
+				$identificador = $dataRol['identificador'];
+				$rol           = $dataRol['rol'];
+				$rolEstado     = $dataRol['estado'];
+				if($rolEstado === 'I'){
+					$usuariorol               = new UsuarioRol();
+					$usuariorol->usurolusuaid = $usuaid;
+					$usuariorol->usurolrolid  = $rol;
+					$usuariorol->save();
+				}else if($rolEstado === 'D'){
+					$usuariorol = UsuarioRol::findOrFail($identificador);
+					$usuariorol->delete();
+				}else{//Omitir
+				}
+			}
+
 			$mensajeCorreo      = '';
 			if ($request->tipo  === 'I' ){
 				$notificar         = new notificar();
@@ -103,7 +138,7 @@ class UsuarioController extends Controller
 				$email             = $request->correo; 
 				$urlSistema        =  URL::to('/');
 				$emailEmpresa      = $empresa->emprcorreo;
-				$nombreGerente     = $empresa->nombrePersona; 
+				$nombreGerente     = $empresa->nombrePersona;
 
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'registroUsuario')->first();
 				$buscar            = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlSistema','nombreGerente');
@@ -151,7 +186,7 @@ class UsuarioController extends Controller
         } catch (Exception $error){
             return response()->json(['success' => true, 'message' => 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-    }    
+    }
 
     //Funcion para actualizar los datos
 	public function updatePassword(Request $request)
@@ -169,11 +204,9 @@ class UsuarioController extends Controller
 		}
 
 		//Verifico que la contraseña no la halla utilizado el usuario
-		$historialcontrasenas = DB::table('historialcontrasena')
-								->select('hisconid','hisconpassword')
-								->where('usuaid', Auth::id())->get();
-		foreach($historialcontrasenas as $historialcontrasena){
-			if (password_verify($request->password, $historialcontrasena->hisconpassword)) {
+		$historialContrasenas = DB::table('historialcontrasena')->select('hisconid','hisconpassword')->where('usuaid', Auth::id())->get();
+		foreach($historialContrasenas as $historialContrasena){
+			if (password_verify($request->password, $historialContrasena->hisconpassword)) {
 				return response()->json(['success' => false, 'message'=> 'Lo siento, pero esta contraseña ya ha sido utilizada en el pasado. Por favor, elige una contraseña diferente']);
 			}
 		}
@@ -185,8 +218,8 @@ class UsuarioController extends Controller
 			$historialcontrasena->hisconpassword = bcrypt($request->password);
 			$historialcontrasena->save();
 
-			$usuario = User::findOrFail(Auth::id());
-			$usuario->password = bcrypt($request->password);
+			$usuario                      = User::findOrFail(Auth::id());
+			$usuario->password            = bcrypt($request->password);
 			$usuario->usuacambiarpassword = false;
 			$usuario->save();
 			DB::commit();
@@ -196,14 +229,12 @@ class UsuarioController extends Controller
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
 	}
-	
+
 	public function destroy(Request $request)
 	{
-        //consulto que no tenga evaluacion 
-        $data = DB::table('codigodocumental')->select('usuaid')
-				                        ->where('usuaid', $request->codigo)->first();
-		$dataIngreso = DB::table('ingresosistema')->select('usuaid')
-				                        ->where('usuaid', $request->codigo)->first();
+        //consulto que no tenga relacion 
+        $data        = DB::table('codigodocumental')->select('usuaid')->where('usuaid', $request->codigo)->first();
+		$dataIngreso = DB::table('ingresosistema')->select('usuaid')->where('usuaid', $request->codigo)->first();
 		if($data){
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está relacionado con un tipo documental producido en el sistema']);
 		}else if($dataIngreso){

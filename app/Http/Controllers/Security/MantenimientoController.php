@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use App\Util\Notificar;
 use DB, Auth, URL, Artisan;
 use Carbon\Carbon;
+use setasign\Fpdi\Fpdi;
 
 class MantenimientoController extends Controller
 {
-    public function __construct()
+    /*public function __construct()
     {
         $this->middleware('auth')->except('clear');
     }
@@ -24,17 +25,15 @@ class MantenimientoController extends Controller
     {
         Artisan::call('config:clear');
         Artisan::call('cache:clear');
-        Artisan::call('config:cache'); 
+        Artisan::call('route:clear'); 
+        Artisan::call('config:cache');
+        Artisan::call('view:cache'); 
+        Artisan::call('route:cache'); 
+        Artisan::call('event:cache'); 
+        
        // Artisan::call('optimize');
         return "Datos eliminados";
-    }
-    
-    public function optimize()
-    {
-        Artisan::call('optimize');
-        return "Ruta optimizados";
-        // php artisan optimize
-    }
+    } 
 
     public function down()
     {
@@ -79,5 +78,39 @@ class MantenimientoController extends Controller
         $mensajeCorreo = ', '.$notificar->correo([$email], $asunto, $msg, [$rutaPdf], $emailEmpresa, $enviarcopia, $enviarpiepagina);
 
        dd($mensajeCorreo);      
-    }    
+    }
+    
+    public function Pdf()
+    {  
+     
+        try {       
+
+            $sourcePdf = public_path('prueba.pdf');
+
+            // Crea una instancia de FPDI
+            $pdf = new FPDI();
+    
+            // Agrega la página del archivo PDF fuente al PDF actual
+            $pageId = $pdf->setSourceFile($sourcePdf);
+            $pdf->AddPage();
+            $tplId = $pdf->importPage($pageId);
+            $pdf->useTemplate($tplId);
+    
+            // Opcional: puedes agregar tu contenido o modificaciones aquí
+            // Por ejemplo, agregar texto
+            $pdf->SetFont('Arial', '', 12);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->SetXY(10, 10);
+            $pdf->Write(0, '2222 Este es un PDF generado con FPDI y TCPDF. ....');
+    
+            // Genera la salida del PDF
+            $pdf->Output('output.pdf', 'I');
+
+            //return true;
+		} catch (Exception $e) {
+           // return false;
+		}
+
+    }
+
 }

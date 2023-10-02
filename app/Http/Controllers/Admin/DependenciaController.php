@@ -89,7 +89,7 @@ class DependenciaController extends Controller
             $dependencia->save();
 
             if($request->tipo === 'I'){
-				//Consulto el ultimo identificador de los codigos documentales
+				//Consulto el ultimo identificador de la dependencia
 				$dependenciaConsecutivo    = Dependencia::latest('depeid')->first();
 				$depeid                  = $dependenciaConsecutivo->depeid;
 			}

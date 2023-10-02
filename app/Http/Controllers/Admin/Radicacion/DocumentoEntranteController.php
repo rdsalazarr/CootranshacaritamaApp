@@ -119,7 +119,7 @@ class DocumentoEntranteController extends Controller
                 'tieneCopia'              => 'nullable|numeric',
                 'observacionGeneral'      => 'nullable|string|min:4|max:300',
                 'personaId'               => 'nullable|numeric',
-                
+
                 'pdfRadicar'              => 'nullable|array|max:2000',
                 'pdfRadicar.*'            => 'nullable|mimes:pdf|max:2000',
                 'archivos'                => 'nullable|array|max:2000',
@@ -133,10 +133,12 @@ class DocumentoEntranteController extends Controller
             $fechaHoraActual     = Carbon::now();
             $anioActual          = Carbon::now()->year;
             $funcion 		     = new generales();
+            $generarPdf          = new generarPdf();
             $radoenid            = $request->codigo; 
            
-            $nombreOriginalPdf   = '';
-            $nombreArchivoPdf    = '';
+            $nombreOriginalPdf    = '';
+            $nombreArchivoPdf     = '';
+            $debeRadicarDocumento = false;
             if($request->hasFile('pdfRadicar')){
                 $numeroAleatorio = rand(100, 1000);
                 $rutaCarpeta       = public_path().'/archivos/radicacion/documentoEntrante/'.$anioActual;
@@ -148,10 +150,15 @@ class DocumentoEntranteController extends Controller
 				$nombreArchivoPdf  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 				$file->move($rutaCarpeta, $nombreArchivoPdf);
                 //Verifico que el archivo lo pueda radicar
+                $verificarPdf         = $generarPdf->validarPuedeAbrirPdf($rutaCarpeta.'/'.$nombreArchivoPdf);
+                $debeRadicarDocumento = true;
+                if(!$verificarPdf){
+                    DB::rollback();
+                    return response()->json(['success' => false, 'message'=> 'Este documento PDF está encriptado y no puede ser procesado']);
+                }
+            }   
 
-            }          
-
-            $personaRadicado   =   DB::table('personaradicadocumento')->select('peradoid')
+            $personaRadicado   = DB::table('personaradicadocumento')->select('peradoid')
                                         ->where('tipideid', $request->tipoIdentificacion)
                                         ->where('peradodocumento', $request->numeroIdentificacion)->first();
         
@@ -241,7 +248,7 @@ class DocumentoEntranteController extends Controller
 					$radicaciondocentanexo->save();
 				}
 			}
-            
+
 			if($request->tipo === 'U'){
 				//Elimino las dependencia que esten en el documento
 				$radicaciondocentdependenciaConsultas = DB::table('radicaciondocentdependencia')->select('radoedid')->where('radoenid', $radoenid)->get();
@@ -267,8 +274,33 @@ class DocumentoEntranteController extends Controller
                 $radicaciondocentcambioestado->tierdeid          = $estado;
                 $radicaciondocentcambioestado->radeceusuaid      = Auth::id();
                 $radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
-                $radicaciondocentcambioestado->radeceobservacion = 'Documento radicado por '.auth()->user()->usuanombre.'  en la fecha '.$fechaHoraActual;
+                $radicaciondocentcambioestado->radeceobservacion = 'Documento radicado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $radicaciondocentcambioestado->save();
+            }
+
+            if($debeRadicarDocumento){//Radico el documento
+                $rutaPdf      = $rutaCarpeta.'/'.$nombreArchivoPdf;
+                $dataCopias   = [];
+                $dataRadicado = DB::table('radicaciondocumentoentrante as rde')
+                                    ->select('rde.radoenfechahoraradicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                            'd.depenombre', 'd.depecorreo','u.usuaalias', 'prd.peradocorreo',
+                                            DB::raw("(SELECT emprnombre FROM empresa WHERE emprid = 1) as empresa"),
+                                            DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"),
+                                            DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid) AS totalCopias'))
+                                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                                    ->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
+                                    ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
+                                    ->where('rde.radoenid', $radoenid)->first();
+
+                if($dataRadicado->totalCopias > 0){
+                    $dataCopias    =  DB::table('radicaciondocentdependencia as rded')
+                                        ->select('d.depenombre','d.depecorreo')
+                                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                                        ->where('rded.radoenid', $radoenid)->get();
+                }
+
+                $generarPdf->validarPuedeAbrirPdf($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
+                //$funcion->reducirPesoPDF($rutaPdf, $rutaPdf);
             }
 
             DB::commit();

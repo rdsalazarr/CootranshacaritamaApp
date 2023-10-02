@@ -201,4 +201,14 @@ class generales
 
 	    return $fechaValida;
 	}
+
+	function reducirPesoPDF($archivoOriginal, $archivoReducido) {
+		// Comando para reducir el peso del archivo PDF
+		$comando = "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=$archivoReducido $archivoOriginal";
+	
+		// Ejecutar el comando
+		exec($comando, $salida, $estado);
+
+		return ($estado === 0) ? true : false;
+	}
 }

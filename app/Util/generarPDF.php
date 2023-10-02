@@ -4,6 +4,7 @@ namespace App\Util;
 use Illuminate\Support\Facades\Crypt;
 use App\Util\showTipoDocumental;
 use Auth, PDF, DB, URL, File;
+use setasign\Fpdi\Fpdi;
 use App\Util\generales;
 use App\Util\encrypt;
 use Carbon\Carbon;
@@ -864,7 +865,7 @@ EOD;
 	/*Para la radicacion de documentos*/
 	public function validarPuedeAbrirPdf($ruta){
         try {
-            $tcpdf = new Fpdi(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            $tcpdf = new FPDI();
             $pageCount = $tcpdf->setSourceFile($ruta);
             return true;
 		} catch (Exception $e) {
@@ -872,22 +873,33 @@ EOD;
 		}
     }
 
-    public function radicarDocumentoExterno($ruta, $consecutivo, $fecha, $dependencia, $correo, $funcionario, $dataCopia, $descargarPdf = false){
-        $documentoRadicado = true;
+    public function radicarDocumentoExterno($ruta, $nombreFile, $data, $dataCopia, $descargarPdf = false){
+		$consecutivo    = $data->consecutivo;
+		$fecha          = $data->fechaRadicado;
+		$dependencia    = $data->dependencia;
+		$asuntoRadicado = $data->asunto;
+		$correo         = $data->correo;
+		$funcionario    = $data->usuario;
+		
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		
+		$documentoRadicado = true;
         $mensajeRadicar    = '';
-        $tcpdf = new Fpdi(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-        $tcpdf->SetAuthor('Divisis');
-        $tcpdf->SetCreator('Oficina de atención al ciudadano');
+        //$tcpdf = new Fpdi(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		$tcpdf =new FPDI();
+        $tcpdf->SetAuthor('IMPLESOFT');
+        $tcpdf->SetCreator('Oficina de atención al usuario');
         $tcpdf->SetTitle($consecutivo);
         $tcpdf->SetSubject('Formato de registro de radicado externo');
-        $tcpdf->SetKeywords('Radicacion, UFPS Ocaña, '.$consecutivo);  
+        $tcpdf->SetKeywords('Radicación, '.$consecutivo);  
         $tcpdf->SetProtection(array('copy'), '', null, 0, null);
         $tcpdf->SetPrintHeader(false);
         $tcpdf->SetPrintFooter(false);
         //$pageCount = $tcpdf->setSourceFile('./archivos/procedimiento.pdf');
 
         try {
-            $pageCount = $tcpdf->setSourceFile($ruta);
+            $pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
 		} catch (Exception $e) {
             $mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();
             $documentoRadicado = false;
@@ -908,10 +920,7 @@ EOD;
             $tcpdf->SetFont('Helvetica','B',6);
             $tcpdf->SetY(8);
             $tcpdf->Cell(115,1,'',0,0,'',false);
-            $tcpdf->Cell(82,3,'UNIVERSIDAD FRANCISCO DE PAULA SANTANDER','LTR',0,'C',true);
-            $tcpdf->Ln(3);
-            $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(82,3,'OCAÑA','LR',0,'C',true);
+            $tcpdf->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
             $tcpdf->Ln(3);
             $tcpdf->SetFont('Helvetica','',7);
             $tcpdf->Cell(115,3,'',0,0,'');
@@ -938,14 +947,14 @@ EOD;
             $tcpdf->Ln(3);
             $tcpdf->SetFont('Helvetica','',6);
             $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(82,3,'www.ufpso.edu.co ','LBR',0,'R',true);
+            $tcpdf->Cell(82,3,$urlEmpresa,'LBR',0,'R',true);
             $tcpdf->Ln(8);
 
             //Genero las copias solo en la pagina uno
             if(count($dataCopia) > 0 and $pageNo === 1){
                 $tcpdf->SetFont('Helvetica','B',6);
                 $tcpdf->Cell(115,1,'',0,0,'',false);
-                $tcpdf->Cell(82,3,'UNIVERSIDAD FRANCISCO DE PAULA SANTANDER','LTR',0,'C',true);
+                $tcpdf->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
                 $tcpdf->Ln(3);
                 $tcpdf->Cell(115,3,'',0,0,'');
                 $tcpdf->Cell(82,3,'OCAÑA','LR',0,'C',true);
@@ -963,7 +972,7 @@ EOD;
                 foreach($dataCopia as $copia){
                     $tcpdf->Cell(115,3,'',0,0,'');
                     $tcpdf->Cell(12,3,'Copia: ','L',0,'',true);
-                    $tcpdf->Cell(70,3,substr($copia['DEPENDENCIA'], 0, 47),'R',0,'',true);
+                    $tcpdf->Cell(60,4,$copia->dependencia,0,0,'');
                     $tcpdf->Ln(3);
                 }
 
@@ -979,17 +988,18 @@ EOD;
                 $tcpdf->Ln(3);
                 $tcpdf->SetFont('Helvetica','',6);
                 $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(82,3,'www.ufpso.edu.co ','LBR',0,'R',true);
+                $tcpdf->Cell(82,3,$urlEmpresa,'LBR',0,'R',true);
                 $tcpdf->Ln(12);
             }
         }
 
         $nombrePDF       = 'Rad-'.$consecutivo.'.pdf';
         if($descargarPdf){
-            $rutaPdfGenerado = sys_get_temp_dir().'/'.$nombrePDF;
-            fopen($rutaPdfGenerado, "w+"); 
+            //$rutaPdfGenerado = $ruta.'/'.$nombrePDF;
+           // fopen($rutaPdfGenerado, "w+"); 
+		    $rutaPdfGenerado = $rutaCarpeta.'/'.$nombreFile;
             $metodo    = 'F';
-            $nombrePDF = $rutaPdfGenerado;
+            $nombrePDF = $nombreFile;
         }else{
             $metodo          = 'S';
             $rutaPdfGenerado = '';
@@ -1012,7 +1022,7 @@ EOD;
         $dependencia    = $data->dependencia;
 		$asuntoRadicado = $data->asunto;
         $correo         = $data->correo;
-        $funcionario    = $data->usuario;		
+        $funcionario    = $data->usuario;
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
@@ -1105,5 +1115,4 @@ EOD;
 
         return ($descargarPdf) ?  $rutaPdfGenerado :  base64_encode($pdfGenerado);
     }
-
 }

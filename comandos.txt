@@ -170,5 +170,7 @@ php artisan make:controller Admin\Radicacion\DocumentoEntranteController
 php artisan make:controller Admin\Radicacion\ShowDocumentoEntranteController
 php artisan make:controller Admin\Radicacion\AnularDocumentoEntranteController
 php artisan make:controller Admin\Radicacion\BandejaRadicadoDocumentoEntranteController
+php artisan make:controller Admin\Archivo\HistoricoController
+php artisan make:controller Admin\Archivo\ConsultarController
 
 php artisan db:seed

@@ -42,6 +42,8 @@ use App\Http\Controllers\Admin\Radicacion\ShowDocumentoEntranteController;
 use App\Http\Controllers\Admin\Radicacion\AnularDocumentoEntranteController;
 use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteController;
 
+use App\Http\Controllers\Admin\Archivo\HistoricoController;
+use App\Http\Controllers\Admin\Archivo\ConsultarController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -88,9 +90,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/usuario/list', [UsuarioController::class, 'index']);
         Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
+        Route::post('/usuario/list/datos', [UsuarioController::class, 'datos']);
         Route::post('/usuario/salve', [UsuarioController::class, 'salve']);
-        Route::post('/usuario/destroy', [UsuarioController::class, 'destroy']);
-        Route::get('/listar/datos/usuario', [UsuarioController::class, 'datos']);
+        Route::post('/usuario/destroy', [UsuarioController::class, 'destroy']);        
         Route::get('/usuario/miPerfil', [UsuarioController::class, 'perfil']);
         Route::post('/usuario/updatePerfil', [UsuarioController::class, 'updatePerfil']);
         Route::post('/usuario/updatePassword', [UsuarioController::class, 'updatePassword']);
@@ -249,6 +251,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::post('/entrante/show', [ShowDocumentoEntranteController::class, 'index']);
         });
+
+        Route::prefix('/archivo/historico')->group(function(){
+            Route::post('/gestionar', [HistoricoController::class, 'index']);
+
+            Route::post('/consultar', [ConsultarController::class, 'index']);
+
+        });
+
     });
         
 });

@@ -11,7 +11,7 @@ use DB;
 class FestivoController extends Controller
 {
     public function index()
-    {      	
+    {
         $data = DB::table('festivo')->select('festid','festfecha')->whereDate('festfecha', '>=', Carbon::now()->format('Y-m-d'))
 				        ->orderBy('festfecha')->get();
 
@@ -19,7 +19,7 @@ class FestivoController extends Controller
     }
 
     public function salve(Request $request)
-    {                 
+    {
         $this->validate(request(),['fechas' => 'required|array|min:1' ]);
         DB::beginTransaction();
         try {
