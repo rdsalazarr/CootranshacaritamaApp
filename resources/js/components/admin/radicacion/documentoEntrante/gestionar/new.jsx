@@ -97,7 +97,7 @@ export default function New({data, tipo}){
         let newFormData               = {...formData};
         newFormData.pdfRadicar        = formDataFilePdf.archivos;
         newFormData.copiasDependencia = checkedDependencias;
-       // setLoader(true);
+        setLoader(true);
         instance.post('/admin/radicacion/documento/entrante/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
@@ -111,6 +111,7 @@ export default function New({data, tipo}){
                             tipoMedio: '',             observacionGeneral: '',      personaId: '',         tipo:tipo,             archivos:[]})
 
                 setIdRadicado(res.idRadicado);
+                setFormDataFilePdf({archivos : []});
                 setAbrirModal(true);
             }
 
@@ -276,6 +277,7 @@ export default function New({data, tipo}){
                                 validators={["required"]}
                                 errorMessages={["Debe hacer una selección"]}
                                 onChange={consultarPersona} 
+                                tabIndex="1"
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
                                 {tipoIdentificaciones.map(res=>{
@@ -296,6 +298,7 @@ export default function New({data, tipo}){
                                 errorMessages={["Campo obligatorio"]}
                                 onChange={handleChange}
                                 onBlur={consultarPersona}
+                                tabIndex="2"
                             />
                         </Grid>
 
@@ -310,6 +313,7 @@ export default function New({data, tipo}){
                                 validators={["required"]}
                                 errorMessages={["Campo obligatorio"]}
                                 onChange={handleInputChange}
+                                tabIndex="3"
                             />
                         </Grid>
 
@@ -686,7 +690,7 @@ export default function New({data, tipo}){
                         </Box>
                     : null}
 
-                    { (totalAdjuntoSubido > 0) ?
+                    { (tipo === 'U') ?
                         <Grid item md={12} xl={12} sm={12} xs={12} >
                             <Anexos data={anexosRadicado} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
                         </Grid>

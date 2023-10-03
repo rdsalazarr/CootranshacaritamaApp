@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\Tipos;
 use App\Http\Controllers\Controller;
 use App\Models\CargoLaboral;
 use Illuminate\Http\Request;
-use DB;
+use Exception, DB;
 
 class CargoLaboralController extends Controller
 {
     public function index()
-    {  
+    {
         $data = DB::table('cargolaboral')->select('carlabid','carlabnombre','carlabactivo',
                                     DB::raw("if(carlabactivo = 1 ,'Sí', 'No') as estado"))
                                     ->orderBy('carlabnombre')->get();

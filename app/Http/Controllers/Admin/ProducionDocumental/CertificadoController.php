@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
+use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
-use Auth, DB, File;
 use Carbon\Carbon;
 
 class CertificadoController extends Controller
@@ -63,7 +63,7 @@ class CertificadoController extends Controller
 	public function datos(Request $request)
 	{
 		$this->validate(request(),['tipo' => 'required']);
-	
+
 		$id                = $request->id;
 		$tipo              = $request->tipo;
 		$data              = '';
@@ -137,7 +137,7 @@ class CertificadoController extends Controller
 			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
 			$codigodocumentalprocesocambioestado->codpceobservacion = $observacion;
-			$codigodocumentalprocesocambioestado->save(); 
+			$codigodocumentalprocesocambioestado->save();
 
 			//Enviamos la notificacion
 			$notificar         = new notificar();
@@ -299,7 +299,7 @@ class CertificadoController extends Controller
 
 	public function showPdf(Request $request)
 	{
-		$this->validate(request(),['codigo' => 'required']);  
+		$this->validate(request(),['codigo' => 'required']);
 		try {
 			$generarPdf    = new generarPdf();
 			$dataDocumento = $generarPdf->certificado($request->codigo, 'S');

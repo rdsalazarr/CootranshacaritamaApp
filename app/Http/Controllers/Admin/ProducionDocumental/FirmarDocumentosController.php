@@ -16,10 +16,10 @@ use App\Models\TokenFirmaPersona;
 use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
 use Illuminate\Http\Request;
+use Exception, Auth, DB;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use Carbon\Carbon;
-use Auth, DB;
 
 class FirmarDocumentosController extends Controller
 {
@@ -146,7 +146,7 @@ class FirmarDocumentosController extends Controller
             $msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
             $enviarcopia        = $informacioncorreo->innocoenviarcopia;
             $enviarpiepagina    = $informacioncorreo->innocoenviarpiepagina;
-            $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);           
+            $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
 
         	DB::commit();
 			return response()->json(['success' => true, 'message' => 'Proceso realizado con éxito', 'mensajeMostrar' => $mensajeMostrar, 

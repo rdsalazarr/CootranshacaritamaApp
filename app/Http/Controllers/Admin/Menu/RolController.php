@@ -6,12 +6,12 @@ use App\Models\RolFuncionalidad;
 use Illuminate\Http\Request;
 use App\Models\Rol;
 use Carbon\Carbon;
-use DB;
+use Exception, DB;
 
 class RolController extends Controller
-{  
+{
 	public function index()
-	{   
+	{
         $data = DB::table('rol')
                     ->select('rolid', 'rolnombre', 'rolactivo', 
                         DB::raw("if(rolactivo = 1 ,'Sí', 'No') as estado"))
@@ -43,7 +43,7 @@ class RolController extends Controller
 				'funcionalidades' => 'required|array|min:1',
             ]);
 
-        DB::beginTransaction();        
+        DB::beginTransaction();
         try {
 			$fechaHoraActual = Carbon::now();
 			if($request->tipo === 'I'){
@@ -58,7 +58,7 @@ class RolController extends Controller
 				$rol->rolnombre = $request->nombre; 
 	            $rol->rolactivo = $request->estado;
 	            $rol->save(); 
-			}			
+			}
 
 			//Elimino las funcionalides asignada
 			if($request->tipo === 'U'){
@@ -84,7 +84,7 @@ class RolController extends Controller
 		} catch (Exception $error){
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-		}		
+		}
 	}
 	
 	public function destroy(Request $request)
@@ -103,6 +103,6 @@ class RolController extends Controller
         } catch (Exception $error){
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
-        }			
-	} 
+        }
+	}
 }

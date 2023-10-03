@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\Menu;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Funcionalidad;
-use DB;
+use Exception, DB;
 
 class FuncionalidadController extends Controller
 {
     public function index()
-	{   	
+	{
 		$data = DB::table('funcionalidad as f')
 							->select('f.funcnombre', 'f.funcid', 'f.functitulo','f.funcicono',
 								 'f.funcruta', 'f.funcorden', 'f.funcactiva',
@@ -76,5 +76,5 @@ class FuncionalidadController extends Controller
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}
-	} 
+	}
 }

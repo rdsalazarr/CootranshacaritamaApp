@@ -10,11 +10,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ActaRequests;
 use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
+use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
-use Auth, DB, File;
 use Carbon\Carbon;
 
 class ActaController extends Controller

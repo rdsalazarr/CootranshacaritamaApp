@@ -6,10 +6,10 @@ use App\Util\redimencionarImagen;
 use Illuminate\Http\Request;
 use App\Models\Empresa;
 use App\Util\generales;
-use DB, URL;
+use Exception, DB, URL;
 
 class EmpresaController extends Controller
-{  
+{
 	public function index()
 	{  
         $url = URL::to('/');
@@ -22,9 +22,9 @@ class EmpresaController extends Controller
                             
         return response()->json(["data" => $data]);  
     }
-    
+
     public function datos()
-	{ 
+	{
         $deptos =  DB::table('departamento')
                        ->select('depaid','depanombre')
                        ->OrderBy('depanombre')->get();
@@ -78,7 +78,7 @@ class EmpresaController extends Controller
             }else{
                 $nombreBD = $request->logo_old;
             }
-    
+
 			$empresa = Empresa::findOrFail($request->codigo);
             $empresa->persidrepresentantelegal = $request->jefe;
             $empresa->emprdepaid               = $request->departamento;

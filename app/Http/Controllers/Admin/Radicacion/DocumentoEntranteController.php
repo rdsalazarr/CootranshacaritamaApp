@@ -9,11 +9,11 @@ use App\Models\RadicacionDocumentoEntrante;
 use App\Models\PersonaRadicaDocumento;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
+use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
-use Auth, DB, File;
 use Carbon\Carbon;
 
 class DocumentoEntranteController extends Controller
@@ -282,10 +282,8 @@ class DocumentoEntranteController extends Controller
                 $rutaPdf      = $rutaCarpeta.'/'.$nombreArchivoPdf;
                 $dataCopias   = [];
                 $dataRadicado = DB::table('radicaciondocumentoentrante as rde')
-                                    ->select('rde.radoenfechahoraradicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
-                                            'd.depenombre', 'd.depecorreo','u.usuaalias', 'prd.peradocorreo',
-                                            DB::raw("(SELECT emprnombre FROM empresa WHERE emprid = 1) as empresa"),
-                                            DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"),
+                                    ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto',
                                             DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid) AS totalCopias'))
                                     ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                                     ->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
@@ -299,7 +297,7 @@ class DocumentoEntranteController extends Controller
                                         ->where('rded.radoenid', $radoenid)->get();
                 }
 
-                $generarPdf->validarPuedeAbrirPdf($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
+                $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
                 //$funcion->reducirPesoPDF($rutaPdf, $rutaPdf);
             }
 

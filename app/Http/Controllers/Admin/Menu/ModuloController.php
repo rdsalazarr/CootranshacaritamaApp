@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Menu;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Modulo;
-use DB;
+use Exception, DB;
 
 class ModuloController extends Controller
 {
@@ -57,5 +57,5 @@ class ModuloController extends Controller
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}
-	} 
+	}
 }

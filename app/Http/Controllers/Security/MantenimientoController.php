@@ -8,6 +8,7 @@ use App\Util\Notificar;
 use DB, Auth, URL, Artisan;
 use Carbon\Carbon;
 use setasign\Fpdi\Fpdi;
+use App\Util\generarPdf;
 
 class MantenimientoController extends Controller
 {
@@ -82,10 +83,36 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {  
+
+
+        $generarPdf          = new generarPdf();
+        $rutaCarpeta       = public_path().'/archivos/radicacion/documentoEntrante/2023';
+        $nombreArchivoPdf = '913_autorizacion.pdf';
+        $dataCopias    = [];
+
+        $dataRadicado = DB::table('radicaciondocumentoentrante as rde')
+                        ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto',
+                                DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid) AS totalCopias'))
+                        ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                        ->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
+                        ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
+                        ->where('rde.radoenid', 11)->first();
+
+                if($dataRadicado->totalCopias > 0){
+                $dataCopias    =  DB::table('radicaciondocentdependencia as rded')
+                            ->select('d.depenombre','d.depecorreo')
+                            ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                            ->where('rded.radoenid', 11)->get();
+                }
+
+                $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
+
+                dd("verificado");
      
         try {       
 
-            $sourcePdf = public_path('prueba.pdf');
+           $sourcePdf = public_path('prueba.pdf');
 
             // Crea una instancia de FPDI
             $pdf = new FPDI();

@@ -2,8 +2,8 @@
 
 namespace App\Util;
 use Illuminate\Support\Facades\Crypt;
+use Exception, Auth, PDF, DB, URL, File;
 use App\Util\showTipoDocumental;
-use Auth, PDF, DB, URL, File;
 use setasign\Fpdi\Fpdi;
 use App\Util\generales;
 use App\Util\encrypt;
@@ -873,7 +873,7 @@ EOD;
 		}
     }
 
-    public function radicarDocumentoExterno($ruta, $nombreFile, $data, $dataCopia, $descargarPdf = false){
+    public function radicarDocumentoExterno($rutaCarpeta, $nombreFile, $data, $dataCopia, $descargarPdf = false){
 		$consecutivo    = $data->consecutivo;
 		$fecha          = $data->fechaRadicado;
 		$dependencia    = $data->dependencia;
@@ -893,11 +893,13 @@ EOD;
         $tcpdf->SetTitle($consecutivo);
         $tcpdf->SetSubject('Formato de registro de radicado externo');
         $tcpdf->SetKeywords('Radicación, '.$consecutivo);  
-        $tcpdf->SetProtection(array('copy'), '', null, 0, null);
-        $tcpdf->SetPrintHeader(false);
-        $tcpdf->SetPrintFooter(false);
-        //$pageCount = $tcpdf->setSourceFile('./archivos/procedimiento.pdf');
+       // $tcpdf->SetProtection(array('copy'), '', null, 0, null);
+        //$tcpdf->SetPrintHeader(false);
+       // $tcpdf->SetPrintFooter(false);
+        //$pageCount = $tcpdf->setSourceFile('./archivos/procedimiento.pdf');	
 
+		$pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
+	
         try {
             $pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
 		} catch (Exception $e) {
@@ -995,14 +997,10 @@ EOD;
 
         $nombrePDF       = 'Rad-'.$consecutivo.'.pdf';
         if($descargarPdf){
-            //$rutaPdfGenerado = $ruta.'/'.$nombrePDF;
-           // fopen($rutaPdfGenerado, "w+"); 
-		    $rutaPdfGenerado = $rutaCarpeta.'/'.$nombreFile;
+		    $nombrePDF = $rutaCarpeta.'/'.$nombreFile;
             $metodo    = 'F';
-            $nombrePDF = $nombreFile;
         }else{
-            $metodo          = 'S';
-            $rutaPdfGenerado = '';
+            $metodo    = 'S';
         }
 
         $pdfGenerado = $tcpdf->Output($nombrePDF, $metodo);
@@ -1010,7 +1008,7 @@ EOD;
         $datos = array(
                     'documentoRadicado' => $documentoRadicado,
                     'mensajeRadicar'    => $mensajeRadicar,
-                    'rutaPdfRadicado'   => ($descargarPdf) ?  $rutaPdfGenerado :  base64_encode($pdfGenerado),
+                    'rutaPdfRadicado'   => ($descargarPdf) ?  $nombrePDF :  base64_encode($pdfGenerado),
                     );
        
         return json_encode($datos);

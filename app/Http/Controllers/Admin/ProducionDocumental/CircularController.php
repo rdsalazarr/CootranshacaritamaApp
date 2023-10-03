@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
+use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
-use Auth, DB, File;
 use Carbon\Carbon;
 
 class CircularController extends Controller
@@ -61,7 +61,7 @@ class CircularController extends Controller
 	}
 
 	public function datos(Request $request)
-	{ 
+	{
 		$this->validate(request(),['tipo' => 'required']);
 
 		$id                = $request->id;
@@ -134,7 +134,7 @@ class CircularController extends Controller
 			$codigodocumentalproceso->codoprsolicitafirma = true;
 			$codigodocumentalproceso->tiesdoid            = $estado;
 			
-			$codigodocumentalproceso->save(); 
+			$codigodocumentalproceso->save();
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
@@ -265,7 +265,7 @@ class CircularController extends Controller
 
 		DB::beginTransaction();
 		try {
-			
+
 			$fechaHoraActual  = Carbon::now();
 			$estado           = 10;
 

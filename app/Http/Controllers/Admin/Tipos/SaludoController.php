@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\Tipos;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TipoSaludo;
-use DB;
+use Exception, DB;
 
 class SaludoController extends Controller
 {
     public function index()
-    { 
+    {
         $data = DB::table('tiposaludo')->select('tipsalid','tipsalnombre','tipsalactivo',
                                     DB::raw("if(tipsalactivo = 1 ,'Sí', 'No') as estado"))
                                     ->orderBy('tipsalnombre')->get();

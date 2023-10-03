@@ -185,7 +185,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/anular/circular', [CircularController::class, 'anular']);
             Route::post('/circular/visualizar/PDF', [CircularController::class, 'showPdf']);
             Route::post('/trazabilidad/circular', [CircularController::class, 'trazabilidad']);
-            
+
             Route::post('/citacion/list', [CitacionController::class, 'index']);
             Route::get('/citacion/consultar/area', [CitacionController::class, 'area']);
             Route::post('/citacion/listar/datos', [CitacionController::class, 'datos']);
@@ -260,7 +260,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
     });
-        
+
 });
 
 

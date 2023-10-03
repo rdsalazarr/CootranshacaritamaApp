@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Util\redimencionarImagen;
+use Exception, File, DB, URL;
 use App\Models\Persona;
 use App\Util\generales;
-use File, DB, URL;
 
 class PersonaController extends Controller
 {

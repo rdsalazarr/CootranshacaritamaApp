@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Festivo;
 use Carbon\Carbon;
-use DB;
+use Exception, DB;
 
 class FestivoController extends Controller
 {
@@ -29,7 +29,7 @@ class FestivoController extends Controller
                 $festid = $dataFecha['codigo'];
                 $fecha  = $dataFecha['fecha']; 
                 $estado = $dataFecha['estado'];
-           
+
                 if($estado == 'I'){
                     $festivo = new Festivo();
                     $festivo->festfecha = $fecha;

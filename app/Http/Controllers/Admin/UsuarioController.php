@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HistorialContrasena;
+use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
 use App\Models\UsuarioRol;
 use App\Models\Persona;
 use App\Util\notificar;
 use App\Models\User;
-use Auth, DB, URL;
 
 class UsuarioController extends Controller
 {
@@ -160,7 +160,10 @@ class UsuarioController extends Controller
 
     public function perfil()
 	{
-		$usuario = User::findOrFail(Auth::id());
+		$usuario = DB::table('usuario as u')
+					->select('u.usuaid','u.persid','u.usuanombre','u.usuaapellidos','u.usuaemail','u.usuanick','u.usuaalias','p.tipideid','p.persdocumento')
+					->join('persona as p', 'p.persid', '=', 'u.persid')
+					->where('u.usuaid', Auth::id())->first(); 
 		$tipoidentificaciones = DB::table('tipoidentificacion')->get();
         return response()->json(['success' => true,"usuario" => $usuario,'tipoidentificaciones' => $tipoidentificaciones]);
 	}
@@ -180,7 +183,7 @@ class UsuarioController extends Controller
             $usuario->usuanombre    = $request->nombre;
             $usuario->usuaapellidos = $request->apellido;
             $usuario->usuanick      = mb_strtoupper($request->usuario,'UTF-8'); 
-            $usuario->email         = $request->correo;
+            $usuario->usuaemail     = $request->correo;
             $usuario->save();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
         } catch (Exception $error){

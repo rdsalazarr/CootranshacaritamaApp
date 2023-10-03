@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
+use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\notificar;
 use App\Util\generales;
-use Auth, DB, File;
 use Carbon\Carbon;
 
 class CitacionController extends Controller
@@ -214,7 +214,7 @@ class CitacionController extends Controller
 			$fechaHoraActual   = Carbon::now();
 			$estado            = 5; //Sellado
 			$mensajeCorreo     = '';
-	
+
 			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->tiesdoid            = $estado;
 			$codigodocumentalproceso->codoprsellado       = true;
@@ -307,5 +307,5 @@ class CitacionController extends Controller
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}    
+	}
 }

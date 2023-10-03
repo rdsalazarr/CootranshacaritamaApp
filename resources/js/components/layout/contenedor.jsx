@@ -13,11 +13,8 @@ import instance from '../layout/instance';
 
 import Welcome from "../admin/welcome";
 import Usuario from "../admin/usuario/list";
+import MiPerfil from "../admin/usuario/miPerfil";
 import NotificarCorreo from "../admin/notificar/correo/list";
-
-import Festivos from "../admin/festivo/list";
-
-
 import Menu from "../admin/menu/list";
 import DatosGeograficos from "../admin/datosGeograficos/list";
 import Empresa from "../admin/empresa/list";
@@ -26,6 +23,7 @@ import GestionTipos from "../admin/tipos/list";
 import SeriesDocumentales from "../admin/seriesDocumental/list";
 import Dependencia from "../admin/dependencia/list";
 import Persona from "../admin/persona/list";
+import Festivos from "../admin/festivo/list";
 
 import Acta from "../admin/produccionDocumental/acta/list";
 import Citacion from "../admin/produccionDocumental/citacion/list";
@@ -177,8 +175,9 @@ const menuComponente = [
     {id:12,componente : <Usuario />}     
 ];
 
-export default function  Contenedor ({componente, users}) {
-    const [esInvitado, setEsInvitado] = useState(true); 
+export default function  Contenedor () {
+    const [nameUsuario, setnameUsuario] = useState("ramon");
+    //const [componente, setComponente] = useState([]); 
     useEffect(() => {
         /*instance.get('/nameUser').then(res=>{
             setEsInvitado((res.esInvitado === 1) ? true : false);
@@ -198,7 +197,8 @@ export default function  Contenedor ({componente, users}) {
                 <Box className={open ? 'component' : 'component componentClose'}>
                     <Box className='containerAdmin'>
                         <Routes >
-                            <Route exact = {`true`} path="/dashboard" element={<Welcome susuario={users}/>}/>
+                            <Route exact = {`true`} path="/dashboard" element={<Welcome usuario={nameUsuario}/>}/>
+                            <Route exact = {`true`} path="/admin/miPerfil" element={<MiPerfil />}/>
                             {componenteMenu.map(item=>{
                                 return item.itemMenu.map((res, i ) =>{
                                         /*const resultado = menuComponente.find( resul => resul.id === parseInt(res.id));
@@ -215,8 +215,9 @@ export default function  Contenedor ({componente, users}) {
                     <Divider/>
                     <ItemMenu route={'dashboard'} text={'Inicio'} icon={'home'} />
                     {componenteMenu.map((res, i )=>{
-                            return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
-                        }) }
+                        return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
+                    }) }
+                    <ItemMenu route={'admin/miPerfil'} text={'Mi perfil'} icon={'person'} />
                     <ItemMenu route={'logout'} text={'Salir'} icon={'exit_to_app'} />
                 </Drawer>
 

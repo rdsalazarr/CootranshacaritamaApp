@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\DatosGeograficos;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Municipio;
-use DB;
+use Exception, DB;
 
 class MunicipioController extends Controller
-{  
+{
 	public function index()
-	{   
+	{
 		$data = DB::table('municipio as m')
                             ->select('m.muniid','m.munidepaid','m.municodigo','m.muninombre','m.munihacepresencia','d.depanombre',
 								DB::raw("if(munihacepresencia = 1 ,'Sí', 'No') as hacePresencia"))
@@ -24,7 +24,7 @@ class MunicipioController extends Controller
 		$departamentos = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get(); 
 		return response()->json(["data" => $departamentos]);
 	}
-	
+
 	public function salve(Request $request)
 	{
 	   $this->validate(request(),[
@@ -46,5 +46,5 @@ class MunicipioController extends Controller
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}	
+	}
 }

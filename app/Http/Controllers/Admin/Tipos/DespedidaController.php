@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Tipos;
 use App\Http\Controllers\Controller;
 use App\Models\TipoDespedida;
 use Illuminate\Http\Request;
-use DB;
+use Exception, DB;
 
 class DespedidaController extends Controller
 {

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Tipos;
 use App\Http\Controllers\Controller;
 use App\Models\TipoPersonaDocumental;
 use Illuminate\Http\Request;
-use DB;
+use Exception, DB;
 
 class PersonaDocumentalController extends Controller
 {

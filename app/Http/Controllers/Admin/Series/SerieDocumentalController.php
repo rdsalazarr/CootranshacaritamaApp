@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\Series;
 use App\Http\Controllers\Controller;
 use App\Models\SerieDocumental;
 use Illuminate\Http\Request;
-use DB;
+use Exception, DB;
 
 class SerieDocumentalController extends Controller
 {
     public function index()
-    {  
+    {
         $data = DB::table('seriedocumental')->select('serdocid','serdoccodigo','serdocnombre','serdoctiempoarchivogestion','serdoctiempoarchivocentral',
                                     'serdoctiempoarchivohistorico','serdocpermiteeliminar','serdocactiva',
 									DB::raw("if(serdocpermiteeliminar = 1 ,'Sí', 'No') as permiteeliminar"),

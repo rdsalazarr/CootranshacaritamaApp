@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\DependenciaSubSerieDocumental;
 use App\Models\DependenciaPersona;
 use App\Models\Dependencia;
-use DB;
-    
+use Exception, DB;
+
 class DependenciaController extends Controller
 {
     public function index()

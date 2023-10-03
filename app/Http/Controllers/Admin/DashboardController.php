@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HistorialContrasena;
 use Illuminate\Http\Request;
+use Exception, DB, Auth;
 use App\Util\generales;
 use App\Models\User;
 use Carbon\Carbon;
-use DB, Auth;
 
 class DashboardController extends Controller
 {

@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\Series;
 use App\Http\Controllers\Controller;
 use App\Models\SubSerieDocumental;
 use Illuminate\Http\Request;
-use DB;
+use Exception, DB;
 
 class SubSerieDocumentalController extends Controller
 {
     public function index()
-    {  
+    {
         $data = DB::table('subseriedocumental as ssd')
        					->select('ssd.susedoid','ssd.susedocodigo','ssd.susedonombre','ssd.susedopermiteeliminar','ssd.susedoactiva','ssd.serdocid',
 	    						'sd.serdoccodigo as seriecodigo','sd.serdocnombre as serienombre','td.tipdocnombre as tipodocumental','ssd.tipdocid',
@@ -34,7 +34,7 @@ class SubSerieDocumentalController extends Controller
 	{
         $id      = $request->id;
         $subseriedocumental = ($id != 000) ? SubSerieDocumental::findOrFail($id) : new SubSerieDocumental();
-	
+
 	    $this->validate(request(),[
 				'codigo'          => 'required|numeric|unique:subseriedocumental,susedocodigo,'.$subseriedocumental->susedoid.',susedoid,serdocid,'.$request->serie,
 	    	    'nombre'          => 'required|string|min:4|max:80',

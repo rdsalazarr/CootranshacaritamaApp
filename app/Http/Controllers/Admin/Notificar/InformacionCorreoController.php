@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Admin\Notificar;
 use App\Models\InformacionNotificacionCorreo;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Exception, DB;
 
 class InformacionCorreoController extends Controller
-{  
+{
 	public function index()
-	{  
+	{
         $data = DB::table('informacionnotificacioncorreo')
                     ->select('innocoid','innoconombre','innocoasunto','innococontenido','innocoenviarpiepagina','innocoenviarcopia',
                     DB::raw("if(innocoenviarcopia = 1 ,'Sí', 'No') as enviarPiePagina"),
@@ -35,7 +35,7 @@ class InformacionCorreoController extends Controller
             $infocorreonotificacion->innoconombre          = $request->nombre;
             $infocorreonotificacion->innocoasunto          = $request->asunto;
             $infocorreonotificacion->innococontenido       = $request->contenido;
-            $infocorreonotificacion->innocoenviarpiepagina = $request->piePagina; 
+            $infocorreonotificacion->innocoenviarpiepagina = $request->piePagina;
             $infocorreonotificacion->innocoenviarcopia     = $request->copia;
             $infocorreonotificacion->save();
 			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
@@ -52,6 +52,6 @@ class InformacionCorreoController extends Controller
 			return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
-		}				
+		}
 	} 
 }

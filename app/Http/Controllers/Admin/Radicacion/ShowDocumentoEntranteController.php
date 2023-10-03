@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Radicacion;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use  DB;
+use Exception, DB;
 
 class ShowDocumentoEntranteController extends Controller
 {
