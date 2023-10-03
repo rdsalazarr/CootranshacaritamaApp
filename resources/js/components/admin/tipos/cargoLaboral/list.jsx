@@ -4,7 +4,7 @@ import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
-import { Box} from '@mui/material';
+import { Box, Card} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
@@ -47,7 +47,7 @@ export default function List(){
 
     return (
         <Box className={'containerSmall'} >
-            <Box className={'cardContainer'} >
+            <Card className={'cardContainer'} >
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
@@ -69,7 +69,7 @@ export default function List(){
                     tam = {modal.tamano}
                     abrir ={modal.open}
                 />
-            </Box>
+            </Card>
         </Box>
     )
 }

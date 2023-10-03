@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tipdocnombre', 50)->comment('Nombre del tipo documental');
             $table->boolean('tipdocproducedocumento')->default(false)->comment('Determina si el tipo documental produce documento');
             $table->boolean('tipdocactivo')->default(true)->comment('Determina si el tipo de documento se encuentra activo');
+            $table->timestamps();
         });
     }
 

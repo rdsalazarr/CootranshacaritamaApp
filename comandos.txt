@@ -173,4 +173,7 @@ php artisan make:controller Admin\Radicacion\BandejaRadicadoDocumentoEntranteCon
 php artisan make:controller Admin\Archivo\HistoricoController
 php artisan make:controller Admin\Archivo\ConsultarController
 
+php artisan make:controller Admin\Tipos\EstanteArchivadorController
+php artisan make:controller Admin\Tipos\DocumentalController
+
 php artisan db:seed

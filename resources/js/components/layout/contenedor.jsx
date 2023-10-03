@@ -38,6 +38,9 @@ import RadicadoEntrante from "../admin/radicacion/documentoEntrante/gestionar/li
 import AnularRadicadoEntrante from "../admin/radicacion/documentoEntrante/anular/list";
 import BandejaRadicadoEntrante from "../admin/radicacion/documentoEntrante/bandeja/list";
 
+import ArchivoHistorico from "../admin/archivoHistorico/gestionar/list";
+import ConsultarArchivoHistorico from "../admin/archivoHistorico/consultar/list";
+
 
 const HeaderMenu = ({open , setOpen}) =>{
     return (
@@ -163,8 +166,8 @@ const componenteMenu = [
     {   nombre: 'Archivo Histórico',
         icono : 'forward_to_inbox_icon',
         itemMenu: [       
-            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <BandejaRadicadoEntrante /> },
-            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <BandejaRadicadoEntrante /> },
+            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <ArchivoHistorico /> },
+            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <ConsultarArchivoHistorico /> },
         ]
     } 
 ];

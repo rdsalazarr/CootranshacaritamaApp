@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\EmpresaController;
 use App\Http\Controllers\Admin\Tipos\SaludoController;
 use App\Http\Controllers\Admin\Tipos\DespedidaController;
 use App\Http\Controllers\Admin\Tipos\CargoLaboralController;
+use App\Http\Controllers\Admin\Tipos\EstanteArchivadorController;
+use App\Http\Controllers\Admin\Tipos\DocumentalController;
 use App\Http\Controllers\Admin\Tipos\PersonaDocumentalController;
 use App\Http\Controllers\Admin\Series\SerieDocumentalController;
 use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
@@ -123,6 +125,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index']);
         Route::post('/cargoLaboral/salve', [CargoLaboralController::class, 'salve']);
         Route::post('/cargoLaboral/destroy', [CargoLaboralController::class, 'destroy']);
+
+        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index']);
+        Route::post('/tipoEstante/salve', [EstanteArchivadorController::class, 'salve']);
+        Route::post('/tipoEstante/destroy', [EstanteArchivadorController::class, 'destroy']);
+
+        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index']);
+        Route::post('/tipoDocumental/salve', [DocumentalController::class, 'salve']);
+        Route::post('/tipoDocumental/destroy', [DocumentalController::class, 'destroy']);
 
         Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index']);
         Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
@@ -253,10 +263,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/archivo/historico')->group(function(){
-            Route::post('/gestionar', [HistoricoController::class, 'index']);
+           // Route::get('/listar', [HistoricoController::class, 'index']);
+            Route::post('/obtener/datos', [HistoricoController::class, 'datos']);
 
             Route::post('/consultar', [ConsultarController::class, 'index']);
-
         });
 
     });

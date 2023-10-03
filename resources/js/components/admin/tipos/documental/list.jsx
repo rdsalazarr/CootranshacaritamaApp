@@ -21,10 +21,10 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.tipedoid : null} ruta={'/admin/personaDocumental/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.tipdocid : null} ruta={'/admin/tipoDocumental/destroy'} cerrarModal={cerrarModal} />
                     ];
 
-    const tituloModal = ['Nueva persona documental','Editar persona documental',''];
+    const tituloModal = ['Nuevo tipo documental','Editar tipo documental',''];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
@@ -33,7 +33,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/personaDocumental/list').then(res=>{
+        instance.get('/admin/tipoDocumental/list').then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -51,8 +51,8 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Nombre','Activo','Actualizar','Eliminar']}
-                        ver={["tipedonombre","estado"]}
+                        titulo={['Código','Nombre','Activo','Actualizar','Eliminar']}
+                        ver={["tipdoccodigo","tipdocnombre","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

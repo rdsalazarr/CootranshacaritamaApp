@@ -3,6 +3,8 @@ import { Box, Typography, Tab, Tabs} from '@mui/material';
 import PersonaDocumental from "./personaDocumental/list";
 import { TabPanel } from '../../layout/general';
 import CargoLaboral from "./cargoLaboral/list";
+import EstanteArchivador from "./estante/list";
+import Documental from "./documental/list";
 import Despedida from "./despedida/list";
 import Saludo from "./saludo/list";
 
@@ -28,6 +30,8 @@ export default function List(){
                 <Tab label="Despedida" />
                 <Tab label="Cargo laboral" />
                 <Tab label="Persona Documental" />
+                <Tab label="Estantes archivador" />
+                <Tab label="Documental" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -44,6 +48,14 @@ export default function List(){
 
             <TabPanel value={value} index={3}>
                 <PersonaDocumental />
+            </TabPanel>
+
+            <TabPanel value={value} index={4}>
+                <EstanteArchivador />
+            </TabPanel>
+
+            <TabPanel value={value} index={5}>
+                <Documental />
             </TabPanel>
 
           </Box>

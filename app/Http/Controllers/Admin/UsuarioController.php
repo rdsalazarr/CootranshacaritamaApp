@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\UsuarioRol;
 use App\Models\Persona;
 use App\Util\notificar;
+use App\Util\generales;
 use App\Models\User;
 
 class UsuarioController extends Controller
@@ -180,8 +181,8 @@ class UsuarioController extends Controller
            ]);
 
         try {
-            $usuario->usuanombre    = $request->nombre;
-            $usuario->usuaapellidos = $request->apellido;
+            $usuario->usuanombre    = mb_strtoupper($request->nombre,'UTF-8');
+            $usuario->usuaapellidos = mb_strtoupper($request->apellido,'UTF-8');
             $usuario->usuanick      = mb_strtoupper($request->usuario,'UTF-8'); 
             $usuario->usuaemail     = $request->correo;
             $usuario->save();

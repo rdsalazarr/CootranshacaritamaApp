@@ -21,10 +21,10 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.tipedoid : null} ruta={'/admin/personaDocumental/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.tiesarid : null} ruta={'/admin/tipoEstante/destroy'} cerrarModal={cerrarModal} />
                     ];
 
-    const tituloModal = ['Nueva persona documental','Editar persona documental',''];
+    const tituloModal = ['Nuevo estante archivador','Editar estante archivador',''];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
@@ -33,7 +33,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/personaDocumental/list').then(res=>{
+        instance.get('/admin/tipoEstante/list').then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -52,7 +52,7 @@ export default function List(){
                     <TablaGeneral
                         datos={data}
                         titulo={['Nombre','Activo','Actualizar','Eliminar']}
-                        ver={["tipedonombre","estado"]}
+                        ver={["tiesarnombre","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
