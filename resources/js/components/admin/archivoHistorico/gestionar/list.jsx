@@ -35,13 +35,11 @@ export default function Producir(){
     }
 
     const inicio = () =>{
-        setLoader(true);
-        instance.get('/admin/archivo/historico/listar').then(res=>{
-
-            //setData(res.data);
-
+        setLoader(true);    
+        instance.get('/admin/archivo/historico/gestionar/list').then(res=>{
+            setData(res.data);
             setLoader(false);
-        }) /**/
+        })
     }
 
     useEffect(()=>{inicio();}, []);
@@ -59,7 +57,7 @@ export default function Producir(){
                     ver={["tipoDocumental", "estante", "caja", "carpeta", "asunto", "numerofolio"]}
                     accion={[
                         {tipo: 'T', icono : 'add',                  color: 'green',  funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',                 color: 'blue',   funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'edit',                 color: 'orange',   funcion : (data)=>{edit(data,1)} },
                         {tipo: 'B', icono : 'visibility',           color: 'green',  funcion : (data)=>{edit(data,2)} },
                     ]}
                     funciones={{orderBy: false, search: false, pagination:true}}

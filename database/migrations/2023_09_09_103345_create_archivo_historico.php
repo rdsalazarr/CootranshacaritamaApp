@@ -19,14 +19,14 @@ return new class extends Migration
             $table->tinyInteger('ticaubid')->unsigned()->comment('Identificador del tipo de caja ubicacion');
             $table->tinyInteger('ticrubid')->unsigned()->comment('Identificador del tipo de carpeta ubicacion');
             $table->dateTime('archisfechahora')->comment('Fecha y hora actual en el que se crea el registro del documento');
-            $table->date('archisfechadocumento')->comment('Fecha que contiene el documento');
+            $table->date('archisfechadocumento')->nullable()->comment('Fecha que contiene el documento');
             $table->string('archisnumerofolio', 2)->comment('Número de folio que posee el documento del archivo histórico'); 
             $table->string('archisasuntodocumento', 200)->comment('Asunto que posee el documento del archivo histórico');
             $table->string('archistomodocumento', 2)->nullable()->comment('Tomo que posee el documento del archivo histórico');
             $table->string('archiscodigodocumental', 20)->nullable()->comment('Código que posee el documento del archivo histórico');
             $table->string('archisentidadremitente', 200)->nullable()->comment('Entidad remitente que posee el documento del archivo histórico');
             $table->string('archisentidadproductora', 200)->nullable()->comment('Entidad productora que posee el documento del archivo histórico');
-            $table->string('archisresumendocumento', 200)->nullable()->comment('REsumen que posee el documento del archivo histórico');
+            $table->string('archisresumendocumento', 500)->nullable()->comment('REsumen que posee el documento del archivo histórico');
             $table->string('archisobservacion', 500)->nullable()->comment('Observación general del registro del archivo histórico');
             $table->timestamps();
             $table->foreign('tipdocid')->references('tipdocid')->on('tipodocumental')->onUpdate('cascade')->index('fk_tipdocarchis');

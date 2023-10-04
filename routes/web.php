@@ -263,9 +263,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/archivo/historico')->group(function(){
-           // Route::get('/listar', [HistoricoController::class, 'index']);
+            Route::get('/gestionar/list', [HistoricoController::class, 'index']);
             Route::post('/obtener/datos', [HistoricoController::class, 'datos']);
-
+            Route::post('/salve', [HistoricoController::class, 'salve']);
+      
             Route::post('/consultar', [ConsultarController::class, 'index']);
         });
 

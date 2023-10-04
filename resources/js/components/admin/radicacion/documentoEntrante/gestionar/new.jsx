@@ -1,5 +1,5 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import {Card, Typography, Button, Grid, MenuItem, Box, Stack, FormGroup, FormControlLabel, Checkbox, Avatar } from '@mui/material';
+import {Card, Button, Grid, MenuItem, Box, Stack, FormGroup, FormControlLabel, Checkbox, Avatar } from '@mui/material';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {ButtonFileImg, ButtonFilePdf, ContentFile} from "../../../../layout/files";
 import showSimpleSnackbar from '../../../../layout/snackBar';
