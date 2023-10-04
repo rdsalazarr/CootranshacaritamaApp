@@ -885,21 +885,14 @@ EOD;
 		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
 		
 		$documentoRadicado = true;
-        $mensajeRadicar    = '';
-        //$tcpdf = new Fpdi(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $mensajeRadicar    = '';     
 		$tcpdf =new FPDI();
         $tcpdf->SetAuthor('IMPLESOFT');
-        $tcpdf->SetCreator('Oficina de atención al usuario');
+        $tcpdf->SetCreator($nombreEmpresa);
         $tcpdf->SetTitle($consecutivo);
         $tcpdf->SetSubject('Formato de registro de radicado externo');
-        $tcpdf->SetKeywords('Radicación, '.$consecutivo);  
-       // $tcpdf->SetProtection(array('copy'), '', null, 0, null);
-        //$tcpdf->SetPrintHeader(false);
-       // $tcpdf->SetPrintFooter(false);
-        //$pageCount = $tcpdf->setSourceFile('./archivos/procedimiento.pdf');	
-
-		$pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
-	
+        $tcpdf->SetKeywords('Radicacion, '.$consecutivo);  
+  
         try {
             $pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
 		} catch (Exception $e) {
@@ -1028,7 +1021,7 @@ EOD;
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($asuntoRadicado);
-		PDF::SetKeywords('Certificado, documento,'.$siglaEmpresa.', '.$asuntoRadicado);
+		PDF::SetKeywords('Stickers, documento,'.$siglaEmpresa.', '.$asuntoRadicado);
         PDF::SetTitle($consecutivo);
         PDF::SetKeywords('Radicado, '.$siglaEmpresa.',  Stickers, '.$consecutivo);  
         PDF::SetProtection(array('copy'), '', null, 0, null);
@@ -1113,4 +1106,43 @@ EOD;
 
         return ($descargarPdf) ?  $rutaPdfGenerado :  base64_encode($pdfGenerado);
     }
+
+	public function expedienteArchivoHistorico($digitalizados, $metodo = 'S'){
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
+		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		
+		$documentoRadicado = true;
+        $mensajeRadicar    = '';     
+		$tcpdf =new FPDI();
+        $tcpdf->SetAuthor('IMPLESOFT');
+        $tcpdf->SetCreator($nombreEmpresa);
+        $tcpdf->SetTitle("Expediente");
+        $tcpdf->SetSubject('Generacion de expediente del archivo historico');
+        $tcpdf->SetKeywords('Expediente, Archivo historico, '.$siglaEmpresa);
+
+		foreach($digitalizados as $digitalizado){
+			try {
+				$pageCount = $tcpdf->setSourceFile($digitalizado->rutaDigitalizacion.'/'.Crypt::decrypt($digitalizado->rutaPdf));
+				for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+					$tcpdf->addPage();
+	
+					try {
+						$templateId = $tcpdf->importPage($pageNo);
+						$tcpdf->useTemplate($templateId, 0, 0, 210);
+					} catch (Exception $e) {
+						$mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();
+						$documentoRadicado = false;
+					}
+				}
+			} catch (Exception $e) {
+				$mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();
+				$documentoRadicado = false;
+			}			
+		}
+
+		$nombrePDF   = 'Expediente.pdf';
+
+		return base64_encode($tcpdf->output($nombrePDF, $metodo));
+	}
 }

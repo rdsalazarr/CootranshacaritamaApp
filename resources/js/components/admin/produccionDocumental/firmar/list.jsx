@@ -24,7 +24,7 @@ export default function List(){
                 textColor="secondary"
                 variant={variantTab} >
                 <Tab label="Pendiente por Firmar" />
-                <Tab label="Firmados" />        
+                <Tab label="Firmados" />
             </Tabs>
 
             <TabPanel value={value} index={0}>

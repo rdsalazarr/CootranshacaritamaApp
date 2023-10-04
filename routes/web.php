@@ -270,9 +270,12 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/obtener/datos', [HistoricoController::class, 'datos']);
             Route::post('/salve', [HistoricoController::class, 'salve']);
 
-            Route::post('/show', [HistoricoShowController::class, 'index']);
-      
-            Route::post('/consultar', [HistoricoConsultarController::class, 'index']);
+            Route::post('/show', [HistoricoShowController::class, 'index']);      
+
+            Route::get('/obtener/datos/consulta', [HistoricoConsultarController::class, 'index']);
+            Route::post('/consultar/datos', [HistoricoConsultarController::class, 'consultar']);
+            Route::post('/consultar/expediente', [HistoricoConsultarController::class, 'expediente']);
+            Route::post('/consultar/expediente/pdf', [HistoricoConsultarController::class, 'expedientePdf']);
         });
 
     });

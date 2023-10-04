@@ -18,7 +18,7 @@ class HistoricoController extends Controller
 	{
         $data = DB::table('archivohistorico as ah')
                     ->select('ah.archisid','td.tipdocnombre as tipoDocumental','tea.tiesarnombre as estante','tcu.ticaubnombre as caja','tcb.ticrubnombre as carpeta',
-                    'ah.archisnumerofolio as numerofolio','ah.archisasuntodocumento as asunto')
+                    'ah.archisnumerofolio as numeroFolio','ah.archisasuntodocumento as asunto')
                     ->join('tipodocumental as td', 'td.tipdocid', '=', 'ah.tipdocid')
                     ->join('tipoestantearchivador as tea', 'tea.tiesarid', '=', 'ah.tiesarid')
 					->join('tipocajaubicacion as tcu', 'tcu.ticaubid', '=', 'ah.ticaubid')

@@ -53,12 +53,12 @@ export default function New({data, tipo}){
     }
 
     const handleSubmit = () =>{
-       /* if(tipo === 'I' && formData.archivos.length === 0 ){
+        if(tipo === 'I' && formData.archivos.length === 0 ){
             showSimpleSnackbar("Debe adjuntar el archivo digitalizado", 'error');
             return;
-        }*/
+        }
 
-        //setLoader(true);
+        setLoader(true);
         instance.post('/admin/archivo/historico/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
