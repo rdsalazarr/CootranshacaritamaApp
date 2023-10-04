@@ -171,7 +171,8 @@ php artisan make:controller Admin\Radicacion\ShowDocumentoEntranteController
 php artisan make:controller Admin\Radicacion\AnularDocumentoEntranteController
 php artisan make:controller Admin\Radicacion\BandejaRadicadoDocumentoEntranteController
 php artisan make:controller Admin\Archivo\HistoricoController
-php artisan make:controller Admin\Archivo\ConsultarController
+php artisan make:controller Admin\Archivo\HistoricoShowController
+php artisan make:controller Admin\Archivo\HistoricoConsultarController 
 
 php artisan make:controller Admin\Tipos\EstanteArchivadorController
 php artisan make:controller Admin\Tipos\DocumentalController

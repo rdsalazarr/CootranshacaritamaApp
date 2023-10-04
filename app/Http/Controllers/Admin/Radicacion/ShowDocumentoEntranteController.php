@@ -25,6 +25,7 @@ class ShowDocumentoEntranteController extends Controller
                                 DB::raw("if(rde.radoenrequiererespuesta = 1 ,'Sí', 'No') as requiereRespuesta"),
                                 'ti.tipidenombre as tipoIdentificacion','prd.peradodocumento','prd.peradoprimernombre','prd.peradosegundonombre','prd.peradoprimerapellido',
                                 'prd.peradosegundoapellido', 'prd.peradodireccion','prd.peradotelefono','prd.peradocorreo','prd.peradocodigodocumental',
+                                DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"),
                                 DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid) AS totalCopias'))
                         ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                         ->join('tipomedio as tm', 'tm.tipmedid', '=', 'rde.tipmedid')
@@ -37,6 +38,7 @@ class ShowDocumentoEntranteController extends Controller
 								$join->on('m.munidepaid', '=', 'rde.depaid'); 
 							})
                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'prd.tipideid')
+                        ->leftJoin('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
                         ->where('rde.radoenid', $codigo)->first();
 
         if($radicado->totalCopias > 0){

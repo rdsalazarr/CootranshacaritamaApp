@@ -11,13 +11,13 @@ import Anexos from './anexos';
 
 export default function Show({id}){
 
-    const [formData, setFormData] = useState({codigo: id, totalAnexos:'', totalCopias:''});   
+    const [formData, setFormData] = useState({codigo: id, totalAnexos:'', totalCopias:''});
     const [loader, setLoader] = useState(false);
     const [dataPersona, setDataPersona] = useState([]);
     const [dataRadicado, setDataRadicado] = useState([]);
     const [dataAnexos, setDataAnexos] = useState([]);
     const [dataCopias, setDataCopias] = useState([]);
-    const [dataEstados, setDatosEstados] = useState([]);    
+    const [dataEstados, setDatosEstados] = useState([]);
 
     const inicio = () =>{
         setLoader(true);
@@ -26,7 +26,7 @@ export default function Show({id}){
             let newFormData      = {...formData};
             let newDataUsuario   = [];
             let newDataRadicado  = [];
-            let radicado         = res.radicado;          
+            let radicado         = res.radicado;
             let estadosRadicado  = res.estados;
             let anexosRadicado   = res.anexos;
             let copiasRadicado   = res.copias;
@@ -45,6 +45,7 @@ export default function Show({id}){
             newDataUsuario.empresaCodigo        = radicado.peradocodigodocumental;
 
             //Informacion del radicado
+            newDataRadicado.usuario                 = radicado.nombreUsuario;
             newDataRadicado.fechaRadicado           = radicado.radoenfechahoraradicado;
             newDataRadicado.fechaMaxRespuesta       = radicado.radoenfechamaximarespuesta;
             newDataRadicado.fechaLlegadaDocumento   = radicado.radoenfechallegada;

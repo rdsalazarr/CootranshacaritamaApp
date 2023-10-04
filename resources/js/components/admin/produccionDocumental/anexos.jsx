@@ -60,7 +60,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
 
                         {dataFiles.map((anexos, a) => {
                             let i = a + 1;
-                            let rutaAdjunto = '/download/adjunto/'+anexos['sigla']+'/'+anexos['anio']+'/'+anexos['rutaAnexo'];
+                            let rutaAdjunto = '/download/adjunto/documental/'+anexos['sigla']+'/'+anexos['anio']+'/'+anexos['rutaAnexo'];
                             return(
                                     <TableRow key={'rowAne-' + a + anexos['id']}>
                                         <TableCell>

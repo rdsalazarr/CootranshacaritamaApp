@@ -251,7 +251,7 @@ export default function New({data, tipo}){
                         <TextValidator
                             name={'tomoDocumento'}
                             value={formData.tomoDocumento}
-                            label={'Tomo'}
+                            label={'Números de tomos'}
                             className={'inputGeneral'} 
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}
@@ -323,6 +323,12 @@ export default function New({data, tipo}){
                     </Grid>
 
                 </Grid>
+
+                { (tipo === 'U' && totalAdjuntoSubido > 0) ?
+                    <Grid item md={12} xl={12} sm={12} xs={12} >
+                        <Anexos data={digitalizados} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
+                    </Grid>
+                : null }
 
                 <Grid container spacing = {2} style={{ transition: 'all .2s ease-in-out'}}>
                     <Grid item md={12} xl={12} sm={12} xs={12}>

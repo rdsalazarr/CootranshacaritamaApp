@@ -45,7 +45,8 @@ use App\Http\Controllers\Admin\Radicacion\AnularDocumentoEntranteController;
 use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteController;
 
 use App\Http\Controllers\Admin\Archivo\HistoricoController;
-use App\Http\Controllers\Admin\Archivo\ConsultarController;
+use App\Http\Controllers\Admin\Archivo\HistoricoShowController;
+use App\Http\Controllers\Admin\Archivo\HistoricoConsultarController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -53,12 +54,14 @@ Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
+Route::get('/download/digitalizados/{anyo}/{ruta}', [DownloadFileController::class, 'digitalizados']);
 Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
-Route::get('/download/adjunto/{sigla}/{anyo}/{ruta}', [DownloadFileController::class, 'download']);
+Route::get('/download/adjunto/documental/{sigla}/{anyo}/{ruta}', [DownloadFileController::class, 'download']);
 Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);//Decarga el documento con el QR
-Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
-Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
 
+Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
+Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);
+Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
 
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -266,8 +269,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/gestionar/list', [HistoricoController::class, 'index']);
             Route::post('/obtener/datos', [HistoricoController::class, 'datos']);
             Route::post('/salve', [HistoricoController::class, 'salve']);
+
+            Route::post('/show', [HistoricoShowController::class, 'index']);
       
-            Route::post('/consultar', [ConsultarController::class, 'index']);
+            Route::post('/consultar', [HistoricoConsultarController::class, 'index']);
         });
 
     });

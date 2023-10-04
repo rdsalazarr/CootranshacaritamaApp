@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid  } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 
 export default function Radicado({data}){
 
@@ -54,7 +54,14 @@ export default function Radicado({data}){
                     <label>Consecutivo</label>
                     <span>{data.consecutivo}</span>
                 </Box>
-            </Grid>     
+            </Grid>
+
+            <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Box className='frmTexto'>
+                    <label>Usuario que radicó</label>
+                    <span>{data.usuario}</span>
+                </Box>
+            </Grid> 
 
             <Grid item xl={3} md={3} sm={6} xs={12}>
                 <Box className='frmTexto'>

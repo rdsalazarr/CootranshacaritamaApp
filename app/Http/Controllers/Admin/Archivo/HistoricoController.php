@@ -6,8 +6,8 @@ use App\Models\ArchivoHistoricoDigitalizado;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Models\ArchivoHistorico;
+use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
-use Exception, Auth, DB;
 use App\Util\generarPdf;
 use App\Util\generales;
 use Carbon\Carbon;
@@ -40,12 +40,19 @@ class HistoricoController extends Controller
                         ->select('ah.archisid','ah.tipdocid','ah.tiesarid', 'ah.ticaubid','ah.ticrubid', 'ah.archisfechadocumento',
                                 'ah.archisnumerofolio','ah.archisasuntodocumento','ah.archistomodocumento', 'ah.archiscodigodocumental',
                                 'ah.archisentidadremitente','ah.archisentidadproductora','ah.archisresumendocumento','ah.archisobservacion',
-                                DB::raw('(SELECT COUNT(arhidiid) AS arhidiid FROM archivohistoricodigitalizado WHERE arhidiid = ah.archisid ) AS totalAnexos'))
+                                DB::raw('(SELECT COUNT(arhidiid) AS arhidiid FROM archivohistoricodigitalizado WHERE archisid = ah.archisid ) AS totalAnexos'))
                         ->where('ah.archisid', $codigo)->first();
+
+            $digitalizados  =  DB::table('archivohistoricodigitalizado as ahd')
+                                ->select('ahd.arhidiid as id','ahd.arhidinombrearchivooriginal as nombreOriginal','ahd.arhidinombrearchivoeditado as nombreEditado',
+                                'ahd.arhidirutaarchivo as rutaArchivo', DB::raw("YEAR(ah.archisfechadocumento) as anio"),
+                                DB::raw("CONCAT('archivos/digitalizados/',YEAR(ah.archisfechadocumento),'/', ahd.arhidirutaarchivo) as rutaDescargar"))
+                                ->join('archivohistorico as ah', 'ah.archisid', '=', 'ahd.archisid')
+                                ->where('ahd.archisid', $codigo)->get();
         }
  
         $tipoDocumentales        = DB::table('tipodocumental')->select('tipdocid','tipdocnombre')->orderBy('tipdocnombre')->get();
-		$tipoEstanteArchivadores = DB::table('tipoestantearchivador')->select('tiesarid','tiesarnombre')->where('tiesaractivo', true)->orderBy('tiesarnombre')->get();
+		$tipoEstanteArchivadores = DB::table('tipoestantearchivador')->select('tiesarid','tiesarnombre')->where('tiesaractivo', true)->get();
         $tipoCajaUbicaciones     = DB::table('tipocajaubicacion')->select('ticaubid','ticaubnombre')->get();
         $tipoCarpetaUbicaciones  = DB::table('tipocarpetaubicacion')->select('ticrubid','ticrubnombre')->get();
 
@@ -112,10 +119,11 @@ class HistoricoController extends Controller
 			if($request->hasFile('archivos')){
                 $fechaDocumento = Carbon::parse($request->fechaDocumento);
                 $anioDocumento  = $fechaDocumento->year;
-				$funcion         = new generales();
-                $rutaCarpeta     = public_path().'/archivos/digitalizados/'.$anioDocumento;
-                $carpetaServe    = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-				$files           = $request->file('archivos');
+				$funcion        = new generales();
+                $generarPdf     = new generarPdf();
+                $rutaCarpeta    = public_path().'/archivos/digitalizados/'.$anioDocumento;
+                $carpetaServe   = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+				$files          = $request->file('archivos');
 				foreach($files as $file){
 					$nombreOriginal = $file->getclientOriginalName();
 					$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
@@ -123,9 +131,7 @@ class HistoricoController extends Controller
 					$nombreArchivo  = $anioDocumento."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 					$file->move($rutaCarpeta, $nombreArchivo);
 					$rutaArchivo     = Crypt::encrypt($nombreArchivo);
-
-                    $verificarPdf         = $generarPdf->validarPuedeAbrirPdf($rutaCarpeta.'/'.$nombreArchivo);
-                    $debeRadicarDocumento = true;
+                    $verificarPdf    = $generarPdf->validarPuedeAbrirPdf($rutaCarpeta.'/'.$nombreArchivo);
                     if(!$verificarPdf){
                         DB::rollback();
                         return response()->json(['success' => false, 'message'=> 'Este documento PDF está encriptado y no puede ser procesado']);
@@ -146,6 +152,6 @@ class HistoricoController extends Controller
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}
+	}   
 
 }
