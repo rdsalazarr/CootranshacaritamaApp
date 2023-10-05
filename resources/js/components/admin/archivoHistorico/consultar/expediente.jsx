@@ -23,16 +23,15 @@ export default function Expediente(){
     }
 
     const handleSubmit = () =>{
-       // setLoader(true);
+        setLoader(true);
         setMostarDatos(false);
-        let consultarPdf = false;
         instance.post('/admin/archivo/historico/consultar/expediente', formData).then(res=>{
-            (!res.success) ? showSimpleSnackbar(res.message, 'error') : null;
-            if(res.succes){
-                consultarPdf = true;
-
+            if(!res.success){
+                showSimpleSnackbar(res.message, 'error');
+                setLoader(false);
+            }else{
                 console.log("consulta con exito");
-
+                setLoader(true);
                 instancePdf.post('/admin/archivo/historico/consultar/expediente/pdf', formData).then(resPdf=>{
                     console.log("Generando pdf");
                     let url = 'data:application/pdf;base64,'+resPdf.data;
@@ -40,26 +39,12 @@ export default function Expediente(){
                     setMostarDatos(true);
                     setLoader(false);
                 });
-
             }
-            setLoader(false);
         })
-
-        console.log(consultarPdf);
-
-        /*if(consultarPdf){
-            setLoader(true);
-            instancePdf.post('/admin/archivo/historico/consultar/expediente/pdf', formData).then(resPdf=>{
-                let url = 'data:application/pdf;base64,'+resPdf.data;
-                setPdf(url);
-                setMostarDatos(true);
-                setLoader(false);
-            });
-        }*/
     }
 
     const inicio = () =>{
-        setLoader(true);    
+        setLoader(true);
         instance.get('/admin/archivo/historico/obtener/datos/consulta').then(res=>{
             setTipoDocumentales(res.tipoDocumentales);
             setTipoEstanteArchivadores(res.tipoEstanteArchivadores);

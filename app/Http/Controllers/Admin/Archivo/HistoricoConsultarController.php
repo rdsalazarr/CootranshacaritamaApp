@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use Exception, DB;
 
-
 class HistoricoConsultarController extends Controller
 {
     public function index()
@@ -34,7 +33,7 @@ class HistoricoConsultarController extends Controller
         $estante        = $request->estante;
         $caja           = $request->caja;
         $carpeta        = $request->carpeta;
-        $asunto        = $request->asuntoDocumento;
+        $asunto         = $request->asuntoDocumento;
 
         $consulta = DB::table('archivohistorico as ah')
                     ->select('ah.archisid','td.tipdocnombre as tipoDocumental','tea.tiesarnombre as estante','tcu.ticaubnombre as caja','tcb.ticrubnombre as carpeta',
@@ -87,13 +86,13 @@ class HistoricoConsultarController extends Controller
                     if($request->tipoDocumental != '000')
                         $consulta = $consulta->where('tipdocid', $request->tipoDocumental);
 
-                    $data = $consulta->get();
+                    $data = $consulta->first();
 
             $array = ($data !== null) ? ['success' => true, "data" => $data] : ['success' => false, "message" => 'No se encontraron resultados que coincidan con los criterios de búsqueda seleccionados'];
 
 		return response()->json($array);
 	}
-    
+
     public function expedientePdf(Request $request)
 	{
         $this->validate(request(),[ 'tipoDocumental' => 'nullable|numeric',
@@ -121,5 +120,5 @@ class HistoricoConsultarController extends Controller
         } catch (Exception $error){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-	}    
+	}
 }

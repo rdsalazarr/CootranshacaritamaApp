@@ -30,6 +30,8 @@ use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
 
+use App\Http\Controllers\Admin\Exportar\RegistrosController;
+
 use App\Http\Controllers\Admin\ProducionDocumental\ActaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController;
 use App\Http\Controllers\Admin\ProducionDocumental\CircularController;
@@ -62,6 +64,10 @@ Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosCon
 Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
 Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);
 Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
+
+Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);  
+
+Route::get('/exportar/datos', [RegistrosController::class, 'exportarConsultaAH']); 
 
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -274,14 +280,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/obtener/datos/consulta', [HistoricoConsultarController::class, 'index']);
             Route::post('/consultar/datos', [HistoricoConsultarController::class, 'consultar']);
+                   
             Route::post('/consultar/expediente', [HistoricoConsultarController::class, 'expediente']);
             Route::post('/consultar/expediente/pdf', [HistoricoConsultarController::class, 'expedientePdf']);
         });
 
     });
 
-});
-
+}); 
 
 Route::get('/Eliminar', [MantenimientoController::class, 'clear']);
 Route::get('/Mantenimiento', [MantenimientoController::class, 'down']);

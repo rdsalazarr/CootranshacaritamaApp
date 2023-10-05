@@ -3,13 +3,17 @@ import { TextValidator, ValidatorForm, SelectValidator} from 'react-material-ui-
 import ScreenSearchDesktopIcon from '@mui/icons-material/ScreenSearchDesktop';
 import { Button, Grid, Card, Box, MenuItem, Stack } from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
+import instanceFile from '../../../layout/instanceFile';
 import instance from '../../../layout/instance';
+import Show from '../show';
 
 export default function Consultar(){
 
     const [formData, setFormData] = useState({fechaInicial:'', fechaFinal: '', tipoDocumental:'000', estante: '000', caja:'000', carpeta: '000', asuntoDocumento:''});
+    const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
     const [mostarDatos, setMostarDatos] = useState(false);
     const [data, setData] = useState([]);   
     const [loader, setLoader] = useState(false);
@@ -22,6 +26,10 @@ export default function Consultar(){
       setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
     }
 
+    const edit = (data) =>{      
+        setModal({open: true, vista: 0, data:data, titulo: 'Visualizar información del archivo histórico', tamano: 'bigFlot'});
+    }
+
     const handleSubmit = () =>{
       setLoader(true);
       instance.post('/admin/archivo/historico/consultar/datos', formData).then(res=>{
@@ -30,13 +38,13 @@ export default function Consultar(){
         (res.success) ? setData(res.data) : null;
         setLoader(false);
       })
-    }
+    }    
 
     const descargarFile = () =>{
-      setLoader(true);
-      instanceFile.post('/api/Informes/excel/postDescargarInformeEncuesta', formData).then(res=>{
-          setLoader(false);
-      })
+        setLoader(true);
+        instanceFile.post('/admin/exportar/datos/consulta/archivo/historico', formData).then(res=>{
+            setLoader(false);
+        })
     } 
 
     const inicio = () =>{
@@ -57,10 +65,9 @@ export default function Consultar(){
     }
 
     return (
-        <Box className={'container'}>
-            
+        <Box>            
             <ValidatorForm onSubmit={handleSubmit} >
-                <Card style={{padding: '5px', width: '90%', margin: 'auto', marginTop: '1em' }}>
+                <Card style={{padding: '5px', width: '80%', margin: 'auto', marginTop: '1em' }}>
                     <Grid container spacing={2}>
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <SelectValidator
@@ -106,7 +113,7 @@ export default function Consultar(){
                                 inputProps={{autoComplete: 'off'}}
                                 onChange={handleChange}
                             >
-                                <MenuItem value={"000"}>Todos...</MenuItem>
+                                <MenuItem value={"000"}>Todas...</MenuItem>
                                 {tipoCajaUbicaciones.map(res=>{
                                     return <MenuItem value={res.ticaubid} key={res.ticaubid}>{res.ticaubnombre}</MenuItem>
                                 })}
@@ -123,7 +130,7 @@ export default function Consultar(){
                                 inputProps={{autoComplete: 'off'}}
                                 onChange={handleChange} 
                             >
-                                <MenuItem value={"000"}>Todos...</MenuItem>
+                                <MenuItem value={"000"}>Todas...</MenuItem>
                                 {tipoCarpetaUbicaciones.map(res=>{
                                     return <MenuItem value={res.ticrubid} key={res.ticrubid}>{res.ticrubnombre}</MenuItem>
                                 })}
@@ -187,7 +194,7 @@ export default function Consultar(){
             </ValidatorForm>
 
             {mostarDatos ? 
-                <Card style={{marginTop:'1em'}}>
+                <Card style={{marginTop:'2em', padding: '5px'}}>
                     <Grid container spacing={2} >
                         <Grid item md={12} xl={12} sm={12} xs={12} style={{textAlign: 'center', paddingTop: '2em'}}>
                             <Button class="download-button" type="button" onClick={() => {descargarFile()}}>
@@ -212,12 +219,21 @@ export default function Consultar(){
                         <Grid item md={12} xl={12} sm={12} xs={12} style={{marginTop: '-1em'}}>
                             <TablaGeneral
                                 datos={data}
-                                titulo={["Tipo documento", "Estante", "Caja", "Carpeta", "Asunto", "Número de folios"]}
+                                titulo={["Tipo documento", "Estante", "Caja", "Carpeta", "Asunto", "Número de folios", "Ver"]}
                                 ver={["tipoDocumental", "estante", "caja", "carpeta", "asunto", "numeroFolio"]} 
-                                accion={[]}
+                                accion={[{tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data)} }]}
                                 funciones={{orderBy: true,search: true, pagination:true}}
                             />
                         </Grid>
+
+                        <ModalDefaultAuto
+                            title={modal.titulo}
+                            content={<Show id={modal.data.archisid} />}
+                            close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
+                            tam    ={modal.tamano}
+                            abrir  ={modal.open}
+                        />
+
                     </Grid>
                 </Card>
             : null }
