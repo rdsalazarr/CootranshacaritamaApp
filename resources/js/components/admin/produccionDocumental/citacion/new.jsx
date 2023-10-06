@@ -347,12 +347,24 @@ export default function New({id, area, tipo, ruta}){
                         init={{
                             language: 'es',
                             height: 400,
-                            menubar: false,
                             object_resizing : true,
+                            table_responsive_width: true, 
+                            browser_spellcheck: true,
+                            spellchecker_language: 'es', 
+                            spellchecker_wordchar_pattern: /[^\s,\.]+/g ,
+                            menubar: 'file edit view insert format tools table',
                             plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table wordcount',
-                            toolbar: 'undo redo | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat  | link',
-                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                         }}
+                            toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | link',
+                            menu:{
+                                file: {title: 'File', items: 'newdocument'},
+                                edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall searchreplace'},
+                                view: {title: 'View', items: 'visualaid  | fullscreen'},
+                                insert: {title: 'Insert', items: 'link  | hr | inserttable'},
+                                format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript'},
+                                tools: {title: 'tools', items: 'wordcount'},
+                                table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'}
+                            },
+                        }}
                     />
                 </Grid>
 

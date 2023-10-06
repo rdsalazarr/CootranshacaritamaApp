@@ -378,6 +378,10 @@ body{
   color: $verdeOscuro;
 }
 
+.tox-promotion{
+  visibility: hidden !important;
+}
+
 /*md*/
 @media (max-width: 768px) { 
   .containerAdmin{

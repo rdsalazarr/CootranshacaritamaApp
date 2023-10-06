@@ -176,5 +176,6 @@ php artisan make:controller Admin\Archivo\HistoricoConsultarController
 
 php artisan make:controller Admin\Tipos\EstanteArchivadorController
 php artisan make:controller Admin\Tipos\DocumentalController
+php artisan make:controller Admin\Exportar\RegistrosController
 
 php artisan db:seed

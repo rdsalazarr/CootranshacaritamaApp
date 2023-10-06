@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Util;
-use Illuminate\Support\Facades\Crypt;
+use setasign\FpdiProtection\FpdiProtection;
 use Exception, Auth, PDF, DB, URL, File;
+use Illuminate\Support\Facades\Crypt;
 use App\Util\showTipoDocumental;
 use setasign\Fpdi\Fpdi;
 use App\Util\generales;
@@ -1024,7 +1025,7 @@ EOD;
 		PDF::SetKeywords('Stickers, documento,'.$siglaEmpresa.', '.$asuntoRadicado);
         PDF::SetTitle($consecutivo);
         PDF::SetKeywords('Radicado, '.$siglaEmpresa.',  Stickers, '.$consecutivo);  
-        PDF::SetProtection(array('copy'), '', null, 0, null);
+        PDF::SetProtection(array('copy','modify'), '', null, 0, null);
         PDF::SetPrintHeader(false);
         PDF::SetPrintFooter(false); 
         PDF::AddPage('L', array(110,35));
@@ -1111,33 +1112,31 @@ EOD;
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
 		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
-		
-		$documentoRadicado = true;
-        $mensajeRadicar    = '';     
-		$tcpdf =new FPDI();
+			
+        $mensajeRadicar    = '';
+		$tcpdf = new FpdiProtection();
         $tcpdf->SetAuthor('IMPLESOFT');
         $tcpdf->SetCreator($nombreEmpresa);
         $tcpdf->SetTitle("Expediente");
         $tcpdf->SetSubject('Generacion de expediente del archivo historico');
         $tcpdf->SetKeywords('Expediente, Archivo historico, '.$siglaEmpresa);
+		$tcpdf->setProtection(FALSE | FALSE);
+	    //$tcpdf->setProtection(FpdiProtection::PERM_PRINT | FpdiProtection::PERM_COPY,[contraseña de usuario],[contraseña maestra]);
 
 		foreach($digitalizados as $digitalizado){
 			try {
 				$pageCount = $tcpdf->setSourceFile($digitalizado->rutaDigitalizacion.'/'.Crypt::decrypt($digitalizado->rutaPdf));
 				for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
 					$tcpdf->addPage();
-	
 					try {
 						$templateId = $tcpdf->importPage($pageNo);
 						$tcpdf->useTemplate($templateId, 0, 0, 210);
 					} catch (Exception $e) {
-						$mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();
-						$documentoRadicado = false;
+						$mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();						
 					}
 				}
 			} catch (Exception $e) {
-				$mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();
-				$documentoRadicado = false;
+				$mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();				
 			}			
 		}
 

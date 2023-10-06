@@ -78,7 +78,7 @@ class ActaController extends Controller
 		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
 		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('A', '');
 
-        return response()->json(["fechaActual"    => $fechaActual,     "tipoMedios" => $tipoMedios,  "tipoActas"   => $tipoActas,          "personas"        => $personas, 
+        return response()->json(["fechaActual"    => $fechaActual,     "tipoMedios" => $tipoMedios,  "tipoActas"       => $tipoActas,          "personas"        => $personas, 
 								"cargoLaborales"   => $cargoLaborales,  "data"       => $data,		 "firmasDocumento" => $firmasDocumento,  ]);
 	}
 
