@@ -1176,6 +1176,46 @@ emprhorarioatencion,emprurl,emprcodigopostal, emprlogo) VALUES
  'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '890505424_logo-hacaritama.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
+INSERT INTO `modulo` (`moduid`, `modunombre`, `moduicono`, `moduorden`, `moduactivo`, `created_at`, `updated_at`) VALUES
+(1, 'Configuración', 'settings_applications', 1, 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 'Gestionar', 'ac_unit_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3, 'Producción documental', 'menu_book_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4, 'Firmar', 'folder_special_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(5, 'Radicación', 'insert_page_break_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(6, 'Archivo histórico', 'forward_to_inbox_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Menú', 'Gestionar menú', 'admin/menu', 'add_chart', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 1, 'Info notificar correo', 'Gestionar información de notificar correo', 'admin/informacionNotificarCorreo', 'mail_outline_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3, 1, 'Datos territorial', 'Gestionar datos territorial', 'admin/datosTerritorial', 'language_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4, 1, 'Empresa', 'Gestionar empresa', 'admin/empresa', 'store', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(5, 2, 'Tipos', 'Gestionar tipos', 'admin/gestionarTipos', 'star_rate_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(6, 2, 'Series', 'Gestionar series documentales', 'admin/gestionarSeriesDocumentales', 'insert_chart_icon', 2, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(7, 2, 'Dependencia', 'Gestionar dependencia', 'admin/gestionarDependencia', 'maps_home_work_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(8, 2, 'Persona', 'Gestionar persona', 'admin/gestionarPersona', 'person_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(9, 2, 'Usuario', 'Gestionar usuario', 'admin/usuario', 'person', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(10, 2, 'Festivos', 'Gestionar festivos', 'admin/festivos', 'calendar_month_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(11, 3, 'Acta', 'Gestionar actas', 'admin/produccion/documental/acta', 'local_library_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(12, 3, 'Certificado', 'Gestionar certificados', 'admin/produccion/documental/certificado', 'note_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(13, 3, 'Circular', 'Gestionar circulares', 'admin/produccion/documental/circular', 'menu_book_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(14, 3, 'Citación', 'Gestionar citaciones', 'admin/produccion/documental/citacion', 'collections_bookmark_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(15, 3, 'Constancia', 'Gestionar constancias', 'admin/produccion/documental/constancia', 'import_contacts_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(16, 3, 'Oficio', 'Gestionar oficios', 'admin/produccion/documental/oficio', 'library_books_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(17, 4, 'Firmar', 'Firmar documentos', 'admin/produccion/documental/firmar', 'import_contacts_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(18, 5, 'Documento entrante', 'Gestionar documento entrante', 'admin/radicacion/documento/entrante', 'post_add_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(19, 5, 'Anular radicado', 'Gestionar anulado de radicado', 'admin/radicacion/documento/anular', 'layers_clear_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(20, 5, 'Bandeja de radicado', 'Gestionar bandeja de radicado', 'admin/radicacion/documento/bandeja', 'content_paste_go_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(21, 6, 'Gestionar', 'Gestionar archivo histórico', 'admin/archivo/historico/gestionar', 'ac_unit_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(22, 6, 'Consultar', 'Gestionar consulta del archivo histórico', 'admin/archivo/historico/consultar', 'find_in_page_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+INSERT INTO `rol` (`rolid`, `rolnombre`, `rolactivo`, `created_at`, `updated_at`) VALUES
+(1, 'Super administrador', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 'Administrador', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3, 'Secretaria', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4, 'Jefe', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(5, 'Radicador', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(6, 'Coordinador del archivo histórico', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 /*
 

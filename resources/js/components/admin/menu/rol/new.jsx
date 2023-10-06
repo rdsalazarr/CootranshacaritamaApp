@@ -36,7 +36,7 @@ export default function New({data, tipo}){
 
     const handleSubmit = () =>{
         setLoader(true);
-        let newFormData = {...formData}
+        let newFormData             = {...formData}
         newFormData.funcionalidades = formDataMenu; 
         instance.post('/admin/rol/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -44,13 +44,17 @@ export default function New({data, tipo}){
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', funcionalidades: '',  estado: '1', tipo:tipo}) : null;
 
-            let newFormDataMenu = [];
-            formDataMenu.forEach(function(men){
-                newFormDataMenu.push({
-                    funcid: men.funcid
-                });
-            });
-            setMenuMarcado(newFormDataMenu);
+            if(formData.tipo !== 'I'){
+                let newFormDataMenu = [];
+                formDataMenu.forEach(function(men){
+                    newFormDataMenu.push({
+                        funcid: men.funcid
+                    });
+                })
+                setMenuMarcado(newFormDataMenu);
+            }
+
+            (formData.tipo === 'I' && res.success) ? setMenuMarcado([]) : null;
             setLoader(false);
         })
     }

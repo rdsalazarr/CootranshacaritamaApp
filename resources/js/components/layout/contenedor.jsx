@@ -8,8 +8,9 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import IconoMenu from "@mui/icons-material/Menu";
 import ClearIcon from '@mui/icons-material/Clear';
 import "../../../scss/contenedor.scss";
-import {generalTema} from "../layout/theme";
-import instance from '../layout/instance';
+import {generalTema} from "./theme";
+import instance from './instance';
+import Loader from "./loader";
 
 import Welcome from "../admin/welcome";
 import Usuario from "../admin/usuario/list";
@@ -41,8 +42,7 @@ import BandejaRadicadoEntrante from "../admin/radicacion/documentoEntrante/bande
 import ArchivoHistorico from "../admin/archivoHistorico/gestionar/list";
 import ConsultarArchivoHistorico from "../admin/archivoHistorico/consultar/list";
 
-
-const HeaderMenu = ({open , setOpen}) =>{
+const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
             <List className={"accionMenu"}>
@@ -169,24 +169,64 @@ const componenteMenu = [
             {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <ArchivoHistorico /> },
             {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <ConsultarArchivoHistorico /> },
         ]
-    } 
+    }
 ];
 
-
 const menuComponente = [
-    {id:11,componente : <Usuario />},
-    {id:12,componente : <Usuario />}     
+    {id:1,componente : <Menu />},
+    {id:2,componente : <NotificarCorreo />},
+    {id:3,componente : <DatosGeograficos />},
+    {id:4,componente : <Empresa />},
+
+    {id:5,componente : <GestionTipos />},
+    {id:6,componente : <SeriesDocumentales />},
+    {id:7,componente : <Dependencia />},
+    {id:8,componente : <Persona />},
+    {id:9,componente : <Usuario />},
+    {id:10,componente : <Festivos />},
+
+    {id:11,componente : <Acta />},
+    {id:12,componente : <Certificado />},
+    {id:13,componente : <Circular />},
+    {id:14,componente : <Citacion />},
+    {id:15,componente : <Constancia />},
+    {id:16,componente : <Oficio />},
+
+    {id:17,componente : <FirmarDocumento />},
+
+    {id:18,componente : <RadicadoEntrante />},
+    {id:19,componente : <AnularRadicadoEntrante />},
+    {id:20,componente : <BandejaRadicadoEntrante />},
+
+    {id:21,componente : <ArchivoHistorico />},
+    {id:22,componente : <ConsultarArchivoHistorico />},
+
+    {id:23,componente : <Welcome />},
+    {id:24,componente : <Welcome />},
+    {id:25,componente : <Welcome />},
+    {id:26,componente : <Welcome />},
+    {id:27,componente : <Welcome />},
+    {id:28,componente : <Welcome />},
+    {id:29,componente : <Welcome />},
+    {id:30,componente : <Welcome />},
 ];
 
 export default function  Contenedor () {
-    const [nameUsuario, setnameUsuario] = useState("ramon");
-    //const [componente, setComponente] = useState([]); 
-    useEffect(() => {
-        /*instance.get('/nameUser').then(res=>{
-            setEsInvitado((res.esInvitado === 1) ? true : false);
-        })*/
-    }, []);
+    const [loader, setLoader] = useState(true);
     const [open, setOpen] = useState(true); 
+    const [componente, setComponente] = useState([]); 
+
+    useEffect(() => {
+       instance.get('/admin/generarMenu').then(res=>{      
+        setComponente(res.data);
+        setLoader(false);   
+        })
+    }, []);
+
+    if(loader){
+        return <Loader />
+    }    
+
     return (
         <ThemeProvider theme={generalTema}>
             <Router>
@@ -200,13 +240,13 @@ export default function  Contenedor () {
                 <Box className={open ? 'component' : 'component componentClose'}>
                     <Box className='containerAdmin'>
                         <Routes >
-                            <Route exact = {`true`} path="/dashboard" element={<Welcome usuario={nameUsuario}/>}/>
+                            <Route exact = {`true`} path="/dashboard" element={<Welcome />}/>
                             <Route exact = {`true`} path="/admin/miPerfil" element={<MiPerfil />}/>
-                            {componenteMenu.map(item=>{
+                            {componente.map(item=>{
                                 return item.itemMenu.map((res, i ) =>{
-                                        /*const resultado = menuComponente.find( resul => resul.id === parseInt(res.id));
-                                        return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={resultado.componente}></Route>)*/  
-                                    return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={res.componente}></Route>)
+                                    const resultado = menuComponente.find( resul => resul.id === parseInt(res.id));
+                                    return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={resultado.componente}></Route>)
+                                    /*return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={res.componente}></Route>)*/  
                                 }
                             )})}
                         </Routes>
@@ -217,7 +257,7 @@ export default function  Contenedor () {
                     <HeaderMenu open={open} setOpen={setOpen} />
                     <Divider/>
                     <ItemMenu route={'dashboard'} text={'Inicio'} icon={'home'} />
-                    {componenteMenu.map((res, i )=>{
+                    {componente.map((res, i )=>{
                         return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
                     }) }
                     <ItemMenu route={'admin/miPerfil'} text={'Mi perfil'} icon={'person'} />

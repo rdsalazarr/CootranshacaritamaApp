@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Util\Generales;
+use DB, Auth;
 
 class Funcionalidad extends Model
 {
@@ -17,42 +18,42 @@ class Funcionalidad extends Model
     //Funcion que construye los menus recorriendo 
     public static function menus()
     {
-        $consPadre = DB::table('funcionalidad')->select('funcid','moduid', 'funcnombre','functitulo',
-                    'funcruta', 'funcicono', 'moduid')->distinct()
-                    ->join('modulo','moduid','=','moduid')
-                    ->join('rolfuncionalidad','rolfunfuncid','=','funcid')
-                    ->join('usuariorol','usurolrolid','=','rolfunrolid')   
-                    ->where('usuroluserid', Auth::id());
+        $consultaModulos = DB::table('modulo as m')
+                    ->select('m.moduid','m.modunombre as nombre','m.moduicono as icono')->distinct()
+					->join('funcionalidad as f', 'f.moduid', '=','m.moduid')
+                    ->join('rolfuncionalidad as rf', 'rf.rolfunfuncid', '=','f.funcid')
+                    ->join('usuariorol as ur','ur.usurolrolid','=','rf.rolfunrolid')
+                    ->where('ur.usurolusuaid', Auth::id());
 
                 if(Auth::id() != 1)
-                    $consPadre = $consPadre->where('funcactiva', 1);
+                    $consultaModulos = $consultaModulos->where('m.moduactivo', 1);
                 
-                $funPadre =  $consPadre ->orderby('funcorden')->orderBy('funcnombre')->get();
+                $modulos =  $consultaModulos->orderby('m.moduorden')->orderBy('m.modunombre')->get();
 
-        $arrayFunPadre = collect($funPadre)->map(function($x){ 
+        $arrayModulos = collect($modulos)->map(function($x){ 
                          return (array) $x; 
                       })->toArray();
-        
-        $consPadre = DB::table('funcionalidad')->select('funcid','funcidpadre', 'functitulo',
-                    'funcruta', 'funcicono','modunombre','moduid')->distinct()
-                    ->join('modulo','moduid','=','moduid')
-                    ->join('rolfuncionalidad','rolfunfuncid','=','funcid')
-                    ->join('usuariorol','usurolrolid','=','rolfunrolid')   
-                    ->where('usuroluserid', Auth::id());
+
+        $consultaMenu = DB::table('funcionalidad as f')
+                    ->select('f.funcid as id','f.moduid','f.funcnombre as menu', 'f.functitulo as titulo', 'f.funcruta as ruta', 'f.funcicono as icono')->distinct()
+                    ->join('rolfuncionalidad as rf', 'rf.rolfunfuncid', '=','f.funcid')
+                    ->join('usuariorol as ur','ur.usurolrolid','=','rf.rolfunrolid')  
+                    ->where('ur.usurolusuaid', Auth::id());
 
                 if(Auth::id() != 1)
-                    $consPadre = $consPadre->where('funcactiva', 1);
+                    $consultaMenu = $consultaMenu->where('f.funcactiva', 1);
 
-                $funHijo = $consPadre->orderby('funcorden')->orderBy('funcnombre')->get();
+                $menus = $consultaMenu->orderby('f.funcorden')->orderBy('f.funcnombre')->get();
 
-        $arrayFunHijo = collect($funHijo)->map(function($x){ 
+        $arrayMenus = collect($menus)->map(function($x){ 
                          return (array) $x; 
                       })->toArray();
         
         $label   = ['moduid'];
-        $nombres = ['Funcionalidad'];
+        $nombres = ['itemMenu'];
 
-        $funcion = new Generales();
-        return $funcion->ordenarArray($arrayFunPadre, $label, $nombres, $arrayFunHijo);
+        $funcion = new generales();
+
+        return $funcion->ordenarArray($arrayModulos, $label, $nombres, $arrayMenus);
     }
 }

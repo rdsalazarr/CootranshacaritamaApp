@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HistorialContrasena;
 use Illuminate\Http\Request;
+use App\Models\Funcionalidad;
 use Exception, DB, Auth;
 use App\Util\generales;
 use App\Models\User;
@@ -71,5 +72,19 @@ class DashboardController extends Controller
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
+	}
+	
+	public function welcome()
+	{
+		$empresa = DB::table('empresa')->select('emprsigla')->where('emprid', 1 )->first();
+		$data    = ['nombreUsuario' => ucfirst(mb_strtolower(Auth::user()->usuanombre,'UTF-8')),
+					'siglaEmpresa'  => $empresa->emprsigla
+					];
+		return response()->json(["data" => $data]);
+	}
+
+	public function generarMenu()
+	{
+		return response()->json(["data" => Funcionalidad::menus()]);
 	}
 }

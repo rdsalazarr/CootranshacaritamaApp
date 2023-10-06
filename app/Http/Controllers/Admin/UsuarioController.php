@@ -245,7 +245,12 @@ class UsuarioController extends Controller
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está relacionado con un ingreso al sistema']);
 		}else{
 			try {
-                $usuario = User::findOrFail($request->codigo);
+				$usuario = User::findOrFail($request->codigo);
+				if ($usuario->has('usuarioRoles')){ 
+					foreach ($usuario->usuarioRoles as $idUsuarioRoles){
+						$usuario->usuarioRoles()->delete($idUsuarioRoles);
+					}
+				}
                 $usuario->delete();
 				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 			} catch (Exception $error){

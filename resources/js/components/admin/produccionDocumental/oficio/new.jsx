@@ -22,6 +22,8 @@ import dayjs from 'dayjs';
 
 export default function New({id, area, tipo, ruta}){ 
     const editorTexto = useRef(null);
+    const fecha       = new Date();
+
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
                                         dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',       subSerie: '6',      tipoMedio: '',     tipoTramite: '1', 
@@ -42,6 +44,7 @@ export default function New({id, area, tipo, ruta}){
     const [dependencias, setDependencias] = useState([]);
     const [personas, setPersonas] = useState([]);
     const [cargoLaborales, setCargoLaborales] = useState([]);
+    const [radicadosRecibidos, setRadicadosRecibidos] = useState([]);    
    
     const [formDataFile, setFormDataFile] = useState({ archivos : []});
     const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_OFICIO);
@@ -49,7 +52,8 @@ export default function New({id, area, tipo, ruta}){
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
     const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
     const [anexosDocumento, setAnexosDocumento] = useState([]);
-    const [formDataRadicado, setFormDataRadicado] = useState({identificador:'', anioRadicado:'', consecutivoRadicado: '', estado: 'I'});
+    const [anioActual, setAnioActual] = useState(fecha.getFullYear());  
+    const [formDataRadicado, setFormDataRadicado] = useState({identificador:'', radicado:'', anioRadicado:anioActual, consecutivoRadicado: '', estado: 'I'});
     const [documentosRadicados, setDocumentosRadicados] = useState([]);
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
     const [fechaMinima, setFechaMinima] = useState(dayjs());
@@ -121,11 +125,12 @@ export default function New({id, area, tipo, ruta}){
         let formDataCopia       = {...formData};
         formDataCopia.contenido = editorTexto.current.getContent();
 
-        let newFormData                = {...formData};
-        newFormData.contenido          = editorTexto.current.getContent()
-        newFormData.firmaPersonas      = firmaPersona;
-        newFormData.archivos           = formDataFile.archivos;
-        newFormData.copiasDependencia  = formDataDependencia;
+        let newFormData                 = {...formData};
+        newFormData.contenido           = editorTexto.current.getContent()
+        newFormData.firmaPersonas       = firmaPersona;
+        newFormData.archivos            = formDataFile.archivos;
+        newFormData.copiasDependencia   = formDataDependencia;
+        newFormData.documentosRadicados = documentosRadicados;
 
         setLoader(true);
         setFormData(formDataCopia);
@@ -159,32 +164,54 @@ export default function New({id, area, tipo, ruta}){
     }
 
     const adicionarFilaRadicado= () =>{
-        //consultar la base de datos
 
-        if(documentosRadicados.some((radicado) => radicado.consecutivo === formDataRadicado.consecutivoRadicado)){
+        if(formDataRadicado.anioRadicado === ''){
+            showSimpleSnackbar('Debe ingresar el año del radicado', 'error');
+            return
+        }
+
+        if(formDataRadicado.consecutivoRadicado === ''){
+            showSimpleSnackbar('Debe ingresar el consecutivo del radicado', 'error');
+            return
+        }
+
+        if(documentosRadicados.some((radicado) => radicado.radicadoId === formDataRadicado.radicado)){
             showSimpleSnackbar('Este registro ya existe', 'error');
             return
         }
 
+        //Consulta los radicados de la base de datos
+        let radicadoId   = '';
+        radicadosRecibidos.map((rad) =>{
+           if( parseInt(rad.radoenanio) ===  parseInt(formDataRadicado.anioRadicado) && rad.radoenconsecutivo === formDataRadicado.consecutivoRadicado ){
+            radicadoId = rad.radoenid;
+           }
+        })
+
+        if(radicadoId === ''){
+            showSimpleSnackbar('El radicado que busca no existe o no ha sido recibido en la bandeja de radicados', 'error');
+            return
+        }
+
         let newDocumentosRadicados = [...documentosRadicados];
-        newDocumentosRadicados.push({identificador: formDataRadicado.identificador, anioRadicado:formDataRadicado.anioRadicado, 
+        newDocumentosRadicados.push({identificador: formDataRadicado.identificador, radicado: radicadoId, anioRadicado:formDataRadicado.anioRadicado, 
                                     consecutivoRadicado:formDataRadicado.consecutivoRadicado, estado: 'I'});
         setDocumentosRadicados(newDocumentosRadicados);
-        setFormDataRadicado({identificador:'', anioRadicado: '', consecutivoRadicado: '',  estado: 'I'})
+        setFormDataRadicado({identificador:'', radicado:'', anioRadicado:anioActual, consecutivoRadicado: '', estado: 'I'});
     }
 
     const eliminarFirmaRadicado = (id) =>{
         let newDatosRadicado = []; 
         documentosRadicados.map((res,i) =>{
             if(res.estado === 'U' && i === id){
-                newDatosRadicado.push({ identificador:res.identificador, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'D' }); 
+                newDatosRadicado.push({ identificador:res.identificador, radicado: res.radicado, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'D' }); 
             }else if(res.estado === 'D' && i === id){
-                newDatosRadicado.push({identificador:res.identificador,  anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'U'});
+                newDatosRadicado.push({identificador:res.identificador, radicado: res.radicado, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'U'});
             }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
-                newDatosRadicado.push({identificador:res.identificador, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado:res.estado});
+                newDatosRadicado.push({identificador:res.identificador, radicado: res.radicado, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado:res.estado});
             }else{
                 if(i != id){
-                    newDatosRadicado.push({identificador:res.identificador, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'I' });
+                    newDatosRadicado.push({identificador:res.identificador, radicado: res.radicado, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'I' });
                 }
             }
         })
@@ -240,14 +267,16 @@ export default function New({id, area, tipo, ruta}){
             setDependencias(res.dependencias);
             setPersonas(res.personas);
             setCargoLaborales(res.cargoLaborales);
+            setRadicadosRecibidos(res.radicadosRecibidos);
             newFormData.fecha = res.fechaActual;
 
             if(tipo === 'U'){
                 let tpDocumental                  = res.data;
                 let firmasDocumento               = res.firmasDocumento;
                 let copiaDependenciaMarcadas      = res.copiaDependencias;
+                let radicadosDocumento            = res.radicadosDocumento;
                 let anexosDocumento               = res.anexosDocumento;
-  
+
                 newFormData.idCD                  = tpDocumental.coddocid;
                 newFormData.idCDP                 = tpDocumental.codoprid;
                 newFormData.idCDPO                = tpDocumental.id;
@@ -267,6 +296,7 @@ export default function New({id, area, tipo, ruta}){
                 newFormData.nombreAnexo           = (tpDocumental.codopranexonombre !== null) ? tpDocumental.codopranexonombre : '';
                 newFormData.tieneCopia            = tpDocumental.codoprtienecopia.toString();
                 newFormData.nombreCopia           = (tpDocumental.codoprcopianombre !== null) ? tpDocumental.codoprcopianombre : '';
+                newFormData.responderRadicado     = tpDocumental.codoporesponderadicado;
                 newFormData.saludo                = tpDocumental.tipsalid;
                 newFormData.despedida             = tpDocumental.tipdesid;
                 newFormData.tituloPersona         = tpDocumental.codopotitulo;
@@ -276,6 +306,17 @@ export default function New({id, area, tipo, ruta}){
                 newFormData.direccionDestinatario = tpDocumental.codopodireccion;
                 newFormData.telefono              = (tpDocumental.codopotelefono !== null) ? tpDocumental.codopotelefono : '';
                 newFormData.totalAdjuntoSubido    = tpDocumental.totalAnexos;
+
+                let newDocumentosRadicados = [];
+                radicadosDocumento.forEach(function(rad){
+                    newDocumentosRadicados.push({
+                        identificador:       rad.cdprdeid,
+                        radicado:            rad.radoenid,
+                        anioRadicado:        rad.radoenanio,
+                        consecutivoRadicado: rad.radoenconsecutivo,
+                        estado: 'U'
+                    });
+                });
 
                 let newFirmasDocumento = [];
                 firmasDocumento.forEach(function(frm){
@@ -297,6 +338,7 @@ export default function New({id, area, tipo, ruta}){
     
                 setFormDataDependencia(newFormDataDependencia);
                 setTotalAdjuntoSubido(tpDocumental.totalAnexos);
+                setDocumentosRadicados(newDocumentosRadicados);
                 setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD'));
                 setFechaActual(tpDocumental.codoprfecha);
                 setFirmaPersona(newFirmasDocumento);
@@ -544,7 +586,7 @@ export default function New({id, area, tipo, ruta}){
                     </SelectValidator>
                 </Grid>
 
-                {(formData.responderRadicado === '1') ?
+                {(formData.responderRadicado.toString() === '1') ?
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box  style={{width: '50%', margin: 'auto'}}>
@@ -561,7 +603,7 @@ export default function New({id, area, tipo, ruta}){
                                         <Grid item xl={5} md={5} sm={6} xs={12}>
                                             <TextValidator
                                                 name={'anioRadicado'}
-                                                value={formData.anioRadicado}
+                                                value={formDataRadicado.anioRadicado}
                                                 label={'Año del radicado'}
                                                 className={'inputGeneral'} 
                                                 variant={"standard"} 
@@ -576,8 +618,8 @@ export default function New({id, area, tipo, ruta}){
                                         <Grid item xl={5} md={5} sm={6} xs={12}>
                                             <TextValidator
                                                 name={'consecutivoRadicado'}
-                                                value={formData.consecutivoRadicado}
-                                                label={'Numero de radicado'}
+                                                value={formDataRadicado.consecutivoRadicado}
+                                                label={'Número de radicado'}
                                                 className={'inputGeneral'} 
                                                 variant={"standard"} 
                                                 inputProps={{autoComplete: 'off'}}
@@ -593,39 +635,49 @@ export default function New({id, area, tipo, ruta}){
                                             </Button>
                                         </Grid>
 
-                                        <Grid item xl={12} md={12} sm={12} xs={12}>
-                                            <Table key={'tableRadicadoDocumento'}  className={'tableAdicional'} style={{marginTop: '1px'}} >
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell>Año del radicado</TableCell>
-                                                        <TableCell>Consecutivo del radicado</TableCell>
-                                                        <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                { documentosRadicados.map((radicado, a) => {
-                                                    return(
-                                                        <TableRow key={'rowA-' +a} className={(radicado.estado == 'D')? 'tachado': null}>
-
-                                                            <TableCell>
-                                                                <p>{radicado['anioRadicado']}</p> 
-                                                            </TableCell>
-
-                                                            <TableCell>
-                                                                <p>{radicado['consecutivoRadicado']}</p> 
-                                                            </TableCell>
-                                                        
-                                                            <TableCell className='cellCenter'>
-                                                                <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                                    onClick={() => {eliminarFirmaRadicado(a);}} title={'Eliminar'}
-                                                                >clear</Icon>
-                                                            </TableCell>
+                                        {(documentosRadicados.length > 0) ?
+                                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                                <Table key={'tableRadicadoDocumento'}  className={'tableAdicional'} style={{marginTop: '1px'}} >
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>Año del radicado</TableCell>
+                                                            <TableCell>Número del radicado</TableCell>
+                                                            <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
                                                         </TableRow>
-                                                        );
-                                                    })
-                                                }
-                                                </TableBody>
-                                            </Table>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                    { documentosRadicados.map((radicado, a) => {
+                                                        return(
+                                                            <TableRow key={'rowA-' +a} className={(radicado.estado == 'D')? 'tachado': null}>
+
+                                                                <TableCell>
+                                                                    <p>{radicado['anioRadicado']}</p> 
+                                                                </TableCell>
+
+                                                                <TableCell>
+                                                                    <p>{radicado['consecutivoRadicado']}</p> 
+                                                                </TableCell>
+                                                            
+                                                                <TableCell className='cellCenter'>
+                                                                    <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                                        onClick={() => {eliminarFirmaRadicado(a);}} title={'Eliminar'}
+                                                                    >clear</Icon>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                            );
+                                                        })
+                                                    }
+                                                    </TableBody>
+                                                </Table>
+                                            </Grid>
+                                        : null}
+
+                                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                                            <p style={{fontSize:'0.8em', color: '#7c7777', textAlign: 'justify'}}> 
+                                                <b>Nota:</b> Solo se permiten radicados que hayan sido aceptados, 
+                                                marcados como que se requiere una respuesta y que no hayan
+                                                sido respondidos por un tipo documental.
+                                            </p>
                                         </Grid>
 
                                     </Grid>

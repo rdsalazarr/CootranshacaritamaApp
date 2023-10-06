@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
+use App\Models\RadicacionDocumentoEntranteCambioEstado;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
 use App\Models\CodigoDocumentalProcesoOficio;
+use App\Models\RadicacionDocumentoEntrante;
 use App\Models\CodigoDocumentalProceso;
 use App\Http\Requests\OficioRequests;
 use Illuminate\Support\Facades\Crypt;
@@ -64,27 +66,44 @@ class OficioController extends Controller
 	{
 		$this->validate(request(),['tipo' => 'required']);
 
-		$id                = $request->id;
-		$tipo              = $request->tipo;
-		$depeid            = $request->dependencia;
-		$data              = '';
-		$firmasDocumento   = [] ;
-		$copiaDependencias = [] ;
-		$anexosDocumento   = [] ;
-		if($tipo === 'U'){
+		$id                 = $request->id;
+		$tipo               = $request->tipo;
+		$depeid             = $request->dependencia;
+		$data               = '';
+		$firmasDocumento    = [] ;
+		$copiaDependencias  = [] ;
+		$anexosDocumento    = [] ;
+		$radicadosDocumento = [];
+		if($tipo === 'U'){			
 			$visualizar  = new showTipoDocumental();
-			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
+			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento, $radicadosDocumento) = $visualizar->oficio($id);
 			$depeid      = $data->depeid;
 		}
+
+		$radicadosRecibidos = DB::table('radicaciondocumentoentrante as rde')
+									->select('rde.radoenid', 'rde.radoenanio', 'rde.radoenconsecutivo')
+									->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
+									->join('radicaciondocentdependencia as rded', function($join)
+										{
+												$join->on('rded.radoenid', '=', 'rde.radoenid');
+												$join->on('rded.depeid', '=', 'rde.depeid'); 
+										})
+									->where('rde.tierdeid', 3) //Recibido
+									->where('rde.radoenrequiererespuesta', true)
+									->whereIn('rded.depeid', function($query) {
+											$query->select('depperdepeid')->from('dependenciapersona')
+													->where('depperpersid',  auth()->user()->persid);
+											})->get();
 
 		$manejadorDocumentos = new manejadorDocumentos();
 		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
 		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('O', $depeid);
 
-        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"       => $tipoDestinos,      "tipoMedios"      => $tipoMedios,
-                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"    => $tipoDespedidas,    "dependencias"    => $dependencias,
-								"personas"        => $personas,        "cargoLaborales"    => $cargoLaborales,    "data"            => $data,
-								"firmasDocumento" => $firmasDocumento, "copiaDependencias" => $copiaDependencias, "anexosDocumento" => $anexosDocumento ]);
+        return response()->json(["fechaActual"       => $fechaActual,      "tipoDestinos"         => $tipoDestinos,      "tipoMedios"      => $tipoMedios,
+                                "tipoSaludos"        => $tipoSaludos,       "tipoDespedidas"      => $tipoDespedidas,    "dependencias"    => $dependencias,
+								"personas"           => $personas,          "cargoLaborales"      => $cargoLaborales,    "data"            => $data,
+								"firmasDocumento"    => $firmasDocumento,   "copiaDependencias"   => $copiaDependencias, "anexosDocumento" => $anexosDocumento,
+								"radicadosRecibidos" => $radicadosRecibidos, "radicadosDocumento" => $radicadosDocumento]);
 	}
 
     public function salve(OficioRequests $request){
@@ -197,7 +216,8 @@ class OficioController extends Controller
 							->select('cdpo.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpo.codopoconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
 							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"),
-						     DB::raw("CONCAT(tdc.tipdoccodigo,'-', d.depesigla,'-', cdpo.codopoconsecutivo,'-', cdp.codoprfecha,'.pdf') as rutaDocumento"))
+						     DB::raw("CONCAT(tdc.tipdoccodigo,'-', d.depesigla,'-', cdpo.codopoconsecutivo,'-', cdp.codoprfecha,'.pdf') as rutaDocumento"),
+							 DB::raw('(SELECT COUNT(cdprdeid) AS cdprdeid FROM coddocumprocesoraddocentrante WHERE codoprid = cdp.codoprid) AS totalRadicados'))
 							->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpo.codoprid')
 							->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 							->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
@@ -210,6 +230,7 @@ class OficioController extends Controller
 			$jefeDependencia   = $infodocumento->nombreJefe;
 			$nombreUsuario     = $infodocumento->codoprnombredirigido;
 			$correoNotificados = $infodocumento->codoprcorreo;
+			$totalRadicados    = $infodocumento->totalRadicados;
 			$email             = explode(",", $correoNotificados);
 			$nombreDependencia = $infodocumento->depenombre;
 			$emailDependencia  = $infodocumento->depecorreo;
@@ -218,6 +239,31 @@ class OficioController extends Controller
 			$fechaHoraActual   = Carbon::now();
 			$estado            = 5; //Sellado
 			$mensajeCorreo     = '';
+
+			if($totalRadicados > 0){
+				$radicadosDocumento = DB::table('coddocumprocesoraddocentrante as ddprde')
+								->select('ddprde.cdprdeid','rde.radoenid', 'rde.radoenanio', 'rde.radoenconsecutivo')
+								->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 'ddprde.radoenid')
+								->where('ddprde.codoprid', $codoprid)
+								->get();
+
+				foreach($radicadosDocumento as $radicadosocumento){
+					$radoenid       = $radicadosocumento->radoenid;
+					$estadoRadicado = '4'; //Respondido
+					$radicaciondocumentoentrante           =  RadicacionDocumentoEntrante::findOrFail($radicadosocumento->radoenid);
+					$radicaciondocumentoentrante->tierdeid = $estadoRadicado;
+					$radicaciondocumentoentrante->save();
+
+					//Almaceno la trazabilidad del radicado
+					$radicaciondocentcambioestado 					 = new RadicacionDocumentoEntranteCambioEstado();
+					$radicaciondocentcambioestado->radoenid          = $radoenid;
+					$radicaciondocentcambioestado->tierdeid          = $estadoRadicado;
+					$radicaciondocentcambioestado->radeceusuaid      = Auth::id();
+					$radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
+					$radicaciondocentcambioestado->radeceobservacion = 'Radicado respondido por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual.', mediante el tipo documental número '.$numeroDocumental;
+					$radicaciondocentcambioestado->save();
+				}
+			}
 	
 			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->tiesdoid            = $estado;
@@ -304,7 +350,7 @@ class OficioController extends Controller
 
 	public function showPdf(Request $request)
 	{
-		$this->validate(request(),['codigo' => 'required']);  
+		$this->validate(request(),['codigo' => 'required']);
 		try {
 			$generarPdf    = new generarPdf();
 			$dataDocumento = $generarPdf->oficio($request->codigo, 'S');

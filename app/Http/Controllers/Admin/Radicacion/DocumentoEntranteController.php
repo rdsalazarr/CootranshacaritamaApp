@@ -397,8 +397,8 @@ class DocumentoEntranteController extends Controller
                 $enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
                 $asunto            = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg               = str_replace($buscar, $remplazo, $innococontenido);
-               $prueba =  $notificar->correo([$correoPersona], $asunto, $msg, [$arrayfiles], $correoDependencia, $enviarcopia, $enviarpiepagina);
-                $correoPersona    = $correoDependencia;
+                $notificar->correo([$correoPersona], $asunto, $msg, [$arrayfiles], $correoDependencia, $enviarcopia, $enviarpiepagina);
+                $correoPersona     = $correoDependencia;
             }
 
             if($dataRadicado->totalCopias > 0){

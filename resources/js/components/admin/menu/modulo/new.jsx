@@ -27,7 +27,7 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', orden: '', icono: '', estado: '1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', orden: parseInt(formData.orden) + 1, icono: '', estado: '1', tipo:tipo}) : null;
             setLoader(false);
         })
     }

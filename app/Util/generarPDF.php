@@ -657,7 +657,7 @@ class generarPDF
 		}
 
 		//Verifico si tiene copia
-		if($tieneCopia == 1 || $correos !== ''){
+		if($tieneCopia == 1 || $correos !== null){
 			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);
 		}
 	
@@ -734,7 +734,7 @@ class generarPDF
 			PDF::Cell(165,4,'Teléfono: '.$telefonoEmpresa.' | Celular: '.$celularEmpresa.'',0,0,'C'); 
 			PDF::Ln(5);
 			PDF::SetX(30);
-			PDF::Cell(165,4,$urlEmpresa.' '.$idCifrado,0,0,'C');
+			PDF::Cell(165,4,$urlEmpresa,0,0,'C');
 
 			$style = array(
 				'border' => 0,

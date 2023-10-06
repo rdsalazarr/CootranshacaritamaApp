@@ -11,7 +11,7 @@ export default function New({data, tipo}){
     const [formData, setFormData] = useState(
                     (tipo !== 'I') ? {codigo: data.funcid, modulo: data.moduid, nombre: data.funcnombre, orden: data.funcorden,
                                     titulo: data.functitulo,icono: data.funcicono, ruta: data.funcruta,  estado: data.funcactiva, tipo:tipo 
-                                    } : {codigo:'000', modulo: '', nombre: '', orden: '', icono: '', titulo: '', ruta: '', estado: '1', tipo:tipo
+                                    } : {codigo:'000', modulo: '', nombre: '', orden: '', icono: '', titulo: 'Gestionar ', ruta: '', estado: '1', tipo:tipo
                                 });
 
    const [loader, setLoader] = useState(false); 
@@ -28,7 +28,7 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', modulo: '', nombre: '', orden: '', icono: '', titulo: '', ruta: '', estado: '1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', modulo: formData.modulo, nombre: '', orden: parseInt(formData.orden) + 1, icono: '', titulo: 'Gestionar ', ruta: '', estado: '1', tipo:tipo}) : null;
             setLoader(false);
         })
     }
@@ -50,7 +50,7 @@ export default function New({data, tipo}){
 
     return (
         <ValidatorForm onSubmit={handleSubmit} >
-            <Grid container spacing={2}>           
+            <Grid container spacing={2}>
 
                 <Grid item xl={3} md={3} sm={12} xs={12}>
                     <SelectValidator
@@ -114,11 +114,11 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item xl={3} md={3} sm={12} xs={12}>
-                    <TextValidator 
+                    <TextValidator
                         name={'icono'}
                         value={formData.icono}
                         label={'Ícono'}
-                        className={'inputGeneral'} 
+                        className={'inputGeneral'}
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 60}}
                         validators={["required"]}

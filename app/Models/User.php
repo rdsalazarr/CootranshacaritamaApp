@@ -45,7 +45,7 @@ class User extends Authenticatable
 
 
     //Para realizar la relacion con los roles
-    public function roles(){     
+    public function usuarioRoles(){     
         return $this->hasMany('App\Models\UsuarioRol', 'usurolusuaid', 'usuaid');
     } 
 }

@@ -72,6 +72,8 @@ Route::get('/exportar/datos', [RegistrosController::class, 'exportarConsultaAH']
 //'revalidate', verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('admin/welcome', [DashboardController::class, 'welcome']);
+    Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu']);    
     Route::get('/admin/{id}', [DashboardController::class, 'index']);
 
     //para recargar la pagina con f5

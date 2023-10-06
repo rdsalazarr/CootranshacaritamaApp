@@ -96,7 +96,7 @@ class FirmarDocumentosController extends Controller
 
             $tokenGenerado    = strtoupper(strtr(substr(md5(microtime()), 0, 8),"01","97"));
             $fechaHoraActual  = Carbon::now();  
-            $tiempoToken      = 20;
+            $tiempoToken      = 5;
             $fechaHoraMaxima  = Carbon::now()->addMinutes($tiempoToken);
             $persona          = DB::table('persona')->select('perscorreoelectronico','persnumerocelular',
                                                             DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ', persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombreJefe"))
