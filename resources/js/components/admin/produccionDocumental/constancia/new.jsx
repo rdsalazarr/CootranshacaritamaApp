@@ -45,7 +45,7 @@ export default function New({id, area, tipo, ruta}){
 
     const handleChangeDate = (date) => {
         setFormData((prevData) => ({...prevData, fecha: date.format('YYYY-MM-DD')}));
-    };
+    }
 
     const handleChangeFirmaPersona = (e, index) =>{
         let newFirmaPersona= [...firmaPersona];

@@ -44,7 +44,7 @@ export default function New({id, area, tipo, ruta}){
 
     const handleChangeDate = (date) => {
         setFormData((prevData) => ({...prevData, fecha: date.format('YYYY-MM-DD')}));
-    };
+    }
 
     const handleChangeFirmaPersona = (e, index) =>{
         let newFirmaPersona= [...firmaPersona];
@@ -82,7 +82,7 @@ export default function New({id, area, tipo, ruta}){
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
             setLoader(false);
         })
-    }        
+    }
 
     const inicio = () =>{
         setLoader(true);

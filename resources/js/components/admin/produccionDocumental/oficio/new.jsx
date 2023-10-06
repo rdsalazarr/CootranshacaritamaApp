@@ -1,16 +1,18 @@
 import React, {useState, useEffect, Fragment, useRef} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Box, Avatar, FormGroup, FormLabel, FormControlLabel } from '@mui/material';
-import { Checkbox, Icon,Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
+import { Checkbox, Icon,Table, TableHead, TableBody, TableRow, TableCell, Card } from '@mui/material';
 import {ButtonFileImg, ContentFile} from "../../../layout/files";
 import showSimpleSnackbar from '../../../layout/snackBar';
 import WarningIcon from '@mui/icons-material/Warning';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
 import Files from "react-files";
 import Anexos from '../anexos';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -22,9 +24,9 @@ export default function New({id, area, tipo, ruta}){
     const editorTexto = useRef(null);
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',     subSerie: '6',       tipoMedio: '',     tipoTramite: '1', 
-                                        tipoDestino: '',       fecha: '',      nombreDirigido: '',  cargoDirigido: '',  asunto: '',  
-                                        correo: '',            contenido: '',  tieneAnexo: '',      nombreAnexo: '',    tieneCopia: '', 
+                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',       subSerie: '6',      tipoMedio: '',     tipoTramite: '1', 
+                                        tipoDestino: '',       fecha: '',      nombreDirigido: '',         cargoDirigido: '',  asunto: '',  
+                                        correo: '',            contenido: '',  tieneAnexo: '',             nombreAnexo: '',    tieneCopia: '', 
                                         nombreCopia: '',       saludo: '',     despedida: '',              tituloPersona: '',  ciudad: '',    
                                         cargoDestinatario: '', empresa: '',     direccionDestinatario: '', telefono: '',       responderRadicado: '0',
                                         tipo:tipo
@@ -46,7 +48,9 @@ export default function New({id, area, tipo, ruta}){
     const [totalAdjuntoSubido, setTotalAdjuntoSubido] = useState(0);    
     const [formDataDependencia, setFormDataDependencia] = useState([]); 
     const [dependenciaMarcada, setDependenciaMarcada] = useState([]);
-    const [anexosDocumento, setAnexosDocumento] = useState([]);    
+    const [anexosDocumento, setAnexosDocumento] = useState([]);
+    const [formDataRadicado, setFormDataRadicado] = useState({identificador:'', anioRadicado:'', consecutivoRadicado: '', estado: 'I'});
+    const [documentosRadicados, setDocumentosRadicados] = useState([]);
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
     const [fechaMinima, setFechaMinima] = useState(dayjs());
 
@@ -61,7 +65,11 @@ export default function New({id, area, tipo, ruta}){
 
     const handleChangeDate = (date) => {
         setFormData((prevData) => ({...prevData, fecha: date.format('YYYY-MM-DD')}));
-    };
+    }
+
+    const handleChangeRadicado = (e) =>{
+        setFormDataRadicado(prev => ({...prev, [e.target.name]: e.target.value}))
+    }     
 
     const handleChangeFirmaPersona = (e, index) =>{
         let newFirmaPersona= [...firmaPersona];
@@ -149,6 +157,39 @@ export default function New({id, area, tipo, ruta}){
            setLoader(false);
         })
     }
+
+    const adicionarFilaRadicado= () =>{
+        //consultar la base de datos
+
+        if(documentosRadicados.some((radicado) => radicado.consecutivo === formDataRadicado.consecutivoRadicado)){
+            showSimpleSnackbar('Este registro ya existe', 'error');
+            return
+        }
+
+        let newDocumentosRadicados = [...documentosRadicados];
+        newDocumentosRadicados.push({identificador: formDataRadicado.identificador, anioRadicado:formDataRadicado.anioRadicado, 
+                                    consecutivoRadicado:formDataRadicado.consecutivoRadicado, estado: 'I'});
+        setDocumentosRadicados(newDocumentosRadicados);
+        setFormDataRadicado({identificador:'', anioRadicado: '', consecutivoRadicado: '',  estado: 'I'})
+    }
+
+    const eliminarFirmaRadicado = (id) =>{
+        let newDatosRadicado = []; 
+        documentosRadicados.map((res,i) =>{
+            if(res.estado === 'U' && i === id){
+                newDatosRadicado.push({ identificador:res.identificador, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'D' }); 
+            }else if(res.estado === 'D' && i === id){
+                newDatosRadicado.push({identificador:res.identificador,  anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'U'});
+            }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
+                newDatosRadicado.push({identificador:res.identificador, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado:res.estado});
+            }else{
+                if(i != id){
+                    newDatosRadicado.push({identificador:res.identificador, anioRadicado: res.anioRadicado, consecutivoRadicado:res.consecutivoRadicado, estado: 'I' });
+                }
+            }
+        })
+        setDocumentosRadicados(newDatosRadicado);
+    }
     
     const adicionarFilaFirmaPersona = () =>{
         let newFirmaPersona = [...firmaPersona];
@@ -183,7 +224,7 @@ export default function New({id, area, tipo, ruta}){
             }
         }
         return true;
-    };
+    }
 
     const inicio = () =>{
         setLoader(true);
@@ -455,7 +496,7 @@ export default function New({id, area, tipo, ruta}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
                         name={'ciudad'}
                         value={formData.ciudad}
@@ -469,7 +510,7 @@ export default function New({id, area, tipo, ruta}){
                     />
                 </Grid>
 
-                <Grid item xl={5} md={5} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         multiline
                         maxRows={2}
@@ -484,6 +525,117 @@ export default function New({id, area, tipo, ruta}){
                         onChange={handleChange}
                     />
                 </Grid>
+
+                <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'responderRadicado'}
+                        value={formData.responderRadicado}
+                        label={'Responder radicado'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        <MenuItem value={"1"} >Sí</MenuItem>
+                        <MenuItem value={"0"}>No</MenuItem>
+                    </SelectValidator>
+                </Grid>
+
+                {(formData.responderRadicado === '1') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box  style={{width: '50%', margin: 'auto'}}>
+
+                                <Card style={{padding: '0.5em 1em 1em 1em'}}>
+                                    <Grid container spacing={2}>
+
+                                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                                            <Box className='frmDivision'>
+                                                Adicionar radicados al tipo documental
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xl={5} md={5} sm={6} xs={12}>
+                                            <TextValidator
+                                                name={'anioRadicado'}
+                                                value={formData.anioRadicado}
+                                                label={'Año del radicado'}
+                                                className={'inputGeneral'} 
+                                                variant={"standard"} 
+                                                inputProps={{autoComplete: 'off'}}
+                                                validators={["maxNumber:9999"]}
+                                                errorMessages={["Número máximo permitido es el 9999"]}
+                                                type={"number"}
+                                                onChange={handleChangeRadicado}
+                                            />
+                                        </Grid>
+
+                                        <Grid item xl={5} md={5} sm={6} xs={12}>
+                                            <TextValidator
+                                                name={'consecutivoRadicado'}
+                                                value={formData.consecutivoRadicado}
+                                                label={'Numero de radicado'}
+                                                className={'inputGeneral'} 
+                                                variant={"standard"} 
+                                                inputProps={{autoComplete: 'off'}}
+                                                validators={["maxNumber:9999"]}
+                                                errorMessages={["Número máximo permitido es el 9999"]}
+                                                onChange={handleChangeRadicado}
+                                            />
+                                        </Grid>
+
+                                        <Grid item xl={2} md={2} sm={4} xs={12}>
+                                            <Button type={"button"} className={'modalBtn'}  onClick={() => {adicionarFilaRadicado();}}
+                                                startIcon={<PostAddIcon />}> {"Adicionar"}
+                                            </Button>
+                                        </Grid>
+
+                                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                                            <Table key={'tableRadicadoDocumento'}  className={'tableAdicional'} style={{marginTop: '1px'}} >
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell>Año del radicado</TableCell>
+                                                        <TableCell>Consecutivo del radicado</TableCell>
+                                                        <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                { documentosRadicados.map((radicado, a) => {
+                                                    return(
+                                                        <TableRow key={'rowA-' +a} className={(radicado.estado == 'D')? 'tachado': null}>
+
+                                                            <TableCell>
+                                                                <p>{radicado['anioRadicado']}</p> 
+                                                            </TableCell>
+
+                                                            <TableCell>
+                                                                <p>{radicado['consecutivoRadicado']}</p> 
+                                                            </TableCell>
+                                                        
+                                                            <TableCell className='cellCenter'>
+                                                                <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                                    onClick={() => {eliminarFirmaRadicado(a);}} title={'Eliminar'}
+                                                                >clear</Icon>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        );
+                                                    })
+                                                }
+                                                </TableBody>
+                                            </Table>
+                                        </Grid>
+
+                                    </Grid>
+                                </Card>
+                            </Box> 
+                        </Grid>
+
+                    </Fragment>
+
+                : null}
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <label className={'labelEditor'}> Contenido </label> 

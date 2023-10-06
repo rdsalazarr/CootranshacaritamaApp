@@ -2,6 +2,7 @@
 
 namespace App\Util;
 
+use App\Models\CodigoDocumentalProcesoRadicacionDocumentoEntrante;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
 use App\Models\CodigoDocumentalProcesoCertificado;
 use App\Models\CodigoDocumentalProcesoConstancia;
@@ -60,7 +61,6 @@ class manejadorDocumentos {
 
 		return array ($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias, $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales);
 	}
-
    
     public function acta($request){
 
@@ -722,7 +722,25 @@ class manejadorDocumentos {
 		   	$codigodocumentalprocesooficio->codopodireccion         = $request->direccionDestinatario;
 			$codigodocumentalprocesooficio->codopotelefono          = $request->telefono;
 			$codigodocumentalprocesooficio->codoporesponderadicado  = $request->responderRadicado;
-		   	$codigodocumentalprocesooficio->save();	
+		   	$codigodocumentalprocesooficio->save();
+
+			if($request->responderRadicado === '1'){
+				foreach($request->documentosRadicados as $documentoRadicado){
+					$identificadorCDPRDE = $documentoRadicado['identificador'];
+					$radicadoId          = $documentoRadicado['radicado'];
+					$radicadoEstado      = $documentoRadicado['estado'];
+					if($radicadoEstado === 'I'){
+						$coddocumprocesoraddocentrante = new CodigoDocumentalProcesoRadicacionDocumentoEntrante();
+						$coddocumprocesoraddocentrante->codoprid = $codoprid;
+						$coddocumprocesoraddocentrante->radoenid = $radicadoId;
+						$coddocumprocesoraddocentrante->save();
+					}else if($radicadoEstado === 'D'){
+						$coddocumprocesoraddocentrante = CodigoDocumentalProcesoRadicacionDocumentoEntrante::findOrFail($identificadorCDPRDE);
+						$coddocumprocesoraddocentrante->delete();
+					}else{//omitir
+					}
+				}
+			}			   
 
 			//Registramos los adjuntos
 			if($request->hasFile('archivos')){

@@ -40,7 +40,7 @@ export default function New({id, area, tipo, ruta}){
 
     const handleChangeDate = (date) => {
         setFormData((prevData) => ({...prevData, fecha: date.format('YYYY-MM-DD')}));
-    };
+    }
 
     const handleChangeFirmaPersona = (e, index) =>{
         let newFirmaPersona= [...firmaPersona];
@@ -70,7 +70,7 @@ export default function New({id, area, tipo, ruta}){
 
         let newFormData            = {...formData};
         newFormData.contenido      = editorTexto.current.getContent()
-        newFormData.firmaPersonas  = firmaPersona;  
+        newFormData.firmaPersonas  = firmaPersona;
 
         setLoader(true);
         setFormData(formDataCopia);
@@ -123,12 +123,12 @@ export default function New({id, area, tipo, ruta}){
             }
         }
         return true;
-    };
+    }
 
     const validateHora = (value) => {
         const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/; // HH:mm format
         return regex.test(value);
-    };
+    }
 
     const inicio = () =>{
         setLoader(true);

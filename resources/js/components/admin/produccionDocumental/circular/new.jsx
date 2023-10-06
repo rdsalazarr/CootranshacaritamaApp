@@ -57,14 +57,14 @@ export default function New({id, area, tipo, ruta}){
 
     const handleChangeDate = (date) => {
         setFormData((prevData) => ({...prevData, fecha: date.format('YYYY-MM-DD')}));
-    };
+    }
 
     const handleChangeFirmaPersona = (e, index) =>{
         let newFirmaPersona= [...firmaPersona];
         newFirmaPersona[index][e.target.name] = e.target.value; 
         setFirmaPersona(newFirmaPersona);
     }
-   
+
     const handleChangeDependencia = (e) =>{
         let newFormDataDependencia = [...formDataDependencia];
         if(e.target.checked){
@@ -176,7 +176,7 @@ export default function New({id, area, tipo, ruta}){
             }
         }
         return true;
-    };
+    }
 
     const inicio = () =>{
         setLoader(true);
