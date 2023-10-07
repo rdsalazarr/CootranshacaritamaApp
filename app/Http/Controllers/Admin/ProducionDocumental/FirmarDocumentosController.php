@@ -189,10 +189,6 @@ class FirmarDocumentosController extends Controller
                 return response()->json(['success' => false, 'message'=> 'El token con número '.$token.', no concuerda o el tiempo de actividad expiro']);
             }
 
-            $tokenfirma = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
-            $tokenfirma->tofipeutilizado = true;
-            $tokenfirma->save();
-
 			//consulto para saber cuantas firma tiene el documento
 			$totalFirmas = DB::table('coddocumprocesofirma')->select('codoprid')
                                         ->where('codopffirmado', false)
@@ -204,6 +200,30 @@ class FirmarDocumentosController extends Controller
 				$codigodocumentalproceso->tiesdoid      = '4'; //Firmado documento
 				$codigodocumentalproceso->save();
 			}
+
+            $infodocumento =  DB::table('codigodocumentalproceso as cdp')
+                        ->select('d.depecorreo','d.depenombre','p.perscorreoelectronico','tdc.tipdocnombre','cl.carlabnombre',
+                        DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"))							
+                        ->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
+                        ->join('tipodocumental as tdc', 'tdc.tipdocid', '=', 'cd.tipdocid')
+                        ->join('dependencia as d', 'd.depeid', '=', 'cd.depeid')
+                        ->join('persona as p', 'p.persid', '=', 'd.depejefeid')	
+                        ->join('cargolaboral as cl', 'cl.carlabid', '=', 'p.carlabid')	
+                        ->where('cdp.codoprid', $codoprid)->first();
+
+            //Datos de la notificacion
+            $nombreDependencia = $infodocumento->depenombre;
+            $tipoDocumental    = $infodocumento->tipdocnombre;
+            $numeroDocumental  = '';
+            $nombreJefe        = $infodocumento->nombreJefe;
+            $cargoJefe         = $infodocumento->carlabnombre;
+            $correoJefe        = $infodocumento->perscorreoelectronico;
+            $correoDependencia = $infodocumento->depecorreo;
+
+            //Actualizo los datos
+            $tokenfirma = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
+            $tokenfirma->tofipeutilizado = true;
+            $tokenfirma->save();
 
 			//Marco como relizado el proceso de la firma
 			$codigodocumentalprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($codopfid);
@@ -223,6 +243,17 @@ class FirmarDocumentosController extends Controller
             $codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
             $codigodocumentalprocesocambioestado->codpceobservacion = 'Documento firmado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
             $codigodocumentalprocesocambioestado->save();
+
+            //Envio la notificacion
+            $notificar          = new notificar();
+            $informacioncorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarFirmaTipoDocumental')->first();
+            $buscar             = Array('nombreDependencia', 'tipoDocumental', 'numeroDocumental', 'nombreJefe','cargoJefe');
+            $remplazo           = Array($nombreDependencia, $tipoDocumental,  $numeroDocumental, $nombreJefe, $cargoJefe); 
+            $asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
+            $msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
+            $enviarcopia        = $informacioncorreo->innocoenviarcopia;
+            $enviarpiepagina    = $informacioncorreo->innocoenviarpiepagina;
+            $notificar->correo([$correoDependencia], $asunto, $msg, [], $correoJefe, $enviarcopia, $enviarpiepagina);
 
 			DB::commit();
 			return response()->json(['success' => true, 'message' => 'Documento firmado con éxito']);

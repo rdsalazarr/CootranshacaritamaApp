@@ -128,6 +128,7 @@ class ActaController extends Controller
 			$codigodocumentalproceso                      = CodigoDocumentalProceso::findOrFail($codoprid);
 			$codigodocumentalproceso->codoprsolicitafirma = true;
 			$codigodocumentalproceso->tiesdoid            = $estado;
+			$codigodocumentalproceso->save(); 
 
 			//Almaceno la trazabilidad del documento
 			$codigodocumentalprocesocambioestado 					= new CodigoDocumentalProcesoCambioEstado();
@@ -184,10 +185,12 @@ class ActaController extends Controller
 	public function sellar(Request $request)
 	{
 		$this->validate(request(),['codigo' => 'required']);
+
+		DB::beginTransaction();
 		try {
 
 			$empresa       = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();
-			$infodocumento =  DB::table('coddocumprocesoacta as cdpa')
+			$infodocumento = DB::table('coddocumprocesoacta as cdpa')
 							->select('cdpa.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpa.codopaconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
 							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"),
@@ -225,12 +228,13 @@ class ActaController extends Controller
 			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
 			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
-			$codigodocumentalprocesocambioestado->codpceobservacion = 'Solicitud de sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+			$codigodocumentalprocesocambioestado->codpceobservacion = 'Sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
 			$codigodocumentalprocesocambioestado->save();
 
 			//Genero una copia del documento en el servidor
 			$generarPdf = new generarPdf();
-			$rutaPdf    = $generarPdf->acta($request->codigo, 'F');
+			$arrayPdf   = [];
+			array_push($arrayPdf, $generarPdf->acta($request->codigo, 'F'));
 			if($email != null or $email != ''){//Enviamos la notificacion al usuario
 				$notificar         = new notificar();
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarEnvioDocumento')->first();
@@ -240,7 +244,7 @@ class ActaController extends Controller
 				$msg               = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
 				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
 				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
-				$notificar->correo($email, $asunto, $msg, [$rutaPdf], $emailDependencia, $enviarcopia, $enviarpiepagina);
+				$notificar->correo($email, $asunto, $msg, [$arrayPdf], $emailDependencia, $enviarcopia, $enviarpiepagina);
 				$mensajeCorreo     = ', Se ha enviado notificación al correo  '.$correoNotificados;
 			}
 
@@ -258,11 +262,10 @@ class ActaController extends Controller
 
 		DB::beginTransaction();
 		try {
-			
-			$fechaHoraActual  = Carbon::now();
-			$estado           = 10;
 
-			$codigodocumentalprocesoacta =  CodigoDocumentalProcesoActa::findOrFail($request->codigo);
+			$fechaHoraActual             = Carbon::now();
+			$estado                      = 10;
+			$codigodocumentalprocesoacta = CodigoDocumentalProcesoActa::findOrFail($request->codigo);
 			$codoprid                    = $codigodocumentalprocesoacta->codoprid;
 
 			$codigodocumentalproceso           = CodigoDocumentalProceso::findOrFail($codoprid);

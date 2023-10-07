@@ -268,7 +268,7 @@ class showTipoDocumental
 		return  DB::table('coddocumprocesofirma as cdpf')
 							->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid',
 							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-							'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado', DB::raw("CONCAT('/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"))
+							'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado', DB::raw("CONCAT('archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"))
 							->join('persona as p', 'p.persid', '=', 'cdpf.persid')
 							->join('cargolaboral as cl', 'cl.carlabid', '=', 'cdpf.carlabid')
 							->where('cdpf.codopfesinvitado', $esInvitado)

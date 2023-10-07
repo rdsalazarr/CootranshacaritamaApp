@@ -1,7 +1,7 @@
 import '../../../bootstrap';
 import React from 'react';
 import {createRoot} from "react-dom/client";
-import imagen from "../../../../images/errors/error401.svg";
+import imagen from "../../../../images/errors/accesoNoAutorizado.svg";
 import {Header, Footer} from "../../layout/general";
 import HomeIcon from '@mui/icons-material/Home';
 import { Box, Grid } from '@mui/material';

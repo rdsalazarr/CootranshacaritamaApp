@@ -12,7 +12,7 @@ class InformacionCorreoController extends Controller
 	{
         $data = DB::table('informacionnotificacioncorreo')
                     ->select('innocoid','innoconombre','innocoasunto','innococontenido','innocoenviarpiepagina','innocoenviarcopia',
-                    DB::raw("if(innocoenviarcopia = 1 ,'Sí', 'No') as enviarPiePagina"),
+                    DB::raw("if(innocoenviarpiepagina = 1 ,'Sí', 'No') as enviarPiePagina"),
                     DB::raw("if(innocoenviarcopia = 1 ,'Sí', 'No') as enviarCopia"))->get();
 
         return response()->json(["data" => $data]);

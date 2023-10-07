@@ -14,7 +14,7 @@ export default function Firmados(){
 
     const modales = [ <VisualizarPdf data={modal.data} /> ];
 
-    const tituloModal = [  'Visualizar trazabilidad del documento'];
+    const tituloModal = [  'Visualizar documento en formato PDF'];
 
     const edit = (data, tipo) =>{
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano:  'mediumFlot'});

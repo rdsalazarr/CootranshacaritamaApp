@@ -76,7 +76,7 @@ const ListMenu = ({res, control, setControll, j}) =>{
                 </ListItemButton>
                 <Collapse in={(control === false) ? control:  open}  unmountOnExit timeout="auto" key={'collapse'+j}>
 
-                {res.itemMenu.map((item, i ) =>{
+                    {res.itemMenu.map((item, i ) =>{
                         return (
                             <NavLink className={"itemMenu"} exact = {`true`} to={`/${item.ruta}`}  key={item.ruta + 'nav'} >
                                 <List component="div" disablePadding key={i + 'datosGeneral'}>

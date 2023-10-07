@@ -185,10 +185,12 @@ class CertificadoController extends Controller
 	public function sellar(Request $request)
 	{
 		$this->validate(request(),['codigo' => 'required']);
+
+		DB::beginTransaction();
 		try {
 
 			$empresa       = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();
-			$infodocumento =  DB::table('coddocumprocesocertificado as cdpc')
+			$infodocumento = DB::table('coddocumprocesocertificado as cdpc')
 							->select('cdpc.codoprid', DB::raw("CONCAT(tdc.tipdoccodigo,'-',d.depesigla,'-', cdpc.codopcconsecutivo) as consecutivoDocumento"),
 											'cdp.codoprnombredirigido','cdp.codoprcorreo','d.depecorreo','d.depenombre','p.perscorreoelectronico',
 							 DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreJefe"),
@@ -226,12 +228,13 @@ class CertificadoController extends Controller
 			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
 			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
-			$codigodocumentalprocesocambioestado->codpceobservacion = 'Solicitud de sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+			$codigodocumentalprocesocambioestado->codpceobservacion = 'Sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
 			$codigodocumentalprocesocambioestado->save();
 
 			//Genero una copia del documento en el servidor
 			$generarPdf = new generarPdf();
-			$rutaPdf    = $generarPdf->oficio($request->codigo, 'F');
+			$arrayPdf   = [];
+			array_push($arrayPdf, $generarPdf->certificado($request->codigo, 'F'));
 			if($email != null or $email != ''){//Enviamos la notificacion al usuario
 				$notificar         = new notificar();
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarEnvioDocumento')->first();
@@ -241,12 +244,12 @@ class CertificadoController extends Controller
 				$msg               = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
 				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
 				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
-				$notificar->correo($email, $asunto, $msg, [$rutaPdf], $emailDependencia, $enviarcopia, $enviarpiepagina);
-				$mensajeCorreo     = ', Se ha enviado notificación al correo  '.$correoNotificados;
+				$notificar->correo($email, $asunto, $msg, [$arrayPdf], $emailDependencia, $enviarcopia, $enviarpiepagina);
+				$mensajeCorreo     = ', Se ha enviado notificación al correo '.$correoNotificados;
 			}
 
 			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito '.$mensajeCorreo ]);
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeCorreo ]);
 		} catch (Exception $error){
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

@@ -24,7 +24,7 @@ export default function Reset(){
 
     const handleSubmit =() =>{
         setLoader(true);
-        instance.post('/updatePassword', formData).then(res=>{
+        instance.post('/admin/usuario/updatePassword', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setSuccess(true) : null;
@@ -37,7 +37,7 @@ export default function Reset(){
     }
 
     useEffect(() => {
-        instance.get('/dataUsuario').then(res=>{
+        instance.get('/admin/usuario/data').then(res=>{
             setDataUsuario(res.dataUsuario);
         })
     }, []);

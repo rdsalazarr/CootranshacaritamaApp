@@ -409,12 +409,12 @@ export function AnularDocumento({id, ruta, cerrarModal}){
 
 export function FirmarDocumento({id, cerrarModal}){
 
-    const [formData, setFormData] = useState( {id: id, token: ''});
+    const [formData, setFormData] = useState({id: id, token: ''});
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [mensaje, setMensaje] = useState('');
-    const [tiempoRestante, setTiempoRestante] = useState(0);    
+    const [tiempoRestante, setTiempoRestante] = useState(0);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -426,6 +426,8 @@ export function FirmarDocumento({id, cerrarModal}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setHabilitado(false) : null;
+            (res.success) ? setTiempoRestante(0) : null;
+            (res.success) ? setFormData({id: id, token: ''}) : null;
             setLoader(false);
         })
     }
@@ -479,7 +481,7 @@ export function FirmarDocumento({id, cerrarModal}){
                             <Box className='tiepoRestante'> Tiempo restante:<Box className="tiempoevaluacion">
                                 {(tiempoRestante > 0) ?
                                     <RelojDigital tiempoInicial={tiempoRestante} onTiempoFinalizado={cerrarModal} />
-                                : <Box className="tiempoevaluacion">0</Box>  }
+                                : <Box className="tiempoevaluacion">0</Box> }
                                 </Box>
                             </Box>
 

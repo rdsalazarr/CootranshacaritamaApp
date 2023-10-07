@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Home\FrondController;
 use App\Http\Controllers\Home\VerificarDocumentosController;
+use App\Http\Controllers\Admin\PerfilUsuarioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Menu\ModuloController;
 use App\Http\Controllers\Security\MantenimientoController;
 use App\Http\Controllers\Admin\Menu\FuncionalidadController;
-
 use App\Http\Controllers\Admin\Menu\RolController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\Notificar\InformacionCorreoController;
@@ -29,9 +29,7 @@ use App\Http\Controllers\Admin\DependenciaController;
 use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
-
 use App\Http\Controllers\Admin\Exportar\RegistrosController;
-
 use App\Http\Controllers\Admin\ProducionDocumental\ActaController; 
 use App\Http\Controllers\Admin\ProducionDocumental\CertificadoController;
 use App\Http\Controllers\Admin\ProducionDocumental\CircularController;
@@ -40,12 +38,10 @@ use App\Http\Controllers\Admin\ProducionDocumental\ConstanciaController;
 use App\Http\Controllers\Admin\ProducionDocumental\OficioController; 
 use App\Http\Controllers\Admin\ProducionDocumental\VisualizarDocumentosController;
 use App\Http\Controllers\Admin\ProducionDocumental\FirmarDocumentosController;
-
 use App\Http\Controllers\Admin\Radicacion\DocumentoEntranteController;
 use App\Http\Controllers\Admin\Radicacion\ShowDocumentoEntranteController;
 use App\Http\Controllers\Admin\Radicacion\AnularDocumentoEntranteController;
 use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteController;
-
 use App\Http\Controllers\Admin\Archivo\HistoricoController;
 use App\Http\Controllers\Admin\Archivo\HistoricoShowController;
 use App\Http\Controllers\Admin\Archivo\HistoricoConsultarController;
@@ -67,114 +63,113 @@ Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosControl
 
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);  
 
-Route::get('/exportar/datos', [RegistrosController::class, 'exportarConsultaAH']); 
-
-//'revalidate', verifySource
+// verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('admin/welcome', [DashboardController::class, 'welcome']);
-    Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu']);    
-    Route::get('/admin/{id}', [DashboardController::class, 'index']);
 
-    //para recargar la pagina con f5
-    //Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
-    Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
-    Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
-    Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
+    Route::get('dashboard', [DashboardController::class, 'index']);
+    Route::get('admin/welcome', [DashboardController::class, 'welcome']);
+    Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu']);
+
+    Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
+        Route::get('/admin/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
+    });
 
     Route::get('reset', [DashboardController::class, 'reset']);
-    Route::get('dataUsuario', [DashboardController::class, 'dataUsuario']);
-    Route::post('updatePassword',[DashboardController::class, 'updatePassword']);    
-        
+
     Route::prefix('admin')->group(function(){
-        Route::get('/modulo/list', [ModuloController::class, 'index']); //->middleware('security:Admin/Modulo/List')
+        Route::get('/modulo/list', [ModuloController::class, 'index']);
         Route::post('/modulo/salve', [ModuloController::class, 'salve']);
         Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
 
-        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index']); //->middleware('security:Admin/Funcionalidad')
+        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware('security:admin/menu');
         Route::get('/funcionalidad/listar/modulos', [FuncionalidadController::class, 'modulos']);
         Route::post('/funcionalidad/salve', [FuncionalidadController::class, 'salve']);
         Route::post('/funcionalidad/destroy', [FuncionalidadController::class, 'destroy']);
 
-        Route::get('/rol/list', [RolController::class, 'index']); //->middleware('security:Admin/Rol')
+        Route::get('/rol/list', [RolController::class, 'index'])->middleware('security:admin/menu');
         Route::post('/rol/listar/funcionalidad', [RolController::class, 'funcionalidades']);
         Route::post('/rol/salve', [RolController::class, 'salve']);
         Route::post('/rol/destroy', [RolController::class, 'destroy']);
 
-        Route::get('/usuario/list', [UsuarioController::class, 'index']);
-        Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
-        Route::post('/usuario/list/datos', [UsuarioController::class, 'datos']);
-        Route::post('/usuario/salve', [UsuarioController::class, 'salve']);
-        Route::post('/usuario/destroy', [UsuarioController::class, 'destroy']);        
-        Route::get('/usuario/miPerfil', [UsuarioController::class, 'perfil']);
-        Route::post('/usuario/updatePerfil', [UsuarioController::class, 'updatePerfil']);
-        Route::post('/usuario/updatePassword', [UsuarioController::class, 'updatePassword']);
-
-        Route::get('/informacionCorreo/list', [InformacionCorreoController::class, 'index']);
+        Route::get('/informacionCorreo/list', [InformacionCorreoController::class, 'index'])->middleware('security:admin/informacionNotificarCorreo');
         Route::post('/informacionCorreo/salve', [InformacionCorreoController::class, 'salve']);
         Route::post('/informacionCorreo/destroy', [InformacionCorreoController::class, 'destroy']);
-
-        Route::get('/departamento/list', [DepartamentoController::class, 'index']);
+        
+        Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware('security:admin/datosTerritorial');
         Route::post('/departamento/salve', [DepartamentoController::class, 'salve']);
 
-        Route::get('/municipio/list', [MunicipioController::class, 'index']);
+        Route::get('/municipio/list', [MunicipioController::class, 'index'])->middleware('security:admin/datosTerritorial');
         Route::get('/municipio/list/deptos', [MunicipioController::class, 'deptos']);
         Route::post('/municipio/salve', [MunicipioController::class, 'salve']);
 
-        Route::get('/empresa/list', [EmpresaController::class, 'index']);
+        Route::get('/empresa/list', [EmpresaController::class, 'index'])->middleware('security:admin/empresa');
         Route::get('/empresa/list/datos', [EmpresaController::class, 'datos']);
-        Route::post('/empresa/salve', [EmpresaController::class, 'salve']);
+        Route::post('/empresa/salve', [EmpresaController::class, 'salve']); 
 
-        Route::get('/tipoSaludo/list', [SaludoController::class, 'index']);
+        Route::get('/tipoSaludo/list', [SaludoController::class, 'index'])->middleware('security:admin/gestionarTipos');
         Route::post('/tipoSaludo/salve', [SaludoController::class, 'salve']);
         Route::post('/tipoSaludo/destroy', [SaludoController::class, 'destroy']);
 
-        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index']);
+        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index'])->middleware('security:admin/gestionarTipos');
         Route::post('/tipoDespedida/salve', [DespedidaController::class, 'salve']);
         Route::post('/tipoDespedida/destroy', [DespedidaController::class, 'destroy']);
         
-        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index']);
+        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index'])->middleware('security:admin/gestionarTipos');
         Route::post('/cargoLaboral/salve', [CargoLaboralController::class, 'salve']);
         Route::post('/cargoLaboral/destroy', [CargoLaboralController::class, 'destroy']);
 
-        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index']);
+        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index'])->middleware('security:admin/gestionarTipos');
         Route::post('/tipoEstante/salve', [EstanteArchivadorController::class, 'salve']);
         Route::post('/tipoEstante/destroy', [EstanteArchivadorController::class, 'destroy']);
 
-        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index']);
+        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index'])->middleware('security:admin/gestionarTipos');
         Route::post('/tipoDocumental/salve', [DocumentalController::class, 'salve']);
         Route::post('/tipoDocumental/destroy', [DocumentalController::class, 'destroy']);
 
-        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index']);
+        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionarTipos');
         Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
-        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index']);   
+        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionarSeriesDocumentales');  
         Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
         Route::post('/serieDocumental/destroy', [SerieDocumentalController::class, 'destroy']);
 
-        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index']);
+        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware('security:admin/gestionarSeriesDocumentales');
         Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos']);  
         Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
         Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
-
-        Route::get('/persona/list', [PersonaController::class, 'index']); 
-        Route::get('/persona/listar/datos', [PersonaController::class, 'datos']); 
-        Route::post('/persona/salve', [PersonaController::class, 'salve']);
-        Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
-        Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta
-       
-        Route::get('/dependencia/list', [DependenciaController::class, 'index']);
+         
+        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware('security:admin/gestionarDependencia');
         Route::post('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/festivo/list', [FestivoController::class, 'index']);
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/usuario'); 
+        Route::get('/persona/listar/datos', [PersonaController::class, 'datos']); 
+        Route::post('/persona/salve', [PersonaController::class, 'salve']);
+        Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
+        Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta
+
+        Route::get('/usuario/list', [UsuarioController::class, 'index'])->middleware('security:admin/usuario');
+        Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
+        Route::post('/usuario/list/datos', [UsuarioController::class, 'datos']);
+        Route::post('/usuario/salve', [UsuarioController::class, 'salve']);
+        Route::post('/usuario/destroy', [UsuarioController::class, 'destroy']);
+
+        Route::get('/usuario/data', [PerfilUsuarioController::class, 'index']); //No debe tener control de ruta
+        Route::get('/usuario/miPerfil', [PerfilUsuarioController::class, 'perfil']);
+        Route::post('/usuario/updatePerfil', [PerfilUsuarioController::class, 'updatePerfil']);
+        Route::post('/usuario/updatePassword', [PerfilUsuarioController::class, 'updatePassword']);
+
+        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/usuario');
         Route::post('/festivo/salve', [FestivoController::class, 'salve']);
 
         Route::prefix('/producion/documental')->group(function(){
 
-            Route::post('/acta/list', [ActaController::class, 'index']);
+            Route::post('/acta/list', [ActaController::class, 'index']);//->middleware('security:admin/produccion/documental/acta')
             Route::get('/acta/consultar/area', [ActaController::class, 'area']);
             Route::post('/acta/listar/datos', [ActaController::class, 'datos']);
             Route::post('/acta/salve', [ActaController::class, 'salve']);
@@ -185,7 +180,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/acta/visualizar/PDF', [ActaController::class, 'showPdf']);
             Route::post('/trazabilidad/acta', [ActaController::class, 'trazabilidad']);
 
-            Route::post('/certificado/list', [CertificadoController::class, 'index']);
+            Route::post('/certificado/list', [CertificadoController::class, 'index'])->middleware('security:admin/produccion/documental/certificado');
             Route::get('/certificado/consultar/area', [CertificadoController::class, 'area']);
             Route::post('/certificado/listar/datos', [CertificadoController::class, 'datos']);
             Route::post('/certificado/salve', [CertificadoController::class, 'salve']);
@@ -196,7 +191,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/certificado/visualizar/PDF', [CertificadoController::class, 'showPdf']);
             Route::post('/trazabilidad/certificado', [CertificadoController::class, 'trazabilidad']);
 
-            Route::post('/circular/list', [CircularController::class, 'index']);
+            Route::post('/circular/list', [CircularController::class, 'index'])->middleware('security:admin/produccion/documental/circular');
             Route::get('/circular/consultar/area', [CircularController::class, 'area']);
             Route::post('/circular/listar/datos', [CircularController::class, 'datos']);
             Route::post('/circular/salve', [CircularController::class, 'salve']);
@@ -207,7 +202,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/circular/visualizar/PDF', [CircularController::class, 'showPdf']);
             Route::post('/trazabilidad/circular', [CircularController::class, 'trazabilidad']);
 
-            Route::post('/citacion/list', [CitacionController::class, 'index']);
+            Route::post('/citacion/list', [CitacionController::class, 'index'])->middleware('security:admin/produccion/documental/citacion');
             Route::get('/citacion/consultar/area', [CitacionController::class, 'area']);
             Route::post('/citacion/listar/datos', [CitacionController::class, 'datos']);
             Route::post('/citacion/salve', [CitacionController::class, 'salve']);
@@ -218,7 +213,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/citacion/visualizar/PDF', [CitacionController::class, 'showPdf']);
             Route::post('/trazabilidad/citacion', [CitacionController::class, 'trazabilidad']);
 
-            Route::post('/constancia/list', [ConstanciaController::class, 'index']);
+            Route::post('/constancia/list', [ConstanciaController::class, 'index'])->middleware('security:admin/produccion/documental/constancia');
             Route::get('/constancia/consultar/area', [ConstanciaController::class, 'area']);
             Route::post('/constancia/listar/datos', [ConstanciaController::class, 'datos']);
             Route::post('/constancia/salve', [ConstanciaController::class, 'salve']);
@@ -229,7 +224,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/constancia/visualizar/PDF', [ConstanciaController::class, 'showPdf']);
             Route::post('/trazabilidad/constancia', [ConstanciaController::class, 'trazabilidad']);
 
-            Route::post('/oficio/list', [OficioController::class, 'index']);
+            Route::post('/oficio/list', [OficioController::class, 'index'])->middleware('security:admin/produccion/documental/oficio');
             Route::get('/oficio/consultar/area', [OficioController::class, 'area']);
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
             Route::post('/oficio/salve', [OficioController::class, 'salve']);
@@ -242,10 +237,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/firmar/documento')->group(function(){
-            Route::post('/list', [FirmarDocumentosController::class, 'index']);
+            Route::post('/list', [FirmarDocumentosController::class, 'index'])->middleware('security:admin/produccion/documental/firmar');
             Route::post('/solicitar/token', [FirmarDocumentosController::class, 'solicitarToken']);
             Route::post('/procesar', [FirmarDocumentosController::class, 'procesar']);
-
             Route::post('/editar/documento', [FirmarDocumentosController::class, 'editarDocumentos']);
             Route::post('/acta/salve', [FirmarDocumentosController::class, 'salvarActa']);
             Route::post('/certificado/salve', [FirmarDocumentosController::class, 'salvarCertificado']);
@@ -257,32 +251,26 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/radicacion/documento')->group(function(){
-            Route::post('/entrante', [DocumentoEntranteController::class, 'index']);
+            Route::post('/entrante', [DocumentoEntranteController::class, 'index'])->middleware('security:admin/radicacion/documento/entrante');
             Route::post('/entrante/datos', [DocumentoEntranteController::class, 'datos']);
             Route::post('/entrante/consultar/persona', [DocumentoEntranteController::class, 'consultarPersona']);
             Route::post('/entrante/salve', [DocumentoEntranteController::class, 'salve']);
             Route::post('/entrante/imprimir', [DocumentoEntranteController::class, 'imprimir']);
             Route::post('/entrante/enviar', [DocumentoEntranteController::class, 'enviar']);
-
-            Route::post('/entrante/consultar/radicado', [AnularDocumentoEntranteController::class, 'index']);
+            Route::post('/entrante/consultar/radicado', [AnularDocumentoEntranteController::class, 'index'])->middleware('security:admin/radicacion/documento/anular');
             Route::post('/entrante/anular', [AnularDocumentoEntranteController::class, 'anular']);
-
-            Route::post('/entrante/bandeja', [BandejaRadicadoDocumentoEntranteController::class, 'index']);
+            Route::post('/entrante/bandeja', [BandejaRadicadoDocumentoEntranteController::class, 'index'])->middleware('security:admin/radicacion/documento/bandeja');
             Route::post('/entrante/recibir', [BandejaRadicadoDocumentoEntranteController::class, 'recibir']);
-
-            Route::post('/entrante/show', [ShowDocumentoEntranteController::class, 'index']);
+            Route::post('/entrante/show', [ShowDocumentoEntranteController::class, 'index']); //No debe tener control de ruta
         });
 
         Route::prefix('/archivo/historico')->group(function(){
-            Route::get('/gestionar/list', [HistoricoController::class, 'index']);
+            Route::get('/gestionar/list', [HistoricoController::class, 'index'])->middleware('security:admin/archivo/historico/gestionar');
             Route::post('/obtener/datos', [HistoricoController::class, 'datos']);
             Route::post('/salve', [HistoricoController::class, 'salve']);
-
-            Route::post('/show', [HistoricoShowController::class, 'index']);      
-
-            Route::get('/obtener/datos/consulta', [HistoricoConsultarController::class, 'index']);
+            Route::post('/show', [HistoricoShowController::class, 'index']);  //No debe tener control de ruta
+            Route::get('/obtener/datos/consulta', [HistoricoConsultarController::class, 'index'])->middleware('security:admin/archivo/historico/consultar');
             Route::post('/consultar/datos', [HistoricoConsultarController::class, 'consultar']);
-                   
             Route::post('/consultar/expediente', [HistoricoConsultarController::class, 'expediente']);
             Route::post('/consultar/expediente/pdf', [HistoricoConsultarController::class, 'expedientePdf']);
         });

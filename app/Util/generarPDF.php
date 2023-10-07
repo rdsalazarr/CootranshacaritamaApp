@@ -49,7 +49,7 @@ class generarPDF
 		$convocatorialugar    = $infodocumento->codopaconvocatorialugar;
 		$convocatoriafecha    = $infodocumento->codopaconvocatoriafecha;
 		$convocatoriahora     = $infodocumento->codopaconvocatoriahora;
-		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';	
+		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -69,10 +69,10 @@ class generarPDF
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(24); 
 		PDF::SetFont('helvetica','B',14);
-		PDF::Ln(16);
+		PDF::Ln(12);
 	    PDF::SetFont('helvetica', 'B', 12);
 	    PDF::Cell(165, 4, 'ACTA ' . $consecutivo, 0, 0, 'C');
-	    PDF::Ln(6);
+	    PDF::Ln(4);
 	    PDF::MultiCell(165, 0, $dependencia, 0, 'C', false, 1);
 	    if ($tipactid >= '2') {
 	        PDF::Cell(0, 5, $tipoActa, 0, 0, 'C');
@@ -109,7 +109,7 @@ class generarPDF
             PDF::MultiCell(125, 4, $ausentes."\n", 0, 'J', 0);
             PDF::Ln(8);
         }
-       
+
         PDF::SetFont('helvetica', 'B', 12);
         PDF::Cell(40, 4, 'ORDEN DEL DÍA:', 0, 0, '');
         PDF::SetFont('helvetica', '', 12);
@@ -125,19 +125,17 @@ class generarPDF
             PDF::Ln(4);
         }
 
-		PDF::writeHTML($contenido, true, 1, true, true);		
+		PDF::writeHTML($contenido, true, 1, true, true);
 		PDF::Ln(8);
 
 		if ($convocatoria === 1) {
 			PDF::SetX(26);    
 	        PDF::SetFont('helvetica', 'B', 12);
-	        PDF::Cell(38, 4, 'CONVOCATORIA.', 0, 0, '');	
+	        PDF::Cell(38, 4, 'CONVOCATORIA.', 0, 0, '');
 	        PDF::SetFont('helvetica', '', 12);
 	        PDF::MultiCell(127, 4,$convocatoriaDescripcion."\n", 0, 'J', 0);
-	        PDF::Ln(12);
-	    }else{
-			PDF::Ln(4);
 		}
+		PDF::Ln(12);
 
 		$this->imprimirFirmasDocumento($firmasDocumento, $estadoDocumento);
 
@@ -204,7 +202,7 @@ class generarPDF
 		PDF::writeHTML($contenido, true, 1, true, true);
 		PDF::Ln(4);
 		PDF::writeHTML($contenidoAdicional, true, 1, true, true);
-		PDF::Ln(4);
+		PDF::Ln(8);
 		PDF::Cell(60,4,$fechaDocumento,0,0,'');
 		PDF::Ln(26);
 		
@@ -216,7 +214,7 @@ class generarPDF
 			$firmado        = $firma->codopffirmado;
 
 			($firmado == 1) ? PDF::Image($rutaFirma, 80, PDF::GetY(), 46, 13) : $this->mensajeFirmarCentro(); 
-			PDF::Ln(($firmado == 1) ? 6 : 0);
+			PDF::Ln(($firmado == 1) ? 4 : 0);
 
 			PDF::Ln(8);
 			PDF::SetFont('helvetica','B',12); 
@@ -503,7 +501,7 @@ class generarPDF
 		PDF::writeHTML($contenido, true, 1, true, true);
 		PDF::Ln(4);
 		PDF::writeHTML($contenidoAdicional, true, 1, true, true);
-		PDF::Ln(4);
+		PDF::Ln(8);
 		PDF::Cell(60,4,$fechaDocumento,0,0,'');
 		PDF::Ln(26);
 		
@@ -515,7 +513,7 @@ class generarPDF
 			$firmado        = $firma->codopffirmado;
 
 			($firmado == 1) ? PDF::Image($rutaFirma, 80, PDF::GetY(), 46, 13) : $this->mensajeFirmarCentro(); 
-			PDF::Ln(($firmado == 1) ? 6 : 0);
+			PDF::Ln(($firmado == 1) ? 4 : 0);
 
 			PDF::Ln(8);
 			PDF::SetFont('helvetica','B',12); 

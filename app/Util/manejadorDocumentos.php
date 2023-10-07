@@ -38,7 +38,7 @@ class manejadorDocumentos {
 		}
 
 		//certificado y constancia
-		if($tipoDocumental === 'C'  || $tipoDocumental === 'T'){
+		if($tipoDocumental === 'B'  || $tipoDocumental === 'T'){
 			$tipoDestinos            = DB::table('tipodestino')->select('tipdetid','tipdetnombre')->orderBy('tipdetnombre')->get();
 			$tipoPersonaDocumentales = DB::table('tipopersonadocumental')->select('tipedoid','tipedonombre')->where('tipedoactivo', true)->orderBy('tipedonombre')->get();	
 		}
@@ -869,6 +869,7 @@ class manejadorDocumentos {
 						DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdpce.tiesdoid')
 						->join('usuario as u', 'u.usuaid', '=', 'cdpce.codpceusuaid')
-						->where('cdpce.codoprid', $codigo)->get();
+						->where('cdpce.codoprid', $codigo)
+						->orderBy('cdpce.codpceid')->get();
 	}
 }

@@ -152,6 +152,7 @@ php artisan make:request CitacionRequests
 php artisan make:request ConstanciaRequests
 php artisan make:request OficioRequests
 
+php artisan make:controller Admin\PerfilUsuarioController
 php artisan make:controller Admin\FestivoController
 php artisan make:controller Admin\ModuloController
 php artisan make:controller Admin\FuncionalidadController
@@ -179,5 +180,8 @@ php artisan make:controller Admin\Archivo\HistoricoConsultarController
 php artisan make:controller Admin\Tipos\EstanteArchivadorController
 php artisan make:controller Admin\Tipos\DocumentalController
 php artisan make:controller Admin\Exportar\RegistrosController
+
+php artisan make:middleware SecurityMiddleware
+php artisan make:middleware PreloadSecurityMiddleware
 
 php artisan db:seed

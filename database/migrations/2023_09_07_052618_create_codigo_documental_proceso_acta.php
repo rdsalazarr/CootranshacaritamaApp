@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('codopalugar', 200)->comment('Lugar donde se realiza el acta');
             $table->string('codopaquorum', 200)->nullable()->comment('Quorum reglamentario para el acta');
             $table->string('codopaordendeldia', 4000)->comment('Orden del dñia del acta');
-            $table->string('codopainvitado', 4000)->nullable()->comment('Invitados para el acta');
+            $table->string('codopainvitado', 4000)->nullable()->comment('Personas invitados para el acta');
+            $table->string('codopaausente', 4000)->nullable()->comment('Persona usente en la generación para el acta');
             $table->boolean('codopaconvocatoria')->default(false)->comment('Determina si el acta tiene conovocatoria');
             $table->string('codopaconvocatorialugar', 100)->nullable()->comment('Lugar conovocatoria para el acta');
             $table->date('codopaconvocatoriafecha')->nullable()->comment('Fecha para la conovocatoria del acta');
