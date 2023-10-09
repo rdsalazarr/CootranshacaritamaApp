@@ -266,7 +266,9 @@ class showTipoDocumental
 
 	function obtenerFirmaDocumento($id, $esInvitado = false){
 		return  DB::table('coddocumprocesofirma as cdpf')
-							->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid',
+							->select('cdpf.codopfid', 'cdpf.persid', 'cdpf.carlabid','cdpf.codopftoken','cdpf.codopffechahorafirmado',
+							'cdpf.codopffechahoranotificacion','cdpf.codopffechahoramaxvalidez','cdpf.codopfmensajecorreo',
+							'cdpf.codopfmensajecelular','p.persdocumento','p.perscorreoelectronico','p.persnumerocelular',
 							DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
 							'p.persrutafirma','cl.carlabnombre','cdpf.codopffirmado', DB::raw("CONCAT('archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"))
 							->join('persona as p', 'p.persid', '=', 'cdpf.persid')

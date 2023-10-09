@@ -1,12 +1,12 @@
 import '../../../bootstrap';
 import React from 'react';
 import {createRoot} from "react-dom/client";
-import { Box, Grid } from '@mui/material';
-import {Header,  Footer} from "../../layout/general";
-import imagen from "../../../images/errors/subiendoMantenimiento.svg";
+import imagen from "../../../../images/errors/subiendoMantenimiento.svg";
+import {Header, Footer} from "../../layout/general";
 import HomeIcon from '@mui/icons-material/Home';
-import "../../../scss/app.scss";
-import "../../../scss/errors.scss";
+import { Box, Grid } from '@mui/material';
+import "../../../../scss/app.scss";
+import "../../../../scss/errors.scss";
 
 export default function UpMantenimiento(){
 

@@ -10,24 +10,18 @@ class notificar
 	//Funcion para enviar el correo
     public function correo($correo = [], $asunto = '', $msg = '', $adjuntos = [], $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
 	
-		$mail = new PHPMailer(true);	
-		$usuario    = 'notificacioncootranshacaritama@gmail.com';
-		$password   = 'Notific@2023.';
-		$password   = 'grgsmqtlmijxaapj';
-		$host       = 'smtp.gmail.com';	
-	    $puerto     = 587;
-		$SMTPSecure = 'SSL';
+		$mail       = new PHPMailer(true);
 
 		try {
 			$mail->SMTPDebug  = 0;
 			$mail->isSMTP();
-			$mail->charSet 	  = "UTF-8";
-			$mail->Host       = $host;
 			$mail->SMTPAuth   = true; 
-			$mail->Username   = $usuario;
-			$mail->Password   = $password; 
-			$mail->SMTPSecure = $SMTPSecure;
-			$mail->Port       = $puerto; //587
+			$mail->charSet 	  = "UTF-8";
+			$mail->Host       = env('HOST_NOTIFICACION');
+			$mail->Username   = env('CORREO_NOTIFICACION');
+			$mail->Password   = env('PASSWORD_NOTIFICACION_API'); 
+			$mail->SMTPSecure = 'SSL';
+			$mail->Port       = 587;
 
 			$mail->setFrom($usuario,utf8_decode('Notificaciones CRM HACARITAMA'));
 	
