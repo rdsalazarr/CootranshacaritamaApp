@@ -20,7 +20,9 @@ class showTipoDocumental
 						'ted.tiesdonombre as estado',
 						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
-						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias','d.depenombre')
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias','d.depenombre',
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaDocumento'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid AND codopffirmado = true) AS totalFirmaRealizadas'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpa.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
@@ -53,7 +55,9 @@ class showTipoDocumental
 						'ted.tiesdonombre as estado',
 						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
-						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias')
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias',
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaDocumento'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid AND codopffirmado = true) AS totalFirmaRealizadas'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
@@ -92,7 +96,9 @@ class showTipoDocumental
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
 						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias',
 						DB::raw('(SELECT COUNT(codopxid) AS codopxid FROM coddocumprocesoanexo WHERE codoprid = cdp.codoprid) AS totalAnexos'),
-						DB::raw('(SELECT COUNT(codoppid) AS codoppid FROM coddocumprocesocopia WHERE codoprid = cdp.codoprid) AS totalCopias'))
+						DB::raw('(SELECT COUNT(codoppid) AS codoppid FROM coddocumprocesocopia WHERE codoprid = cdp.codoprid) AS totalCopias'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaDocumento'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid AND codopffirmado = true) AS totalFirmaRealizadas'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
@@ -140,7 +146,9 @@ class showTipoDocumental
 						DB::raw("if(cdp.codoprtienecopia = 1 ,'Sí', 'No') as tienecopia"),
 						'ted.tiesdonombre as estado','cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo','d.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias',
-						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaInvitados'))
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaInvitados'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaDocumento'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid AND codopffirmado = true) AS totalFirmaRealizadas'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')
@@ -177,7 +185,9 @@ class showTipoDocumental
 						'ted.tiesdonombre as estado',
 						'cd.depeid','cd.serdocid','cd.susedoid','cd.tipdocid','cd.tipmedid','cd.tiptraid','cd.tipdetid',
 						'tdc.tipdoccodigo','sd.serdoccodigo', 'ssd.susedocodigo',
-						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias')
+						'd.depenombre as dependencia', 'd.depecodigo', 'u.usuaalias as alias',
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid) AS totalFirmaDocumento'),
+						DB::raw('(SELECT COUNT(codopfid) AS codopfid FROM coddocumprocesofirma WHERE codoprid = cdp.codoprid AND codopffirmado = true) AS totalFirmaRealizadas'))
 						->join('codigodocumentalproceso as cdp', 'cdp.codoprid', '=', 'cdpc.codoprid')
 	  					->join('codigodocumental as cd', 'cd.coddocid', '=', 'cdp.coddocid')
 						->join('tipoestadodocumento as ted', 'ted.tiesdoid', '=', 'cdp.tiesdoid')

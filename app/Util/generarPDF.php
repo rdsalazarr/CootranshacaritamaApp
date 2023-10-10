@@ -50,7 +50,9 @@ class generarPdf
 		$convocatorialugar    = $infodocumento->codopaconvocatorialugar;
 		$convocatoriafecha    = $infodocumento->codopaconvocatoriafecha;
 		$convocatoriahora     = $infodocumento->codopaconvocatoriahora;
-		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
+		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';		
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -62,7 +64,7 @@ class generarPdf
 		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
 
-		//PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
+		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		PDF::SetMargins(24, 36, 20);
@@ -144,6 +146,10 @@ class generarPdf
 			PDF::Ln(20);
 		}
 
+		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		}
+
 		//Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
 	}
@@ -175,6 +181,8 @@ class generarPdf
 		$firmado              = $infodocumento->codoprfirmado;
 		$transcriptor         = $infodocumento->alias;
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -228,7 +236,9 @@ class generarPdf
 		PDF::SetFont('helvetica','',9);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		//$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		}
 
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -270,6 +280,8 @@ class generarPdf
 		$firmado        	  = $infodocumento->codoprfirmado;
 		$transcriptor   	  = $infodocumento->alias;
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 		
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -329,9 +341,12 @@ class generarPdf
 			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);
 		}
 
+		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		//$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		}
 
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -372,6 +387,8 @@ class generarPdf
 		$transcriptor   	  = $infodocumento->alias;
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 		$fechaRealizacion     = $funcion->formatearFecha($infodocumento->codoptfecharealizacion);
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -383,7 +400,7 @@ class generarPdf
 		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
 
-		//PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
+		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		PDF::SetMargins(24, 36, 20);
@@ -444,8 +461,12 @@ class generarPdf
 			$this->imprimirCopiaDocumento([], '', $correos);
 		}
 
-		PDF::SetFont('helvetica', '', 11);
+		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
+
+		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		}
 
 		//Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -478,6 +499,8 @@ class generarPdf
 		$firmado              = $infodocumento->codoprfirmado;
 		$transcriptor         = $infodocumento->alias;
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -528,10 +551,12 @@ class generarPdf
 		}		
 
 		PDF::Ln(12);
-		PDF::SetFont('helvetica','',9);		
+		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		//$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		}
 
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -578,8 +603,8 @@ class generarPdf
 		$firmado        	  = $infodocumento->codoprfirmado;
 		$transcriptor   	  = $infodocumento->alias;
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
-		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento ;
-		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;		
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -668,11 +693,12 @@ class generarPdf
 			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);
 		}
 	
+		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		/*if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
-		}*/
+		}
 
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -860,11 +886,11 @@ class generarPdf
 			$xmlString               = $xml->saveXML();
 
 			Storage::disk('public')->put('firma.xml',$xmlString);
-			//$xmlFirma = public_path('storage/firma.xml');
-			$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
+			$xmlFirma = public_path('storage/firma.xml');
+			//$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
 
 			PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
-			PDF::Ln(5);
+			PDF::Ln(8);
 			PDF::SetFont('helvetica', '', 6);
 			PDF::MultiCell(0,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
 		}
