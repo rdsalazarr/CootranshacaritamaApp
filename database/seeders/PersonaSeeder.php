@@ -38,7 +38,7 @@ class PersonaSeeder extends Seeder
             'persnumerocelular'  => '3204018506',
             'persgenero'    => 'M',
             'persrutafoto'  => null,
-            'persrutafirma' => null,
+            'persrutafirma' => 'Firma_1978917.png',
             'persactiva'    => '1',
             'created_at'    => $fechaHoraActual,
             'updated_at'    => $fechaHoraActual,

@@ -23,7 +23,7 @@ class notificar
 			$mail->SMTPSecure = 'SSL';
 			$mail->Port       = 587;
 
-			$mail->setFrom($usuario,utf8_decode('Notificaciones CRM HACARITAMA'));
+			$mail->setFrom(env('CORREO_NOTIFICACION'), utf8_decode('Notificaciones CRM HACARITAMA'));
 	
 			foreach ($correo as $email) {
 				$mail->addAddress($email);

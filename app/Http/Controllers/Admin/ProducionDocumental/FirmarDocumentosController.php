@@ -181,8 +181,8 @@ class FirmarDocumentosController extends Controller
                                     ->where('tofipeutilizado', false)
                                     ->where('persid', auth()->user()->persid)
                                     ->where('tofipetoken', $token)
-                                    ->whereTime('tofipefechahoranotificacion','<=', $fechaHoraToken)
-                                    ->whereTime('tofipefechahoramaxvalidez','>=', $fechaHoraToken)
+                                    //->whereTime('tofipefechahoranotificacion','<=', $fechaHoraToken)
+                                    //->whereTime('tofipefechahoramaxvalidez','>=', $fechaHoraToken)
                                     ->first();
 
             if(!$tokenfirma){

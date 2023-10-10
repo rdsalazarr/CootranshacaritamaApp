@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Security;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Util\Notificar;
+use App\Util\notificar;
 use DB, Auth, URL, Artisan;
 use Carbon\Carbon;
 use setasign\Fpdi\Fpdi;

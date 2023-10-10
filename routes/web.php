@@ -80,7 +80,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('reset', [DashboardController::class, 'reset']);
 
     Route::prefix('admin')->group(function(){
-        Route::get('/modulo/list', [ModuloController::class, 'index']);
+        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/menu');
         Route::post('/modulo/salve', [ModuloController::class, 'salve']);
         Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
 
@@ -133,21 +133,21 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
-        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionarSeriesDocumentales');  
+        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/seriesDocumentales');  
         Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
         Route::post('/serieDocumental/destroy', [SerieDocumentalController::class, 'destroy']);
 
-        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware('security:admin/gestionarSeriesDocumentales');
+        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware('security:admin/seriesDocumentales');
         Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos']);  
         Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
         Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
          
-        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware('security:admin/gestionarDependencia');
+        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware('security:admin/dependencia');
         Route::post('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/usuario'); 
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/persona'); 
         Route::get('/persona/listar/datos', [PersonaController::class, 'datos']); 
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
@@ -164,12 +164,12 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/usuario/updatePerfil', [PerfilUsuarioController::class, 'updatePerfil']);
         Route::post('/usuario/updatePassword', [PerfilUsuarioController::class, 'updatePassword']);
 
-        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/usuario');
+        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/festivos');
         Route::post('/festivo/salve', [FestivoController::class, 'salve']);
 
         Route::prefix('/producion/documental')->group(function(){
 
-            Route::post('/acta/list', [ActaController::class, 'index']);//->middleware('security:admin/produccion/documental/acta')
+            Route::post('/acta/list', [ActaController::class, 'index'])->middleware('security:admin/produccion/documental/acta');
             Route::get('/acta/consultar/area', [ActaController::class, 'area']);
             Route::post('/acta/listar/datos', [ActaController::class, 'datos']);
             Route::post('/acta/salve', [ActaController::class, 'salve']);

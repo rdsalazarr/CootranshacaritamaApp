@@ -11,7 +11,7 @@ use App\Util\generales;
 use App\Util\encrypt;
 use Carbon\Carbon;
 
-class generarPDF
+class generarPdf
 {
 	function acta($id, $metodo = 'I')
 	{
@@ -228,6 +228,8 @@ class generarPDF
 		PDF::SetFont('helvetica','',9);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
+		//$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
 	}
@@ -324,10 +326,12 @@ class generarPDF
 
 		//Verifico si tiene copia
 		if($tieneCopia == 1 || $correos !== ''){
-			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);			
+			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);
 		}
 
 		PDF::Cell(30,4,$transcriptor,0,0,'');
+
+		//$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -527,6 +531,8 @@ class generarPDF
 		PDF::SetFont('helvetica','',9);		
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
+		//$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
 	}
@@ -572,6 +578,8 @@ class generarPDF
 		$firmado        	  = $infodocumento->codoprfirmado;
 		$transcriptor   	  = $infodocumento->alias;
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
+		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento ;
+		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;		
 
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -662,7 +670,9 @@ class generarPDF
 	
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		/*if ($totalFirmaDocumento === $totalFirmaRealizadas){
+			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
+		}*/
 
 	    //Imprimimos salida del pdf
 		return $this->outputPdfDocumental($codigoInstitucional,$fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia,$anioDocumento);
@@ -846,14 +856,17 @@ class generarPDF
 			$informacioncertificado->appendChild($xml->createElement('certificado',$contenidoCertficado));
 
 			$xml->preserveWhiteSpace = false;
-			$xml->formatOutput       = true; 
+			$xml->formatOutput       = true;
 			$xmlString               = $xml->saveXML();
 
 			Storage::disk('public')->put('firma.xml',$xmlString);
-			$xmlFirma = public_path('storage/firma.xml');
+			//$xmlFirma = public_path('storage/firma.xml');
+			$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
 
 			PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
-			PDF::MultiCell(0,4,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken,0,'C',0);
+			PDF::Ln(5);
+			PDF::SetFont('helvetica', '', 6);
+			PDF::MultiCell(0,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
 		}
 	}
 

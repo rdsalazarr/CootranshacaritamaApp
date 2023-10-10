@@ -397,6 +397,9 @@ body{
 
 /*xs*/
 @media (max-width: 576px) {
+  .cardContainer {
+    margin-left: 0em;
+  }
   .containerAdmin{
     width: 94%;
   }
@@ -405,6 +408,6 @@ body{
     margin-left: -25px;
   }  
   .containerSmall{
-    width: 100%;
+    width: 120%;
   }
 }

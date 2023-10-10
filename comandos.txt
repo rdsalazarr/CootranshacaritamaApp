@@ -185,3 +185,21 @@ php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 
 php artisan db:seed
+
+
+{
+    "name": "AppHacaritama",
+    "host": "153.92.214.181",
+    "protocol": "sftp",
+    "port": 47963,
+    "username": "implesoft",
+    "password": "ImpleS2023@",
+    "remotePath": "/sitios/implesoft/hacaritama/",
+    "uploadOnSave": true,
+    "ignore": [".vscode", ".git"],
+    "watcher": {
+        "files": "**/*.{js,css,json,png,jpg}",
+        "autoUpload": true,
+        "autoDelete": true
+    }
+ }
