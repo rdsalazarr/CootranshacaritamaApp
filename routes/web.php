@@ -70,8 +70,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('admin/welcome', [DashboardController::class, 'welcome']);
     Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu']);
 
+    Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
-        Route::get('/admin/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
