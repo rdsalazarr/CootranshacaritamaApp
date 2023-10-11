@@ -6,7 +6,7 @@ import instance from '../../../../layout/instance';
 import { Box} from '@mui/material';
 import Show from '../show';
 
-export default function Producir(){
+export default function Historico(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);

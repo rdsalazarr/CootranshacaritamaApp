@@ -17,26 +17,33 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
     public function index(Request $request)
 	{
 		$this->validate(request(),['tipo' => 'required']);
+        $esCopia = ($request->tipo === 'COPIAS') ? true : false;
+
+       // dd($esCopia);
 
         $consulta   = DB::table('radicaciondocumentoentrante as rde')
-                    ->select('rde.radoenid as id', 'radoedid as idFirma', 'rde.tierdeid', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
-                        DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
-                        DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"))                    
-                    ->join('tipoestadoraddocentrante as terde', 'terde.tierdeid', '=', 'rde.tierdeid')
-                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
-                    ->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
-                    ->join('radicaciondocentdependencia as rded', function($join)
-								{
-									$join->on('rded.radoenid', '=', 'rde.radoenid');
-									$join->on('rded.depeid', '=', 'rde.depeid'); 
-								})
-                    ->whereIn('rded.depeid', function($query) {
+                        ->select('rde.radoenid as id', 'radoedid as idFirma', 'rde.tierdeid', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
+                            DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
+                            DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"))                    
+                        ->join('tipoestadoraddocentrante as terde', 'terde.tierdeid', '=', 'rde.tierdeid')
+                        ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                        ->join('radicaciondocentdependencia as rded', function($join)
+                            {
+                                $join->on('rded.radoenid', '=', 'rde.radoenid');
+                                $join->where('rded.radoedescopia', false); 
+                            })
+                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                        ->whereIn('d.depeid', function($query) {
                             $query->select('depperdepeid')->from('dependenciapersona')
                                     ->where('depperpersid',  auth()->user()->persid);
                             });
 
                     if($request->tipo === 'VERIFICADOS')
                         $consulta = $consulta->where('rde.tierdeid', 2);
+
+                    if($request->tipo === 'COPIAS')
+                        $consulta =  $consulta->whereIn('rde.tierdeid', [1,2,3,4]);
+                        $consulta =  $consulta->where('rded.radoedescopia', true); 
 
                     if($request->tipo === 'RECIBIDOS')
                         $consulta = $consulta->where('rde.tierdeid', '!=', 2);

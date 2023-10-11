@@ -17,7 +17,7 @@ class ShowDocumentoEntranteController extends Controller
 
         $radicado   = DB::table('radicaciondocumentoentrante as rde')
                         ->select('tm.tipmednombre as nombreTipoMedio','terde.tierdenombre as estadoActual','d.depenombre as dependencia',
-                                'm.muninombre as municipio','dp.depanombre as depertamento','rde.radoenfechadocumento','rde.radoenfechallegada',
+                                'm.muninombre as municipio','dp.depanombre as departamento','rde.radoenfechadocumento','rde.radoenfechallegada',
                                 'rde.radoenpersonaentregadocumento','rde.radoenasunto', 'rde.radoendescripcionanexo','rde.radoenobservacion',
                                 DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'radoenfechahoraradicado','radoenfechamaximarespuesta',
                                 DB::raw("if(rde.radoentieneanexo = 1 ,'Sí', 'No') as tieneAnexos"),
@@ -26,11 +26,16 @@ class ShowDocumentoEntranteController extends Controller
                                 'ti.tipidenombre as tipoIdentificacion','prd.peradodocumento','prd.peradoprimernombre','prd.peradosegundonombre','prd.peradoprimerapellido',
                                 'prd.peradosegundoapellido', 'prd.peradodireccion','prd.peradotelefono','prd.peradocorreo','prd.peradocodigodocumental',
                                 DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"),
-                                DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid) AS totalCopias'))
+                                DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid AND radoedescopia = true) AS totalCopias'))
                         ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                         ->join('tipomedio as tm', 'tm.tipmedid', '=', 'rde.tipmedid')
                         ->join('tipoestadoraddocentrante as terde', 'terde.tierdeid', '=', 'rde.tierdeid')
-                        ->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
+                        ->join('radicaciondocentdependencia as rded', function($join)
+                        {
+                            $join->on('rded.radoenid', '=', 'rde.radoenid');
+                            $join->where('rded.radoedescopia', false);
+                        })
+                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                         ->join('departamento as dp', 'dp.depaid', '=', 'rde.depaid')
                         ->join('municipio as m', function($join)
 							{
@@ -47,7 +52,8 @@ class ShowDocumentoEntranteController extends Controller
                                     DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
                                     ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                     ->leftJoin('usuario as u', 'u.usuaid', '=', 'rded.radoedsuaid')
-                                    ->where('rded.radoenid', $codigo)->get();
+                                    ->where('rded.radoenid', $codigo)
+                                    ->where('rded.radoedescopia', true)->get();
         }
 
         $anexos  =  DB::table('radicaciondocentanexo as rdea')

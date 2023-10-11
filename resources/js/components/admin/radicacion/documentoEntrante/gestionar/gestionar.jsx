@@ -9,7 +9,7 @@ import { Box} from '@mui/material';
 import NewEdit from './new';
 import Show from '../show';
 
-export default function Producir(){
+export default function Gestionar(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);

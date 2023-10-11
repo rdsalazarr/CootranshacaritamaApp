@@ -6,7 +6,8 @@ import instance from '../../../../layout/instance';
 import { Box} from '@mui/material';
 import Show from '../show';
 
-export default function Recibidos(){
+export default function Recibidos({tipoUrl}){
+    console.log(tipoUrl);
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
@@ -24,7 +25,7 @@ export default function Recibidos(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/radicacion/documento/entrante/bandeja', {tipo:'RECIBIDOS'}).then(res=>{
+        instance.post('/admin/radicacion/documento/entrante/bandeja', {tipo: tipoUrl}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 

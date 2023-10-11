@@ -11,5 +11,5 @@ class RadicacionDocumentoEntranteDependencia extends Model
 
     protected $table      = 'radicaciondocentdependencia';
     protected $primaryKey = 'radoedid';
-    protected $fillable   = ['radoenid','depeid','radoedsuaid'];
+    protected $fillable   = ['radoenid','depeid','radoedsuaid','radoedescopia'];
 }

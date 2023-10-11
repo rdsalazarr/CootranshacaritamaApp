@@ -94,9 +94,14 @@ export default function New({data, tipo}){
             return;
         }
 
+        let arrayCopiaDenpendencias = [];
+        checkedDependencias.map((dep) => (
+            arrayCopiaDenpendencias.push(dep.depeid)
+        ))
+
         let newFormData               = {...formData};
         newFormData.pdfRadicar        = formDataFilePdf.archivos;
-        newFormData.copiasDependencia = checkedDependencias;
+        newFormData.copiasDependencia = arrayCopiaDenpendencias;
         setLoader(true);
         instance.post('/admin/radicacion/documento/entrante/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -127,6 +132,7 @@ export default function New({data, tipo}){
 
             if(tipo === 'U'){
                 let radicado                        = res.data;
+                let copiaDependencias               = res.copiaDependencias;
                 newFormData.personaId               = radicado.peradoid;
                 newFormData.tipoIdentificacion      = radicado.tipideid;
                 newFormData.numeroIdentificacion    = radicado.peradodocumento;
@@ -141,6 +147,8 @@ export default function New({data, tipo}){
                 newFormData.fechaLlegadaDocumento   = radicado.radoenfechallegada;
                 newFormData.fechaDocumento          = radicado.radoenfechadocumento;
                 newFormData.dependencia             = radicado.depeid;
+                newFormData.dependenciaRadicado     = radicado.depeid;
+                newFormData.radoedid                = radicado.radoedid;
                 newFormData.departamento            = radicado.depaid;
                 newFormData.municipio               = radicado.muniid;
                 newFormData.asuntoRadicado          = radicado.radoenasunto;
@@ -161,11 +169,18 @@ export default function New({data, tipo}){
                         });
                     }
                 });
-                
+
+                let depeCopias = [];
+                copiaDependencias.forEach(function(depen){
+                    depeCopias.push({depeid: depen.depeid, depesigla: depen.dependencia, depenombre: depen.depenombre });
+                })
+
+                setCheckedDependencias(depeCopias);
                 setDeptoMunicipios(newMunicipios);
                 setTotalAdjuntoSubido(radicado.totalAnexos);
                 setAnexosRadicado(res.anexosRadicados);
                 setHabilitarAnexos((parseInt(radicado.totalAnexos) > 0) ? true : false);
+                setTieneCopia((parseInt(radicado.radoentienecopia) === 1) ? true : false);
             }
 
             setTipoMedios(res.tipoMedios);
@@ -659,11 +674,16 @@ export default function New({data, tipo}){
 
                             <Box style={{maxHeight: '15em', overflow:'auto'}}>
                                 <Grid container spacing = {2} >
-                                    { dependencias.map((dep, a) => { 
+                                    { dependencias.map((dep, a) => {
+
+                                        const marcado         = checkedDependencias.some(resul => resul.depeid === dep.depeid);
+                                        const controlCheckbox = (marcado) ? <Checkbox color="secondary" defaultChecked onChange={(e) => handleCheckboxChange(e, dep)} /> :
+                                                                    <Checkbox color="secondary" onChange={(e) => handleCheckboxChange(e, dep)} />;  
+
                                         return(
                                             <Grid item xl={4} md={4} sm={12} xs={12} key={a}>
                                                 <FormGroup id={dep.depeid}>
-                                                    <FormControlLabel control={<Checkbox color="secondary" onChange={(e) => handleCheckboxChange(e, dep)} />} label={dep.depenombre} />
+                                                    <FormControlLabel control={controlCheckbox} label={dep.depenombre} />
                                                 </FormGroup>
                                             </Grid>
                                         )

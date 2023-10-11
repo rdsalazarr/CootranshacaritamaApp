@@ -108,17 +108,17 @@ export default function New({id, area, tipo, ruta}){
     const handleSubmit = () =>{
         if(formData.tipoMedio !== 1 && formData.correo === ''){
             showSimpleSnackbar("Debe ingresar el correo", 'error');
-            return
+            return;
         }
 
         if(!validateCorreos(formData.correo) && formData.correo !== ''){
             showSimpleSnackbar("El campo de correo electrónico contiene uno o más correos que no tienen una estructura válida", 'error');
-            return
+            return;
         }
 
         if(editorTexto.current.getContent() === ''){
             showSimpleSnackbar("Debe ingresar el contenido del documento", 'error');
-            return
+            return;
         }
 
         //En el momento de enviar la peticion no muestra los cambio en el tyminice
@@ -335,7 +335,7 @@ export default function New({id, area, tipo, ruta}){
                         depeid: dep.depeid
                     });
                 });
-    
+
                 setFormDataDependencia(newFormDataDependencia);
                 setTotalAdjuntoSubido(tpDocumental.totalAnexos);
                 setDocumentosRadicados(newDocumentosRadicados);
@@ -690,7 +690,7 @@ export default function New({id, area, tipo, ruta}){
                 : null}
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
-                    <label className={'labelEditor'}> Contenido </label> 
+                    <label className={'labelEditor'}> Contenido </label>
                     <Editor 
                         onInit={(evt, editor) => editorTexto.current = editor}
                         initialValue = {formData.contenido}
@@ -698,7 +698,6 @@ export default function New({id, area, tipo, ruta}){
                             language: 'es',
                             height: 400,
                             object_resizing : true,
-                            table_responsive_width: true,
                             browser_spellcheck: true,
                             spellchecker_language: 'es',
                             spellchecker_wordchar_pattern: /[^\s,\.]+/g ,
@@ -870,7 +869,7 @@ export default function New({id, area, tipo, ruta}){
                                     const marcado  = dependenciaMarcada.find(resul => resul.depeid === res.depeid);
                                     const checkbox = (marcado !== undefined) ? <Checkbox color="secondary" defaultChecked /> : <Checkbox color="secondary"  />;  
                                 
-                                    const frmCheckbox = <Grid item md={4} xl={4} sm={6} key={res.depenombre} >
+                                    const frmCheckbox = <Grid item xl={4} md={4} sm={6} xs={12} key={res.depenombre} >
                                                             <FormControlLabel value={res.depeid} label={res.depenombre} control={checkbox} />
                                                         </Grid>
                                     return frmCheckbox;

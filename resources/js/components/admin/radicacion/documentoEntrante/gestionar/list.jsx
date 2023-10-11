@@ -3,7 +3,7 @@ import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../../layout/general';
 import Verificar from "./verificar";
 import Historico from "./historico";
-import Producir from "./producir";
+import Gestionar from "./gestionar";
 
 export default function List(){
 
@@ -24,13 +24,13 @@ export default function List(){
                 indicatorColor="secondary"
                 textColor="secondary"
                 variant={variantTab} >
-                <Tab label="Producir" />
+                <Tab label="Gestionar" />
                 <Tab label="Verificar" />
                 <Tab label="Histórico" /> 
             </Tabs>
 
             <TabPanel value={value} index={0}>
-                <Producir />
+                <Gestionar />
             </TabPanel>
 
             <TabPanel value={value} index={1}>

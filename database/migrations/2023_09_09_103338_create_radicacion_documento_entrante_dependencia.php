@@ -17,6 +17,7 @@ return new class extends Migration
             $table->smallInteger('depeid')->unsigned()->comment('Identificador de la dependencia');
             $table->smallInteger('radoedsuaid')->unsigned()->nullable()->comment('Identificador del usuario que recibe el documento radicado');
             $table->dateTime('radoedfechahorarecibido')->nullable()->comment('Fecha y hora en la cual se recibe el documento');
+            $table->boolean('radoedescopia')->default(false)->comment('Determina si el radicado es una copia para una dependencia');
             $table->timestamps();
             $table->foreign('radoenid')->references('radoenid')->on('radicaciondocumentoentrante')->onUpdate('cascade')->index('fk_radoenradoed');
             $table->foreign('depeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_deperadoed');

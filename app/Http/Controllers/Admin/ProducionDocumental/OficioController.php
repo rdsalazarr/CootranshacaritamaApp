@@ -42,13 +42,13 @@ class OficioController extends Controller
 
 						if($request->tipo === 'PRODUCIR')
 							$consulta = $consulta->whereIn('cdp.tiesdoid', [1, 3]);
-					
+
 						if($request->tipo === 'VERIFICAR')
 							$consulta = $consulta->whereIn('cdp.tiesdoid', [2, 4]);
 
 						if($request->tipo === 'HISTORICOS')
 							$consulta = $consulta->whereNotIn('cdp.tiesdoid', [1, 2, 3, 4]);
-					
+
 				$data = $consulta->orderBy('cdp.codoprfecha','Desc')->get();
 
         return response()->json(["data" => $data]);
@@ -74,7 +74,7 @@ class OficioController extends Controller
 		$copiaDependencias  = [] ;
 		$anexosDocumento    = [] ;
 		$radicadosDocumento = [];
-		if($tipo === 'U'){			
+		if($tipo === 'U'){
 			$visualizar  = new showTipoDocumental();
 			list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento, $radicadosDocumento) = $visualizar->oficio($id);
 			$depeid      = $data->depeid;
@@ -82,11 +82,10 @@ class OficioController extends Controller
 
 		$radicadosRecibidos = DB::table('radicaciondocumentoentrante as rde')
 									->select('rde.radoenid', 'rde.radoenanio', 'rde.radoenconsecutivo')
-									->join('dependencia as d', 'd.depeid', '=', 'rde.depeid')
 									->join('radicaciondocentdependencia as rded', function($join)
 										{
-												$join->on('rded.radoenid', '=', 'rde.radoenid');
-												$join->on('rded.depeid', '=', 'rde.depeid'); 
+											$join->on('rded.radoenid', '=', 'rde.radoenid');
+											$join->where('rded.radoedescopia', false);
 										})
 									->where('rde.tierdeid', 3) //Recibido
 									->where('rde.radoenrequiererespuesta', true)

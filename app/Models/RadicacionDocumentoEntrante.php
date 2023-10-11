@@ -11,7 +11,7 @@ class RadicacionDocumentoEntrante extends Model
 
     protected $table      = 'radicaciondocumentoentrante';
     protected $primaryKey = 'radoenid';
-    protected $fillable   = ['peradoid','tipmedid','tierdeid','usuaid','depaid','muniid','depeid','radoenconsecutivo','radoenanio',
+    protected $fillable   = ['peradoid','tipmedid','tierdeid','usuaid','depaid','muniid','radoenconsecutivo','radoenanio',
                             'radoenfechahoraradicado','radoenfechamaximarespuesta','radoenfechadocumento','radoenfechallegada',
                             'radoenpersonaentregadocumento','radoenasunto','radoentieneanexo','radoendescripcionanexo','radoentienecopia',
                             'radoenobservacion','radoenrequiererespuesta'];

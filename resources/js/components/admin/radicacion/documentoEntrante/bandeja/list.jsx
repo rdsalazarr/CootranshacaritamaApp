@@ -24,15 +24,20 @@ export default function List(){
                 textColor="secondary"
                 variant={variantTab} >
                 <Tab label="Verificar" />
+                <Tab label="Copias" />
                 <Tab label="Recibidos" /> 
             </Tabs>
 
             <TabPanel value={value} index={0}>
                 <Verificar />
             </TabPanel>
-
+            
             <TabPanel value={value} index={1}>
-                <Recibidos />
+                <Recibidos tipoUrl={'COPIAS'}/>
+            </TabPanel>
+
+            <TabPanel value={value} index={2}>
+                <Recibidos tipoUrl={'RECIBIDOS'}/>
             </TabPanel>
 
         </Box>

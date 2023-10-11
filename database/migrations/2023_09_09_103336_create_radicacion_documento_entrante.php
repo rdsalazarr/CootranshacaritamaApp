@@ -18,7 +18,6 @@ return new class extends Migration
             $table->tinyInteger('tierdeid')->unsigned()->comment('Identificador del tipo de estado radicación documento entrante');
             $table->tinyInteger('depaid')->unsigned()->nullable()->comment('Identificador del departamento del cual proviene el documento');
             $table->smallInteger('muniid')->unsigned()->nullable()->comment('Identificador del municipio del cual proviene el documento');
-            $table->smallInteger('depeid')->unsigned()->comment('Identificador de la dependencia'); 
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el estado del documento');
             $table->string('radoenconsecutivo', 4)->comment('Consecutivo del radicado');
             $table->string('radoenanio', 4)->comment('Año en el cual se crea el radicado');
@@ -39,8 +38,7 @@ return new class extends Migration
             $table->foreign('tipmedid')->references('tipmedid')->on('tipomedio')->onUpdate('cascade')->index('fk_tipmedradoen');
             $table->foreign('tierdeid')->references('tierdeid')->on('tipoestadoraddocentrante')->onUpdate('cascade')->index('fk_tierderadoen');
             $table->foreign('depaid')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_deparadoen');
-            $table->foreign('muniid')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_muniradoen');
-            $table->foreign('depeid')->references('depeid')->on('dependencia')->onUpdate('cascade')->index('fk_deperadoen');
+            $table->foreign('muniid')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_muniradoen');           
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_radoen');  
         });
     }

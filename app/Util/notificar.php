@@ -11,19 +11,26 @@ class notificar
     public function correo($correos = [], $asunto = '', $msg = '', $adjuntos = [], $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
 	
 		$mail       = new PHPMailer(true);
-dd(env('CORREO_NOTIFICACION'));
+		$host       = env('HOST_NOTIFICACION');
+		$usuario    = env('CORREO_NOTIFICACION'); 
+		$password   = env('PASSWORD_NOTIFICACION_API'); 
+
+		$host       = 'smtp.gmail.com';
+		$usuario    = 'notificacioncootranshacaritama@gmail.com'; 
+		$password   = 'grgsmqtlmijxaapj'; 
+
 		try {
 			$mail->SMTPDebug  = 0;
 			$mail->isSMTP();
 			$mail->SMTPAuth   = true; 
 			$mail->charSet 	  = "UTF-8";
-			$mail->Host       = env('HOST_NOTIFICACION');
-			$mail->Username   = env('CORREO_NOTIFICACION');
-			$mail->Password   = env('PASSWORD_NOTIFICACION_API'); 
+			$mail->Host       = $host;
+			$mail->Username   = $usuario;
+			$mail->Password   = $password; 
 			$mail->SMTPSecure = 'SSL';
 			$mail->Port       = 587;
 
-			$mail->setFrom(env('CORREO_NOTIFICACION'), utf8_decode('Notificaciones CRM HACARITAMA'));
+			$mail->setFrom($usuario, utf8_decode('Notificaciones CRM HACARITAMA'));
 	
 			foreach ($correos as $email) {
 				$mail->addAddress($email);
