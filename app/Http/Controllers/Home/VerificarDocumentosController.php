@@ -122,8 +122,8 @@ class VerificarDocumentosController extends Controller
 
     public function downloadDocumento($sigla, $anyo, $ruta){
         try {
-            $ruta = Crypt::decrypt($ruta); 
-            $file = public_path().$sigla.'/'.$anyo.'/'.$ruta; 
+            $ruta = Crypt::decrypt($ruta);
+            $file = public_path().'/archivos/produccionDocumental/digitalizados/'.$sigla.'/'.$anyo.'/'.$ruta;
             if (file_exists($file)) {
                 return response()->download($file, $ruta);
             } else {

@@ -279,7 +279,7 @@ class OficioController extends Controller
 			$codigodocumentalprocesocambioestado->tiesdoid          = $estado;
 			$codigodocumentalprocesocambioestado->codpceusuaid      = Auth::id();
 			$codigodocumentalprocesocambioestado->codpcefechahora   = $fechaHoraActual;
-			$codigodocumentalprocesocambioestado->codpceobservacion = 'Solicitud de sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+			$codigodocumentalprocesocambioestado->codpceobservacion = 'Sellado del documento realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
 			$codigodocumentalprocesocambioestado->save();
 
 			//Genero una copia del documento en el servidor

@@ -153,6 +153,7 @@ class DocumentoEntranteController extends Controller
                 $verificarPdf         = $generarPdf->validarPuedeAbrirPdf($rutaCarpeta.'/'.$nombreArchivoPdf);
                 $debeRadicarDocumento = true;
                 if(!$verificarPdf){
+                    unlink($rutaCarpeta.'/'.$nombreArchivoPdf);//Elimina el archivo de la carpeta
                     DB::rollback();
                     return response()->json(['success' => false, 'message'=> 'Este documento PDF está encriptado y no puede ser procesado']);
                 }
@@ -385,7 +386,7 @@ class DocumentoEntranteController extends Controller
             $radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
             $radicaciondocentcambioestado->radeceobservacion = 'Documento enviado a la dependencia, este proceso fue realizado por '.auth()->user()->usuanombre.'  en la fecha '.$fechaHoraActual;
             $radicaciondocentcambioestado->save();
-          
+      
             $notificar          = new notificar();
             $informacioncorreos = DB::table('informacionnotificacioncorreo')->wherein('innoconombre', ['notificarRegistroRadicado','notificarRadicadoDocumento'])->orderBy('innocoid')->get();
             foreach( $informacioncorreos as  $informacioncorreo){
@@ -397,10 +398,11 @@ class DocumentoEntranteController extends Controller
                 $enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
                 $asunto            = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg               = str_replace($buscar, $remplazo, $innococontenido);
-                $notificar->correo([$correoPersona], $asunto, $msg, [$arrayfiles], $correoDependencia, $enviarcopia, $enviarpiepagina);
+               $prueba =  $notificar->correo(['radasa10@hotmail.com'], $asunto, $msg, [], $correoDependencia, $enviarcopia, $enviarpiepagina);
                 $correoPersona     = $correoDependencia;
             }
 
+            dd( $prueba);
             if($dataRadicado->totalCopias > 0){
                 foreach($dataCopias as $dataCopia){
                     $nombreDependencia = $dataCopia->depenombre;
@@ -413,7 +415,7 @@ class DocumentoEntranteController extends Controller
                 }
             }
 
-            DB::commit();
+           // DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
         } catch (Exception $error){
             DB::rollback();

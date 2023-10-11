@@ -696,7 +696,7 @@ class generarPdf
 		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas and $tipoMedio !== 1){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 		}
 
@@ -892,7 +892,12 @@ class generarPdf
 			PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
 			PDF::Ln(8);
 			PDF::SetFont('helvetica', '', 6);
+
+			PDF::setXY(180, 240);
+			PDF::StartTransform();
+			PDF::Rotate(90);
 			PDF::MultiCell(0,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+			PDF::StopTransform();		
 		}
 	}
 

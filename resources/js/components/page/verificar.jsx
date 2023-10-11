@@ -67,7 +67,7 @@ export default function Verificar(){
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <h1 style={{textAlign: 'center'}}>¡Bienvenido a nuestro sistema de verificación de documentos!</h1>
                         <Box className='borderTitulo'></Box>
-                        <p>Este código QR es tu llave para confirmar la autenticidad y validez de su documento. 
+                        <p style={{textAlign: 'justify'}}>Este código QR es tu llave para confirmar la autenticidad y validez de su documento. 
                             Al escanearlo, estás asegurando que este documento ha sido creado y es respaldado por nuestra empresa.<br />
                             Recuerda, la confianza y la seguridad son nuestra prioridad. Si necesitas más detalles o tienes alguna 
                             pregunta, no dudes en contactarnos. </p>

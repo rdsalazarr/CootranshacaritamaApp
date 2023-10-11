@@ -8,10 +8,10 @@ use DB, URL;
 class notificar
 {
 	//Funcion para enviar el correo
-    public function correo($correo = [], $asunto = '', $msg = '', $adjuntos = [], $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
+    public function correo($correos = [], $asunto = '', $msg = '', $adjuntos = [], $correoDependencia = '', $enviarCopia = '', $enviarPiePagina = ''){
 	
 		$mail       = new PHPMailer(true);
-
+dd(env('CORREO_NOTIFICACION'));
 		try {
 			$mail->SMTPDebug  = 0;
 			$mail->isSMTP();
@@ -25,7 +25,7 @@ class notificar
 
 			$mail->setFrom(env('CORREO_NOTIFICACION'), utf8_decode('Notificaciones CRM HACARITAMA'));
 	
-			foreach ($correo as $email) {
+			foreach ($correos as $email) {
 				$mail->addAddress($email);
 			}
 
@@ -49,7 +49,7 @@ class notificar
 			$mail->ClearAttachments();
 			$mail->ClearAllRecipients();
 
-			return implode(",", $correo);
+			return implode(",", $correos);
 
 		}catch (Exception $e) {
 			return "No se puedo enviar el correo. Error: ".$mail->ErrorInfo;
