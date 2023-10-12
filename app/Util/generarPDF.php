@@ -850,13 +850,20 @@ class generarPdf
 		$totalFirmas = count($firmasDocumento);
 		foreach ($firmasDocumento as $firma)
 		{
-			$certificate 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.crt'));
-			$primaryKey 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.pem'));
-			$claveCertificado = '123456';
+			//$certificate 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.crt'));
+			//$primaryKey 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.pem'));
+			//$claveCertificado = '123456';
+
+			$rutaCompletaCrt = $firma->rutaCrt.'/'.Crypt::decrypt($firma->persrutacrt);
+			$rutaCompletaPem = $firma->rutaPem.'/'.Crypt::decrypt($firma->persrutapem);
+
+			$certificate 	  = 'file://'.realpath(public_path($rutaCompletaCrt));
+			$primaryKey 	  = 'file://'.realpath(public_path($rutaCompletaPem));
+			$claveCertificado = $firma->persclavecertificado;
 			PDF::setSignature($certificate, $primaryKey, $claveCertificado, '', 2, $informacioncertificado);
 
 			//Abrimos el certificado
-			$fp = fopen(public_path('/archivos/persona/1978917/1978917.crt'), "r");
+			$fp = fopen(public_path($rutaCompletaCrt), "r");
 			$contenidoCertficado = '';
 			while (!feof($fp)){
 				$contenidoCertficado .= fgets($fp);
@@ -1058,10 +1065,7 @@ EOD;
                 $tcpdf->SetFont('Helvetica','B',6);
                 $tcpdf->Cell(115,1,'',0,0,'',false);
                 $tcpdf->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
-                $tcpdf->Ln(3);
-                $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(82,3,'OCAÑA','LR',0,'C',true);
-                $tcpdf->Ln(3);
+                $tcpdf->Ln(3);            
                 $tcpdf->SetFont('Helvetica','',7);
                 $tcpdf->Cell(115,3,'',0,0,'');
                 $tcpdf->Cell(12,3,'Radicado: ','L',0,'',true);
@@ -1075,7 +1079,7 @@ EOD;
                 foreach($dataCopia as $copia){
                     $tcpdf->Cell(115,3,'',0,0,'');
                     $tcpdf->Cell(12,3,'Copia: ','L',0,'',true);
-                    $tcpdf->Cell(60,4,$copia->dependencia,0,0,'');
+                    $tcpdf->Cell(60,4,$copia->dependencia,0,0,'',true);
                     $tcpdf->Ln(3);
                 }
 

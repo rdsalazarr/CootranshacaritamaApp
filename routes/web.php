@@ -52,6 +52,7 @@ Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
+Route::get('/download/certificado/{documento}/{ruta}', [DownloadFileController::class, 'certificado']);
 Route::get('/download/digitalizados/{anyo}/{ruta}', [DownloadFileController::class, 'digitalizados']);
 Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
 Route::get('/download/adjunto/documental/{sigla}/{anyo}/{ruta}', [DownloadFileController::class, 'download']);
@@ -148,8 +149,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/persona'); 
-        Route::get('/persona/listar/datos', [PersonaController::class, 'datos']); 
+        Route::get('/persona/list', [PersonaController::class, 'index']); //->middleware('security:admin/persona')
+        Route::post('/persona/listar/datos', [PersonaController::class, 'datos']); 
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
         Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta

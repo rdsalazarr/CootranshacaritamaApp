@@ -13,7 +13,8 @@ export default function New({data}){
                         codigo: data.emprid, jefe: data.persidrepresentantelegal, departamento: data.emprdepaid, municipio: data.emprmuniid, 
                         nit: data.emprnit, digitoVerificacion: data.emprdigitoverificacion,  nombre: data.emprnombre,  sigla: data.emprsigla,
                         lema: (data.emprlema !== null ) ? data.emprlema : '',  direccion: data.emprdireccion, correo: (data.emprcorreo !== null ) ? data.emprcorreo : '',
-                        telefono: (data.emprtelefonofijo !== null ) ? data.emprtelefonofijo : '', celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', 
+                        barrio: (data.emprbarrio !== null ) ? data.emprbarrio : '',telefono: (data.emprtelefonofijo !== null ) ? data.emprtelefonofijo : '',
+                        celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', 
                         horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '',
                         url: data.emprurl, codigoPostal: data.emprcodigopostal,  
                         logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: ''
@@ -23,7 +24,6 @@ export default function New({data}){
     const [logoEmpresa, setLogo] = useState();
     const [loader, setLoader] = useState(true); 
     const [habilitado, setHabilitado] = useState(true);
-    const [firmaRL, setFirmaRL] = useState();
     const [municipios, setMunicipios] = useState([]);
     const [newMunicipios, setNewMunicipios] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
@@ -175,11 +175,25 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={5} md={5} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
                         name={'direccion'}
                         value={formData.direccion}
                         label={'Dirección'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 100}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <TextValidator 
+                        name={'barrio'}
+                        value={formData.barrio}
+                        label={'Barrio'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 100}}

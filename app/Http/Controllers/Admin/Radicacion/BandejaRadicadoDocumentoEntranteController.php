@@ -20,7 +20,7 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
 
         try {
             $consulta   = DB::table('radicaciondocumentoentrante as rde')
-                        ->select('rde.radoenid as id', 'radoedid as idFirma', 'rde.tierdeid', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
+                        ->select('rde.radoenid as id', 'rded.radoedid as idFirma', 'rde.tierdeid', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
                             DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
                             DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"))                    
                         ->join('tipoestadoraddocentrante as terde', 'terde.tierdeid', '=', 'rde.tierdeid')
@@ -32,15 +32,21 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
                             })
                         ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                         ->whereIn('rded.depeid', function($query) {
-                            $query->select('depperdepeid')->from('dependenciapersona')
-                                    ->where('depperpersid',  auth()->user()->persid);
-                            });
+                                $query->select('depperdepeid')->from('dependenciapersona')
+                                        ->where('depperpersid',  auth()->user()->persid);
+                                });
 
                     if($request->tipo === 'VERIFICADOS')
                         $consulta = $consulta->where('rde.tierdeid', 2);
 
-                    if($request->tipo === 'COPIAS')
-                        $consulta =  $consulta->whereIn('rde.tierdeid', [1,2,3,4])->where('rded.radoedescopia', true);
+                    if($request->tipo === 'COPIAS'){
+                        $consulta = $consulta->join('radicaciondocentdependencia as rded1', function($join)
+                                                    {
+                                                        $join->on('rded1.radoenid', '=', 'rde.radoenid');
+                                                        $join->where('rded1.radoedescopia', true); 
+                                                    })
+                                                ->whereIn('rde.tierdeid', [1,2,3,4]);
+                    }
 
                     if($request->tipo === 'RECIBIDOS')
                         $consulta = $consulta->where('rde.tierdeid', '!=', 2);

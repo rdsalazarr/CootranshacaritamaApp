@@ -281,7 +281,7 @@ class DocumentoEntranteController extends Controller
 			}
 
 			if($request->copiasDependencia !== null){
-				foreach($request->copiasDependencia as $copiaDependencia){
+				foreach($request->copiasDependencia as $copiaDependencia){                  
 					$radicaciondocentdependencia                = new RadicacionDocumentoEntranteDependencia();
 					$radicaciondocentdependencia->radoenid      = $radoenid;
 					$radicaciondocentdependencia->depeid        = $copiaDependencia;
@@ -320,7 +320,7 @@ class DocumentoEntranteController extends Controller
 
                 if($dataRadicado->totalCopias > 0){
                     $dataCopias    =  DB::table('radicaciondocentdependencia as rded')
-                                        ->select('d.depenombre','d.depecorreo')
+                                        ->select('d.depenombre as dependencia','d.depecorreo')
                                         ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                         ->where('rded.radoenid', $radoenid)
                                         ->where('rded.radoedescopia', true)->get();

@@ -14,5 +14,5 @@ class Persona extends Model
     protected $fillable   = ['carlabid','tipideid','tirelaid','persdepaidnacimiento','persmuniidnacimiento','persdepaidexpedicion','persmuniidexpedicion',
                             'persdocumento','persprimernombre','perssegundonombre','persprimerapellido','perssegundoapellido','persfechanacimiento',
                             'persdireccion','perscorreoelectronico','persfechadexpedicion','persnumerotelefonofijo','persnumerocelular',
-                            'persgenero','persrutafoto','persrutafirma','persactiva'];
+                            'persgenero','persrutafoto','persrutafirma','perstienefirmadigital','persrutacrt','persrutapem','persactiva'];
 }

@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Link } from '@mui/material';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {ButtonFileImg, ContentFile} from "../../layout/files";
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
@@ -10,26 +11,18 @@ import Files from "react-files";
 
 export default function New({data, tipo}){
 
-    const [formData, setFormData] = useState( 
-                    (tipo !== 'I') ? {codigo:data.persid,                           documento: data.persdocumento,                    cargo:data.carlabid,                             tipoIdentificacion:data.tipideid, 
-                                     tipoRelacionLaboral: data.tirelaid,            departamentoNacimiento:data.persdepaidnacimiento,  municipioNacimiento: data.persmuniidnacimiento, departamentoExpedicion:data.persdepaidexpedicion,
-                                     municipioExpedicion: data.persmuniidexpedicion, primerNombre: data.persprimernombre,              segundoNombre: (data.perssegundonombre !== null)  ? data.perssegundonombre : '', 
-                                     primerApellido:data.persprimerapellido,         segundoApellido: (data.perssegundoapellido !== null) ? data.perssegundoapellido : '', 
-                                     fechaNacimiento: data.persfechanacimiento,       direccion: data.persdireccion,                     correo: (data.perscorreoelectronico !== null ) ? data.perscorreoelectronico : '', 
-                                     fechaExpedicion: data.persfechadexpedicion,      telefonoFijo: (data.persnumerotelefonofijo !== null) ? data.persnumerotelefonofijo : '',
-                                     numeroCelular: (data.persnumerocelular !== null) ? data.persnumerocelular : '',                      genero: data.persgenero,                       
-                                     rutaFirma_old: (data.persrutafirma !== null) ? data.persrutafirma : '',                              rutaFoto_old: (data.persrutafoto !== null) ? data.persrutafoto : '',                 
-                                     estado:  data.persactiva, tipo:tipo 
+    const [formData, setFormData] = useState(
+                    (tipo !== 'I') ? {codigo:data.persid,  tipo:tipo 
                                     } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
                                         departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                         segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
-                                        estado: '1', tipo:tipo
-                                });
- 
-    const showFotografia   = (formData.rutaFoto_old !== null && tipo === 'U') ? data.fotografia : null;
-    const showFirmaPersona = (formData.rutaFirma_old !== null && tipo === 'U') ? data.firmaPersona  : null;    
+                                        estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo
+                                }); 
+
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
+    const [showFotografia, setShowFotografia] = useState('');
+    const [showFirmaPersona, setFirmaPersona] = useState('');
     const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [tipoRelacionLaborales, setTipoRelacionLaborales] = useState([]);
@@ -37,7 +30,7 @@ export default function New({data, tipo}){
     const [municipios, setMunicipios] = useState([]);
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
     const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
-    const [formDataFile, setFormDataFile] = useState({ fotografia : [], firma : []});
+    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: []});
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -54,41 +47,96 @@ export default function New({data, tipo}){
     const removeFIle = (nombre)=>{
         setFormDataFile(prev => ({...prev, archivos: prev.archivos.filter(item => item.name !== nombre)}));
     }
-    
-    const onFilesError = (error, file) => {  
+
+    const onFilesError = (error, file) => {
         let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
         showSimpleSnackbar(msj, 'error');
     }
 
     const handleSubmit = () =>{
+        let fotografia = formDataFile.fotografia;
+        let firma      = formDataFile.firma;
+        let rutaCrt    = formDataFile.rutaCrt;
+        let rutaPem    = formDataFile.rutaPem;
+
+        if(tipo === '' && formData.firmaDigital.toString() === '1' && rutaCrt.length < 1){
+            showSimpleSnackbar("Debe subir el certificado digital en formato crt", 'error');
+            return;
+        }
+
+        if(tipo === '' && formData.firmaDigital.toString() === '1' && rutaPem.length < 1){
+            showSimpleSnackbar("Debe subir el certificado digital en formato pem", 'error');
+            return;
+        }
+
         let dataFile = new FormData();
         Object.keys(formData).forEach(function(key) {
            dataFile.append(key, formData[key])
         })
-        let fotografia = formDataFile.fotografia;
-        let firma      = formDataFile.firma;
+
+        console.log(fotografia[0]);
+        console.log(rutaCrt[0]);
+        console.log(rutaPem[0]);
+
         dataFile.append('firma', (firma[0] != undefined) ? firma[0] : '');
         dataFile.append('fotografia', (fotografia[0] != undefined) ? fotografia[0] : '');
-        setLoader(true); 
+        dataFile.append('rutaCrt', (rutaCrt[0] != undefined) ? rutaCrt[0] : '');
+        dataFile.append('rutaPem', (rutaPem[0] != undefined) ? rutaPem[0] : '');
+
+        setLoader(true);
         instance.post('/admin/persona/salve', dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({id:'000', codigo:'', sigla:'', nombre: '', correo: '', jefe:'', estado: '1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
+                                                                departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
+                                                                segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
+                                                                estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo}) : null;
             setLoader(false);
         })
     }
 
     useEffect(()=>{
         setLoader(true);
-        instance.get('/admin/persona/listar/datos').then(res=>{
+        let newFormData = {...formData}
+        instance.post('/admin/persona/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
             setTipoCargoLaborales(res.tipoCargoLaborales);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTipoRelacionLaborales(res.tipoRelacionLaborales);
             setDepartamentos(res.departamentos);
             setMunicipios(res.municipios);
 
-            if(tipo !== 'I'){
+            if(tipo !== 'I'){     
+                let persona                        = res.persona;
+                newFormData.documento              = persona.persdocumento;
+                newFormData.cargo                  = persona.carlabid;
+                newFormData.tipoIdentificacion     = persona.tipideid;
+                newFormData.tipoRelacionLaboral    = persona.tirelaid;
+                newFormData.departamentoNacimiento = persona.persdepaidnacimiento;
+                newFormData.municipioNacimiento    = persona.persmuniidnacimiento;
+                newFormData.departamentoExpedicion = persona.persdepaidexpedicion;
+                newFormData.municipioExpedicion    = persona.persmuniidexpedicion;
+                newFormData.primerNombre           = persona.persprimernombre;
+                newFormData.segundoNombre          = (persona.perssegundonombre !== null)  ? persona.perssegundonombre : '';
+                newFormData.primerApellido         = persona.persprimerapellido;
+                newFormData.segundoApellido        = (persona.perssegundoapellido !== null) ? persona.perssegundoapellido : '';
+                newFormData.fechaNacimiento        = persona.persfechanacimiento;
+                newFormData.direccion              = persona.persdireccion;
+                newFormData.correo                 = (persona.perscorreoelectronico !== null ) ? persona.perscorreoelectronico : '';
+                newFormData.fechaExpedicion        = persona.persfechadexpedicion;
+                newFormData.telefonoFijo           = (persona.persnumerotelefonofijo !== null) ? persona.persnumerotelefonofijo : '';
+                newFormData.numeroCelular          = (persona.persnumerocelular !== null) ? persona.persnumerocelular : '';
+                newFormData.genero                 = persona.persgenero;
+                newFormData.rutaFirmaOld           = (persona.persrutafirma !== null) ? persona.persrutafirma : '';
+                newFormData.rutaFotoOld            = (persona.persrutafoto !== null) ? persona.persrutafoto : '';
+                newFormData.firmaDigital           = persona.perstienefirmadigital;
+                newFormData.rutaCrtOld             = (persona.persrutacrt !== null) ? persona.persrutacrt : '';
+                newFormData.rutaPemOld             = (persona.persrutapem !== null) ? persona.persrutapem : '';
+                newFormData.claveCertificado       = persona.persclavecertificado; 
+                newFormData.rutaDescargaCrt        = (persona.rutaCrt !== null) ? persona.rutaCrt : '';
+                newFormData.rutaDescargaPem        = (persona.rutaPem !== null) ? persona.rutaPem : '';
+                newFormData.estado                 = persona.persactiva;
+
                 let munNacimiento   = [];
                 let deptoNacimiento = data.persdepaidnacimiento;
                 res.municipios.forEach(function(muni){ 
@@ -113,7 +161,9 @@ export default function New({data, tipo}){
                     }
                 });
                 setMunicipiosExpedicion(munExpedicion);
-
+                setFormData(newFormData);
+                setShowFotografia((persona.persrutafoto !== null) ? persona.fotografia : '');
+                setFirmaPersona((persona.persrutafirma !== null) ? persona.firmaPersona : '');
             }
             setLoader(false);
         })
@@ -444,7 +494,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'tipoRelacionLaboral'}
                         value={formData.tipoRelacionLaboral}
@@ -462,8 +512,26 @@ export default function New({data, tipo}){
                         })}
                     </SelectValidator>
                 </Grid>
+
+                <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'firmaDigital'}
+                        value={formData.firmaDigital}
+                        label={'¿Tiene firma digital?'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        <MenuItem value={"1"}>Sí</MenuItem>
+                        <MenuItem value={"0"}>No</MenuItem>
+                    </SelectValidator>
+                </Grid>
                 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}
@@ -479,6 +547,12 @@ export default function New({data, tipo}){
                         <MenuItem value={"1"}>Sí</MenuItem>
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
+                </Grid>
+
+                <Grid item md={12} xl={12} sm={12} xs={12}>
+                    <Box className='frmDivision'>
+                        Anexe foto y firma escaneada de la persona 
+                    </Box>
                 </Grid>
 
                 <Grid item md={5} xl={5} sm={12} xs={12}>
@@ -505,7 +579,7 @@ export default function New({data, tipo}){
                     </Box>
                 </Grid>             
 
-                {(showFotografia !== null && tipo === 'U') ?
+                {(showFotografia !== '' && tipo === 'U') ?
                     <Grid item md={3} xl={3} sm={12} xs={12}>
                         <Box className='fotografia'>
                             <img src={showFotografia} ></img>
@@ -537,13 +611,105 @@ export default function New({data, tipo}){
                     </Box>
                 </Grid>
 
-                {(showFirmaPersona !== null && tipo === 'U') ?
+                {(showFirmaPersona !== '' && tipo === 'U') ?
                     <Grid item md={3} xl={3} sm={12} xs={12}>
                         <Box className='firmaPersona'>
                             <img src={showFirmaPersona}></img>
                         </Box>
                     </Grid>
                 : null }
+
+                {(parseInt(formData.firmaDigital) === 1) ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Anexe la clave de la firma y los certificado digitales de la persona
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={3} xs={12}>
+                            <TextValidator
+                                name={'claveCertificado'}
+                                value={formData.claveCertificado}
+                                label={'Contraseña'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 20}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                                type={'password'}
+                            />
+                        </Grid>
+
+                        <Grid item md={3} xl={3} sm={6} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'rutaCrt') }}
+                                onError={onFilesError}
+                                accepts={['.crt']} 
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar certificado digital con extensión crt"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={3} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.rutaCrt.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid> 
+
+                        <Grid item md={3} xl={3} sm={6} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'rutaPem') }}
+                                onError={onFilesError}
+                                accepts={['.pem']} 
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar certificado digital con extensión pem"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.rutaPem.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid>
+
+                        {(tipo === 'U') ?
+                            <Fragment>
+                                <Grid item md={2} xl={2} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                        <label>Descargar certificado crt</label>
+                                        <Link href={formData.rutaDescargaCrt} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                                    </Box>
+                                </Grid>
+
+                                <Grid item md={2} xl={2} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                        <label>Descargar certificado pem</label>
+                                        <Link href={formData.rutaDescargaPem} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                                    </Box>
+                                </Grid>
+                            </Fragment>
+                        : null}  
+
+                    </Fragment>
+                : null}
 
             </Grid>
 

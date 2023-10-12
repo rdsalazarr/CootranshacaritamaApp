@@ -27,10 +27,10 @@ export default function New({data, tipo}){
     const [loader, setLoader] = useState(false);
     const [esEmpresa, setEsEmpresa] = useState(false);
     const [tieneCopia, setTieneCopia] = useState(false);
-    const [habilitarAnexos, setHabilitarAnexos] = useState(false);    
+    const [habilitarAnexos, setHabilitarAnexos] = useState(false);
     const [tipoMedios, setTipoMedios] = useState([]);
     const [dependencias, setDependencias] = useState([]);
-
+    const [copiasDependencias, setCopiasDependencias] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
@@ -39,7 +39,7 @@ export default function New({data, tipo}){
     const [checkedDependencias, setCheckedDependencias] = useState([]);
     const [totalAdjuntoSubido , setTotalAdjuntoSubido] = useState(0);
     const [anexosRadicado, setAnexosRadicado] = useState([]);
-    const [idRadicado , setIdRadicado] = useState(0);    
+    const [idRadicado , setIdRadicado] = useState(0);
     const [abrirModal, setAbrirModal] = useState(false);
 
     const handleChange = (e) =>{
@@ -56,7 +56,7 @@ export default function New({data, tipo}){
         } else {
           setCheckedDependencias(checkedDependencias.filter(item => item !== dep));
         }
-    };
+    }
 
     const cantidadAdjunto = () =>{
         let totalAdjSubido = parseInt(totalAdjuntoSubido) - 1 ;
@@ -172,9 +172,17 @@ export default function New({data, tipo}){
 
                 let depeCopias = [];
                 copiaDependencias.forEach(function(depen){
-                    depeCopias.push({depeid: depen.depeid, depesigla: depen.dependencia, depenombre: depen.depenombre });
+                    depeCopias.push({depeid: depen.depeid, depesigla: depen.depesigla, depenombre: depen.depenombre });
                 })
 
+                let arrayDependecias = [];
+                res.dependencias.forEach(function(dep){
+                    if(dep.depeid !== radicado.depeid){
+                        arrayDependecias.push({depeid: dep.depeid, depesigla: dep.depesigla, depenombre: dep.depenombre });
+                    }
+                })
+
+                setCopiasDependencias(arrayDependecias)
                 setCheckedDependencias(depeCopias);
                 setDeptoMunicipios(newMunicipios);
                 setTotalAdjuntoSubido(radicado.totalAnexos);
@@ -183,14 +191,27 @@ export default function New({data, tipo}){
                 setTieneCopia((parseInt(radicado.radoentienecopia) === 1) ? true : false);
             }
 
-            setTipoMedios(res.tipoMedios);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setDepartamentos(res.departamentos);
-            setMunicipios(res.municipios)
             setDependencias(res.dependencias);
+            setTipoMedios(res.tipoMedios);
+            setMunicipios(res.municipios)
             setFormData(newFormData);
             setLoader(false);
         })
+    }
+
+    const verificarCopiasRadicado = (e) =>{
+        setLoader(true);
+        let newFormData         = {...formData}
+        let dependencia         = (e.target.name === 'dependencia' ) ? e.target.value : formData.dependencia ;
+        newFormData.dependencia = dependencia;
+        actualizarArrayDependencia(e.target.value);
+        setCheckedDependencias([]);
+        setFormData(newFormData);
+        setTimeout(function(){
+            setLoader(false);
+        }, 100);
     }
 
     const verificarSiTieneCopia = (e) =>{
@@ -199,9 +220,20 @@ export default function New({data, tipo}){
         newFormData.tieneCopia = tieneCopia;
         setTieneCopia((e.target.value === '1') ? true : false);
         (e.target.value === '0') ? setCheckedDependencias([]): null;
+        actualizarArrayDependencia(formData.dependencia);
         setFormData(newFormData);
     }
-    
+
+    const actualizarArrayDependencia = (depen) =>{
+        let arrayDependecias = [];
+        dependencias.forEach(function(dep){
+            if(dep.depeid !== depen){
+                arrayDependecias.push({depeid: dep.depeid, depesigla: dep.depesigla, depenombre: dep.depenombre });
+            }
+        })
+        setCopiasDependencias(arrayDependecias);
+    }
+
     const verificarSiTieneAnexos = (e) =>{
         let newFormData        = {...formData}
         let tieneAnexos        = (e.target.name === 'tieneAnexos' ) ? e.target.value : formData.tieneAnexos ;
@@ -519,7 +551,7 @@ export default function New({data, tipo}){
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
                                 errorMessages={["Debe hacer una selección"]}
-                                onChange={handleChange} 
+                                onChange={verificarCopiasRadicado}
                             >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {dependencias.map(res=>{
@@ -674,7 +706,7 @@ export default function New({data, tipo}){
 
                             <Box style={{maxHeight: '15em', overflow:'auto'}}>
                                 <Grid container spacing = {2} >
-                                    { dependencias.map((dep, a) => {
+                                    { copiasDependencias.map((dep, a) => {
 
                                         const marcado         = checkedDependencias.some(resul => resul.depeid === dep.depeid);
                                         const controlCheckbox = (marcado) ? <Checkbox color="secondary" defaultChecked onChange={(e) => handleCheckboxChange(e, dep)} /> :

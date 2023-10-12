@@ -1243,6 +1243,10 @@ CREATE TABLE `informacionconfiguracioncorreo` (
 INSERT INTO `informacionconfiguracioncorreo` (`incocoid`, `incocohost`, `incocousuario`, `incococlave`, `incococlaveapi`, `incocopuerto`, `created_at`, `updated_at`) VALUES
 (1, 'smtp.gmail.com', 'notificacioncootranshacaritama@gmail.com', 'Notific@2023.', 'grgsmqtlmijxaapj', '587', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+
+ALTER TABLE `persona` ADD `perstienefirmadigital` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la persona tiene firma digital' AFTER `persrutafirma`, ADD `persrutacrt` VARCHAR(500) NULL COMMENT 'Ruta de certificado digital con extensión crt' AFTER `perstienefirmadigital`, ADD `persrutapem` VARCHAR(500) NULL COMMENT 'Ruta de certificado digital con extensión pem' AFTER `persrutacrt`;
+ALTER TABLE `persona` ADD `persclavecertificado` VARCHAR(20) NULL COMMENT 'Clave del certificado digital' AFTER `perstienefirmadigital`;
+
 /*
 
 INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES

@@ -20,8 +20,8 @@ export default function RelojDigital({ tiempoInicial, onTiempoFinalizado }) {
     const minutos = Math.floor(tiempoRestante / 60);
     const segundos = tiempoRestante % 60;
  
-    return  (tiempoCumplido) ? ( <div className="tiempoevaluacion">{'00:00'}</div> ) : 
-                              (<div className="tiempoevaluacion">{`${minutos < 10 ? '0' + minutos : minutos}:${
+    return  (tiempoCumplido) ? ( <div className="relojDigital">{'00:00'}</div> ) : 
+                              (<div className="relojDigital">{`${minutos < 10 ? '0' + minutos : minutos}:${
                                             segundos < 10 ? '0' + segundos : segundos
                                         }`}</div>);
 }

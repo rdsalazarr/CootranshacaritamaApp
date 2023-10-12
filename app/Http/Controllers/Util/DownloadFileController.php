@@ -13,6 +13,21 @@ class DownloadFileController extends Controller
 		$this->middleware('auth');
 	}
 
+    public function certificado($documento, $ruta){
+        try {
+	    	$ruta    = Crypt::decrypt($ruta);
+            $carpeta = '/archivos/persona/'.$documento.'/';
+            $file = public_path().$carpeta.$ruta;
+            if (file_exists($file)) {
+                return response()->download($file, $ruta);
+            } else {
+                return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
+            }
+		} catch (DecryptException $e) {
+		   return redirect('/error/url');
+		}
+    }
+
     public function download($sigla, $anyo, $ruta){
         try {
 	    	$ruta    = Crypt::decrypt($ruta);

@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {LoaderModal} from "../../layout/loader";
+import {Grid, Box, Link} from '@mui/material';
 import instance from '../../layout/instance';
-import {Grid, Box } from '@mui/material';
 
 export default function Show({id}){  
     const [loader, setLoader] = useState(false);
@@ -40,9 +41,15 @@ export default function Show({id}){
             newFormData.firma                   = persona.persrutafirma;
             newFormData.foto                    = persona.persrutafoto;
             newFormData.showFotografia          = persona.fotografia;
-            newFormData.showFirmaPersona        = persona.firmaPersona;          
+            newFormData.showFirmaPersona        = persona.firmaPersona;
+            newFormData.tieneFirmaDigital       = persona.tieneFirmaDigital;
+            newFormData.firmaDigital            = persona.firmaDigital;
+            newFormData.rutaDescargaCrt         = persona.rutaCrt;
+            newFormData.rutaDescargaPem         = persona.rutaPem;
             setFormData(newFormData);    
             setLoader(false);
+
+            console.log(persona.rutaCrt, persona.rutaPem);
         }) 
     }
                 
@@ -196,6 +203,13 @@ export default function Show({id}){
                     </Box>
                 </Grid>
 
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>¿Tiene firma digital?</label>
+                        <span>{formData.tieneFirmaDigital}</span>
+                    </Box>
+                </Grid>
+
                 {(formData.foto !== null) ?
                     <Grid item md={3} xl={3} sm={12} xs={12}>
                         <Box className='frmTexto'>
@@ -217,6 +231,24 @@ export default function Show({id}){
                         </Box>
                     </Grid>
                 : null }
+
+                {(formData.firmaDigital === 1) ?
+                    <Fragment>
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                           <Box className='frmTexto'>
+                                <label>Descargar certificado crt</label>
+                                <Link href={formData.rutaDescargaCrt} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                           <Box className='frmTexto'>
+                                <label>Descargar certificado pem</label>
+                                <Link href={formData.rutaDescargaPem} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                            </Box>
+                        </Grid>
+                </Fragment>
+                : null}
 
             </Grid>
         </Box>

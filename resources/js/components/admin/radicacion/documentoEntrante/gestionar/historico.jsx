@@ -8,9 +8,8 @@ import Show from '../show';
 
 export default function Historico(){
 
-    const [loader, setLoader] = useState(true);
+    const [loader, setLoader] = useState(false);
     const [data, setData] = useState([]);
-    const [tipo, setTipo] = useState(0);
     const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
 
     const modales = [<Show id={modal.data.id} /> ];
@@ -18,7 +17,6 @@ export default function Historico(){
     const tituloModal = ['Visualizar información del registro del radicado'];
 
     const edit = (data, tipo) =>{
-        setTipo(tipo);
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'bigFlot'});
     }
 
