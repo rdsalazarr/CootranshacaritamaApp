@@ -17,11 +17,9 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
     public function index(Request $request)
 	{
 		$this->validate(request(),['tipo' => 'required']);
-        $esCopia = ($request->tipo === 'COPIAS') ? true : false;
 
-       // dd($esCopia);
-
-        $consulta   = DB::table('radicaciondocumentoentrante as rde')
+        try {
+            $consulta   = DB::table('radicaciondocumentoentrante as rde')
                         ->select('rde.radoenid as id', 'radoedid as idFirma', 'rde.tierdeid', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
                             DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
                             DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"))                    
@@ -33,7 +31,7 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
                                 $join->where('rded.radoedescopia', false); 
                             })
                         ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
-                        ->whereIn('d.depeid', function($query) {
+                        ->whereIn('rded.depeid', function($query) {
                             $query->select('depperdepeid')->from('dependenciapersona')
                                     ->where('depperpersid',  auth()->user()->persid);
                             });
@@ -42,17 +40,19 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
                         $consulta = $consulta->where('rde.tierdeid', 2);
 
                     if($request->tipo === 'COPIAS')
-                        $consulta =  $consulta->whereIn('rde.tierdeid', [1,2,3,4]);
-                        $consulta =  $consulta->where('rded.radoedescopia', true); 
+                        $consulta =  $consulta->whereIn('rde.tierdeid', [1,2,3,4])->where('rded.radoedescopia', true);
 
                     if($request->tipo === 'RECIBIDOS')
                         $consulta = $consulta->where('rde.tierdeid', '!=', 2);
 
                 $data = $consulta->orderBy('rde.radoenid', 'Desc')->get();
 
-        return response()->json(["data" => $data]);
+            return response()->json(['success' => true, "data" => $data]);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
+        }
     }
-    
+
     public function recibir(Request $request)
 	{
         $this->validate(request(),['id'                => 'required|numeric', 

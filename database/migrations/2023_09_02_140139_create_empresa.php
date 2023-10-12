@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('emprsigla', 20)->nullable()->comment('Sigla de la empresa');
             $table->string('emprlema', 100)->nullable()->comment('Lema de la empresa');
             $table->string('emprdireccion', 80)->comment('Dirección de la empresa');
+            $table->string('emprbarrio', 80)->nullable()->comment('Barrio de la empresa');
             $table->string('emprcorreo', 80)->nullable()->comment('Correo de la empresa');
             $table->string('emprtelefonofijo', 20)->nullable()->comment('Teléfono fijo de contacto con la empresa');
             $table->string('emprtelefonocelular', 20)->nullable()->comment('Teléfono celular de contacto con la empresa');

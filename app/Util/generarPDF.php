@@ -146,7 +146,7 @@ class generarPdf
 			PDF::Ln(20);
 		}
 
-		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas and $tipoMedio !== 1){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 		}
 
@@ -236,7 +236,7 @@ class generarPdf
 		PDF::SetFont('helvetica','',9);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas and $tipoMedio !== 1){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 		}
 
@@ -344,7 +344,7 @@ class generarPdf
 		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas and $tipoMedio !== 1){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 		}
 
@@ -464,7 +464,7 @@ class generarPdf
 		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas and $tipoMedio !== 1){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 		}
 
@@ -554,7 +554,7 @@ class generarPdf
 		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
-		if ($totalFirmaDocumento === $totalFirmaRealizadas){
+		if ($totalFirmaDocumento === $totalFirmaRealizadas and $tipoMedio !== 1){
 			$this->firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $codigoInstitucional, $firmasDocumento);
 		}
 
@@ -706,7 +706,7 @@ class generarPdf
 
 	function consultarEmpresa(){
 		$empresa          = DB::table('empresa as e')
-									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 
+									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 'e.emprbarrio',
 											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre')
 									->join('municipio as m', 'm.muniid', '=', 'e.emprmuniid')
 									->where('e.emprid', 1)
@@ -714,7 +714,7 @@ class generarPdf
 
 		$direccionEmpresa = $empresa->emprdireccion;
 		$ciudadEmpresa    = $empresa->muninombre;
-		$barrioEmpresa    = 'Santa clara'; 
+		$barrioEmpresa    = $empresa->emprbarrio; 
 		$telefonoEmpresa  = $empresa->emprtelefonofijo;
 		$celularEmpresa   = $empresa->emprtelefonocelular;
 		$urlEmpresa       = $empresa->emprurl;
@@ -846,6 +846,8 @@ class generarPdf
 			'ContactInfo' => URL::to('/')
 		);
 
+		$posicionX   = 194;
+		$totalFirmas = count($firmasDocumento);
 		foreach ($firmasDocumento as $firma)
 		{
 			$certificate 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.crt'));
@@ -890,14 +892,19 @@ class generarPdf
 			//$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
 
 			PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
+			
 			PDF::Ln(8);
 			PDF::SetFont('helvetica', '', 6);
-
-			PDF::setXY(180, 240);
-			PDF::StartTransform();
-			PDF::Rotate(90);
-			PDF::MultiCell(0,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
-			PDF::StopTransform();		
+			if($totalFirmas <= 4){
+				PDF::setXY($posicionX, 264);
+				PDF::StartTransform();
+				PDF::Rotate(90);
+				PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+				PDF::StopTransform();
+				$posicionX += 3;
+			}else{
+				PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+			}
 		}
 	}
 

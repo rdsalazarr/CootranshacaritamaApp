@@ -12,15 +12,15 @@ class EmpresaController extends Controller
 {
 	public function index()
 	{  
-        $url = URL::to('/');
-		$data = DB::table('empresa')->select('emprid','persidrepresentantelegal','emprdepaid', 'emprmuniid','emprnit','emprdigitoverificacion',
+        $url  = URL::to('/');
+		$data = DB::table('empresa')->select('emprid','persidrepresentantelegal','emprdepaid', 'emprmuniid','emprnit','emprdigitoverificacion','emprbarrio',
                             'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular','emprhorarioatencion',
                             'emprurl', 'emprcodigopostal', 'emprlogo',
                             DB::raw("CONCAT(emprtelefonocelular,' ', emprtelefonofijo ) as telefonos"),
                             DB::raw("CONCAT('$url/archivos/logoEmpresa/', emprlogo ) as imagen")
                             )->get(); 
-                            
-        return response()->json(["data" => $data]);  
+
+        return response()->json(["data" => $data]);
     }
 
     public function datos()
@@ -53,6 +53,7 @@ class EmpresaController extends Controller
                 'sigla'              => 'nullable|string|min:4|max:20',
                 'lema'               => 'nullable|string|min:4|max:100',
                 'direccion'          => 'required|string|min:4|max:100',
+                'barrio'             => 'nullable|string|min:4|max:80',
                 'correo'             => 'nullable|email|min:4|max:80',
                 'telefono'           => 'nullable|max:20',
                 'celular'            => 'nullable|max:20',
@@ -89,10 +90,11 @@ class EmpresaController extends Controller
             $empresa->emprsigla                = $request->sigla;
             $empresa->emprlema                 = $request->lema;
             $empresa->emprdireccion            = $request->direccion;
+            $empresa->emprbarrio               = $request->barrio;
             $empresa->emprcorreo               = $request->correo;
             $empresa->emprtelefonofijo         = $request->telefono;
             $empresa->emprtelefonocelular      = $request->celular;
-            $empresa->emprhorarioatencion      = $request->horarioAtencion; 
+            $empresa->emprhorarioatencion      = $request->horarioAtencion;
             $empresa->emprurl                  = $request->url;
             $empresa->emprcodigopostal         = $request->codigoPostal;
             $empresa->emprlogo                 = $nombreBD;

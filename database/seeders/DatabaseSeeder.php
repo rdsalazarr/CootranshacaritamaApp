@@ -32,5 +32,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoEstanteArchivadorSeeder::class);
         $this->call(TipoCajaUbicacionSeeder::class);
         $this->call(TipoCarpetaUbicacionSeeder::class);
+        $this->call(InformacionConfiguracionCorreoSeeder::class);
     }
 }

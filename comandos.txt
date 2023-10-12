@@ -9,6 +9,7 @@ php artisan make:migration create_funcionalidad
 php artisan make:migration create_rol_funcionalidad
 php artisan make:migration create_usuario_rol
 php artisan make:migration create_informacion_notificacion_correo
+php artisan make:migration create_informacion_configuracion_correo
 php artisan make:migration create_empresa
 php artisan make:migration create_departamento
 php artisan make:migration create_municipio
@@ -76,6 +77,7 @@ php artisan make:model Funcionalidad
 php artisan make:model RolFuncionalidad
 php artisan make:model UsuarioRol
 php artisan make:model InformacionNotificacionCorreo
+php artisan make:model InformacionConfiguracionCorreo
 php artisan make:model Empresa
 php artisan make:model Departamento
 php artisan make:model Municipio
@@ -123,6 +125,8 @@ php artisan make:model ArchivoHistoricoDigitalizado
 php artisan make:migration create_archivo_historico
 php artisan make:migration create_archivo_historico_digitalizado
 
+
+php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
 php artisan make:seeder TipoDocumentalSeeder

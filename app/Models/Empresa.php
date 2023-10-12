@@ -12,7 +12,7 @@ class Empresa extends Model
     protected $table      = 'empresa';
     public $timestamps    = false;
     protected $primaryKey = 'emprid';
-    protected $fillable   = ['persidrepresentantelegal','emprdepaid','emprmuniid','emprnit','emprdigitoverificacion',
+    protected $fillable   = ['persidrepresentantelegal','emprdepaid','emprmuniid','emprnit','emprdigitoverificacion','emprbarrio',
                             'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular',
                             'emprhorarioatencion','emprurl','emprcodigopostal', 'emprlogo'];
 

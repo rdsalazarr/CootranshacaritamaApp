@@ -1173,10 +1173,10 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 
 --Debe existir el municipio y persona
 INSERT INTO empresa (emprid, persidrepresentantelegal,emprdepaid,emprmuniid,emprnit,emprdigitoverificacion,
-emprnombre,emprsigla,emprlema,emprdireccion, emprcorreo, emprtelefonofijo,emprtelefonocelular,
+emprnombre,emprsigla,emprlema,emprdireccion,emprbarrio, emprcorreo, emprtelefonofijo,emprtelefonocelular,
 emprhorarioatencion,emprurl,emprcodigopostal, emprlogo, created_at, updated_at) VALUES
 (1, 2, 18, 804, '890505424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'La empresa que integra la region', 
-'Calle 7 a 56 211 la ondina vía a rio de oro', 'cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
+'Calle 7 a 56 211 la ondina vía a rio de oro','Santa Clara','cootranshacaritama@hotmail.com', '3146034311', '3146034311', 
  'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '890505424_logoHacaritama.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
@@ -1221,8 +1221,28 @@ INSERT INTO `rol` (`rolid`, `rolnombre`, `rolactivo`, `created_at`, `updated_at`
 (5, 'Radicador', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (6, 'Coordinador del archivo histórico', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+
+ALTER TABLE `empresa` ADD `emprbarrio` VARCHAR(80) NULL COMMENT 'Barrio de la empresa' AFTER `emprdireccion`;
+UPDATE `empresa` SET `emprbarrio` = 'Santa Clara' WHERE `empresa`.`emprid` = 1;
+
 ALTER TABLE `radicaciondocentdependencia` ADD `radoedescopia` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si el radicado es una copia para una dependencia' AFTER `radoedfechahorarecibido`;
 ALTER TABLE `radicaciondocumentoentrante` CHANGE `depeid` `depeid` SMALLINT(5) UNSIGNED NULL COMMENT 'Identificador de la dependencia';
+
+CREATE TABLE `informacionconfiguracioncorreo` (
+  `incocoid` tinyint(3) UNSIGNED NOT NULL COMMENT 'Identificador de la tabla información configuración del correo',
+  `incocohost` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Host para el cual se permite enviar el correo',
+  `incocousuario` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Usuario o correo con el cual se va autenticar para enviar los correos en el sistema',
+  `incococlave` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave del correo para acceder a la plataforma',
+  `incococlaveapi` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave de la api para autenticar y poder enviar el corro',
+  `incocopuerto` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Puerto por el cual se envia el correo',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+INSERT INTO `informacionconfiguracioncorreo` (`incocoid`, `incocohost`, `incocousuario`, `incococlave`, `incococlaveapi`, `incocopuerto`, `created_at`, `updated_at`) VALUES
+(1, 'smtp.gmail.com', 'notificacioncootranshacaritama@gmail.com', 'Notific@2023.', 'grgsmqtlmijxaapj', '587', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 /*
 
 INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
