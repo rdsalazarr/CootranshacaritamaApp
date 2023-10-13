@@ -74,10 +74,6 @@ export default function New({data, tipo}){
            dataFile.append(key, formData[key])
         })
 
-        console.log(fotografia[0]);
-        console.log(rutaCrt[0]);
-        console.log(rutaPem[0]);
-
         dataFile.append('firma', (firma[0] != undefined) ? firma[0] : '');
         dataFile.append('fotografia', (fotografia[0] != undefined) ? fotografia[0] : '');
         dataFile.append('rutaCrt', (rutaCrt[0] != undefined) ? rutaCrt[0] : '');

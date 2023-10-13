@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Menu\FuncionalidadController;
 use App\Http\Controllers\Admin\Menu\RolController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\Notificar\InformacionCorreoController;
+use App\Http\Controllers\Admin\Notificar\ConfiguracionCorreoController;
 use App\Http\Controllers\Admin\DatosGeograficos\DepartamentoController;
 use App\Http\Controllers\Admin\DatosGeograficos\MunicipioController;
 use App\Http\Controllers\Admin\EmpresaController;
@@ -99,6 +100,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/informacionCorreo/list', [InformacionCorreoController::class, 'index'])->middleware('security:admin/informacionNotificarCorreo');
         Route::post('/informacionCorreo/salve', [InformacionCorreoController::class, 'salve']);
         Route::post('/informacionCorreo/destroy', [InformacionCorreoController::class, 'destroy']);
+
+        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/informacionNotificarCorreo');
+        Route::post('/configuracionCorreo/salve', [ConfiguracionCorreoController::class, 'salve']);
+        Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);        
         
         Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware('security:admin/datosTerritorial');
         Route::post('/departamento/salve', [DepartamentoController::class, 'salve']);
@@ -149,7 +154,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index']); //->middleware('security:admin/persona')
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/persona');
         Route::post('/persona/listar/datos', [PersonaController::class, 'datos']); 
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);

@@ -849,68 +849,71 @@ class generarPdf
 		$posicionX   = 194;
 		$totalFirmas = count($firmasDocumento);
 		foreach ($firmasDocumento as $firma)
-		{
+		{		
 			//$certificate 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.crt'));
 			//$primaryKey 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.pem'));
 			//$claveCertificado = '123456';
 
-			$rutaCompletaCrt = $firma->rutaCrt.'/'.Crypt::decrypt($firma->persrutacrt);
-			$rutaCompletaPem = $firma->rutaPem.'/'.Crypt::decrypt($firma->persrutapem);
+			if($firma->codopffirmado === 1 && $firma->persrutacrt !== null){
 
-			$certificate 	  = 'file://'.realpath(public_path($rutaCompletaCrt));
-			$primaryKey 	  = 'file://'.realpath(public_path($rutaCompletaPem));
-			$claveCertificado = $firma->persclavecertificado;
-			PDF::setSignature($certificate, $primaryKey, $claveCertificado, '', 2, $informacioncertificado);
+				$rutaCompletaCrt = $firma->rutaCrt.'/'.Crypt::decrypt($firma->persrutacrt);
+				$rutaCompletaPem = $firma->rutaPem.'/'.Crypt::decrypt($firma->persrutapem);
 
-			//Abrimos el certificado
-			$fp = fopen(public_path($rutaCompletaCrt), "r");
-			$contenidoCertficado = '';
-			while (!feof($fp)){
-				$contenidoCertficado .= fgets($fp);
-			}
+				$certificate 	  = 'file://'.realpath(public_path($rutaCompletaCrt));
+				$primaryKey 	  = 'file://'.realpath(public_path($rutaCompletaPem));
+				$claveCertificado = $firma->persclavecertificado;
+				PDF::setSignature($certificate, $primaryKey, $claveCertificado, '', 2, $informacioncertificado);
 
-			//Creamos el xml para adjuntarlo al documento
-			$xml = new \DomDocument('1.0', 'UTF-8'); 
-			$raiz = $xml->appendChild($xml->createElement('firmaDocumento'));
+				//Abrimos el certificado
+				$fp = fopen(public_path($rutaCompletaCrt), "r");
+				$contenidoCertficado = '';
+				while (!feof($fp)){
+					$contenidoCertficado .= fgets($fp);
+				}
 
-			$datosPersona = $raiz->appendChild($xml->createElement('datosPersona'));
-			$datosPersona->appendChild($xml->createElement('documento',$firma->persdocumento));
-			$datosPersona->appendChild($xml->createElement('nombre',$firma->nombrePersona));
-			$datosPersona->appendChild($xml->createElement('correo',$firma->perscorreoelectronico));
-			$datosPersona->appendChild($xml->createElement('celular',$firma->persnumerocelular));
+				//Creamos el xml para adjuntarlo al documento
+				$xml = new \DomDocument('1.0', 'UTF-8'); 
+				$raiz = $xml->appendChild($xml->createElement('firmaDocumento'));
 
-			$informacionFirma = $raiz->appendChild($xml->createElement('informacionFirma'));
-			$informacionFirma->appendChild($xml->createElement('consecutivoDocumental',$consecutivoDocumental));
-			$informacionFirma->appendChild($xml->createElement('fechaNotificacion',$firma->codopffechahoranotificacion));
-			$informacionFirma->appendChild($xml->createElement('fechaFirma',$firma->codopffechahorafirmado));
-			$informacionFirma->appendChild($xml->createElement('tokenFirma',$firma->codopftoken));
-			$informacionFirma->appendChild($xml->createElement('medioCorreo',$firma->codopfmensajecorreo));
-			$informacionFirma->appendChild($xml->createElement('medioCelular',$firma->codopfmensajecelular));
+				$datosPersona = $raiz->appendChild($xml->createElement('datosPersona'));
+				$datosPersona->appendChild($xml->createElement('documento',$firma->persdocumento));
+				$datosPersona->appendChild($xml->createElement('nombre',$firma->nombrePersona));
+				$datosPersona->appendChild($xml->createElement('correo',$firma->perscorreoelectronico));
+				$datosPersona->appendChild($xml->createElement('celular',$firma->persnumerocelular));
 
-			$informacioncertificado = $raiz->appendChild($xml->createElement('informacionCertificado'));
-			$informacioncertificado->appendChild($xml->createElement('certificado',$contenidoCertficado));
+				$informacionFirma = $raiz->appendChild($xml->createElement('informacionFirma'));
+				$informacionFirma->appendChild($xml->createElement('consecutivoDocumental',$consecutivoDocumental));
+				$informacionFirma->appendChild($xml->createElement('fechaNotificacion',$firma->codopffechahoranotificacion));
+				$informacionFirma->appendChild($xml->createElement('fechaFirma',$firma->codopffechahorafirmado));
+				$informacionFirma->appendChild($xml->createElement('tokenFirma',$firma->codopftoken));
+				$informacionFirma->appendChild($xml->createElement('medioCorreo',$firma->codopfmensajecorreo));
+				$informacionFirma->appendChild($xml->createElement('medioCelular',$firma->codopfmensajecelular));
 
-			$xml->preserveWhiteSpace = false;
-			$xml->formatOutput       = true;
-			$xmlString               = $xml->saveXML();
+				$informacioncertificado = $raiz->appendChild($xml->createElement('informacionCertificado'));
+				$informacioncertificado->appendChild($xml->createElement('certificado',$contenidoCertficado));
 
-			Storage::disk('public')->put('firma.xml',$xmlString);
-			$xmlFirma = public_path('storage/firma.xml');
-			//$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
+				$xml->preserveWhiteSpace = false;
+				$xml->formatOutput       = true;
+				$xmlString               = $xml->saveXML();
 
-			PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
-			
-			PDF::Ln(8);
-			PDF::SetFont('helvetica', '', 6);
-			if($totalFirmas <= 4){
-				PDF::setXY($posicionX, 264);
-				PDF::StartTransform();
-				PDF::Rotate(90);
-				PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
-				PDF::StopTransform();
-				$posicionX += 3;
-			}else{
-				PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+				Storage::disk('public')->put('firma.xml',$xmlString);
+				$xmlFirma = public_path('storage/firma.xml');
+				//$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
+
+				PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
+				
+				PDF::Ln(8);
+				PDF::SetFont('helvetica', '', 6);
+				if($totalFirmas <= 4){
+					PDF::setXY($posicionX, 264);
+					PDF::StartTransform();
+					PDF::Rotate(90);
+					PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+					PDF::StopTransform();
+					$posicionX += 3;
+				}else{
+					PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+				}
 			}
 		}
 	}

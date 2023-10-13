@@ -1190,7 +1190,7 @@ INSERT INTO `modulo` (`moduid`, `modunombre`, `moduicono`, `moduorden`, `moduact
 
 INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Menú', 'Gestionar menú', 'admin/menu', 'add_chart', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 1, 'Info notificar correo', 'Gestionar información de notificar correo', 'admin/informacionNotificarCorreo', 'mail_outline_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 1, 'Notificación correo', 'Gestionar información de notificar correo', 'admin/informacionNotificarCorreo', 'mail_outline_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (3, 1, 'Datos territorial', 'Gestionar datos territorial', 'admin/datosTerritorial', 'language_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (4, 1, 'Empresa', 'Gestionar empresa', 'admin/empresa', 'store', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (5, 2, 'Tipos', 'Gestionar tipos', 'admin/gestionarTipos', 'star_rate_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -1222,7 +1222,7 @@ INSERT INTO `rol` (`rolid`, `rolnombre`, `rolactivo`, `created_at`, `updated_at`
 (6, 'Coordinador del archivo histórico', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
-ALTER TABLE `empresa` ADD `emprbarrio` VARCHAR(80) NULL COMMENT 'Barrio de la empresa' AFTER `emprdireccion`;
+/*ALTER TABLE `empresa` ADD `emprbarrio` VARCHAR(80) NULL COMMENT 'Barrio de la empresa' AFTER `emprdireccion`;
 UPDATE `empresa` SET `emprbarrio` = 'Santa Clara' WHERE `empresa`.`emprid` = 1;
 
 ALTER TABLE `radicaciondocentdependencia` ADD `radoedescopia` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si el radicado es una copia para una dependencia' AFTER `radoedfechahorarecibido`;
@@ -1232,9 +1232,9 @@ CREATE TABLE `informacionconfiguracioncorreo` (
   `incocoid` tinyint(3) UNSIGNED NOT NULL COMMENT 'Identificador de la tabla información configuración del correo',
   `incocohost` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Host para el cual se permite enviar el correo',
   `incocousuario` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Usuario o correo con el cual se va autenticar para enviar los correos en el sistema',
-  `incococlave` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave del correo para acceder a la plataforma',
-  `incococlaveapi` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave de la api para autenticar y poder enviar el corro',
-  `incocopuerto` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Puerto por el cual se envia el correo',
+  `incococlave` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave del correo para acceder a la plataforma',
+  `incococlaveapi` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave de la api para autenticar y poder enviar el corro',
+  `incocopuerto` varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Puerto por el cual se envia el correo',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1246,6 +1246,7 @@ INSERT INTO `informacionconfiguracioncorreo` (`incocoid`, `incocohost`, `incocou
 
 ALTER TABLE `persona` ADD `perstienefirmadigital` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la persona tiene firma digital' AFTER `persrutafirma`, ADD `persrutacrt` VARCHAR(500) NULL COMMENT 'Ruta de certificado digital con extensión crt' AFTER `perstienefirmadigital`, ADD `persrutapem` VARCHAR(500) NULL COMMENT 'Ruta de certificado digital con extensión pem' AFTER `persrutacrt`;
 ALTER TABLE `persona` ADD `persclavecertificado` VARCHAR(20) NULL COMMENT 'Clave del certificado digital' AFTER `perstienefirmadigital`;
+*/
 
 /*
 

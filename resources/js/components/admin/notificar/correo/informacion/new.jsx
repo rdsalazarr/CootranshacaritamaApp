@@ -1,10 +1,10 @@
 import React, {useState, useRef} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack } from '@mui/material';
-import showSimpleSnackbar from '../../../layout/snackBar';
-import {LoaderModal} from "../../../layout/loader";
+import showSimpleSnackbar from '../../../../layout/snackBar';
+import {LoaderModal} from "../../../../layout/loader";
+import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
-import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
 
 export default function New({data, tipo}){
@@ -107,10 +107,10 @@ export default function New({data, tipo}){
                         <MenuItem value={"1"} >Sí</MenuItem>
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
-                </Grid>             
+                </Grid>
 
                 <Grid item md={12} xl={12} sm={12}>
-                    <label className={'labelEditor'}> Contenido </label>                   
+                    <label className={'labelEditor'}> Contenido </label>
 
                     <Editor 
                         onInit={(evt, editor) => editorTexto.current = editor}
@@ -127,8 +127,7 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-
-            </Grid>            
+            </Grid>
 
             <Grid container direction="row"  justifyContent="right">
                 <Stack direction="row" spacing={2}>
