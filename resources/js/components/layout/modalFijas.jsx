@@ -409,7 +409,7 @@ export function AnularDocumento({id, ruta, cerrarModal}){
 
 export function FirmarDocumento({id, cerrarModal}){
 
-    const [formData, setFormData] = useState({id: id, token: ''});
+    const [formData, setFormData] = useState({id: id, tokenId:'',  token: ''});
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
@@ -427,7 +427,7 @@ export function FirmarDocumento({id, cerrarModal}){
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setHabilitado(false) : null;
             (res.success) ? setTiempoRestante(0) : null;
-            (res.success) ? setFormData({id: id, token: ''}) : null;
+            (res.success) ? setFormData({id: id,tokenId:'', token: '' }) : null;
             setLoader(false);
         })
     }
@@ -436,16 +436,16 @@ export function FirmarDocumento({id, cerrarModal}){
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/firmar/documento/solicitar/token', {id: id}).then(res=>{
-            if(res.success){
-                newFormData.fechaHoraToken = res.fechaHoraToken;
-                newFormData.firma = res.firma;
+            if(res.success){              
+                newFormData.firma   = res.firma;
+                newFormData.tokenId = res.idToken;
                 setMensaje(res.mensajeMostrar);
                 setTiempoRestante(res.tiempoToken);
                 setDatosEncontrados(true);
                 setFormData(newFormData);
             }
             setLoader(false);
-        }) 
+        })
     }
 
     useEffect(()=>{inicio();}, []);

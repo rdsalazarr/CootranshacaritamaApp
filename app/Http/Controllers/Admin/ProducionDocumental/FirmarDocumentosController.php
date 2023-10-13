@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
+use Illuminate\Contracts\Encryption\DecryptException;
 use App\Models\CodigoDocumentalProcesoCambioEstado;
 use App\Models\CodigoDocumentalProcesoFirma;
 use App\Http\Requests\CertificadoRequests;
@@ -9,6 +10,7 @@ use App\Http\Requests\ConstanciaRequests;
 use App\Http\Requests\CircularRequests;
 use App\Http\Requests\CitacionRequests;
 use App\Models\CodigoDocumentalProceso;
+use Illuminate\Support\Facades\Crypt;
 use App\Http\Requests\OficioRequests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActaRequests;
@@ -58,7 +60,7 @@ class FirmarDocumentosController extends Controller
         return response()->json(["data" => $data]);
     }
 
-    //Funcion para solicitar firma
+    //Funcion para solicitar token de la firma
     public function solicitarToken(Request $request)
     {
         $this->validate(request(),['id' => 'required']);
@@ -119,8 +121,18 @@ class FirmarDocumentosController extends Controller
             $mensajeCelular   = 'El día '.$fechaHoraActual.' se envió notificación al celular '.$celularUsuario;
             $mensajeCelular  .= ' para continuar con la firma del documento ';
             $mensajeCelular  .= 'con token número '.$tokenGenerado;
+
+            $tokenfirmas      = DB::table('tokenfirmapersona')
+                                        ->select('tofipeid')
+                                        ->where('tofipeutilizado', false)->where('persid', auth()->user()->persid)->get();
+
+            foreach($tokenfirmas as $tokenfirma){
+                $tokenfirmapersonaUpdate = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
+                $tokenfirmapersonaUpdate->tofipeutilizado = true;
+                $tokenfirmapersonaUpdate->save();
+            }
         
-            $tokenfirmapersona = new TokenFirmaPersona();
+            $tokenfirmapersona                              = new TokenFirmaPersona();
             $tokenfirmapersona->persid                      = auth()->user()->persid;
             $tokenfirmapersona->tofipetoken                 = $tokenGenerado;
             $tokenfirmapersona->tofipefechahoranotificacion = $fechaHoraActual;
@@ -128,6 +140,9 @@ class FirmarDocumentosController extends Controller
             $tokenfirmapersona->tofipemensajecorreo         = $mensajeCorreo;
             $tokenfirmapersona->tofipemensajecelular        = ($notificarMovil) ? $mensajeCelular : '';
             $tokenfirmapersona->save();
+
+            $tokeMaxConsecutio  = TokenFirmaPersona::latest('tofipeid')->first();
+            $idToken            = Crypt::encrypt($tokeMaxConsecutio->tofipeid);
 
             $mensajeMostrar  = 'Para continuar con el proceso de firmado electrónico de este documento, ';
             $mensajeMostrar  .= 'se ha generado un código el cual fue enviado al correo '.$correoUsuario;
@@ -149,8 +164,7 @@ class FirmarDocumentosController extends Controller
             $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
 
         	DB::commit();
-			return response()->json(['success' => true, 'message' => 'Proceso realizado con éxito', 'mensajeMostrar' => $mensajeMostrar, 
-                                    'fechaHoraToken' => $fechaHoraActual, 'firma' => $firma, 'tiempoToken' => $tiempoToken * 60]);
+			return response()->json(['success' => true,  'mensajeMostrar' => $mensajeMostrar, 'firma' => $firma, 'tiempoToken' => $tiempoToken * 60, 'idToken' => $idToken]);
 		} catch (Exception $error){
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -161,32 +175,34 @@ class FirmarDocumentosController extends Controller
 	public function procesar(Request $request){
         $this->validate(request(),['id'            => 'required|numeric', 
                                   'token'          => 'required|string|min:4|max:20',
-                                  'fechaHoraToken' => 'required',
+                                  'tokenId'        => 'required',
                                   'firma'          => 'required|numeric'
                                 ]);
 
         $codoprid             = $request->id;
         $token                = $request->token;
-        $fechaHoraTokenCarbon = Carbon::parse($request->fechaHoraActual);
-        $fechaHoraToken       = $fechaHoraTokenCarbon->format('Y-m-d H:i:s');
         $codopfid             = $request->firma;
         $fechaHoraActual      = Carbon::now();
-		
+
+        try {
+            $idToken           = Crypt::decrypt($request->tokenId);
+		} catch (DecryptException $e) {
+            return response()->json(['success' => false, 'message'=> 'Se produjo un eror al optener el token de la firma, por favor contacte el equipo de soporte técnico']);
+		}
+
 		DB::beginTransaction();
 		try {
 
-            $tokenfirma      = DB::table('tokenfirmapersona')
+            $tokenfirma = DB::table('tokenfirmapersona')
                                     ->select('tofipetoken','tofipefechahoranotificacion','tofipefechahoramaxvalidez',
                                             'tofipemensajecorreo','tofipemensajecelular','tofipeid')
                                     ->where('tofipeutilizado', false)
                                     ->where('persid', auth()->user()->persid)
                                     ->where('tofipetoken', $token)
-                                    //->whereTime('tofipefechahoranotificacion','<=', $fechaHoraToken)
-                                    //->whereTime('tofipefechahoramaxvalidez','>=', $fechaHoraToken)
+                                    ->where('tofipeid', $idToken)
                                     ->first();
-
             if(!$tokenfirma){
-                return response()->json(['success' => false, 'message'=> 'El token con número '.$token.', no concuerda o el tiempo de actividad expiro']);
+                return response()->json(['success' => false, 'message'=> 'El token con número '.$token.', no concuerda o el tiempo de actividad expiró']);
             }
 
 			//consulto para saber cuantas firma tiene el documento

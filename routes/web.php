@@ -74,7 +74,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
     Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
-        Route::get('/admin/{id}', [DashboardController::class, 'index']);        
+        Route::get('/admin/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
@@ -83,84 +85,84 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('reset', [DashboardController::class, 'reset']);
 
     Route::prefix('admin')->group(function(){
-        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/menu');
+        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/configurar/menu');
         Route::post('/modulo/salve', [ModuloController::class, 'salve']);
         Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
 
-        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware('security:admin/menu');
+        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware('security:admin/configurar/menu');
         Route::get('/funcionalidad/listar/modulos', [FuncionalidadController::class, 'modulos']);
         Route::post('/funcionalidad/salve', [FuncionalidadController::class, 'salve']);
         Route::post('/funcionalidad/destroy', [FuncionalidadController::class, 'destroy']);
 
-        Route::get('/rol/list', [RolController::class, 'index'])->middleware('security:admin/menu');
+        Route::get('/rol/list', [RolController::class, 'index'])->middleware('security:admin/configurar/menu');
         Route::post('/rol/listar/funcionalidad', [RolController::class, 'funcionalidades']);
         Route::post('/rol/salve', [RolController::class, 'salve']);
         Route::post('/rol/destroy', [RolController::class, 'destroy']);
 
-        Route::get('/informacionCorreo/list', [InformacionCorreoController::class, 'index'])->middleware('security:admin/informacionNotificarCorreo');
+        Route::get('/informacionCorreo/list', [InformacionCorreoController::class, 'index'])->middleware('security:admin/configurar/informacionNotificarCorreo');
         Route::post('/informacionCorreo/salve', [InformacionCorreoController::class, 'salve']);
         Route::post('/informacionCorreo/destroy', [InformacionCorreoController::class, 'destroy']);
 
-        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/informacionNotificarCorreo');
+        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/configurar/informacionNotificarCorreo');
         Route::post('/configuracionCorreo/salve', [ConfiguracionCorreoController::class, 'salve']);
         Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);        
         
-        Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware('security:admin/datosTerritorial');
+        Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware('security:admin/configurar/datosTerritorial');
         Route::post('/departamento/salve', [DepartamentoController::class, 'salve']);
 
-        Route::get('/municipio/list', [MunicipioController::class, 'index'])->middleware('security:admin/datosTerritorial');
+        Route::get('/municipio/list', [MunicipioController::class, 'index'])->middleware('security:admin/configurar/datosTerritorial');
         Route::get('/municipio/list/deptos', [MunicipioController::class, 'deptos']);
         Route::post('/municipio/salve', [MunicipioController::class, 'salve']);
 
-        Route::get('/empresa/list', [EmpresaController::class, 'index'])->middleware('security:admin/empresa');
+        Route::get('/empresa/list', [EmpresaController::class, 'index'])->middleware('security:admin/configurar/empresa');
         Route::get('/empresa/list/datos', [EmpresaController::class, 'datos']);
         Route::post('/empresa/salve', [EmpresaController::class, 'salve']); 
 
-        Route::get('/tipoSaludo/list', [SaludoController::class, 'index'])->middleware('security:admin/gestionarTipos');
+        Route::get('/tipoSaludo/list', [SaludoController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/tipoSaludo/salve', [SaludoController::class, 'salve']);
         Route::post('/tipoSaludo/destroy', [SaludoController::class, 'destroy']);
 
-        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index'])->middleware('security:admin/gestionarTipos');
+        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/tipoDespedida/salve', [DespedidaController::class, 'salve']);
         Route::post('/tipoDespedida/destroy', [DespedidaController::class, 'destroy']);
         
-        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index'])->middleware('security:admin/gestionarTipos');
+        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/cargoLaboral/salve', [CargoLaboralController::class, 'salve']);
         Route::post('/cargoLaboral/destroy', [CargoLaboralController::class, 'destroy']);
 
-        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index'])->middleware('security:admin/gestionarTipos');
+        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/tipoEstante/salve', [EstanteArchivadorController::class, 'salve']);
         Route::post('/tipoEstante/destroy', [EstanteArchivadorController::class, 'destroy']);
 
-        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index'])->middleware('security:admin/gestionarTipos');
+        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/tipoDocumental/salve', [DocumentalController::class, 'salve']);
         Route::post('/tipoDocumental/destroy', [DocumentalController::class, 'destroy']);
 
-        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionarTipos');
+        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
-        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/seriesDocumentales');  
+        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');  
         Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
         Route::post('/serieDocumental/destroy', [SerieDocumentalController::class, 'destroy']);
 
-        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware('security:admin/seriesDocumentales');
+        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');
         Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos']);  
         Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
         Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
          
-        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware('security:admin/dependencia');
+        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware('security:admin/gestionar/dependencia');
         Route::post('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/persona');
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/gestionar/persona');
         Route::post('/persona/listar/datos', [PersonaController::class, 'datos']); 
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
         Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta
 
-        Route::get('/usuario/list', [UsuarioController::class, 'index'])->middleware('security:admin/usuario');
+        Route::get('/usuario/list', [UsuarioController::class, 'index'])->middleware('security:admin/gestionar/usuario');
         Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
         Route::post('/usuario/list/datos', [UsuarioController::class, 'datos']);
         Route::post('/usuario/salve', [UsuarioController::class, 'salve']);
@@ -171,7 +173,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/usuario/updatePerfil', [PerfilUsuarioController::class, 'updatePerfil']);
         Route::post('/usuario/updatePassword', [PerfilUsuarioController::class, 'updatePassword']);
 
-        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/festivos');
+        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/gestionar/festivos');
         Route::post('/festivo/salve', [FestivoController::class, 'salve']);
 
         Route::prefix('/producion/documental')->group(function(){

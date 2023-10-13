@@ -88,9 +88,11 @@ class LoginController extends Controller
                             ->where('usuaid', Auth::id())
                             ->orderBy('ingsisid', 'DESC')->first();
 
-    $ingresosistema = IngresoSistema::findOrFail($usuario->ingsisid);
-    $ingresosistema->ingsisfechahorasalida = Carbon::now();
-    $ingresosistema->save();
+    if($usuario){
+      $ingresosistema = IngresoSistema::findOrFail($usuario->ingsisid);
+      $ingresosistema->ingsisfechahorasalida = Carbon::now();
+      $ingresosistema->save();
+    }
 
     Auth::logout();
     $request->session()->invalidate(); 

@@ -31,7 +31,6 @@ php artisan make:migration create_tipo_carpeta_ubicacion
 php artisan make:migration create_archivo_historico
 php artisan make:migration create_archivo_historico_digitalizado
 
-
 php artisan make:migration create_dependencia_persona
 php artisan make:migration create_dependencia_sub_serie_documental
 
@@ -64,6 +63,11 @@ php artisan make:migration create_radicacion_documento_entrante_anexo
 php artisan make:migration create_radicacion_documento_entrante_dependencia
 php artisan make:migration create_radicacion_documento_entrante_cambio_estado
 php artisan make:migration create_codigo_documental_proceso_radicacion_documento_entrante
+
+php artisan make:migration create_tipo_asociado
+php artisan make:migration create_asociado
+php artisan make:migration create_linea_credito
+php artisan make:migration create_solicitud_credito
 
 
 php artisan make:model Festivo
