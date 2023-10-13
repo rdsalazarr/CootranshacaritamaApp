@@ -11,11 +11,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers';
 import "/resources/scss/fechaDatePicker.scss";
-import esLocale from 'date-fns/locale/es'; 
+import esLocale from 'dayjs/locale/es';
 import dayjs from 'dayjs';
-dayjs.locale('esLocale')
+import 'dayjs/locale/es';
 
-export default function New({id, area, tipo, ruta}){ 
+export default function New({id, area, tipo, ruta}){
     const editorTexto = useRef(null);
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPC:'000',
@@ -150,18 +150,18 @@ export default function New({id, area, tipo, ruta}){
 
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
-               <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={esLocale} >
                         <DatePicker
                             label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']} 
                             minDate={fechaMinima}
-                            locale={esLocale}
                             className={'inputGeneral'} 
                             onChange={handleChangeDate}
                         />
                     </LocalizationProvider>
+
                 </Grid>
 
                 <Grid item xl={2} md={2} sm={6} xs={12} >
@@ -293,7 +293,6 @@ export default function New({id, area, tipo, ruta}){
                             height: 400,
                             menubar: false,
                             object_resizing : true,
-                            table_responsive_width: true,
                             browser_spellcheck: true,
                             spellchecker_language: 'es',
                             spellchecker_wordchar_pattern: /[^\s,\.]+/g ,                           

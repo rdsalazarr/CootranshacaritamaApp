@@ -1194,7 +1194,7 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (3, 1, 'Datos territorial', 'Gestionar datos territorial', 'admin/datosTerritorial', 'language_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (4, 1, 'Empresa', 'Gestionar empresa', 'admin/empresa', 'store', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (5, 2, 'Tipos', 'Gestionar tipos', 'admin/gestionarTipos', 'star_rate_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(6, 2, 'Series', 'Gestionar series documentales', 'admin/seriesDocumentales', 'insert_chart_icon', 2, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(6, 2, 'Series', 'Gestionar series documentales', 'admin/seriesDocumentales', 'insert_chart_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (7, 2, 'Dependencia', 'Gestionar dependencia', 'admin/dependencia', 'maps_home_work_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (8, 2, 'Persona', 'Gestionar persona', 'admin/persona', 'person_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (9, 2, 'Usuario', 'Gestionar usuario', 'admin/usuario', 'person', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -1222,47 +1222,14 @@ INSERT INTO `rol` (`rolid`, `rolnombre`, `rolactivo`, `created_at`, `updated_at`
 (6, 'Coordinador del archivo histórico', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
-/*ALTER TABLE `empresa` ADD `emprbarrio` VARCHAR(80) NULL COMMENT 'Barrio de la empresa' AFTER `emprdireccion`;
-UPDATE `empresa` SET `emprbarrio` = 'Santa Clara' WHERE `empresa`.`emprid` = 1;
-
-ALTER TABLE `radicaciondocentdependencia` ADD `radoedescopia` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si el radicado es una copia para una dependencia' AFTER `radoedfechahorarecibido`;
-ALTER TABLE `radicaciondocumentoentrante` CHANGE `depeid` `depeid` SMALLINT(5) UNSIGNED NULL COMMENT 'Identificador de la dependencia';
-
-CREATE TABLE `informacionconfiguracioncorreo` (
-  `incocoid` tinyint(3) UNSIGNED NOT NULL COMMENT 'Identificador de la tabla información configuración del correo',
-  `incocohost` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Host para el cual se permite enviar el correo',
-  `incocousuario` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Usuario o correo con el cual se va autenticar para enviar los correos en el sistema',
-  `incococlave` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave del correo para acceder a la plataforma',
-  `incococlaveapi` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Clave de la api para autenticar y poder enviar el corro',
-  `incocopuerto` varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Puerto por el cual se envia el correo',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-INSERT INTO `informacionconfiguracioncorreo` (`incocoid`, `incocohost`, `incocousuario`, `incococlave`, `incococlaveapi`, `incocopuerto`, `created_at`, `updated_at`) VALUES
-(1, 'smtp.gmail.com', 'notificacioncootranshacaritama@gmail.com', 'Notific@2023.', 'grgsmqtlmijxaapj', '587', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-
-ALTER TABLE `persona` ADD `perstienefirmadigital` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la persona tiene firma digital' AFTER `persrutafirma`, ADD `persrutacrt` VARCHAR(500) NULL COMMENT 'Ruta de certificado digital con extensión crt' AFTER `perstienefirmadigital`, ADD `persrutapem` VARCHAR(500) NULL COMMENT 'Ruta de certificado digital con extensión pem' AFTER `persrutacrt`;
-ALTER TABLE `persona` ADD `persclavecertificado` VARCHAR(20) NULL COMMENT 'Clave del certificado digital' AFTER `perstienefirmadigital`;
-*/
-
-/*
+INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
+(1, 1, '100', 'GER', 'GERENCIA', 'rdsalazarr@ufpso.edu.co', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
-(1, 1, '500', 'GER', 'GERENCIA', 'rdsalazarr@ufpso.edu.co', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
-(2, 1, '600', 'CON', 'CONTABILIDAD', 'radasa10@hotmail.com', 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(2, 1, '200', 'CON', 'CONTABILIDAD', 'radasa10@hotmail.com', 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `dependenciapersona` (`depperid`, `depperdepeid`, `depperpersid`) VALUES
 (1, 1, 1),(2, 2, 1);
 
 INSERT INTO `dependenciasubseriedocumental` (`desusdid`, `desusdsusedoid`, `desusddepeid`) VALUES
 (1, 1, 1),(2, 2, 2);
-
-INSERT INTO `empresa` VALUES (1,'COOPERATIVA DE TRANSPORTADORES HACARITAMA','COOTRANSHACARITAMA','890505424',7,'LUIS MANUEL ASCANIO CLARO',
-'5036123',54498,'DIRECCIÓN',54498,'3142197149',NULL,
-'cootranshacaritama@hotmail.com',NULL,'http://hacaritama.ivanmel.dev/api/files/67bde08e1f1b05de8b2fe0cf5105bcec.png',
-NULL,'*** FELIZ VIAJE ***',NULL,'*** FELIZ VIAJE ***',NULL,'2022-12-09 10:54:24');**/

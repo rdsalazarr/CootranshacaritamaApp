@@ -28,7 +28,7 @@ class notificar
 			$mail->SMTPSecure = 'SSL';
 			$mail->Port       = $puerto;
 
-			$mail->setFrom($usuario, utf8_decode('Notificaciones CRM HACARITAMA'));
+			$mail->setFrom($usuario, utf8_decode('Notificaciones ERP HACARITAMA'));
 	
 			foreach ($correos as $email) {
 				$mail->addAddress($email);

@@ -11,8 +11,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 import "/resources/scss/fechaDatePicker.scss";
-import esLocale from 'date-fns/locale/es'; 
+import esLocale from 'dayjs/locale/es';
 import dayjs from 'dayjs';
+import 'dayjs/locale/es';
 
 export default function New({id, area, tipo, ruta}){ 
     const editorTexto = useRef(null);
@@ -203,12 +204,11 @@ export default function New({id, area, tipo, ruta}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>            
-                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={esLocale} >
                         <DatePicker
                             label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']}
-                            locale={esLocale}
                             className={'inputGeneral'} 
                             onChange={handleChangeDate}
                         />
@@ -431,7 +431,6 @@ export default function New({id, area, tipo, ruta}){
                             language: 'es',
                             height: 400,
                             object_resizing : true,
-                            table_responsive_width: true,
                             browser_spellcheck: true,
                             spellchecker_language: 'es',
                             spellchecker_wordchar_pattern: /[^\s,\.]+/g ,

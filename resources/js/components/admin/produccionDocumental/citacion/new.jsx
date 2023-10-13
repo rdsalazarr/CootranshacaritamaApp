@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Fragment, useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Box, Icon,Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
@@ -11,8 +11,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 import "/resources/scss/fechaDatePicker.scss";
-import esLocale from 'date-fns/locale/es'; 
+import esLocale from 'dayjs/locale/es';
 import dayjs from 'dayjs';
+import 'dayjs/locale/es';
 
 export default function New({id, area, tipo, ruta}){
     const editorTexto = useRef(null);
@@ -32,6 +33,7 @@ export default function New({id, area, tipo, ruta}){
     const [cargoLaborales, setCargoLaborales] = useState([]); 
     const [firmaPersona, setFirmaPersona] = useState([{identificador:'', persona:'',  cargo: '', estado: 'I'}]);
     const [firmaInvitados, setFirmaInvitados] = useState([]);
+    const [fechaMinima, setFechaMinima] = useState(dayjs());
     
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -164,6 +166,7 @@ export default function New({id, area, tipo, ruta}){
         let rutaData    = (ruta === 'P') ? '/admin/producion/documental/citacion/listar/datos' : '/admin/firmar/documento/editar/documento';
         instance.post(rutaData, {id: id, tipo: tipo, tipoDocumental: 'H'}).then(res=>{
             (tipo === 'I') ? setFechaActual(res.fechaActual): null;
+            (tipo === 'I') ? setFechaMinima(dayjs(res.fechaActual, 'YYYY-MM-DD')): null;
             setTipoMedios(res.tipoMedios);
             setTipoCitaciones(res.tipoCitaciones);
             setPersonas(res.personas);
@@ -189,7 +192,7 @@ export default function New({id, area, tipo, ruta}){
                 newFormData.contenido         = tpDocumental.codoprcontenido;
 
                 newFormData.tipoCitacion      = tpDocumental.tipactid;
-                newFormData.horaInicial       = tpDocumental.codopthora;             
+                newFormData.horaInicial       = tpDocumental.codopthora;
                 newFormData.lugar             = tpDocumental.codoptlugar;
 
                 let newFirmasDocumento = [];
@@ -211,10 +214,11 @@ export default function New({id, area, tipo, ruta}){
                         estado: 'U'
                     });
                 });
-       
+
                 setFirmaPersona(newFirmasDocumento);
                 setFirmaInvitados(newFirmasInvitado);
                 setFechaActual(tpDocumental.codoprfecha);
+                setFechaMinima(dayjs(tpDocumental.codoprfecha, 'YYYY-MM-DD'));
             }
             setFormData(newFormData);
             setLoader(false);
@@ -233,12 +237,12 @@ export default function New({id, area, tipo, ruta}){
             <Grid container spacing={2} style={{display: 'flex',  justifyContent: 'space-between'}}>
 
                <Grid item xl={4} md={4} sm={6} xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={esLocale} >
                         <DatePicker
                             label="Fecha del documento"
                             defaultValue={dayjs(fechaActual)}
                             views={['year', 'month', 'day']}
-                            locale={esLocale}
+                            minDate={fechaMinima}
                             className={'inputGeneral'} 
                             onChange={handleChangeDate}
                         />
@@ -348,7 +352,6 @@ export default function New({id, area, tipo, ruta}){
                             language: 'es',
                             height: 400,
                             object_resizing : true,
-                            table_responsive_width: true, 
                             browser_spellcheck: true,
                             spellchecker_language: 'es', 
                             spellchecker_wordchar_pattern: /[^\s,\.]+/g ,

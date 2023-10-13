@@ -14,12 +14,12 @@ class DashboardController extends Controller
 {
     public function index()
 	{
-		return view('home.dashboard',['title' => 'Dashboard APP']);
+		return view('home.dashboard',['title' => 'Dashboard ERP']);
 	}
 	
     public function reset()
 	{ 
-		return view('home.reset',['title' => 'Modificar credenciales de acceso al APP']);
+		return view('home.reset',['title' => 'Modificar credenciales de acceso al ERP']);
 	}
 	
 	public function welcome()

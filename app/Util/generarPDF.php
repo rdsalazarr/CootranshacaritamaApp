@@ -132,7 +132,7 @@ class generarPdf
 		PDF::Ln(8);
 
 		if ($convocatoria === 1) {
-			PDF::SetX(26);    
+			PDF::SetX(26);
 	        PDF::SetFont('helvetica', 'B', 12);
 	        PDF::Cell(38, 4, 'CONVOCATORIA.', 0, 0, '');
 	        PDF::SetFont('helvetica', '', 12);
