@@ -255,7 +255,7 @@ export default function  Contenedor () {
 
     if(loader){
         return <Loader />
-    }    
+    }
 
     return (
         <ThemeProvider theme={generalTema}>
