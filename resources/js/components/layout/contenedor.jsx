@@ -174,28 +174,28 @@ const componenteMenu = [
     {   nombre: 'Asociados',
         icono : 'person_search_icon',
         itemMenu: [  
-            {ruta : 'admin/asocidados/activos', menu: 'Activos', icono : 'person_add_alt1_icon', componente : <Menu /> },
-            {ruta : 'admin/asocidados/desvinculados', menu: 'Desvincular', icono : 'person_remove_icon', componente : <Usuario />}, 
-            {ruta : 'admin/asocidados/inactivos', menu: 'Inactivos', icono : 'person_off_icon', componente : <DatosGeograficos /> },                     
+            {ruta : 'admin/asocidados/activos',       menu: 'Activos',     icono : 'person_add_alt1_icon', componente : <Menu /> },
+            {ruta : 'admin/asocidados/desvinculados', menu: 'Desvincular', icono : 'person_remove_icon',   componente : <Usuario />}, 
+            {ruta : 'admin/asocidados/inactivos',     menu: 'Inactivos',   icono : 'person_off_icon',      componente : <DatosGeograficos /> }, 
         ]
     },
     {   nombre: 'Cartera',
         icono : 'work_icon',
         itemMenu: [
-            {ruta : 'admin/cartera/lineaCredito', menu: 'Línea de crédito', icono : 'add_chart ', componente : <Menu /> },
-            {ruta : 'admin/cartera/solicitud', menu: 'Solicitud', icono : 'add_card_icon', componente : <NotificarCorreo />}, 
-            {ruta : 'admin/cartera/aprobacion', menu: 'Aprobación', icono : 'credit_score_icon ', componente : <DatosGeograficos /> },
-            {ruta : 'admin/cartera/desembolso', menu: 'Desembolso', icono : 'attach_money_icon', componente : <Empresa /> },
-            {ruta : 'admin/cartera/cobros', menu: 'Cobros', icono : 'table_chart_icon', componente : <Empresa /> },
+            {ruta : 'admin/cartera/lineaCredito', menu: 'Línea de crédito', icono : 'add_chart ',        componente : <Menu /> },
+            {ruta : 'admin/cartera/solicitud',    menu: 'Solicitud',        icono : 'add_card_icon',     componente : <NotificarCorreo />}, 
+            {ruta : 'admin/cartera/aprobacion',   menu: 'Aprobación',       icono : 'credit_score_icon', componente : <DatosGeograficos /> },
+            {ruta : 'admin/cartera/desembolso',   menu: 'Desembolso',       icono : 'attach_money_icon', componente : <Empresa /> },
+            {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <Empresa /> },
         ]
     },
     {   nombre: 'Dirección transporte',
         icono : 'drive_eta_icon',
         itemMenu: [
-            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon', componente : <Menu /> },
-            {ruta : 'admin/direccion/transporte/conductores', menu: 'Conductores', icono : 'attach_money_icon', componente : <Empresa /> },
-            {ruta : 'admin/direccion/transporte/vehiculos', menu: 'Vehículo', icono : 'inventory_icon', componente : <NotificarCorreo />},
-            {ruta : 'admin/direccion/transporte/polizas', menu: 'Polizas', icono : 'credit_score_icon ', componente : <DatosGeograficos /> },
+            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',     componente : <Menu /> },
+            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',  componente : <Empresa /> },
+            {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'inventory_icon',     componente : <NotificarCorreo />},
+            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon ', componente : <DatosGeograficos /> },
         ]
     },
 

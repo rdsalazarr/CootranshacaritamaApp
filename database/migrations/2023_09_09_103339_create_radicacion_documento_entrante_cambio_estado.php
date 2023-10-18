@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('radicaciondocentcambioestado', function (Blueprint $table) {
-            $table->increments('radeceid')->unsigned()->comment('Identificador de la tabla cambio estado radicacion documento entrante');
+            $table->increments('radeceid')->unsigned()->comment('Identificador de la tabla radicacion documento entrante cambio estado');
             $table->integer('radoenid')->unsigned()->comment('Identificador del radicado del documento entrante');
             $table->tinyInteger('tierdeid')->unsigned()->comment('Identificador del tipo de estado radicación documento entrante');
             $table->smallInteger('radeceusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del radicado');
