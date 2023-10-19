@@ -40,7 +40,7 @@ export default function New({id, area, tipo, ruta}){
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const handleInputChange = (e) => {
+    const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}));
     }
 
@@ -263,7 +263,7 @@ export default function New({id, area, tipo, ruta}){
                         inputProps={{autoComplete: 'off', maxLength: 100}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
 

@@ -24,23 +24,19 @@ php artisan make:migration create_tipo_relacion_laboral
 php artisan make:migration create_persona
 php artisan make:migration create_dependencia
 php artisan make:migration create_cargo_laboral
-
 php artisan make:migration create_tipo_estante_archivador
 php artisan make:migration create_tipo_caja_ubicacion
 php artisan make:migration create_tipo_carpeta_ubicacion
 php artisan make:migration create_archivo_historico
 php artisan make:migration create_archivo_historico_digitalizado
-
 php artisan make:migration create_dependencia_persona
 php artisan make:migration create_dependencia_sub_serie_documental
-
 php artisan make:migration create_tipo_medio
 php artisan make:migration create_tipo_acta
 php artisan make:migration create_tipo_tramite
 php artisan make:migration create_tipo_persona_documental
 php artisan make:migration create_token_firma_persona
 php artisan make:migration create_festivo
-
 php artisan make:migration create_codigo_documental
 php artisan make:migration create_codigo_documental_proceso
 php artisan make:migration create_codigo_documental_proceso_acta
@@ -55,7 +51,6 @@ php artisan make:migration create_codigo_documental_proceso_copia
 php artisan make:migration create_codigo_documental_proceso_cambio_estado
 php artisan make:migration create_codigo_documental_proceso_compartido
 php artisan make:migration create_codigo_documental_proceso_radicado
-
 php artisan make:migration create_persona_radica_documento
 php artisan make:migration create_tipo_estado_radicacion_documento_entrante
 php artisan make:migration create_radicacion_documento_entrante
@@ -63,7 +58,21 @@ php artisan make:migration create_radicacion_documento_entrante_anexo
 php artisan make:migration create_radicacion_documento_entrante_dependencia
 php artisan make:migration create_radicacion_documento_entrante_cambio_estado
 php artisan make:migration create_codigo_documental_proceso_radicacion_documento_entrante
+php artisan make:migration create_archivo_historico
+php artisan make:migration create_archivo_historico_digitalizado
 
+php artisan make:migration create_informacion_general_pdf
+php artisan make:migration create_agencia
+php artisan make:migration create_tipo_vehiculo
+php artisan make:migration create_tipo_marca_vehiculo
+php artisan make:migration create_tipo_referencia_vehiculo
+php artisan make:migration create_tipo_color_vehiculo
+php artisan make:migration create_tipo_modalidad_vehiculo
+php artisan make:migration create_tipo_estado_vehiculo
+php artisan make:migration create_tipo_carroceria_vehiculo
+php artisan make:migration create_tipo_combustible_vehiculo
+php artisan make:migration create_vehiculo
+php artisan make:migration create_vehiculo_cambio_estado
 php artisan make:migration create_tipo_estado_asociado
 php artisan make:migration create_asociado
 php artisan make:migration create_asociado_cambio_estado
@@ -72,14 +81,6 @@ php artisan make:migration create_linea_credito
 php artisan make:migration create_solicitud_credito
 php artisan make:migration create_solicitud_credito_cambio_estado
 php artisan make:migration create_solicitud_credito_desembolso
-
-php artisan make:model Asociado
-php artisan make:model LineaCredito
-php artisan make:model Asociado
-php artisan make:model AsociadoCambioEstado
-php artisan make:model SolicitudCredito
-php artisan make:model SolicitudCreditoCambioEstado
-php artisan make:model SolicitudCreditoDesembolso
 
 
 php artisan make:model Festivo
@@ -109,10 +110,8 @@ php artisan make:model TipoRelacionLaboral
 php artisan make:model CargoLaboral
 php artisan make:model Persona 
 php artisan make:model TipoPersonaDocumental
-
 php artisan make:model DependenciaPersona
 php artisan make:model DependenciaSubSerieDocumental
-
 php artisan make:model CodigoDocumental
 php artisan make:model CodigoDocumentalProceso
 php artisan make:model CodigoDocumentalProcesoActa
@@ -127,20 +126,33 @@ php artisan make:model CodigoDocumentalProcesoCopia
 php artisan make:model CodigoDocumentalProcesoCambioEstado
 php artisan make:model CodigoDocumentalProcesoCompartido
 php artisan make:model CodigoDocumentalProcesoRadicado
-
 php artisan make:model PersonaRadicaDocumento
 php artisan make:model RadicacionDocumentoEntrante
 php artisan make:model RadicacionDocumentoEntranteDependencia
 php artisan make:model RadicacionDocumentoEntranteCambioEstado
 php artisan make:model CodigoDocumentalProcesoRadicacionDocumentoEntrante
-
 php artisan make:model TipoEstanteArchivador
 php artisan make:model ArchivoHistorico
 php artisan make:model ArchivoHistoricoDigitalizado
 
-php artisan make:migration create_archivo_historico
-php artisan make:migration create_archivo_historico_digitalizado
-
+php artisan make:model InformacionGeneralPdf
+php artisan make:model Agencia
+php artisan make:model TipoModalidadVehiculo
+php artisan make:model TipoVehiculo
+php artisan make:model TipoMarcaVehiculo
+php artisan make:model TipoColorVehiculo
+php artisan make:model TipoCarroceriaVehiculo
+php artisan make:model TipoReferenciaVehiculo
+php artisan make:model TipoCombustibleVehiculo
+php artisan make:model Vehiculo 
+php artisan make:model VehiculoCambioEstado
+php artisan make:model Asociado
+php artisan make:model LineaCredito
+php artisan make:model Asociado
+php artisan make:model AsociadoCambioEstado
+php artisan make:model SolicitudCredito
+php artisan make:model SolicitudCreditoCambioEstado
+php artisan make:model SolicitudCreditoDesembolso
 
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
@@ -160,13 +172,20 @@ php artisan make:seeder TipoMedioSeeder
 php artisan make:seeder TipoTramiteSeeder
 php artisan make:seeder TipoPersonaDocumentalSeeder
 php artisan make:seeder TipoEstadoDocumentoEntranteSeeder
-
 php artisan make:seeder TipoCajaUbicacionSeeder
 php artisan make:seeder TipoCarpetaUbicacionSeeder
 php artisan make:seeder TipoEstanteArchivadorSeeder
-
 php artisan make:seeder TipoEstadoAsociadoSeeder
 php artisan make:seeder TipoEstadoSolicitudCreditoSeeder
+php artisan make:seeder TipoVehiculoSeeder
+php artisan make:seeder TipoModalidadVehiculoSeeder
+php artisan make:seeder TipoEstadoVehiculoSeeder
+php artisan make:seeder TipoReferenciaVehiculoSeeder
+php artisan make:seeder TipoMarcaVehiculoSeeder
+php artisan make:seeder TipoColorVehiculoSeeder
+php artisan make:seeder TipoCarroceriaVehiculoSeeder
+php artisan make:seeder TipoCombustibleVehiculoSeeder
+
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -190,6 +209,7 @@ php artisan make:controller Admin\Series\SubSerieDocumentalController
 php artisan make:controller Admin\Tipos\TipoDespedidaController
 php artisan make:controller Admin\Tipos\TipoSaludoController
 php artisan make:controller Admin\PersonaController
+php artisan make:controller Admin\AgenciaController
 php artisan make:controller Admin\ProducionDocumental\OficioController
 
 php artisan make:controller Admin\Radicacion\DocumentoEntranteController
@@ -203,6 +223,13 @@ php artisan make:controller Admin\Archivo\HistoricoConsultarController
 php artisan make:controller Admin\Tipos\EstanteArchivadorController
 php artisan make:controller Admin\Tipos\DocumentalController
 php artisan make:controller Admin\Exportar\RegistrosController
+
+php artisan make:controller Admin\Vehiculos\TiposVehiculosController
+php artisan make:controller Admin\Vehiculos\TiposReferenciaController
+php artisan make:controller Admin\Vehiculos\TiposMarcaController
+php artisan make:controller Admin\Vehiculos\TiposColorController
+php artisan make:controller Admin\Vehiculos\TiposCarroceriaController
+
 
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware

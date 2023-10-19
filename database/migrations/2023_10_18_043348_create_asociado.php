@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('asociado', function (Blueprint $table) {
             $table->increments('asocid')->unsigned()->comment('Identificador de la tabla asociado');
-            $table->string('tiesasid', 2)->unsigned()->comment('Identificador del tipo de estado del asociado');
+            $table->string('tiesasid', 2)->comment('Identificador del tipo de estado del asociado');
             $table->date('asocfechaingreso')->comment('Fecha de ingreso del asocado a la cooperativa');
             $table->date('asocfecharetiro')->nullable()->comment('Fecha de retiro del asocado a la cooperativa');
             $table->timestamps();

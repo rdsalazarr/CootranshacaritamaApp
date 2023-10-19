@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('asociadocambioestado', function (Blueprint $table) {
             $table->increments('ascaesid')->unsigned()->comment('Identificador de la tabla asociado cambio estado');
-            $table->integer('asocid')->unsigned()->comment('Identificador de la tabla asociado');
-            $table->string('tiesasid', 2)->unsigned()->comment('Identificador del tipo de estado asociado');
+            $table->integer('asocid')->unsigned()->comment('Identificador del asociado');
+            $table->string('tiesasid', 2)->comment('Identificador del tipo de estado asociado');
             $table->smallInteger('ascaesusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del asociado');
             $table->dateTime('ascaesfechahora')->comment('Fecha y hora en la cual se crea el cambio estado del asociado');
             $table->string('ascaesobservacion', 500)->nullable()->comment('Observación del cambio estado del asociado');

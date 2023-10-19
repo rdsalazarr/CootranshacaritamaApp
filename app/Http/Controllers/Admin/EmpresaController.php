@@ -15,7 +15,7 @@ class EmpresaController extends Controller
         $url  = URL::to('/');
 		$data = DB::table('empresa')->select('emprid','persidrepresentantelegal','emprdepaid', 'emprmuniid','emprnit','emprdigitoverificacion','emprbarrio',
                             'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular','emprhorarioatencion',
-                            'emprurl', 'emprcodigopostal', 'emprlogo',
+                            'emprurl', 'emprcodigopostal', 'emprlogo','emprpersoneriajuridica',
                             DB::raw("CONCAT(emprtelefonocelular,' ', emprtelefonofijo ) as telefonos"),
                             DB::raw("CONCAT('$url/archivos/logoEmpresa/', emprlogo ) as imagen")
                             )->get(); 
@@ -25,13 +25,8 @@ class EmpresaController extends Controller
 
     public function datos()
 	{
-        $deptos =  DB::table('departamento')
-                       ->select('depaid','depanombre')
-                       ->OrderBy('depanombre')->get();
-
-        $municipios =  DB::table('municipio')
-                       ->select('muniid','muninombre','munidepaid')
-                       ->OrderBy('muninombre')->get(); 
+        $deptos =  DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
+        $municipios =  DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
         
        $jefes = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
                        DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos")
@@ -55,6 +50,7 @@ class EmpresaController extends Controller
                 'direccion'          => 'required|string|min:4|max:100',
                 'barrio'             => 'nullable|string|min:4|max:80',
                 'correo'             => 'nullable|email|min:4|max:80',
+                'personeriaJuridica' => 'nullable|string|min:4|max:50',
                 'telefono'           => 'nullable|max:20',
                 'celular'            => 'nullable|max:20',
                 'horarioAtencion'    => 'nullable|max:200',
@@ -92,6 +88,7 @@ class EmpresaController extends Controller
             $empresa->emprdireccion            = $request->direccion;
             $empresa->emprbarrio               = $request->barrio;
             $empresa->emprcorreo               = $request->correo;
+            $empresa->emprpersoneriajuridica   = $request->personeriaJuridica;            
             $empresa->emprtelefonofijo         = $request->telefono;
             $empresa->emprtelefonocelular      = $request->celular;
             $empresa->emprhorarioatencion      = $request->horarioAtencion;

@@ -214,7 +214,7 @@ class manejadorDocumentos {
 			}
 	    	
 	    	$codigodocumentalproceso->codoprfecha            = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido   = $request->nombreDirigido;
+	    	$codigodocumentalproceso->codoprnombredirigido   = mb_strtoupper($request->nombreDirigido,'UTF-8');
 	    	$codigodocumentalproceso->codoprcorreo           = $request->correo;
 	    	$codigodocumentalproceso->codoprcontenido        = $request->contenido;
 	    	$codigodocumentalproceso->save();  
@@ -590,7 +590,7 @@ class manejadorDocumentos {
 			}
 	    	
 	    	$codigodocumentalproceso->codoprfecha            = $request->fecha;
-	    	$codigodocumentalproceso->codoprnombredirigido   = $request->nombreDirigido;
+	    	$codigodocumentalproceso->codoprnombredirigido   = mb_strtoupper($request->nombreDirigido,'UTF-8');
 	    	$codigodocumentalproceso->codoprcorreo           = $request->correo;
 	    	$codigodocumentalproceso->codoprcontenido        = $request->contenido;
 	    	$codigodocumentalproceso->save();  

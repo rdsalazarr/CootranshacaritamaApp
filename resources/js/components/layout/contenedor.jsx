@@ -25,6 +25,7 @@ import SeriesDocumentales from "../admin/seriesDocumental/list";
 import Dependencia from "../admin/dependencia/list";
 import Persona from "../admin/persona/list";
 import Festivos from "../admin/festivo/list";
+import Agencia from "../admin/agencia/list";
 
 import Acta from "../admin/produccionDocumental/acta/list";
 import Citacion from "../admin/produccionDocumental/citacion/list";
@@ -41,6 +42,9 @@ import BandejaRadicadoEntrante from "../admin/radicacion/documentoEntrante/bande
 
 import ArchivoHistorico from "../admin/archivoHistorico/gestionar/list";
 import ConsultarArchivoHistorico from "../admin/archivoHistorico/consultar/list";
+
+import TiposVehiculos from "../admin/vehiculos/tipos/list";
+
 
 const HeaderMenu = ({open, setOpen}) =>{
     return (
@@ -192,10 +196,11 @@ const componenteMenu = [
     {   nombre: 'Dirección transporte',
         icono : 'drive_eta_icon',
         itemMenu: [
-            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',     componente : <Menu /> },
+            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',     componente : <TiposVehiculos /> },
             {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',  componente : <Empresa /> },
             {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'inventory_icon',     componente : <NotificarCorreo />},
             {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon ', componente : <DatosGeograficos /> },
+            {ruta : 'admin/gestionar/agencia',       menu: 'Agencia',            icono : 'credit_score_icon ', componente : <Agencia /> },
         ]
     },
 
@@ -231,8 +236,8 @@ const menuComponente = [
     {id:21,componente : <ArchivoHistorico />},
     {id:22,componente : <ConsultarArchivoHistorico />},
 
-    {id:23,componente : <Welcome />},
-    {id:24,componente : <Welcome />},
+    {id:23,componente : <TiposVehiculos />},
+    {id:24,componente : <Agencia />},
     {id:25,componente : <Welcome />},
     {id:26,componente : <Welcome />},
     {id:27,componente : <Welcome />},

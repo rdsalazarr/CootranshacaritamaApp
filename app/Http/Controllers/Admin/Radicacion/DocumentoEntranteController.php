@@ -179,10 +179,10 @@ class DocumentoEntranteController extends Controller
             $personaradicadocumento                         = ($peradoid != '000') ? PersonaRadicaDocumento::findOrFail($peradoid) : new PersonaRadicaDocumento();
             $personaradicadocumento->tipideid               = $request->tipoIdentificacion;
             $personaradicadocumento->peradodocumento        = $request->numeroIdentificacion;
-            $personaradicadocumento->peradoprimernombre     = $request->primerNombre;
-            $personaradicadocumento->peradosegundonombre    = $request->segundoNombre;
-            $personaradicadocumento->peradoprimerapellido   = $request->primerApellido;
-            $personaradicadocumento->peradosegundoapellido  = $request->segundoApellido;
+            $personaradicadocumento->peradoprimernombre     = mb_strtoupper($request->primerNombre,'UTF-8');
+            $personaradicadocumento->peradosegundonombre    = mb_strtoupper($request->segundoNombre,'UTF-8');
+            $personaradicadocumento->peradoprimerapellido   = mb_strtoupper($request->primerApellido,'UTF-8');
+            $personaradicadocumento->peradosegundoapellido  = mb_strtoupper($request->segundoApellido,'UTF-8');
             $personaradicadocumento->peradodireccion        = $request->direccionFisica; 
             $personaradicadocumento->peradotelefono         = $request->numeroContacto; 
             $personaradicadocumento->peradocorreo           = $request->correoElectronico;

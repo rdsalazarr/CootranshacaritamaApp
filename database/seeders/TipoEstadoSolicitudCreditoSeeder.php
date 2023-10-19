@@ -12,10 +12,25 @@ class TipoEstadoSolicitudCreditoSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
+    { 
         DB::table('tipoestadosolicitudcredito')->insert([
-            'tiesasid'     => 'A',
-            'tiesasnombre' => 'Activo'
+            'tiesscid'     => 'R',
+            'tiesscnombre' => 'Registrado'
+        ]);
+
+        DB::table('tipoestadosolicitudcredito')->insert([
+            'tiesscid'     => 'A',
+            'tiesscnombre' => 'Aprobado'
+        ]);
+
+        DB::table('tipoestadosolicitudcredito')->insert([
+            'tiesscid'     => 'N',
+            'tiesscnombre' => 'Negado'
+        ]);
+
+        DB::table('tipoestadosolicitudcredito')->insert([
+            'tiesscid'     => 'S',
+            'tiesscnombre' => 'Asesoria'
         ]);
     }
 }

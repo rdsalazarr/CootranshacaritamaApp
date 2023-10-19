@@ -14,7 +14,7 @@ export default function IniciarSesion(){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const handleInputChange = (e) => {
+    const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
     };
 
@@ -58,7 +58,7 @@ export default function IniciarSesion(){
                                     inputProps={{autoComplete: 'off', maxLength: 20}}
                                     validators={["required"]}
                                     errorMessages={["Campo obligatorio"]}
-                                    onChange={handleInputChange}
+                                    onChange={handleChangeUpperCase}
                                 />
                             </Grid>
 

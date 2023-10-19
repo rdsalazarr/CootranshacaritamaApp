@@ -32,7 +32,7 @@ export default function New({data, tipo}){
         setFormDataAdicionar(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const handleInputChange = (e) => {
+    const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
     };
 
@@ -255,7 +255,7 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 3}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
 
@@ -269,7 +269,7 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 50}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
                 

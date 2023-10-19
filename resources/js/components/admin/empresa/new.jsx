@@ -14,7 +14,7 @@ export default function New({data}){
                         nit: data.emprnit, digitoVerificacion: data.emprdigitoverificacion,  nombre: data.emprnombre,  sigla: data.emprsigla,
                         lema: (data.emprlema !== null ) ? data.emprlema : '',  direccion: data.emprdireccion, correo: (data.emprcorreo !== null ) ? data.emprcorreo : '',
                         barrio: (data.emprbarrio !== null ) ? data.emprbarrio : '',telefono: (data.emprtelefonofijo !== null ) ? data.emprtelefonofijo : '',
-                        celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', 
+                        celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', personeriaJuridica : (data.emprpersoneriajuridica !== null ) ? data.emprpersoneriajuridica : '',
                         horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '',
                         url: data.emprurl, codigoPostal: data.emprcodigopostal,  
                         logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: ''
@@ -107,7 +107,7 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={6} xs={12}>
                     <TextValidator 
                         name={'digitoVerificacion'}
                         value={formData.digitoVerificacion}
@@ -122,7 +122,7 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={6} md={6} sm={12} xs={12}>
+                <Grid item xl={7} md={7} sm={12} xs={12}>
                     <TextValidator 
                         name={'nombre'}
                         value={formData.nombre}
@@ -231,7 +231,7 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         name={'correo'}
                         value={formData.correo}
@@ -246,7 +246,21 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={5} md={5} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <TextValidator
+                        name={'personeriaJuridica'}
+                        value={formData.personeriaJuridica}
+                        label={'Personería jurídica'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 50}}
+                        validators={['required']}
+                        errorMessages={['Campo requerido']}
+                        onChange={handleChange}
+                    />
+                </Grid>                
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
                         name={'url'}
                         value={formData.url}
@@ -260,7 +274,7 @@ export default function New({data}){
                     />
                 </Grid>
 
-                <Grid item xl={6} md={6} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
                         name={'horarioAtencion'}
                         value={formData.horarioAtencion}

@@ -36,7 +36,7 @@ export default function New({data, tipo}){
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const handleInputChange = (e) => {
+    const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
     };
 
@@ -246,7 +246,7 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 40}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
 
@@ -258,7 +258,7 @@ export default function New({data, tipo}){
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 40}}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
                 
@@ -272,7 +272,7 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 40}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
 
@@ -284,7 +284,7 @@ export default function New({data, tipo}){
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 40}}
-                        onChange={handleInputChange}
+                        onChange={handleChangeUpperCase}
                     />
                 </Grid>
 

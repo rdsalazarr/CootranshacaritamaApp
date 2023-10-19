@@ -15,17 +15,22 @@ class TipoRelacionLaboralSeeder extends Seeder
     {
         DB::table('tiporelacionlaboral')->insert([
             'tirelaid'     => '1',
-            'tirelanombre' => 'Jefe'
+            'tirelanombre' => 'Empleado'
         ]);
 
         DB::table('tiporelacionlaboral')->insert([
             'tirelaid'     => '2',
-            'tirelanombre' => 'Secretaria'
+            'tirelanombre' => 'Asociado'
         ]);
 
-         DB::table('tiporelacionlaboral')->insert([
+        DB::table('tiporelacionlaboral')->insert([
             'tirelaid'     => '3',
-            'tirelanombre' => 'Usuario Invitado'
+            'tirelanombre' => 'Conductor'
+        ]);
+
+        DB::table('tiporelacionlaboral')->insert([
+            'tirelaid'     => '4',
+            'tirelanombre' => 'Invitado'
         ]);
     }
 }

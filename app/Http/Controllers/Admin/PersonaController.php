@@ -153,10 +153,10 @@ class PersonaController extends Controller
             $persona->persdepaidexpedicion   = $request->departamentoExpedicion;
             $persona->persmuniidexpedicion   = $request->municipioExpedicion;
             $persona->persdocumento          = $request->documento;
-            $persona->persprimernombre       = $request->primerNombre;
-            $persona->perssegundonombre      = $request->segundoNombre;
-            $persona->persprimerapellido     = $request->primerApellido;
-            $persona->perssegundoapellido    = $request->segundoApellido;
+            $persona->persprimernombre       = mb_strtoupper($request->primerNombre,'UTF-8');
+            $persona->perssegundonombre      = mb_strtoupper($request->segundoNombre,'UTF-8');
+            $persona->persprimerapellido     = mb_strtoupper($request->primerApellido,'UTF-8');
+            $persona->perssegundoapellido    = mb_strtoupper($request->segundoApellido,'UTF-8');
             $persona->persfechanacimiento    = $request->fechaNacimiento;
             $persona->persdireccion          = $request->direccion;
             $persona->perscorreoelectronico  = $request->correo;

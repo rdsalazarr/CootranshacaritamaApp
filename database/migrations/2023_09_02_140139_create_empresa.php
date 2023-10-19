@@ -13,7 +13,7 @@ return new class extends Migration
     {        
         Schema::create('empresa', function (Blueprint $table) {
             $table->tinyIncrements('emprid')->comment('Identificador de la tabla empresa'); 
-            $table->integer('persidrepresentantelegal')->unsigned()->comment('Identificador de la tabla persona');
+            $table->integer('persidrepresentantelegal')->unsigned()->comment('Identificador de la persona');
             $table->tinyInteger('emprdepaid')->unsigned()->comment('Identificador del departamento');
             $table->smallInteger('emprmuniid')->nullable()->unsigned()->comment('Identificador del municipio');
             $table->string('emprnit', 15)->comment('Nit de la empresa');
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('emprlema', 100)->nullable()->comment('Lema de la empresa');
             $table->string('emprdireccion', 80)->comment('Dirección de la empresa');
             $table->string('emprbarrio', 80)->nullable()->comment('Barrio de la empresa');
+            $table->string('emprpersoneriajuridica', 50)->nullable()->comment('Personería jurídica de la empresa');
             $table->string('emprcorreo', 80)->nullable()->comment('Correo de la empresa');
             $table->string('emprtelefonofijo', 20)->nullable()->comment('Teléfono fijo de contacto con la empresa');
             $table->string('emprtelefonocelular', 20)->nullable()->comment('Teléfono celular de contacto con la empresa');

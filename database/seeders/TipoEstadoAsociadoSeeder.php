@@ -19,6 +19,11 @@ class TipoEstadoAsociadoSeeder extends Seeder
         ]);
 
         DB::table('tipoestadoasociado')->insert([
+            'tiesasid'     => 'S',
+            'tiesasnombre' => 'Sancionado'
+        ]);
+
+        DB::table('tipoestadoasociado')->insert([
             'tiesasid'     => 'I',
             'tiesasnombre' => 'Inactivo'
         ]);
@@ -30,7 +35,7 @@ class TipoEstadoAsociadoSeeder extends Seeder
 
         DB::table('tipoestadoasociado')->insert([
             'tiesasid'     => 'R',
-            'tiesasnombre' => 'Retiorado'
-        ]);
+            'tiesasnombre' => 'Retirado'
+        ]);       
     }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Notificar\ConfiguracionCorreoController;
 use App\Http\Controllers\Admin\DatosGeograficos\DepartamentoController;
 use App\Http\Controllers\Admin\DatosGeograficos\MunicipioController;
 use App\Http\Controllers\Admin\EmpresaController;
+use App\Http\Controllers\Admin\AgenciaController;
 use App\Http\Controllers\Admin\Tipos\SaludoController;
 use App\Http\Controllers\Admin\Tipos\DespedidaController;
 use App\Http\Controllers\Admin\Tipos\CargoLaboralController;
@@ -46,6 +47,14 @@ use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteContro
 use App\Http\Controllers\Admin\Archivo\HistoricoController;
 use App\Http\Controllers\Admin\Archivo\HistoricoShowController;
 use App\Http\Controllers\Admin\Archivo\HistoricoConsultarController;
+
+use App\Http\Controllers\Admin\Vehiculos\TipoVehiculoController;
+use App\Http\Controllers\Admin\Vehiculos\TipoReferenciaController;
+use App\Http\Controllers\Admin\Vehiculos\TipoCarroceriaController;
+use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
+use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
+
+
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -80,6 +89,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/direccion/transporte/{id}', [DashboardController::class, 'index']);
     });
 
     Route::get('reset', [DashboardController::class, 'reset']);
@@ -175,6 +185,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/gestionar/festivos');
         Route::post('/festivo/salve', [FestivoController::class, 'salve']);
+
+        Route::get('/agencia/list', [AgenciaController::class, 'index']); //->middleware('security:admin/gestionar/agencia')
+        Route::get('/agencia/listar/datos', [AgenciaController::class, 'datos']);
+        Route::post('/agencia/salve', [AgenciaController::class, 'salve']);
+        Route::post('/agencia/destroy', [AgenciaController::class, 'destroy']);
 
         Route::prefix('/producion/documental')->group(function(){
 
@@ -284,6 +299,28 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/expediente/pdf', [HistoricoConsultarController::class, 'expedientePdf']);
         });
 
+        Route::prefix('/direccion/transporte')->group(function(){
+            Route::get('/tipo/list', [TipoVehiculoController::class, 'index']);
+            Route::post('/tipo/salve', [TipoVehiculoController::class, 'salve']);
+            Route::post('/tipo/destroy', [TipoVehiculoController::class, 'destroy']);
+
+            Route::get('/referencia/list', [TipoReferenciaController::class, 'index']);
+            Route::post('/referencia/salve', [TipoReferenciaController::class, 'salve']);
+            Route::post('/referencia/destroy', [TipoReferenciaController::class, 'destroy']);
+
+            Route::get('/carroceria/list', [TipoCarroceriaController::class, 'index']);
+            Route::post('/carroceria/salve', [TipoCarroceriaController::class, 'salve']);
+            Route::post('/carroceria/destroy', [TipoCarroceriaController::class, 'destroy']);
+
+            Route::get('/marca/list', [TipoMarcaController::class, 'index']);
+            Route::post('/marca/salve', [TipoMarcaController::class, 'salve']);
+            Route::post('/marca/destroy', [TipoMarcaController::class, 'destroy']);
+
+            Route::get('/color/list', [TipoColorController::class, 'index']);
+            Route::post('/color/salve', [TipoColorController::class, 'salve']);
+            Route::post('/color/destroy', [TipoColorController::class, 'destroy']);
+
+        });
     });
 
 }); 
