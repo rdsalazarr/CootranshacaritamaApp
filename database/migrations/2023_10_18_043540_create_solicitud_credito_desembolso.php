@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('solicitudcreditodesembolso', function (Blueprint $table) {
-            $table->id();
+            $table->increments('socrdeid')->unsigned()->comment('Identificador de la tabla solicitud de credito desembolso');
+            $table->integer('solcreid')->unsigned()->comment('Identificador de la solicitud de crédito');
             $table->timestamps();
         });
     }
