@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Util;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use DB, URL;

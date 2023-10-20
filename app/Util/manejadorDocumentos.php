@@ -2,21 +2,21 @@
 
 namespace App\Util;
 
-use App\Models\CodigoDocumentalProcesoRadicacionDocumentoEntrante;
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoCertificado;
-use App\Models\CodigoDocumentalProcesoConstancia;
-use App\Models\CodigoDocumentalProcesoCompartido;
-use App\Models\CodigoDocumentalProcesoCircular;
-use App\Models\CodigoDocumentalProcesoCitacion;
-use App\Models\CodigoDocumentalProcesoOficio;
-use App\Models\CodigoDocumentalProcesoFirma;
-use App\Models\CodigoDocumentalProcesoAnexo;
-use App\Models\CodigoDocumentalProcesoCopia;
-use App\Models\CodigoDocumentalProcesoActa;
-use App\Models\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoRadicacionDocumentoEntrante;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCertificado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoConstancia;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCompartido;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCircular;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCitacion;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoOficio;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoFirma;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoAnexo;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCopia;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoActa;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\CodigoDocumental;
 use Illuminate\Support\Facades\Crypt;
-use App\Models\CodigoDocumental;
 use App\Util\generales;
 use Auth, DB, File;
 use Carbon\Carbon;

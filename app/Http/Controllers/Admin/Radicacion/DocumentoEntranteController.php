@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Radicacion;
 
-use App\Models\RadicacionDocumentoEntranteCambioEstado;
-use App\Models\RadicacionDocumentoEntranteDependencia;
-use App\Models\RadicacionDocumentoEntranteAnexo;
-use App\Models\RadicacionDocumentoEntrante;
-use App\Models\PersonaRadicaDocumento;
+use App\Models\Radicacion\DocumentoEntranteCambioEstado;
+use App\Models\Radicacion\DocumentoEntranteDependencia;
+use App\Models\Radicacion\DocumentoEntranteAnexo;
+use App\Models\Radicacion\DocumentoEntrante;
+use App\Models\Radicacion\PersonaRadicaDocumento;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use Exception, Auth, DB, File;
@@ -195,7 +195,7 @@ class DocumentoEntranteController extends Controller
                 $peradoid                      = $perRadDocumentoMaxConsecutio->peradoid;
             }
       
-            $radicaciondocumentoentrante       = ($request->tipo === 'U') ? RadicacionDocumentoEntrante::findOrFail($radoenid) : new RadicacionDocumentoEntrante();
+            $radicaciondocumentoentrante       = ($request->tipo === 'U') ? DocumentoEntrante::findOrFail($radoenid) : new DocumentoEntrante();
             if($request->tipo === 'I'){
                 $radicaciondocumentoentrante->tierdeid                   = $estado;
                 $radicaciondocumentoentrante->usuaid                     = Auth::id();
@@ -221,23 +221,23 @@ class DocumentoEntranteController extends Controller
 
             if($request->tipo === 'I'){
                 //Consulto el ultimo identificador de la persona 
-                $radDocumentoMaxConsecutio      = RadicacionDocumentoEntrante::latest('radoenid')->first();
+                $radDocumentoMaxConsecutio      = DocumentoEntrante::latest('radoenid')->first();
                 $radoenid                       = $radDocumentoMaxConsecutio->radoenid;
 
-                $radicaciondocentdependencia           = new RadicacionDocumentoEntranteDependencia();
+                $radicaciondocentdependencia           = new DocumentoEntranteDependencia();
                 $radicaciondocentdependencia->radoenid = $radoenid;
                 $radicaciondocentdependencia->depeid   = $request->dependencia;
                 $radicaciondocentdependencia->save();
             }
 
             if($request->tipo === 'U' and $request->dependencia !== $request->dependenciaRadicado){
-                $radicaciondocentdependencia         = RadicacionDocumentoEntranteDependencia::findOrFail($request->radoedid);
+                $radicaciondocentdependencia         = DocumentoEntranteDependencia::findOrFail($request->radoedid);
                 $radicaciondocentdependencia->depeid = $request->dependencia;
                 $radicaciondocentdependencia->save();
             }
 
             if($nombreOriginalPdf  !== ''){
-                $radicaciondocentanexo                            = new RadicacionDocumentoEntranteAnexo();
+                $radicaciondocentanexo                            = new DocumentoEntranteAnexo();
                 $radicaciondocentanexo->radoenid                  = $radoenid;
                 $radicaciondocentanexo->radoeanombreanexooriginal = $nombreOriginalPdf;
                 $radicaciondocentanexo->radoeanombreanexoeditado  = $nombreArchivoPdf;

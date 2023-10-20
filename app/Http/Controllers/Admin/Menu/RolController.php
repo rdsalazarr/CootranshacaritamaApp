@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Menu;
+
+use App\Models\Menu\RolFuncionalidad;
 use App\Http\Controllers\Controller;
-use App\Models\RolFuncionalidad;
 use Illuminate\Http\Request;
-use App\Models\Rol;
+use App\Models\Menu\Rol;
 use Carbon\Carbon;
 use Exception, DB;
 

@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
 use Illuminate\Contracts\Encryption\DecryptException;
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoFirma;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoFirma;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\TokenFirmaPersona;
 use App\Http\Requests\CertificadoRequests;
 use App\Http\Requests\ConstanciaRequests;
 use App\Http\Requests\CircularRequests;
 use App\Http\Requests\CitacionRequests;
-use App\Models\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Requests\OficioRequests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActaRequests;
-use App\Models\TokenFirmaPersona;
 use App\Util\manejadorDocumentos;
 use App\Util\showTipoDocumental;
 use Illuminate\Http\Request;

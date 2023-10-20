@@ -1,10 +1,10 @@
 <?php
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Usuario\IntentosFallidos;
+use App\Models\Usuario\IngresoSistema;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\IngresoSistema;
-use App\Models\IntentosFallidos;
 use App\Models\User;
 use Carbon\Carbon;
 use DB, Auth;

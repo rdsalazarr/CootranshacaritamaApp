@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Tipos;
+
 use App\Http\Controllers\Controller;
-use App\Models\CargoLaboral;
+use App\Models\Tipos\CargoLaboral;
 use Illuminate\Http\Request;
 use Exception, DB;
 

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
 use App\Models\RadicacionDocumentoEntranteCambioEstado;
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoOficio;
-use App\Models\RadicacionDocumentoEntrante;
-use App\Models\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoOficio;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
+use App\Models\Radicacion\DocumentoEntrante;
 use App\Http\Requests\OficioRequests;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;

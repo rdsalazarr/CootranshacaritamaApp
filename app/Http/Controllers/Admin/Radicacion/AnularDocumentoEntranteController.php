@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Radicacion;
-use App\Models\RadicacionDocumentoEntranteCambioEstado;
-use App\Models\RadicacionDocumentoEntrante;
+
+use App\Models\Radicacion\DocumentoEntranteCambioEstado;
+use App\Models\Radicacion\DocumentoEntrante;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
@@ -59,11 +60,11 @@ class AnularDocumentoEntranteController extends Controller
         DB::beginTransaction();
         try {
 
-            $radicaciondocumentoentrante           = RadicacionDocumentoEntrante::findOrFail($codigo);
+            $radicaciondocumentoentrante           = DocumentoEntrante::findOrFail($codigo);
             $radicaciondocumentoentrante->tierdeid = $estado;
             $radicaciondocumentoentrante->save();
 
-            $radicaciondocentcambioestado 					 = new RadicacionDocumentoEntranteCambioEstado();
+            $radicaciondocentcambioestado 					 = new DocumentoEntranteCambioEstado();
             $radicaciondocentcambioestado->radoenid          = $codigo;
             $radicaciondocentcambioestado->tierdeid          = $estado;
             $radicaciondocentcambioestado->radeceusuaid      = Auth::id();

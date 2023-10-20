@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoConstancia;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoConstancia;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
 use App\Http\Requests\ConstanciaRequests;
-use App\Models\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Util\manejadorDocumentos;

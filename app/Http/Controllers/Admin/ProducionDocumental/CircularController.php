@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoCircular;
-use App\Models\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCircular;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
 use App\Http\Requests\CircularRequests;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;

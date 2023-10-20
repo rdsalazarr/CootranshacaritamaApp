@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Tipos;
+
 use App\Http\Controllers\Controller;
-use App\Models\TipoPersonaDocumental;
+use App\Models\Tipos\TipoPersonaDocumental;
 use Illuminate\Http\Request;
 use Exception, DB;
 

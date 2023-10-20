@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoActa;
-use App\Models\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoActa;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActaRequests;

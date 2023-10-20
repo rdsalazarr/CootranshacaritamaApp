@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Util;
+
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoAnexo;
 use Illuminate\Contracts\Encryption\DecryptException;
-use App\Models\RadicacionDocumentoEntranteAnexo;
-use App\Models\ArchivoHistoricoDigitalizado;
-use App\Models\CodigoDocumentalProcesoAnexo;
+use App\Models\Radicacion\DocumentoEntranteAnexo;
+use App\Models\Archivo\HistoricoDigitalizado;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

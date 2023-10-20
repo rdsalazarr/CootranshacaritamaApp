@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Tipos;
+
 use App\Http\Controllers\Controller;
+use App\Models\Tipos\TipoSaludo;
 use Illuminate\Http\Request;
-use App\Models\TipoSaludo;
 use Exception, DB;
 
 class SaludoController extends Controller

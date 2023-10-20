@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Vehiculos;
+
+use App\Models\Vehiculos\TipoReferenciaVehiculo;
 use App\Http\Controllers\Controller;
-use App\Models\TipoReferenciaVehiculo;
 use Illuminate\Http\Request;
 use Exception, DB;
 

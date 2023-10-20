@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Menu;
+
 use App\Http\Controllers\Controller;
+use App\Models\Menu\Funcionalidad;
 use Illuminate\Http\Request;
-use App\Models\Funcionalidad;
 use Exception, DB;
 
 class FuncionalidadController extends Controller
@@ -43,8 +44,8 @@ class FuncionalidadController extends Controller
         ]);
 
 		try {
-			$id = $request->codigo;	
-			$funcionalidad = ($id != 000) ? Funcionalidad::findOrFail($id) : new Funcionalidad();	
+			$id            = $request->codigo;
+			$funcionalidad = ($id != 000) ? Funcionalidad::findOrFail($id) : new Funcionalidad();
 			$funcionalidad->moduid      = $request->modulo;
 			$funcionalidad->funcnombre  = $request->nombre;
 			$funcionalidad->functitulo  = $request->titulo;

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Util;
+
 use App\Util\generales;
 use Auth, URL, DB;
 

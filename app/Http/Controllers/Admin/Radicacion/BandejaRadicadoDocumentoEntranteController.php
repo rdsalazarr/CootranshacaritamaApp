@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Radicacion;
 
-use App\Models\RadicacionDocumentoEntranteCambioEstado;
-use App\Models\RadicacionDocumentoEntranteDependencia;
-use App\Models\RadicacionDocumentoEntrante;
+use App\Models\Radicacion\DocumentoEntranteCambioEstado;
+use App\Models\Radicacion\DocumentoEntranteDependencia;
+use App\Models\Radicacion\DocumentoEntrante;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
@@ -72,23 +72,23 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
         DB::beginTransaction();
         try {
 
-            $radicaciondocumentoentrante                          = RadicacionDocumentoEntrante::findOrFail($codigo);
-            $radicaciondocumentoentrante->tierdeid                = $estado;
-            $radicaciondocumentoentrante->radoenrequiererespuesta = $request->requiereRespuesta;
-            $radicaciondocumentoentrante->save();
+            $documentoentrante                          = DocumentoEntrante::findOrFail($codigo);
+            $documentoentrante->tierdeid                = $estado;
+            $documentoentrante->radoenrequiererespuesta = $request->requiereRespuesta;
+            $documentoentrante->save();
 
-            $coddocumprocesocopia                          = RadicacionDocumentoEntranteDependencia::findOrFail($request->idFirma);
+            $coddocumprocesocopia                          = DocumentoEntranteDependencia::findOrFail($request->idFirma);
             $coddocumprocesocopia->radoedsuaid             = Auth::id();
             $coddocumprocesocopia->radoedfechahorarecibido = $fechaHoraActual;
             $coddocumprocesocopia->save();
 
-            $radicaciondocentcambioestado 					 = new RadicacionDocumentoEntranteCambioEstado();
-            $radicaciondocentcambioestado->radoenid          = $codigo;
-            $radicaciondocentcambioestado->tierdeid          = $estado;
-            $radicaciondocentcambioestado->radeceusuaid      = Auth::id();
-            $radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
-            $radicaciondocentcambioestado->radeceobservacion = 'Documento recibido por '.auth()->user()->usuanombre.'  en la fecha '.$fechaHoraActual;
-            $radicaciondocentcambioestado->save();
+            $docentcambioestado 					 = new DocumentoEntranteCambioEstado();
+            $docentcambioestado->radoenid          = $codigo;
+            $docentcambioestado->tierdeid          = $estado;
+            $docentcambioestado->radeceusuaid      = Auth::id();
+            $docentcambioestado->radecefechahora   = $fechaHoraActual;
+            $docentcambioestado->radeceobservacion = 'Documento recibido por '.auth()->user()->usuanombre.'  en la fecha '.$fechaHoraActual;
+            $docentcambioestado->save();
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin\DatosGeograficos;
+
+use App\Models\DatosGeograficos\Municipio;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Municipio;
 use Exception, DB;
 
 class MunicipioController extends Controller

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin\Archivo;
 
-use App\Models\ArchivoHistoricoDigitalizado;
+use App\Models\Archivo\HistoricoDigitalizado;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
-use App\Models\ArchivoHistorico;
+use App\Models\Archivo\Historico;
 use Exception, Auth, DB, File;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;

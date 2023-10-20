@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Menu;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Modulo;
+use App\Models\Menu\Modulo;
 use Exception, DB;
 
 class ModuloController extends Controller

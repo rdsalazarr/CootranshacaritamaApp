@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoCitacion;
-use App\Models\CodigoDocumentalProceso;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCitacion;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
 use App\Http\Requests\CitacionRequests;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;

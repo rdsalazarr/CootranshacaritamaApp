@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin\ProducionDocumental;
 
-use App\Models\CodigoDocumentalProcesoCambioEstado;
-use App\Models\CodigoDocumentalProcesoCertificado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCambioEstado;
+use App\Models\ProducionDocumental\CodigoDocumentalProcesoCertificado;
+use App\Models\ProducionDocumental\CodigoDocumentalProceso;
 use App\Http\Requests\CertificadoRequests;
-use App\Models\CodigoDocumentalProceso;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Util\manejadorDocumentos;

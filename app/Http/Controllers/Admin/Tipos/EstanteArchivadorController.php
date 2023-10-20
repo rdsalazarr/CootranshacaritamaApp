@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Tipos;
+
+use App\Models\Tipos\TipoEstanteArchivador;
 use App\Http\Controllers\Controller;
-use App\Models\TipoEstanteArchivador;
 use Illuminate\Http\Request;
 use Exception, DB;
 

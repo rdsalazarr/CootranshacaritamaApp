@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Series;
+
+use App\Models\Series\SerieDocumental;
 use App\Http\Controllers\Controller;
-use App\Models\SerieDocumental;
 use Illuminate\Http\Request;
 use Exception, DB;
 
