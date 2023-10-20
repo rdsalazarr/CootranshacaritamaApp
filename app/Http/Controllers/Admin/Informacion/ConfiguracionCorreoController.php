@@ -28,13 +28,13 @@ class ConfiguracionCorreoController extends Controller
 			]);
 
 		try {
-            $informacionconfiguracioncorreo                 =  InformacionConfiguracionCorreo::findOrFail($request->codigo);
-            $informacionconfiguracioncorreo->incocohost     = $request->host;
-            $informacionconfiguracioncorreo->incocousuario  = $request->usuario;
-            $informacionconfiguracioncorreo->incococlave    = $request->clave;
-            $informacionconfiguracioncorreo->incococlaveapi = $request->claveApi;
-            $informacionconfiguracioncorreo->incocopuerto   = $request->puerto;
-            $informacionconfiguracioncorreo->save();
+            $configuracioncorreo                 = ConfiguracionCorreo::findOrFail($request->codigo);
+            $configuracioncorreo->incocohost     = $request->host;
+            $configuracioncorreo->incocousuario  = $request->usuario;
+            $configuracioncorreo->incococlave    = $request->clave;
+            $configuracioncorreo->incococlaveapi = $request->claveApi;
+            $configuracioncorreo->incocopuerto   = $request->puerto;
+            $configuracioncorreo->save();
 			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -44,8 +44,8 @@ class ConfiguracionCorreoController extends Controller
     public function destroy(Request $request)
 	{	
 		try {
-			$informacionconfiguracioncorreo = InformacionConfiguracionCorreo::findOrFail($request->codigo);
-			$informacionconfiguracioncorreo->delete();
+			$configuracioncorreo = ConfiguracionCorreo::findOrFail($request->codigo);
+			$configuracioncorreo->delete();
 			return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);

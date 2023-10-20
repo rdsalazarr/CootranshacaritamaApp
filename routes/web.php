@@ -4,19 +4,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Home\FrondController;
 use App\Http\Controllers\Home\VerificarDocumentosController;
-use App\Http\Controllers\Admin\Usuario\PerfilUsuarioController;
+use App\Http\Controllers\Admin\Menu\RolController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\Menu\ModuloController;
-use App\Http\Controllers\Security\MantenimientoController;
 use App\Http\Controllers\Admin\Menu\FuncionalidadController;
-use App\Http\Controllers\Admin\Menu\RolController;
+use App\Http\Controllers\Security\MantenimientoController;
 use App\Http\Controllers\Admin\Usuario\UsuarioController;
+use App\Http\Controllers\Admin\Usuario\PerfilUsuarioController;
 use App\Http\Controllers\Admin\Informacion\NotificacionCorreoController;
 use App\Http\Controllers\Admin\Informacion\ConfiguracionCorreoController;
 use App\Http\Controllers\Admin\DatosGeograficos\DepartamentoController;
 use App\Http\Controllers\Admin\DatosGeograficos\MunicipioController;
-use App\Http\Controllers\Admin\EmpresaController;
-use App\Http\Controllers\Admin\AgenciaController;
+use App\Http\Controllers\Admin\Empresa\EmpresaController;
+use App\Http\Controllers\Admin\Agencia\AgenciaController;
 use App\Http\Controllers\Admin\Tipos\SaludoController;
 use App\Http\Controllers\Admin\Tipos\DespedidaController;
 use App\Http\Controllers\Admin\Tipos\CargoLaboralController;
@@ -25,10 +25,10 @@ use App\Http\Controllers\Admin\Tipos\DocumentalController;
 use App\Http\Controllers\Admin\Tipos\PersonaDocumentalController;
 use App\Http\Controllers\Admin\Series\SerieDocumentalController;
 use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
-use App\Http\Controllers\Admin\PersonaController;
-use App\Http\Controllers\Admin\FestivoController;
+use App\Http\Controllers\Admin\Persona\PersonaController;
+use App\Http\Controllers\Admin\Persona\ShowPersonaController;
+use App\Http\Controllers\Admin\Festivo\FestivoController;
 use App\Http\Controllers\Admin\Dependencia\DependenciaController;
-use App\Http\Controllers\Admin\ShowPersonaController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
 use App\Http\Controllers\Admin\Exportar\RegistrosController;
@@ -53,7 +53,6 @@ use App\Http\Controllers\Admin\Vehiculos\TipoReferenciaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoCarroceriaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
-
 
 
 Route::get('/', [FrondController::class, 'index']);
@@ -95,25 +94,26 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('reset', [DashboardController::class, 'reset']);
 
     Route::prefix('admin')->group(function(){
-        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/configurar/menu');
-        Route::post('/modulo/salve', [ModuloController::class, 'salve']);
-        Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
-
-        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware('security:admin/configurar/menu');
-        Route::get('/funcionalidad/listar/modulos', [FuncionalidadController::class, 'modulos']);
-        Route::post('/funcionalidad/salve', [FuncionalidadController::class, 'salve']);
-        Route::post('/funcionalidad/destroy', [FuncionalidadController::class, 'destroy']);
 
         Route::get('/rol/list', [RolController::class, 'index'])->middleware('security:admin/configurar/menu');
         Route::post('/rol/listar/funcionalidad', [RolController::class, 'funcionalidades']);
         Route::post('/rol/salve', [RolController::class, 'salve']);
         Route::post('/rol/destroy', [RolController::class, 'destroy']);
 
-        Route::get('/informacionCorreo/list', [InformacionCorreoController::class, 'index'])->middleware('security:admin/configurar/informacionNotificarCorreo');
-        Route::post('/informacionCorreo/salve', [InformacionCorreoController::class, 'salve']);
-        Route::post('/informacionCorreo/destroy', [InformacionCorreoController::class, 'destroy']);
+        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware('security:admin/configurar/menu');
+        Route::get('/funcionalidad/listar/modulos', [FuncionalidadController::class, 'modulos']);
+        Route::post('/funcionalidad/salve', [FuncionalidadController::class, 'salve']);
+        Route::post('/funcionalidad/destroy', [FuncionalidadController::class, 'destroy']);
 
-        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/configurar/informacionNotificarCorreo');
+        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/configurar/menu');
+        Route::post('/modulo/salve', [ModuloController::class, 'salve']);
+        Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
+
+        Route::get('/informacionCorreo/list', [NotificacionCorreoController::class, 'index'])->middleware('security:admin/informacion/notificarCorreo');
+        Route::post('/informacionCorreo/salve', [NotificacionCorreoController::class, 'salve']);
+        Route::post('/informacionCorreo/destroy', [NotificacionCorreoController::class, 'destroy']);
+
+        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/informacion/notificarCorreo');
         Route::post('/configuracionCorreo/salve', [ConfiguracionCorreoController::class, 'salve']);
         Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);        
         

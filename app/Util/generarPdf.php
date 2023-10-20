@@ -22,8 +22,8 @@ class generarPdf
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->acta($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -62,8 +62,8 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -163,8 +163,8 @@ class generarPdf
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->certificado($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -192,7 +192,7 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
@@ -253,8 +253,8 @@ class generarPdf
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->circular($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -291,7 +291,7 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
@@ -361,8 +361,8 @@ class generarPdf
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $firmaInvitados) = $visualizar->citacion($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -398,7 +398,7 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
@@ -481,8 +481,8 @@ class generarPdf
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->constancia($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -510,7 +510,7 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
@@ -571,8 +571,8 @@ class generarPdf
 		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -614,7 +614,7 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
@@ -707,41 +707,52 @@ class generarPdf
 
 	function consultarEmpresa(){
 		$empresa          = DB::table('empresa as e')
-									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 'e.emprbarrio',
-											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre')
+									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 'e.emprpersoneriajuridica',
+											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre','e.emprbarrio',
+											DB::raw("CONCAT('NIT:', e.emprnit,' - ', e.emprdigitoverificacion) as nit"))
 									->join('municipio as m', 'm.muniid', '=', 'e.emprmuniid')
 									->where('e.emprid', 1)
 									->first();
 
-		$direccionEmpresa = $empresa->emprdireccion;
-		$ciudadEmpresa    = $empresa->muninombre;
-		$barrioEmpresa    = $empresa->emprbarrio; 
-		$telefonoEmpresa  = $empresa->emprtelefonofijo;
-		$celularEmpresa   = $empresa->emprtelefonocelular;
-		$urlEmpresa       = $empresa->emprurl;
-		$nombreEmpresa    = $empresa->emprnombre; 
-		$lemaEmpresa      = $empresa->emprlema;
-		$siglaEmpresa     = $empresa->emprsigla;
-		$logoEmpresa      = $empresa->emprlogo;
+		$direccionEmpresa 	= $empresa->emprdireccion;
+		$ciudadEmpresa    	= $empresa->muninombre;
+		$barrioEmpresa    	= $empresa->emprbarrio; 
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre; 
+		$lemaEmpresa        = $empresa->emprlema;
+		$siglaEmpresa       = $empresa->emprsigla;	
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
 
-		return array ($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $logoEmpresa);
+		return array ($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa);
 	}
 	
-	function headerDocumento($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
-		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $lemaEmpresa, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
+	function headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
+		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
 			$linea = str_pad('',  71, "_", STR_PAD_LEFT); //Diibuja la linea
-			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,24,18);
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,26,24);
 			PDF::SetY(8);
             PDF::SetX(46);
-			PDF::SetFont('helvetica','B',14);
+			PDF::SetFont('helvetica','',13);
 		    PDF::Cell(144,5,$nombreEmpresa,0,0,'C');
-		    PDF::SetFont('helvetica','I',12);
+			PDF::SetFont('helvetica','B',14);
 		    PDF::Ln(6);
+		    PDF::SetX(46);			
+		    PDF::Cell(144,4,$siglaEmpresa,0,0,'C');
+			PDF::SetFont('helvetica','I',9);
+			PDF::Ln(6);
 		    PDF::SetX(46);
-		    PDF::Cell(144,4,$lemaEmpresa,0,0,'C');
-		    PDF::Ln(4);
+		    PDF::Cell(144,4,$personeriaJuridica,0,0,'C');
+			PDF::Ln(4);
+		    PDF::SetX(46);
+		    PDF::Cell(144,4,$nit,0,0,'C');
+			PDF::SetFont('helvetica','I',12);
+		    PDF::Ln(1);
 			PDF::SetX(24);	
-		    PDF::Cell(170,5,$linea,'0',0,'C');
+		    PDF::Cell(170,4,$linea,'0',0,'C');
 		    PDF::Ln(6);
 		    PDF::SetFont('helvetica','I',9);
 		    PDF::SetX(25);
@@ -749,7 +760,7 @@ class generarPdf
 			PDF::Ln(4);
 			PDF::SetX(25);
 			PDF::Cell(25,4,$codigoDocumental,0,0,'');
-			PDF::SetY(22);
+			PDF::SetY(27);
         	PDF::SetX(191);
 			PDF::Cell(4, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
 		});
@@ -1000,8 +1011,8 @@ EOD;
 		$correo         = $data->correo;
 		$funcionario    = $data->usuario;
 		
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 		
 		$documentoRadicado = true;
         $mensajeRadicar    = '';     
@@ -1131,8 +1142,8 @@ EOD;
         $correo         = $data->correo;
         $funcionario    = $data->usuario;
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-			 $urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 				
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -1225,8 +1236,8 @@ EOD;
 
 	public function expedienteArchivoHistorico($digitalizados, $metodo = 'S'){
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa,
-		$urlEmpresa, $nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $logoEmpresa) = $this->consultarEmpresa();
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 			
         $mensajeRadicar    = '';
 		$tcpdf = new FpdiProtection();

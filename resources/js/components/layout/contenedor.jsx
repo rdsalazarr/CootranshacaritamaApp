@@ -13,10 +13,12 @@ import instance from './instance';
 import Loader from "./loader";
 
 import Welcome from "../admin/welcome";
+import EnConstruccion from "../admin/enConstruccion";
+
+import Menu from "../admin/menu/list";
 import Usuario from "../admin/usuario/list";
 import MiPerfil from "../admin/usuario/miPerfil";
-import NotificarCorreo from "../admin/notificar/correo/list";
-import Menu from "../admin/menu/list";
+import InformacionCorreo from "../admin/informacion/correo/list";
 import DatosGeograficos from "../admin/datosGeograficos/list";
 import Empresa from "../admin/empresa/list";
 
@@ -33,7 +35,6 @@ import Constancia from "../admin/produccionDocumental/constancia/list";
 import Certificado from "../admin/produccionDocumental/certificado/list";
 import Circular from "../admin/produccionDocumental/circular/list";
 import Oficio from "../admin/produccionDocumental/oficio/list";
-
 import FirmarDocumento from "../admin/produccionDocumental/firmar/list";
 
 import RadicadoEntrante from "../admin/radicacion/documentoEntrante/gestionar/list";
@@ -126,7 +127,7 @@ const componenteMenu = [
         icono : 'settings_applications',
         itemMenu: [  
             {ruta : 'admin/menu', menu: 'Menu', icono : 'add_chart ', componente : <Menu /> },
-            {ruta : 'admin/informacionNotificarCorreo', menu: 'Info notificar correo', icono : 'mail_outline_icon', componente : <NotificarCorreo />}, 
+            {ruta : 'admin/informacionInformacionCorreo', menu: 'Info notificar correo', icono : 'mail_outline_icon', componente : <InformacionCorreo />}, 
             {ruta : 'admin/datosTerritorial', menu: 'Datos territorial', icono : 'language_icon ', componente : <DatosGeograficos /> },
             {ruta : 'admin/empresa', menu: 'Empresa', icono : 'store', componente : <Empresa /> },            
         ]
@@ -178,28 +179,28 @@ const componenteMenu = [
     {   nombre: 'Asociados',
         icono : 'person_search_icon',
         itemMenu: [  
-            {ruta : 'admin/asocidados/activos',       menu: 'Activos',     icono : 'person_add_alt1_icon', componente : <Menu /> },
-            {ruta : 'admin/asocidados/desvinculados', menu: 'Desvincular', icono : 'person_remove_icon',   componente : <Usuario />}, 
-            {ruta : 'admin/asocidados/inactivos',     menu: 'Inactivos',   icono : 'person_off_icon',      componente : <DatosGeograficos /> }, 
+            {ruta : 'admin/asocidados/activos',       menu: 'Activos',     icono : 'person_add_alt1_icon', componente : <EnConstruccion /> },
+            {ruta : 'admin/asocidados/desvinculados', menu: 'Desvincular', icono : 'person_remove_icon',   componente : <EnConstruccion />}, 
+            {ruta : 'admin/asocidados/inactivos',     menu: 'Inactivos',   icono : 'person_off_icon',      componente : <EnConstruccion /> }, 
         ]
     },
     {   nombre: 'Cartera',
         icono : 'work_icon',
         itemMenu: [
-            {ruta : 'admin/cartera/lineaCredito', menu: 'Línea de crédito', icono : 'add_chart ',        componente : <Menu /> },
-            {ruta : 'admin/cartera/solicitud',    menu: 'Solicitud',        icono : 'add_card_icon',     componente : <NotificarCorreo />}, 
-            {ruta : 'admin/cartera/aprobacion',   menu: 'Aprobación',       icono : 'credit_score_icon', componente : <DatosGeograficos /> },
-            {ruta : 'admin/cartera/desembolso',   menu: 'Desembolso',       icono : 'attach_money_icon', componente : <Empresa /> },
-            {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <Empresa /> },
+            {ruta : 'admin/cartera/lineaCredito', menu: 'Línea de crédito', icono : 'add_chart ',        componente : <EnConstruccion /> },
+            {ruta : 'admin/cartera/solicitud',    menu: 'Solicitud',        icono : 'add_card_icon',     componente : <EnConstruccion />}, 
+            {ruta : 'admin/cartera/aprobacion',   menu: 'Aprobación',       icono : 'credit_score_icon', componente : <EnConstruccion /> },
+            {ruta : 'admin/cartera/desembolso',   menu: 'Desembolso',       icono : 'attach_money_icon', componente : <EnConstruccion /> },
+            {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <EnConstruccion /> },
         ]
     },
     {   nombre: 'Dirección transporte',
         icono : 'drive_eta_icon',
         itemMenu: [
-            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',     componente : <TiposVehiculos /> },
-            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',  componente : <Empresa /> },
-            {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'inventory_icon',     componente : <NotificarCorreo />},
-            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon ', componente : <DatosGeograficos /> },
+            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',     componente : <EnConstruccion /> },
+            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',  componente : <EnConstruccion /> },
+            {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'inventory_icon',     componente : <EnConstruccion />},
+            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon ', componente : <EnConstruccion /> },
             {ruta : 'admin/gestionar/agencia',       menu: 'Agencia',            icono : 'credit_score_icon ', componente : <Agencia /> },
         ]
     },
@@ -209,7 +210,7 @@ const componenteMenu = [
 
 const menuComponente = [
     {id:1,componente : <Menu />},
-    {id:2,componente : <NotificarCorreo />},
+    {id:2,componente : <InformacionCorreo />},
     {id:3,componente : <DatosGeograficos />},
     {id:4,componente : <Empresa />},
 
@@ -238,12 +239,22 @@ const menuComponente = [
 
     {id:23,componente : <TiposVehiculos />},
     {id:24,componente : <Agencia />},
-    {id:25,componente : <Welcome />},
-    {id:26,componente : <Welcome />},
-    {id:27,componente : <Welcome />},
-    {id:28,componente : <Welcome />},
-    {id:29,componente : <Welcome />},
-    {id:30,componente : <Welcome />},
+    {id:25,componente : <EnConstruccion />},
+    {id:26,componente : <EnConstruccion />},
+    {id:27,componente : <EnConstruccion />},
+    {id:28,componente : <EnConstruccion />},
+    {id:29,componente : <EnConstruccion />},
+    {id:30,componente : <EnConstruccion />},
+    {id:31,componente : <EnConstruccion />},
+    {id:32,componente : <EnConstruccion />},
+    {id:33,componente : <EnConstruccion />},
+    {id:34,componente : <EnConstruccion />},
+    {id:35,componente : <EnConstruccion />},
+    {id:36,componente : <EnConstruccion />},
+    {id:37,componente : <EnConstruccion />},
+    {id:38,componente : <EnConstruccion />},
+    {id:39,componente : <EnConstruccion />},
+    {id:40,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {

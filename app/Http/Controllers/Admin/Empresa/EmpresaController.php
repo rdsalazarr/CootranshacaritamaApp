@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Empresa;
+
 use App\Http\Controllers\Controller;
 use App\Util\redimencionarImagen;
+use App\Models\Empresa\Empresa;
 use Illuminate\Http\Request;
-use App\Models\Empresa;
 use App\Util\generales;
 use Exception, DB, URL;
 

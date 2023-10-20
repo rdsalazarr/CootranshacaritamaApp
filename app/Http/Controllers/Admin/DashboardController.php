@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\HistorialContrasena;
+use App\Models\Menu\Funcionalidad;
 use Illuminate\Http\Request;
-use App\Models\Funcionalidad;
 use Exception, DB, Auth;
 use App\Util\generales;
 use App\Models\User;

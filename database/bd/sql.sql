@@ -1187,7 +1187,7 @@ INSERT INTO `modulo` (`moduid`, `modunombre`, `moduicono`, `moduorden`, `moduact
 
 INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Menú', 'Gestionar menú', 'admin/configurar/menu', 'add_chart', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 1, 'Notificación correo', 'Gestionar información de notificar correo', 'admin/configurar/informacionNotificarCorreo', 'mail_outline_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 1, 'Notificación correo', 'Gestionar información de notificar correo', 'admin/informacion/notificarCorreo', 'mail_outline_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (3, 1, 'Datos territorial', 'Gestionar datos territorial', 'admin/configurar/datosTerritorial', 'language_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (4, 1, 'Empresa', 'Gestionar empresa', 'admin/configurar/empresa', 'store', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (5, 2, 'Tipos', 'Gestionar tipos', 'admin/gestionar/tipos', 'star_rate_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

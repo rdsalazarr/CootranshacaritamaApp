@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Agencia;
+
 use App\Http\Controllers\Controller;
+use App\Models\Agencia\Agencia;
 use Illuminate\Http\Request;
-use App\Models\Agencia;
 use Exception, DB;
 
 class AgenciaController extends Controller
