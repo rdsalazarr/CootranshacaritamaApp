@@ -709,7 +709,7 @@ class generarPdf
 		$empresa          = DB::table('empresa as e')
 									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 'e.emprpersoneriajuridica',
 											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre','e.emprbarrio',
-											DB::raw("CONCAT('NIT:', e.emprnit,' - ', e.emprdigitoverificacion) as nit"))
+											DB::raw("CONCAT('NIT: ', e.emprnit,' - ', e.emprdigitoverificacion) as nit"))
 									->join('municipio as m', 'm.muniid', '=', 'e.emprmuniid')
 									->where('e.emprid', 1)
 									->first();
@@ -798,9 +798,11 @@ class generarPdf
 			$posicionY  = ($tipoDocumeto === 'LETTER') ? 264 : 298;	
 
 			//Crypt::encrypt($id)
-			$url = asset('verificar/documento/'.urlencode($idCifrado));
-			//PDF::write2DBarcode($url, 'QRCODE,H', 20, 264, 30, 30, $style, 'N');
-			PDF::write2DBarcode($url, 'QRCODE,H', 20, $posicionY, 30, 30, $style, 'N');
+			if($idCifrado !== ''){
+				$url = asset('verificar/documento/'.urlencode($idCifrado));
+				//PDF::write2DBarcode($url, 'QRCODE,H', 20, 264, 30, 30, $style, 'N');
+				PDF::write2DBarcode($url, 'QRCODE,H', 20, $posicionY, 30, 30, $style, 'N');
+			}			
 
 			if($estadoDocumento === 10){
 				$posicionY  = ($tipoDocumeto === 'LETTER') ? 240 : 270;	
@@ -1269,5 +1271,98 @@ EOD;
 		$nombrePDF   = 'Expediente.pdf';
 
 		return base64_encode($tcpdf->output($nombrePDF, $metodo));
+	}
+
+	public function generarContratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+
+		$codigoInstitucional = '';
+		$codigoDocumental    = '';
+		$idCifrado           = '';
+		$estadoDocumento     = '';
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo.' '.$placa);
+		PDF::SetKeywords('Contrato, Vehículo, '.$siglaEmpresa.', '.$numeroContrato.', '.$placa);
+        PDF::SetTitle($titulo);	
+
+		//Encabezado y pie de pagina del pdf
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 14);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(16);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica', 'B', 13);
+		PDF::Cell(176, 4, $titulo, 0, 0, 'C');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+	 
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placa;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $rutaCarpeta.'/'.$numeroContrato.'.pdf';
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
+
+	public function generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+	
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo.' '.$documento);
+		PDF::SetKeywords('Colocación, Vehículo, '.$siglaEmpresa.', '.$numeroPagare.', '.$documento);
+        PDF::SetTitle($titulo);	
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+		PDF::SetMargins(20, 36, 14);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(10);
+		PDF::Ln(4);
+		PDF::SetFont('helvetica', 'B', 13);
+		PDF::Cell(176, 4, $titulo, 0, 0, 'C');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica', '', 10);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+		PDF::Ln(4);
+		PDF::Cell(130, 4, '', '', 0, 'L');
+		PDF::MultiCell(30, 30, '', 1, 'C', false, 1);
+		PDF::Cell(80, 4, 'DEUDOR ', 'T', 0, 'L');
+		PDF::Cell(50, 4, '', '', 0, 'L');
+		PDF::Cell(30, 4, 'HUELLA', '', 0, 'L');
+		PDF::Ln(4);
+		PDF::Cell(80, 4, 'C.C. ', 0, 0, 'L');
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$documento.'/'.$numeroPagare;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $rutaCarpeta.'/'.$numeroPagare.'.pdf';
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
 	}
 }

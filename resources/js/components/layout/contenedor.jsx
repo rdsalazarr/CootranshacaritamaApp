@@ -19,6 +19,7 @@ import Menu from "../admin/menu/list";
 import Usuario from "../admin/usuario/list";
 import MiPerfil from "../admin/usuario/miPerfil";
 import InformacionCorreo from "../admin/informacion/correo/list";
+import InformacionGeneralPdf from "../admin/informacion/generalPdf/list";
 import DatosGeograficos from "../admin/datosGeograficos/list";
 import Empresa from "../admin/empresa/list";
 
@@ -238,7 +239,7 @@ const menuComponente = [
     {id:22,componente : <ConsultarArchivoHistorico />},
 
     {id:23,componente : <TiposVehiculos />},
-    {id:24,componente : <Agencia />},
+    {id:24,componente : <InformacionGeneralPdf />},
     {id:25,componente : <EnConstruccion />},
     {id:26,componente : <EnConstruccion />},
     {id:27,componente : <EnConstruccion />},

@@ -9,6 +9,9 @@ use DB, Auth, URL, Artisan;
 use Carbon\Carbon;
 use setasign\Fpdi\Fpdi;
 use App\Util\generarPdf;
+use App\Util\convertirNumeroALetras;
+
+
 
 class MantenimientoController extends Controller
 {
@@ -83,10 +86,91 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {  
+		/*$dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfid', 1)->first();       
+        $numeroContrato             = 'A02765';
+        $fechaContrato              = '2023-10-19';
+        $nombreGerente              = 'LUIS MANUEL ASCANIO CLARO';
+        $tpDocumentoGerente         = 'CC';
+        $documentoGerente           = number_format('5036123', 0, ',', '.');
+        $ciudadExpDocumentoGerente  = 'OCAÑA';
+        $nombreAsociado             = 'DIONISIO DE JESUS ANGARITA ANGARITA ';
+        $tpDocumentoAsociado        = 'CC';
+        $documentoAsociado          = number_format('88143913', 0, ',', '.');
+        $ciudadExpDocumentoAsociado = 'OCAÑA';
+        $direccionAsociado          = 'CALLE 18 N 22-85 LAS COLINAS';
+        $telefonoAsociado           = '3152190167';
+        $placaVehiculo              = 'TFT187';
+        $numeroInternoVehiculo      = '208';
+        $claseVehiculo              = 'AUTOMÓVIL';
+        $cilindrajeVehiculo         = '1598';
+        $carroceriaVehiculo         = 'Sedán';
+        $modeloVehiculo             = '2020';
+        $marcaVehiculo              = 'RENAULT';
+        $colorVehiculo              = 'BLANCO GLACIAL (V)';
+        $capacidadVehiculo          = '04';  
+        $documentosAdionales        = '1 Fotografía, Fotocopia Cédula, Fotocopia Tarjeta de Propiedad a su nombre y Reseña del DAS.';
+        $observacionGeneral         = 'VEHICULO EL DE PLACAS TFT187 INGRESA EN REPOSICION DEl UUA585';
 
+        $buscar                     = Array('numeroContrato', 'fechaContrato', 'nombreGerente', 'tpDocumentoGerente','documentoGerente','ciudadExpDocumentoGerente',
+                                            'nombreAsociado','tpDocumentoAsociado', 'documentoAsociado', 'ciudadExpDocumentoAsociado', 'direccionAsociado',
+                                            'telefonoAsociado', 'placaVehiculo', 'numeroInternoVehiculo', 'claseVehiculo', 'cilindrajeVehiculo', 'carroceriaVehiculo',
+                                            'modeloVehiculo', 'marcaVehiculo', 'colorVehiculo', 'capacidadVehiculo', 'documentosAdionales', 'observacionGeneral'
+                                        );
+        $remplazo                   = Array($numeroContrato, $fechaContrato, $nombreGerente, $tpDocumentoGerente, $documentoGerente, $ciudadExpDocumentoGerente,
+                                            $nombreAsociado, $tpDocumentoAsociado, $documentoAsociado, $ciudadExpDocumentoAsociado, $direccionAsociado,
+                                            $telefonoAsociado, $placaVehiculo, $numeroInternoVehiculo, $claseVehiculo, $cilindrajeVehiculo, $carroceriaVehiculo,
+                                            $modeloVehiculo, $marcaVehiculo, $colorVehiculo, $capacidadVehiculo, $documentosAdionales, $observacionGeneral
+                                        ); 
+        $titulo                      = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
+        $contenido                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido); 
+        $generarPdf                  = new generarPdf();
+        $generarPdf->generarContratoVehiculo($titulo, $contenido, $numeroContrato, $placaVehiculo, 'I' );*/
 
-        $generarPdf          = new generarPdf();
-        $rutaCarpeta       = public_path().'/archivos/radicacion/documentoEntrante/2023';
+        $convertirNumeroALetras = new convertirNumeroALetras();        
+        $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfid', 2)->first();  
+        $numeroPagare               = '55546';
+        $valorTotalCredito          = '600000';
+        $valorCredito               = number_format($valorTotalCredito, 0, ',', '.');
+        $valorCuota                 = number_format('100000', 0, ',', '.');        
+        $fechaSolicitud             = '2023-09-04'; 
+        $fechaDesembolso            = '2023-09-04';
+        $fechaPrimeraCuota          = '2023-10-03';
+        $fechaUltimaCuota           = '2024-03-03';
+        $interesMensual             = '1.09';
+        $numeroCuota                = '6';
+        $destinacionCredito         = 'VARIOS';
+        $referenciaCredito          = '2023';
+        $garantiaCredito            = 'VEHICULO';
+        $numeroInternoVehiculo      = '471';
+        $placaVehiculo              = 'TFT187';
+        $nombreAsociado             = 'DIONISIO DE JESUS ANGARITA ANGARITA ';
+        $tpDocumentoAsociado        = 'CC';
+        $documento                  = '88143913';
+        $documentoAsociado          = number_format($documento, 0, ',', '.');
+        $interesMoratorio           = '1.02';
+        $valorEnLetras              = trim($convertirNumeroALetras->valorEnLetras($valorTotalCredito));
+        $fechaLargaPrestamo         = '4 de septiembre de 2023' ;
+        $fechaLargaDesembolso       = '05 días del mes de septiembre de 2023';
+
+        $buscar                     = Array('numeroPagare', 'valorCredito', 'fechaSolicitud', 'fechaDesembolso','fechaPrimeraCuota','fechaUltimaCuota',
+                                            'interesMensual','numeroCuota', 'destinacionCredito', 'referenciaCredito', 'garantiaCredito',
+                                            'numeroInternoVehiculo', 'placaVehiculo', 'nombreAsociado', 'tpDocumentoAsociado', 'documentoAsociado', 'interesMoratorio',
+                                            'valorEnLetras', 'fechaLargaDesembolso', 'valorCuota'
+                                        );
+        $remplazo                   = Array($numeroPagare, $valorCredito, $fechaSolicitud, $fechaDesembolso, $fechaPrimeraCuota, $fechaUltimaCuota,
+                                            $interesMensual, $numeroCuota, $destinacionCredito, $referenciaCredito, $garantiaCredito,
+                                            $numeroInternoVehiculo, $placaVehiculo, $nombreAsociado, $tpDocumentoAsociado, $documentoAsociado, $interesMoratorio,
+                                            $valorEnLetras, $fechaLargaDesembolso, $valorCuota
+                                        ); 
+        $titulo                      = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
+        $contenido                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);
+
+        $generarPdf                  = new generarPdf();
+       
+        $generarPdf->generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, 'I' );
+        
+
+        /*$rutaCarpeta       = public_path().'/archivos/radicacion/documentoEntrante/2023';
         $nombreArchivoPdf = '913_autorizacion.pdf';
         $dataCopias    = [];
 
@@ -136,7 +220,7 @@ class MantenimientoController extends Controller
             //return true;
 		} catch (Exception $e) {
            // return false;
-		}
+		}*/
 
     }
 

@@ -43,7 +43,7 @@ class EmpresaController extends Controller
                 'jefe'               => 'required|numeric', 
                 'departamento'       => 'required|numeric',
                 'municipio'          => 'required|numeric',
-                'nit'                => 'required|numeric|max:999999999',
+                'nit'                => 'required|string|min:6|max:12',
                 'digitoVerificacion' => 'required|numeric|max:9',
                 'nombre'             => 'required|string|min:4|max:99',
                 'sigla'              => 'nullable|string|min:4|max:20',

@@ -99,11 +99,10 @@ export default function New({data}){
                         label={'NIT'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required","maxNumber:999999999"]}
-                        errorMessages={["Campo obligatorio","Número máximo permitido es el 999999999"]}
+                        inputProps={{autoComplete: 'off', maxLength: 12}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
-                        type={"number"}
                     />
                 </Grid>
 

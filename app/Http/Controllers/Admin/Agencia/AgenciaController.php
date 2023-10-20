@@ -11,10 +11,13 @@ class AgenciaController extends Controller
 {
     public function index()
     {
-        $data = DB::table('agencia')->select('agenid','persidresponsable', 'agendepaid','agenmuniid', 'agennombre','agendireccion','agencorreo',
-                                        'agentelefonocelular','agentelefonofijo','agenactiva',
-                                    DB::raw("if(agenactiva = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('agenactiva')->get();
+        $data = DB::table('agencia as a')->select('a.agenid','a.persidresponsable', 'a.agendepaid','a.agenmuniid', 'a.agennombre','a.agendireccion','a.agencorreo',
+                                        'a.agentelefonocelular','a.agentelefonofijo','a.agenactiva',
+                                    DB::raw("if(a.agenactiva = 1 ,'Sí', 'No') as estado"),
+                                    DB::raw("CONCAT(a.agentelefonocelular,' ',if(a.agentelefonofijo is null ,'', CONCAT(' - ',a.agentelefonofijo))) as telefonos"),
+                                    DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as responsable"))
+                                    ->join('persona as p', 'p.persid', '=', 'a.persidresponsable')
+                                    ->orderBy('a.agennombre')->get();
         return response()->json(["data" => $data]);
     }
 

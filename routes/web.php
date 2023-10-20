@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Menu\FuncionalidadController;
 use App\Http\Controllers\Security\MantenimientoController;
 use App\Http\Controllers\Admin\Usuario\UsuarioController;
 use App\Http\Controllers\Admin\Usuario\PerfilUsuarioController;
+use App\Http\Controllers\Admin\Informacion\GeneralPdfController;
 use App\Http\Controllers\Admin\Informacion\NotificacionCorreoController;
 use App\Http\Controllers\Admin\Informacion\ConfiguracionCorreoController;
 use App\Http\Controllers\Admin\DatosGeograficos\DepartamentoController;
@@ -108,12 +109,16 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/configurar/menu');
         Route::post('/modulo/salve', [ModuloController::class, 'salve']);
         Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
+        
+        Route::get('/informacionGeneralPdf/list', [GeneralPdfController::class, 'index']);//->middleware('security:admin/configurar/GeneralPdf');
+        Route::post('/informacionGeneralPdf/salve', [GeneralPdfController::class, 'salve']);
+        Route::post('/informacionGeneralPdf/destroy', [GeneralPdfController::class, 'destroy']);
 
-        Route::get('/informacionCorreo/list', [NotificacionCorreoController::class, 'index'])->middleware('security:admin/informacion/notificarCorreo');
+        Route::get('/informacionCorreo/list', [NotificacionCorreoController::class, 'index'])->middleware('security:admin/configurar/notificarCorreo');
         Route::post('/informacionCorreo/salve', [NotificacionCorreoController::class, 'salve']);
         Route::post('/informacionCorreo/destroy', [NotificacionCorreoController::class, 'destroy']);
 
-        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/informacion/notificarCorreo');
+        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/configurar/notificarCorreo');
         Route::post('/configuracionCorreo/salve', [ConfiguracionCorreoController::class, 'salve']);
         Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);        
         

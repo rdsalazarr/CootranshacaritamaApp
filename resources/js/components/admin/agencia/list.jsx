@@ -53,7 +53,7 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Responsable','Nombre','Dirección', 'Correo','Teléfonos','Activa','Actualizar','Eliminar','Ver']}
+                        titulo={['Responsable','Nombre','Dirección', 'Correo','Teléfonos','Activa','Actualizar','Eliminar']}
                         ver={["responsable","agennombre","agendireccion","agencorreo","telefonos","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',        color: 'green',   funcion : (data)=>{edit(data,0)} },
