@@ -39,7 +39,7 @@ class ConstanciaRequests extends FormRequest
             'contenidoInicial' => 'required|string|min:4|max:1000',
             'tipoPersona'      => 'required|numeric',
             'tituloDocumento'  => 'nullable|string|min:4|max:200',
-            'firmaPersonas'     => 'required|array|min:1',
+            'firmaPersonas'    => 'required|array|min:1',
         ];
     }
 }

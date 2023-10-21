@@ -27,7 +27,7 @@ use App\Http\Controllers\Admin\Tipos\PersonaDocumentalController;
 use App\Http\Controllers\Admin\Series\SerieDocumentalController;
 use App\Http\Controllers\Admin\Series\SubSerieDocumentalController;
 use App\Http\Controllers\Admin\Persona\PersonaController;
-use App\Http\Controllers\Admin\Persona\ShowPersonaController;
+use App\Http\Controllers\Admin\Persona\DatosPersonaController;
 use App\Http\Controllers\Admin\Festivo\FestivoController;
 use App\Http\Controllers\Admin\Dependencia\DependenciaController;
 use App\Http\Controllers\Util\DownloadFileController;
@@ -54,6 +54,8 @@ use App\Http\Controllers\Admin\Vehiculos\TipoReferenciaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoCarroceriaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
+use App\Http\Controllers\Admin\Vehiculos\VehiculoController;
+
 
 
 Route::get('/', [FrondController::class, 'index']);
@@ -171,11 +173,12 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/gestionar/persona');
-        Route::post('/persona/listar/datos', [PersonaController::class, 'datos']); 
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/gestionar/persona');       
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
-        Route::post('/show/persona', [ShowPersonaController::class, 'index']);//No debe tener control de ruta
+
+        Route::post('/persona/listar/datos', [DatosPersonaController::class, 'index']); //No debe tener control de ruta
+        Route::post('/show/persona', [DatosPersonaController::class, 'show']);
 
         Route::get('/usuario/list', [UsuarioController::class, 'index'])->middleware('security:admin/gestionar/usuario');
         Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
@@ -305,7 +308,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/direccion/transporte')->group(function(){
-            Route::get('/tipo/list', [TipoVehiculoController::class, 'index']);
+            Route::get('/tipo/list', [TipoVehiculoController::class, 'index']); //->middleware('security:admin/direccion/transporte/tipos');
             Route::post('/tipo/salve', [TipoVehiculoController::class, 'salve']);
             Route::post('/tipo/destroy', [TipoVehiculoController::class, 'destroy']);
 
@@ -324,6 +327,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/color/list', [TipoColorController::class, 'index']);
             Route::post('/color/salve', [TipoColorController::class, 'salve']);
             Route::post('/color/destroy', [TipoColorController::class, 'destroy']);
+
+            Route::get('/vehiculo/list', [VehiculoController::class, 'index']); //->middleware('security:admin/direccion/transporte/vehiculo');
+            Route::post('/vehiculo/list/datos', [VehiculoController::class, 'datos']);
+            Route::post('/vehiculo/salve', [VehiculoController::class, 'salve']);
+            Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
 
         });
     });

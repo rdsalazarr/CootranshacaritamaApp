@@ -23,7 +23,7 @@ return new class extends Migration
             $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia a la que esta asignado el vehículo');
             $table->tinyInteger('tiesveid')->unsigned()->comment('Identificador del tipo estado vehículo');
             $table->date('vehifechaingreso')->comment('Fecha de ingreso del vehículo a la cooperativa');
-            $table->string('vehinumerointerno', 4)->unique('uk_vehiculonumerointerno')->comment('Número interno del vehículo');
+            $table->string('vehinumerointerno', 4)->comment('Número interno del vehículo');
             $table->string('vehiplaca', 8)->unique('uk_vehiculoplaca')->comment('Placa del vehículo');
             $table->string('vehimodelo', 4)->comment('Modelo del vehículo');
             $table->string('vehicilindraje', 6)->nullable()->comment('Cilindraje del vehículo');

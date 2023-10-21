@@ -23,7 +23,7 @@ export default function New({data, tipo}){
     const [formDataAdicionar, setFormDataAdicionar] = useState({rol: ''});
     const [roles, setRoles] = useState([]);
     const [rolesUsuario, setRolesUsuario] = useState([]);
-   
+
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -175,7 +175,7 @@ export default function New({data, tipo}){
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
                         validators={["required"]}
-                        errorMessages={["Debe hacer una selección"]}                     
+                        errorMessages={["Debe hacer una selección"]}
                         onChange={consultarPersona} 
                         disabled={(tipo === 'U') ? true : false}
                     >
@@ -229,7 +229,7 @@ export default function New({data, tipo}){
                         onChange={handleChangeUpperCase}
                     />
                 </Grid>
-                
+
                 <Grid item xl={3} md={3} sm={4} xs={12}>
                     <TextValidator
                         name={'correo'}
@@ -258,7 +258,7 @@ export default function New({data, tipo}){
                         onChange={handleChangeUpperCase}
                     />
                 </Grid>
-                
+
                 <Grid item xl={3} md={3} sm={4} xs={12}>
                     <TextValidator
                         name={'alias'}
@@ -270,7 +270,7 @@ export default function New({data, tipo}){
                         onChange={handleChange}
                     />
                 </Grid>
-                 
+
                 { (formData.tipo === 'U') ?
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <SelectValidator
@@ -371,7 +371,7 @@ export default function New({data, tipo}){
                     <Table key={'tableSubSerie'}  className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}} >
                         <TableHead>
                             <TableRow>
-                                <TableCell style={{width: '90%'}}>Nombre del rol</TableCell>                            
+                                <TableCell style={{width: '90%'}}>Nombre del rol</TableCell>
                                 <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                             </TableRow>
                         </TableHead>

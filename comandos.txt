@@ -185,7 +185,7 @@ php artisan make:seeder TipoMarcaVehiculoSeeder
 php artisan make:seeder TipoColorVehiculoSeeder
 php artisan make:seeder TipoCarroceriaVehiculoSeeder
 php artisan make:seeder TipoCombustibleVehiculoSeeder
-
+php artisan make:seeder AgenciaSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -193,6 +193,7 @@ php artisan make:request CircularRequests
 php artisan make:request CitacionRequests
 php artisan make:request ConstanciaRequests
 php artisan make:request OficioRequests
+php artisan make:request PersonaRequests
 
 php artisan make:controller Admin\PerfilUsuarioController
 php artisan make:controller Admin\FestivoController
@@ -209,6 +210,7 @@ php artisan make:controller Admin\Series\SubSerieDocumentalController
 php artisan make:controller Admin\Tipos\TipoDespedidaController
 php artisan make:controller Admin\Tipos\TipoSaludoController
 php artisan make:controller Admin\PersonaController
+php artisan make:controller Admin\Persona\DatosPersonaController
 php artisan make:controller Admin\AgenciaController
 php artisan make:controller Admin\ProducionDocumental\OficioController
 
@@ -229,7 +231,8 @@ php artisan make:controller Admin\Vehiculos\TiposReferenciaController
 php artisan make:controller Admin\Vehiculos\TiposMarcaController
 php artisan make:controller Admin\Vehiculos\TiposColorController
 php artisan make:controller Admin\Vehiculos\TiposCarroceriaController
-
+php artisan make:controller Admin\Vehiculos\VehiculoController
+php artisan make:controller Admin\Vehiculos\ConsultarController
 
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware

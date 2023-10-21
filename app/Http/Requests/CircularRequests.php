@@ -32,7 +32,7 @@ class CircularRequests extends FormRequest
 
             'idCDP'                 => 'required|numeric',
             'fecha'                 => 'required|date|date_format:Y-m-d',
-            'destinatarios'        => 'required|string|min:4|max:2000',
+            'destinatarios'         => 'required|string|min:4|max:2000',
             'asunto'                => 'required|string|min:4|max:200',
             'correo'                => 'nullable|string|min:4|max:1000|required_if:tipo_medio,2|required_if:tipo_medio,3',
             'contenido'             => 'required',

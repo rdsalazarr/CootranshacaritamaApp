@@ -9,14 +9,14 @@ import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../layout/instance';
 import Files from "react-files";
 
-export default function New({data, tipo}){
+export default function New({data, tipo, frm, url, tpRelacion}){
 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo:data.persid,  tipo:tipo 
-                                    } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
+                    (tipo !== 'I') ? {codigo:data.persid,  tipo:tipo, formulario:frm
+                                    } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
                                         departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                         segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
-                                        estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo
+                                        estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm, fechaIngresoAsociado:'', fechaIngresoConductor:''
                                 }); 
 
     const [loader, setLoader] = useState(false); 
@@ -24,8 +24,7 @@ export default function New({data, tipo}){
     const [showFotografia, setShowFotografia] = useState('');
     const [showFirmaPersona, setFirmaPersona] = useState('');
     const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
-    const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
-    const [tipoRelacionLaborales, setTipoRelacionLaborales] = useState([]);
+    const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);  
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
@@ -78,16 +77,15 @@ export default function New({data, tipo}){
         dataFile.append('fotografia', (fotografia[0] != undefined) ? fotografia[0] : '');
         dataFile.append('rutaCrt', (rutaCrt[0] != undefined) ? rutaCrt[0] : '');
         dataFile.append('rutaPem', (rutaPem[0] != undefined) ? rutaPem[0] : '');
-
         setLoader(true);
-        instance.post('/admin/persona/salve', dataFile).then(res=>{
+        instance.post(url, dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
                                                                 departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                                                 segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
-                                                                estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo}) : null;
+                                                                estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm,  fechaIngresoAsociado:'', fechaIngresoConductor:''}) : null;
             setLoader(false);
         })
     }
@@ -97,8 +95,7 @@ export default function New({data, tipo}){
         let newFormData = {...formData}
         instance.post('/admin/persona/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
             setTipoCargoLaborales(res.tipoCargoLaborales);
-            setTipoIdentificaciones(res.tipoIdentificaciones);
-            setTipoRelacionLaborales(res.tipoRelacionLaborales);
+            setTipoIdentificaciones(res.tipoIdentificaciones);      
             setDepartamentos(res.departamentos);
             setMunicipios(res.municipios);
 
@@ -132,9 +129,14 @@ export default function New({data, tipo}){
                 newFormData.rutaDescargaCrt        = (persona.rutaCrt !== null) ? persona.rutaCrt : '';
                 newFormData.rutaDescargaPem        = (persona.rutaPem !== null) ? persona.rutaPem : '';
                 newFormData.estado                 = persona.persactiva;
+               if(frm == 'ASOCIADO'){
+                    newFormData.fechaIngresoAsociado  = (persona.fechaIngresoAsocido !== null) ? persona.fechaIngresoAsocido : '' ;
+               }else{
+                    newFormData.fechaIngresoConductor = (persona.fechaIngresoConductor !== null) ? persona.fechaIngresoConductor : '' ;
+               }
 
                 let munNacimiento   = [];
-                let deptoNacimiento = data.persdepaidnacimiento;
+                let deptoNacimiento = persona.persdepaidnacimiento;
                 res.municipios.forEach(function(muni){ 
                     if(muni.munidepaid === deptoNacimiento){
                         munNacimiento.push({
@@ -146,7 +148,7 @@ export default function New({data, tipo}){
                 setMunicipiosNacimiento(munNacimiento);
 
                 //Municipios de expedicion
-                let deptoExpedicion = data.persdepaidexpedicion;
+                let deptoExpedicion = persona.persdepaidexpedicion;
                 let munExpedicion   = [];
                 res.municipios.forEach(function(muni){ 
                     if(muni.munidepaid === deptoExpedicion){
@@ -490,64 +492,77 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
-                    <SelectValidator
-                        name={'tipoRelacionLaboral'}
-                        value={formData.tipoRelacionLaboral}
-                        label={'Tipo relación laboral'}
-                        className={'inputGeneral'}
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Debe hacer una selección"]}
-                        onChange={handleChange} 
-                    >
-                        <MenuItem value={""}>Seleccione</MenuItem>
-                        {tipoRelacionLaborales.map(res=>{
-                            return <MenuItem value={res.tirelaid} key={res.tirelaid} >{res.tirelanombre}</MenuItem>
-                        })}
-                    </SelectValidator>
-                </Grid>
+                {(frm === 'PERSONA') ?
+                    <Fragment>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'firmaDigital'}
+                                value={formData.firmaDigital}
+                                label={'¿Tiene firma digital?'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"}>Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
-                    <SelectValidator
-                        name={'firmaDigital'}
-                        value={formData.firmaDigital}
-                        label={'¿Tiene firma digital?'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange} 
-                    >
-                        <MenuItem value={""}>Seleccione</MenuItem>
-                        <MenuItem value={"1"}>Sí</MenuItem>
-                        <MenuItem value={"0"}>No</MenuItem>
-                    </SelectValidator>
-                </Grid>
-                
-                <Grid item xl={2} md={2} sm={6} xs={12}>
-                    <SelectValidator
-                        name={'estado'}
-                        value={formData.estado}
-                        label={'Activo'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange} 
-                    >
-                        <MenuItem value={""}>Seleccione</MenuItem>
-                        <MenuItem value={"1"}>Sí</MenuItem>
-                        <MenuItem value={"0"}>No</MenuItem>
-                    </SelectValidator>
-                </Grid>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'estado'}
+                                value={formData.estado}
+                                label={'Activo'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"}>Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+                    </Fragment>
+                : null}
+
+                {(frm !== 'PERSONA') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                {(frm === 'ASOCIADO') ? 'Información de asociado' : 'Información del conductor'}                                
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator
+                                name={(frm === 'ASOCIADO') ? 'fechaIngresoAsociado' : 'fechaIngresoConductor'}
+                                value={(frm === 'ASOCIADO') ? formData.fechaIngresoAsociado : formData.fechaIngresoConductor }
+                                label={(frm === 'ASOCIADO') ? 'Fecha ingreso como asociado' : 'Fecha ingreso como condutor'}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}                           
+                                onChange={handleChange}
+                                type={"date"}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+                    </Fragment>
+                : null}
 
                 <Grid item md={12} xl={12} sm={12} xs={12}>
                     <Box className='frmDivision'>
-                        Anexe foto y firma escaneada de la persona 
+                        Anexe foto de la persona 
                     </Box>
                 </Grid>
 
@@ -582,30 +597,40 @@ export default function New({data, tipo}){
                         </Box>
                     </Grid>
                 : null }
-                
-                <Grid item md={5} xl={5} sm={12} xs={12}>
-                    <Files
-                        className='files-dropzone'
-                        onChange={(file ) =>{onFilesChange(file, 'firma') }}
-                        onError={onFilesError}
-                        accepts={['.jpg', '.png', '.jpeg']} 
-                        multiple
-                        maxFiles={1}
-                        maxFileSize={1000000}
-                        clickable
-                        dropActiveClassName={"files-dropzone-active"}
-                    >
-                    <ButtonFileImg title={"Adicionar firma"} />
-                    </Files>
-                </Grid>
 
-                <Grid item md={4} xl={4} sm={12} xs={12}>
-                    <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                        {formDataFile.firma.map((file, a) =>{
-                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                        })}
-                    </Box>
-                </Grid>
+                {(frm === 'PERSONA') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Anexe firma escaneada de la persona 
+                            </Box>
+                        </Grid>
+                        
+                        <Grid item md={5} xl={5} sm={12} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'firma') }}
+                                onError={onFilesError}
+                                accepts={['.jpg', '.png', '.jpeg']} 
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar firma"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={4} xl={4} sm={12} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.firma.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid>
+                    </Fragment>
+                : null}
 
                 {(showFirmaPersona !== '' && tipo === 'U') ?
                     <Grid item md={3} xl={3} sm={12} xs={12}>
@@ -615,7 +640,7 @@ export default function New({data, tipo}){
                     </Grid>
                 : null }
 
-                {(parseInt(formData.firmaDigital) === 1) ?
+                {(parseInt(formData.firmaDigital) === 1) ?  
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
@@ -686,7 +711,7 @@ export default function New({data, tipo}){
                             </Box>
                         </Grid>
 
-                        {(tipo === 'U') ?
+                        {(tipo === 'U' && formData.claveCertificado !== null) ?
                             <Fragment>
                                 <Grid item md={2} xl={2} sm={6} xs={12}>
                                 <Box className='frmTexto'>

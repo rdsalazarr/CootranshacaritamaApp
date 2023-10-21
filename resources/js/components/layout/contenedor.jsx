@@ -46,6 +46,7 @@ import ArchivoHistorico from "../admin/archivoHistorico/gestionar/list";
 import ConsultarArchivoHistorico from "../admin/archivoHistorico/consultar/list";
 
 import TiposVehiculos from "../admin/vehiculos/tipos/list";
+import Vehiculo from "../admin/vehiculos/automovil/list";
 
 
 const HeaderMenu = ({open, setOpen}) =>{
@@ -185,6 +186,17 @@ const componenteMenu = [
             {ruta : 'admin/asocidados/inactivos',     menu: 'Inactivos',   icono : 'person_off_icon',      componente : <EnConstruccion /> }, 
         ]
     },
+    {   nombre: 'Dirección transporte',
+        icono : 'drive_eta_icon',
+        itemMenu: [
+            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',      componente : <TiposVehiculos /> },
+            {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'electric_car_icon',   componente : <Vehiculo />},
+            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon',   componente : <EnConstruccion /> },
+            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',   componente : <EnConstruccion /> },
+            {ruta : 'admin/gestionar/agencia',                  menu: 'Agencia',            icono : 'holiday_village_con', componente : <Agencia /> },
+            {ruta : 'admin/configurar/GeneralPdf',              menu: 'Información PDF',    icono : 'picture_as_pdf',      componente : <InformacionGeneralPdf /> },
+        ]
+    },
     {   nombre: 'Cartera',
         icono : 'work_icon',
         itemMenu: [
@@ -195,17 +207,6 @@ const componenteMenu = [
             {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <EnConstruccion /> },
         ]
     },
-    {   nombre: 'Dirección transporte',
-        icono : 'drive_eta_icon',
-        itemMenu: [
-            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',     componente : <EnConstruccion /> },
-            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',  componente : <EnConstruccion /> },
-            {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'inventory_icon',     componente : <EnConstruccion />},
-            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon ', componente : <EnConstruccion /> },
-            {ruta : 'admin/gestionar/agencia',       menu: 'Agencia',            icono : 'credit_score_icon ', componente : <Agencia /> },
-        ]
-    },
-
      
 ];
 
@@ -238,8 +239,8 @@ const menuComponente = [
     {id:21,componente : <ArchivoHistorico />},
     {id:22,componente : <ConsultarArchivoHistorico />},
 
-    {id:23,componente : <TiposVehiculos />},
-    {id:24,componente : <InformacionGeneralPdf />},
+    {id:23,componente : <Vehiculo />},
+    {id:24,componente : <Vehiculo />},
     {id:25,componente : <EnConstruccion />},
     {id:26,componente : <EnConstruccion />},
     {id:27,componente : <EnConstruccion />},
