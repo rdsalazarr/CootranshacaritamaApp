@@ -18,7 +18,7 @@ class CargoLaboralSeeder extends Seeder
 
         DB::table('cargolaboral')->insert([
             'carlabid'     => '1',
-            'carlabnombre' => 'Jefe',
+            'carlabnombre' => 'Desarrollador',
             'carlabactivo' => '1',
             'created_at'    => $fechaHoraActual,
             'updated_at'    => $fechaHoraActual,
@@ -26,7 +26,7 @@ class CargoLaboralSeeder extends Seeder
 
         DB::table('cargolaboral')->insert([
             'carlabid'     => '2',
-            'carlabnombre' => 'Jefe encargado',
+            'carlabnombre' => 'Asociado',
             'carlabactivo' => '1',
             'created_at'    => $fechaHoraActual,
             'updated_at'    => $fechaHoraActual,
@@ -34,6 +34,30 @@ class CargoLaboralSeeder extends Seeder
 
         DB::table('cargolaboral')->insert([
             'carlabid'     => '3',
+            'carlabnombre' => 'Conductor',
+            'carlabactivo' => '1',
+            'created_at'    => $fechaHoraActual,
+            'updated_at'    => $fechaHoraActual,
+        ]);
+
+        DB::table('cargolaboral')->insert([
+            'carlabid'     => '4',
+            'carlabnombre' => 'Gerente',
+            'carlabactivo' => '1',
+            'created_at'    => $fechaHoraActual,
+            'updated_at'    => $fechaHoraActual,
+        ]);
+
+        DB::table('cargolaboral')->insert([
+            'carlabid'     => '5',
+            'carlabnombre' => 'Jefe de área',
+            'carlabactivo' => '1',
+            'created_at'    => $fechaHoraActual,
+            'updated_at'    => $fechaHoraActual,
+        ]);
+
+        DB::table('cargolaboral')->insert([
+            'carlabid'     => '6',
             'carlabnombre' => 'Secretaria',
             'carlabactivo' => '1',
             'created_at'    => $fechaHoraActual,

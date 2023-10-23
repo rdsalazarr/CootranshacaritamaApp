@@ -129,7 +129,7 @@ body{
   justify-content: center;
   .big{
     width: 80%;
-    background-color: $colorBlanco ;
+    background-color: $colorBlanco;
     min-height: 80vh;
     overflow-x: hidden;
     overflow-y: auto;
@@ -171,12 +171,20 @@ body{
 }
 
 .iconLupa{
-  background: red;
+  background: $verdeOscuro;
   bottom: 1px;
-  color: #fff;
+  color: $colorBlanco !important;
   padding: .2em;
   position: absolute;
   right: 0;
+  cursor: pointer;
+  transition: all .5s ease-in-out;
+  border-top-left-radius: 20%;
+    border-top-right-radius: 20%;
+  &:hover{
+    background: $verdeClaro;
+    transition: all .5s ease-in-out; 
+  }
 }
 
 .titleGeneral {

@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
+import { Box, Card, Typography} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
-import { Box, Card} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
@@ -50,6 +50,8 @@ export default function List(){
     return (
         <Box>
             <Card className={'cardContainer'} >
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar vehículos</Typography>
+                </Box>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}

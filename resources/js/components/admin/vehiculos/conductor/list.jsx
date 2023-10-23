@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../../layout/tablaGeneral';
-import { ModalDefaultAuto } from '../../../layout/modal';
+import { ModalDefaultAuto  } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
@@ -20,13 +20,13 @@ export default function List(){
     }
 
     const modales = [
-                        <Frm tipo={'I'} frm={'ASOCIADO'} url={'/admin/asociado/salve'} tpRelacion={'1'} />,
-                        <Frm data={modal.data} tipo={'U'} frm={'ASOCIADO'} url={'/admin/asociado/salve'} tpRelacion={'1'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.asocid : null} ruta={'/admin/asociado/destroy'} cerrarModal={cerrarModal} />,
+                        <Frm tipo={'I'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'1'} />,
+                        <Frm data={modal.data} tipo={'U'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'1'} /> ,
+                        <Eliminar id={(tipo === 2) ? modal.data.condid : null} ruta={'/admin/direccion/transporte/conductor/destroy'} cerrarModal={cerrarModal} />,
                         <Show id={(tipo === 3) ? modal.data.persid : null}/>
                     ];
 
-    const tituloModal = ['Nuevo asociado','Editar asociado','','Visualizar la información del asociado'];
+    const tituloModal = ['Nuevo conductor','Editar conductor','','Visualizar la información del conductor'];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
@@ -35,7 +35,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/asociado/list').then(res=>{
+        instance.get('/admin/direccion/transporte/conductor/list').then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -48,20 +48,21 @@ export default function List(){
     }
 
     return (
-        <Box >
+        <Box>
             <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar asociados</Typography>
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar conductores</Typography>
                 </Box>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Estado','Actualizar','Eliminar','Ver']}
+                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Activo','Actualizar','Eliminar','Ver','Sancionar']}
                         ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico","estado"]}
                         accion={[
-                            {tipo: 'T', icono : 'add',        color: 'green',   funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
+                            {tipo: 'T', icono : 'add',               color: 'green',  funcion : (data)=>{edit(data,0)} },
+                            {tipo: 'B', icono : 'edit',              color: 'orange', funcion : (data)=>{edit(data,1)} },
+                            {tipo: 'B', icono : 'delete',            color: 'red',    funcion : (data)=>{edit(data,2)} },
+                            {tipo: 'B', icono : 'visibility',        color: 'green',  funcion : (data)=>{edit(data,3)} },
+                            {tipo: 'B', icono : 'do_not_touch_icon', color: 'red',    funcion : (data)=>{edit(data,4)}},
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />

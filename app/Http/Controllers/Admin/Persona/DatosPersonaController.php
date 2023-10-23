@@ -30,13 +30,14 @@ class DatosPersonaController extends Controller
                                 DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"),
                                 DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutacrt ) as rutaCrt"),
                                 DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutapem ) as rutaPem"),
-                                'a.asocfechaingreso as fechaIngresoAsocido', 'a.asocfechaingreso as fechaIngresoConductor')
+                                'a.asocfechaingreso as fechaIngresoAsocido', 'c.condfechaingreso as fechaIngresoConductor')
                                 ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                 ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
+                                ->leftJoin('conductor as c', 'c.persid', '=', 'p.persid')
                                 ->where('p.persid', $request->codigo)
                                 ->first();
         }
- 
+
         return response()->json(["tipoCargoLaborales" => $cargoLaborales, "tipoIdentificaciones" => $tipoIdentificaciones,
                                   "departamentos"     => $departamentos,  "municipios"           => $municipios,            "persona" => $persona ]);
 	}
@@ -44,7 +45,7 @@ class DatosPersonaController extends Controller
     public function show(Request $request)
     {  
         $id   = $request->codigo;
-        $url  = URL::to('/');    
+        $url  = URL::to('/');
         $data = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'trl.tirelanombre as nombreTipoRelacionLaboral', 'p.persdocumento',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
@@ -58,7 +59,10 @@ class DatosPersonaController extends Controller
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"),
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"),
                                     DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutacrt ) as rutaCrt"),
-                                    DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutapem ) as rutaPem"))
+                                    DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutapem ) as rutaPem"),
+                                    'a.asocfechaingreso as fechaIngresoAsocido', 'c.condfechaingreso as fechaIngresoConductor','a.asocid',
+                                    DB::raw('(SELECT COUNT(ascaesid) AS ascaesid FROM asociadocambioestado WHERE asocid = a.asocid ) AS totalCambioEstadoAsociado'),
+                                    DB::raw('(SELECT COUNT(cocaesid) AS cocaesid FROM conductorcambioestado WHERE condid = c.condid ) AS totalCambioEstadoConductor'))
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->join('cargolaboral as cl', 'cl.carlabid', '=', 'p.carlabid')
                                     ->join('tiporelacionlaboral as trl', 'trl.tirelaid', '=', 'p.tirelaid')
@@ -68,18 +72,40 @@ class DatosPersonaController extends Controller
                                         $join->on('mn.munidepaid', '=', 'p.persdepaidnacimiento');
                                         $join->on('mn.muniid', '=', 'p.persmuniidnacimiento'); 
                                     })
-
                                     ->join('departamento as de', 'de.depaid', '=', 'p.persdepaidexpedicion') 
                                     ->join('municipio as me', function($join)
                                     {
                                         $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
                                         $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
                                     })
-
+                                    ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
+                                    ->leftJoin('conductor as c', 'c.persid', '=', 'p.persid')
                                     ->orderBy('persprimernombre')->orderBy('perssegundonombre')
                                     ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')
                                     ->where('p.persid', $id)->first();
-//nombreTipoRelacionLaboral
-        return response()->json(["data" => $data]);
+
+        $cambiosEstadoAsociado  = [];
+        if($data->totalCambioEstadoAsociado > 0 ){
+            $cambiosEstadoAsociado =  DB::table('asociadocambioestado as ace')
+                                    ->select('ace.ascaesfechahora as fecha','ace.ascaesobservacion as observacion','tea.tiesasnombre as estado',
+                                        DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+                                    ->join('asociado as a', 'a.asocid', '=', 'ace.asocid')
+                                    ->join('tipoestadoasociado as tea', 'tea.tiesasid', '=', 'ace.tiesasid')
+                                    ->join('usuario as u', 'u.usuaid', '=', 'ace.ascaesusuaid')
+                                    ->where('a.persid', $id)->get();
+        }
+
+        $cambiosEstadoConductor = [];
+        if($data->totalCambioEstadoConductor > 0 ){
+            $cambiosEstadoConductor =  DB::table('conductorcambioestado as cce')
+                                    ->select('cce.cocaesfechahora as fecha','cce.cocaesobservacion as observacion','tec.tiesconombre as estado',
+                                        DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+                                    ->join('conductor as c', 'c.condid', '=', 'cce.condid')
+                                    ->join('tipoestadoconductor as tec', 'tec.tiescoid', '=', 'cce.tiescoid')
+                                    ->join('usuario as u', 'u.usuaid', '=', 'cce.cocaesusuaid')
+                                    ->where('c.persid', $id)->get();
+        }
+
+        return response()->json(["data" => $data, "cambiosEstadoAsociado" => $cambiosEstadoAsociado, "cambiosEstadoConductor" => $cambiosEstadoConductor]);
     }
 }

@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoEstanteArchivadorSeeder::class);
         $this->call(TipoCajaUbicacionSeeder::class);
         $this->call(TipoCarpetaUbicacionSeeder::class);
-        $this->call(InformacionConfiguracionCorreoSeeder::class);        
+        $this->call(InformacionConfiguracionCorreoSeeder::class);
         $this->call(TipoVehiculoSeeder::class);
         $this->call(TipoReferenciaVehiculoSeeder::class);
         $this->call(TipoMarcaVehiculoSeeder::class);
@@ -43,6 +43,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoEstadoVehiculoSeeder::class);
         $this->call(TipoEstadoAsociadoSeeder::class);
         $this->call(TipoEstadoSolicitudCreditoSeeder::class);
-        $this->call(AgenciaSeeder::class);        
+        $this->call(AgenciaSeeder::class);
+        $this->call(TipoEstadoConductorSeeder::class);
     }
 }

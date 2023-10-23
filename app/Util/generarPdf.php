@@ -1365,4 +1365,72 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
+	
+	public function generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+		$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+
+		$codigoInstitucional = '';
+		$codigoDocumental    = '';
+		$idCifrado           = '';
+		$estadoDocumento     = '';
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+	
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo.' '.$documento);
+		PDF::SetKeywords('Colocación, Vehículo, '.$siglaEmpresa.', '.$numeroPagare.', '.$documento.', '.$titulo);
+        PDF::SetTitle($titulo);	
+
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 14);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(20);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica', 'B', 13);
+		PDF::Cell(176, 4, $titulo, 0, 0, 'L');
+		PDF::Ln(16);
+		PDF::SetFont('helvetica', '', 10);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+		PDF::Ln(16);
+
+		PDF::Cell(30, 4,'Firma:', 0, 0, 'L');
+		PDF::Cell(80, 4,'', 'B', 0, '');
+		PDF::Cell(30, 4,'', '', 0, '');
+		PDF::Ln(8);
+		PDF::Cell(30, 4,'Nombre:', 0, 0, 'L');
+		PDF::Cell(80, 4,'', 'B', 0, '');
+		PDF::Cell(30, 4,'', '', 0, '');
+		PDF::Ln(8);
+		PDF::Cell(30, 4,'C.C. No. ', 0, 0, 'L');
+		PDF::Cell(80, 4,'', 'B', 0, '');
+		PDF::Cell(30, 4,'', '', 0, '');
+		PDF::Ln(8);
+		PDF::Cell(30, 4,'Domiciliada en:', 0, 0, 'L');
+		PDF::Cell(80, 4,'', 'B', 0, '');
+		PDF::Cell(30, 4,'', '', 0, '');
+		PDF::SetFillColor(255, 255, 255);
+		PDF::MultiCell(30, 30, '', 1, 'J', 1, 1, 150, PDF::GetY() - 24, false, 0, false, false, 60, 'M');
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$documento.'/'.$numeroPagare;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $rutaCarpeta.'/'.$numeroPagare.'.pdf';
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
 }

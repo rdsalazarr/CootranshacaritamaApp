@@ -17,8 +17,8 @@ use App\Models\ProducionDocumental\CodigoDocumentalProcesoActa;
 use App\Models\ProducionDocumental\CodigoDocumentalProceso;
 use App\Models\ProducionDocumental\CodigoDocumental;
 use Illuminate\Support\Facades\Crypt;
+use Exception, Auth, DB, File;
 use App\Util\generales;
-use Auth, DB, File;
 use Carbon\Carbon;
 
 class manejadorDocumentos {

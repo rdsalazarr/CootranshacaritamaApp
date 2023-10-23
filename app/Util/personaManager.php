@@ -111,7 +111,7 @@ class personaManager {
             }
 
             if($request->formulario === 'ASOCIADO' and $request->tipo === 'U'){
-                $asociado                   = DB::table('asociado')->select('asocid')->where('persid', $$persona->persid)->first();
+                $asociado                   = DB::table('asociado')->select('asocid')->where('persid', $persona->persid)->first();
                 $asociado                   = Asociado::findOrFail($asociado->asocid);
                 $asociado->asocfechaingreso = $request->fechaIngresoAsociado;
                 $asociado->save();
@@ -129,7 +129,7 @@ class personaManager {
             }
 
             if($request->formulario === 'CONDUCTOR' and $request->tipo === 'U'){
-                $conductor                   = DB::table('conductor')->select('condid')->where('persid', $$persona->persid)->first();
+                $conductor                   = DB::table('conductor')->select('condid')->where('persid', $persona->persid)->first();
                 $conductor                   = Conductor::findOrFail($conductor->condid);
                 $conductor->condfechaingreso = $request->fechaIngresoConductor;
                 $conductor->save();

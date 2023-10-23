@@ -29,6 +29,9 @@ import Dependencia from "../admin/dependencia/list";
 import Persona from "../admin/persona/list";
 import Festivos from "../admin/festivo/list";
 import Agencia from "../admin/agencia/list";
+import Asociados from "../admin/asociado/gestionar/list";
+import DesvincularAsociado from "../admin/asociado/desvincular/search";
+import AsociadosInactivos from "../admin/asociado/inactivos/list";
 
 import Acta from "../admin/produccionDocumental/acta/list";
 import Citacion from "../admin/produccionDocumental/citacion/list";
@@ -47,12 +50,10 @@ import ConsultarArchivoHistorico from "../admin/archivoHistorico/consultar/list"
 
 import TiposVehiculos from "../admin/vehiculos/tipos/list";
 import Vehiculo from "../admin/vehiculos/automovil/list";
+import Conductor from "../admin/vehiculos/conductor/list";
+import PolizasVehiculo from "../admin/vehiculos/polizas/search";
 
-import Asociados from "../admin/asociado/gestionar/list";
-import DesvincularAsociado from "../admin/asociado/desvincular/list";
-import AsociadosInactivos from "../admin/asociado/inactivos/list";
-
-
+//clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
@@ -195,8 +196,8 @@ const componenteMenu = [
         itemMenu: [
             {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',      componente : <TiposVehiculos /> },
             {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'electric_car_icon',   componente : <Vehiculo />},
-            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon',   componente : <EnConstruccion /> },
-            {ruta : 'admin/gestionar/conductores',              menu: 'Conductores',        icono : 'attach_money_icon',   componente : <EnConstruccion /> },
+            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon',   componente : <PolizasVehiculo /> },
+            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',   componente : <Conductor /> },
             {ruta : 'admin/gestionar/agencia',                  menu: 'Agencia',            icono : 'holiday_village_con', componente : <Agencia /> },
             {ruta : 'admin/configurar/GeneralPdf',              menu: 'Información PDF',    icono : 'picture_as_pdf',      componente : <InformacionGeneralPdf /> },
         ]
@@ -243,8 +244,8 @@ const menuComponente = [
     {id:21,componente : <ArchivoHistorico />},
     {id:22,componente : <ConsultarArchivoHistorico />},
 
-    {id:23,componente : <Asociados />},
-    {id:24,componente : <Asociados />},
+    {id:23,componente : <InformacionGeneralPdf />},
+    {id:24,componente : <DesvincularAsociado />},
     {id:25,componente : <EnConstruccion />},
     {id:26,componente : <EnConstruccion />},
     {id:27,componente : <EnConstruccion />},

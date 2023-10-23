@@ -3,56 +3,63 @@ import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {LoaderModal} from "../../layout/loader";
 import {Grid, Box, Link} from '@mui/material';
 import instance from '../../layout/instance';
+import Trazabilidad from './trazabilidad';
 
-export default function Show({id}){  
+export default function Show({id}){
+
     const [loader, setLoader] = useState(false);
     const [formData, setFormData] = useState(
-            {documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
-            departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
-            segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', 
-            genero:'',firma:'', foto:'', showFotografia:'', showFirmaPersona:'', estado: ''
-            } );
+                                    {documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
+                                    departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
+                                    segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', 
+                                    genero:'',firma:'', foto:'', showFotografia:'', showFirmaPersona:'', estado: ''
+                                    } );
+    const [cambiosEstadoAsociado, setCambiosEstadoAsociado] = useState([]);
+    const [cambiosEstadoConductor, setCambiosEstadoConductor] = useState([]);
 
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData};
         instance.post('/admin/show/persona', {codigo: id}).then(res=>{
-            let persona                         = res.data;
-            newFormData.documento               = persona.persdocumento;
-            newFormData.cargo                   = persona.nombreCargo;
-            newFormData.tipoIdentificacion      = persona.nombreTipoIdentificacion;
-            newFormData.tipoRelacionLaboral     = persona.nombreTipoRelacionLaboral;   
-            newFormData.departamentoNacimiento  = persona.nombreDeptoNacimiento;
-            newFormData.municipioNacimiento     = persona.nombreMunicipioNacimiento;
-            newFormData.departamentoExpedicion  = persona.nombreDeptoExpedicion;
-            newFormData.municipioExpedicion     = persona.nombreMunicipioExpedicion;
-            newFormData.primerNombre            = persona.persprimernombre;
-            newFormData.segundoNombre           = persona.perssegundonombre;
-            newFormData.primerApellido          = persona.persprimerapellido;
-            newFormData.segundoApellido         = persona.perssegundoapellido;
-            newFormData.fechaNacimiento         = persona.persfechanacimiento;  
-            newFormData.direccion               = persona.persdireccion;
-            newFormData.correo                  = persona.perscorreoelectronico;
-            newFormData.fechaExpedicion         = persona.persfechadexpedicion;
-            newFormData.telefonoFijo            = persona.persnumerotelefonofijo;
-            newFormData.numeroCelular           = persona.persnumerocelular;
-            newFormData.genero                  = persona.genero;   
-            newFormData.estado                  = persona.estado;
-            newFormData.firma                   = persona.persrutafirma;
-            newFormData.foto                    = persona.persrutafoto;
-            newFormData.showFotografia          = persona.fotografia;
-            newFormData.showFirmaPersona        = persona.firmaPersona;
-            newFormData.tieneFirmaDigital       = persona.tieneFirmaDigital;
-            newFormData.firmaDigital            = persona.firmaDigital;
-            newFormData.rutaDescargaCrt         = persona.rutaCrt;
-            newFormData.rutaDescargaPem         = persona.rutaPem;
-            setFormData(newFormData);    
-            setLoader(false);
+            let persona                           = res.data;
+            newFormData.documento                 = persona.persdocumento;
+            newFormData.cargo                     = persona.nombreCargo;
+            newFormData.tipoIdentificacion        = persona.nombreTipoIdentificacion;
+            newFormData.tipoRelacionLaboral       = persona.nombreTipoRelacionLaboral;
+            newFormData.departamentoNacimiento    = persona.nombreDeptoNacimiento;
+            newFormData.municipioNacimiento       = persona.nombreMunicipioNacimiento;
+            newFormData.departamentoExpedicion    = persona.nombreDeptoExpedicion;
+            newFormData.municipioExpedicion       = persona.nombreMunicipioExpedicion;
+            newFormData.primerNombre              = persona.persprimernombre;
+            newFormData.segundoNombre             = persona.perssegundonombre;
+            newFormData.primerApellido            = persona.persprimerapellido;
+            newFormData.segundoApellido           = persona.perssegundoapellido;
+            newFormData.fechaNacimiento           = persona.persfechanacimiento;
+            newFormData.direccion                 = persona.persdireccion;
+            newFormData.correo                    = persona.perscorreoelectronico;
+            newFormData.fechaExpedicion           = persona.persfechadexpedicion;
+            newFormData.telefonoFijo              = persona.persnumerotelefonofijo;
+            newFormData.numeroCelular             = persona.persnumerocelular;
+            newFormData.genero                    = persona.genero;
+            newFormData.estado                    = persona.estado;
+            newFormData.firma                     = persona.persrutafirma;
+            newFormData.foto                      = persona.persrutafoto;
+            newFormData.showFotografia            = persona.fotografia;
+            newFormData.showFirmaPersona          = persona.firmaPersona;
+            newFormData.tieneFirmaDigital         = persona.tieneFirmaDigital;
+            newFormData.firmaDigital              = persona.firmaDigital;
+            newFormData.rutaDescargaCrt           = persona.rutaCrt;
+            newFormData.rutaDescargaPem           = persona.rutaPem;
+            newFormData.totalCambioEstadoAsociado  = persona.totalCambioEstadoAsociado
+            newFormData.totalCambioEstadoConductor = persona.totalCambioEstadoConductor
 
-            console.log(persona.rutaCrt, persona.rutaPem);
+            setFormData(newFormData);
+            setCambiosEstadoAsociado(res.cambiosEstadoAsociado);
+            setCambiosEstadoConductor(res.cambiosEstadoConductor);
+            setLoader(false);
         }) 
     }
-                
+
     useEffect(()=>{inicio();}, []);
 
     if(loader){
@@ -249,6 +256,18 @@ export default function Show({id}){
                         </Grid>
                 </Fragment>
                 : null}
+
+                {(formData.totalCambioEstadoAsociado > 0) ? 
+                    <Grid item md={12} xl={12} sm={12} xs={12}>
+                        <Trazabilidad mensaje='Cambio de estado del asociado' data={cambiosEstadoAsociado}/>
+                    </Grid>
+                : null }
+
+                {(formData.totalCambioEstadoConductor > 0) ? 
+                    <Grid item md={12} xl={12} sm={12} xs={12}>
+                        <Trazabilidad mensaje='Cambio de estado del conductor' data={cambiosEstadoConductor}/>
+                    </Grid>
+                : null }
 
             </Grid>
         </Box>

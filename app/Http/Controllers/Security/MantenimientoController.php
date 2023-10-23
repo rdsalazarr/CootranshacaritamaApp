@@ -126,7 +126,7 @@ class MantenimientoController extends Controller
         $generarPdf                  = new generarPdf();
         $generarPdf->generarContratoVehiculo($titulo, $contenido, $numeroContrato, $placaVehiculo, 'I' );*/
 
-        $convertirNumeroALetras = new convertirNumeroALetras();        
+        /*$convertirNumeroALetras = new convertirNumeroALetras();        
         $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfid', 2)->first();  
         $numeroPagare               = '55546';
         $valorTotalCredito          = '600000';
@@ -167,7 +167,25 @@ class MantenimientoController extends Controller
 
         $generarPdf                  = new generarPdf();
        
-        $generarPdf->generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, 'I' );
+        $generarPdf->generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, 'I' );*/
+
+
+        $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfid', 3)->first();   
+        $nombreAsociado             = 'DIONISIO DE JESUS ANGARITA ANGARITA ';   
+        $fechaLargaPrestamo         = '29 de AGOSTO del 2023';
+        $numeroPagare               = '55546';
+        $documento                  = '88143913';
+        $documentoAsociado          = number_format($documento, 0, ',', '.');
+        $buscar                     = Array('nombreAsociado', 'numeroPagare', 'fechaLargaPrestamo');
+        $remplazo                   = Array( $nombreAsociado, $numeroPagare, $fechaLargaPrestamo); 
+        $titulo                     = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
+        $contenido                  = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);
+        $generarPdf                  = new generarPdf();       
+        $generarPdf->generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, 'I' );
+
+
+        //
+
         
 
         /*$rutaCarpeta       = public_path().'/archivos/radicacion/documentoEntrante/2023';

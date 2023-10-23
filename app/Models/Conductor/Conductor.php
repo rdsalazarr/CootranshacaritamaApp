@@ -10,6 +10,6 @@ class Conductor extends Model
     use HasFactory;
 
     protected $table      = 'conductor';
-    protected $primaryKey = 'coduid';
+    protected $primaryKey = 'condid';
     protected $fillable   = ['persid','tiescoid','codufechaingreso'];
 }

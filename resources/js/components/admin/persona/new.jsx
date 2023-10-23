@@ -129,11 +129,11 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                 newFormData.rutaDescargaCrt        = (persona.rutaCrt !== null) ? persona.rutaCrt : '';
                 newFormData.rutaDescargaPem        = (persona.rutaPem !== null) ? persona.rutaPem : '';
                 newFormData.estado                 = persona.persactiva;
-               if(frm == 'ASOCIADO'){
+                if(frm == 'ASOCIADO'){
                     newFormData.fechaIngresoAsociado  = (persona.fechaIngresoAsocido !== null) ? persona.fechaIngresoAsocido : '' ;
-               }else{
+                }else{
                     newFormData.fechaIngresoConductor = (persona.fechaIngresoConductor !== null) ? persona.fechaIngresoConductor : '' ;
-               }
+                }
 
                 let munNacimiento   = [];
                 let deptoNacimiento = persona.persdepaidnacimiento;
@@ -536,7 +536,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
-                                {(frm === 'ASOCIADO') ? 'Información de asociado' : 'Información del conductor'}                                
+                                {(frm === 'ASOCIADO') ? 'Información de asociado' : 'Información del conductor'}
                             </Box>
                         </Grid>
 
@@ -562,7 +562,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
                 <Grid item md={12} xl={12} sm={12} xs={12}>
                     <Box className='frmDivision'>
-                        Anexe foto de la persona 
+                        Anexe la foto
                     </Box>
                 </Grid>
 

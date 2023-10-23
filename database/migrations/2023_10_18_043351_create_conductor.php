@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('conductor', function (Blueprint $table) {
             $table->increments('condid')->unsigned()->comment('Identificador de la tabla conductor');
             $table->integer('persid')->unsigned()->comment('Identificador de la persona');
-            $table->string('tiesasid', 2)->comment('Identificador del tipo de estado del conductor');
+            $table->string('tiescoid', 2)->comment('Identificador del tipo de estado del conductor');
             $table->date('condfechaingreso')->comment('Fecha de ingreso del conductor a la cooperativa');
             $table->timestamps();
             $table->foreign('persid')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_perscond');
-            $table->foreign('tiesasid')->references('tiesasid')->on('tipoestadoconductor')->onUpdate('cascade')->index('fk_tiescocond');
+            $table->foreign('tiescoid')->references('tiescoid')->on('tipoestadoconductor')->onUpdate('cascade')->index('fk_tiescocond');
         });
     }
 

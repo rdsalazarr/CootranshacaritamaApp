@@ -50,7 +50,7 @@ class PersonaSeeder extends Seeder
 
         DB::table('persona')->insert([
             'persid'    => '2',
-            'carlabid'  => '1',
+            'carlabid'  => '4',
             'tipideid'  => '1',
             'tirelaid'  => '1',
             'persdepaidnacimiento' => 9, 

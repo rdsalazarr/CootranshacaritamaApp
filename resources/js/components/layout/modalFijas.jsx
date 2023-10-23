@@ -691,3 +691,85 @@ export function AceptarRadicadoDE({id, idFirma, cerrarModal}){
         </ValidatorForm> 
     )
 }
+
+export function SancionarConductor({id, cerrarModal}){
+
+    const [formData, setFormData] = useState({id: id, tokenId:'',  token: ''});
+    const [loader, setLoader] = useState(false);
+    const [habilitado, setHabilitado] = useState(true);
+    const [mensaje, setMensaje] = useState('');
+
+    const handleChange = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
+
+    const continuar = () =>{
+        setLoader(true);
+        instance.post('/admin/firmar/documento/procesar', formData).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null;
+            (res.success) ? setTiempoRestante(0) : null;
+            (res.success) ? setFormData({id: id,tokenId:'', token: '' }) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }
+
+    return (
+        <ValidatorForm onSubmit={continuar} >
+
+            <Grid container spacing={2}>             
+
+                <Box style={{width: '20%', margin: 'auto'}}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='animate__animated animate__rotateIn'>
+                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={firmarDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                        </Box>
+                    </Grid>
+                </Box>
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                        Para confirmar la recepción del documento, es necesario que indique si requiere emitir una respuesta.
+                    </p>
+                </Grid>
+           
+
+                <Grid item xl={4} md={4} sm={6} xs={0}>
+
+                </Grid>
+
+                <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <TextValidator
+                        name={'token'}
+                        value={formData.token}
+                        label={'Token'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 20}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                        startIcon={<ClearIcon />}> Cancelar
+                    </Button>
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
+                        startIcon={<SaveIcon />}>Continuar
+                    </Button>
+                </Grid>                 
+
+            </Grid>
+        </ValidatorForm> 
+    )
+}

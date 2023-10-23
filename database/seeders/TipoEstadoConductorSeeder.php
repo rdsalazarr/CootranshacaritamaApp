@@ -20,12 +20,12 @@ class TipoEstadoConductorSeeder extends Seeder
 
         DB::table('tipoestadoconductor')->insert([
             'tiescoid'     => 'S',
-            'tiesconombre' => 'Sancionado'
+            'tiesconombre' => 'Suspendido'
         ]);
 
         DB::table('tipoestadoconductor')->insert([
-            'tiescoid'     => 'I',
-            'tiesconombre' => 'Inactivo'
+            'tiescoid'     => 'D',
+            'tiesconombre' => 'Desvinculado'
         ]);
     }
 }

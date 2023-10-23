@@ -207,15 +207,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/asociado/destroy', [AsociadoController::class, 'destroy']);
 
         Route::get('/asociado/desvincular', [DesvincularAsociadoController::class, 'index']);//->middleware('security:admin/gestionar/desvincularAsociado');       
-        Route::post('/asociado/desvincular/salve', [AsociadoController::class, 'desvincular']);
+        Route::post('/asociado/consultar', [DesvincularAsociadoController::class, 'consultar']);
+        Route::post('/asociado/desvincular/salve', [DesvincularAsociadoController::class, 'desvincular']);
 
         Route::get('/asociado/inactivos', [AsociadoInactivosController::class, 'index']);//->middleware('security:admin/gestionar/asociadosInactivos')
-
-        Route::get('/conductor/list', [ConductorController::class, 'index']);//->middleware('security:admin/gestionar/conductores');       
-        Route::post('/conductor/salve', [ConductorController::class, 'salve']);
-        Route::post('/conductor/destroy', [ConductorController::class, 'destroy']);
-        
-
+         
         Route::prefix('/producion/documental')->group(function(){
 
             Route::post('/acta/list', [ActaController::class, 'index'])->middleware('security:admin/produccion/documental/acta');
@@ -350,6 +346,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/vehiculo/salve', [VehiculoController::class, 'salve']);
             Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
 
+            Route::get('/conductor/list', [ConductorController::class, 'index']);//->middleware('security:admin/direccion/transporte/conductores');       
+            Route::post('/conductor/salve', [ConductorController::class, 'salve']);
+            Route::post('/conductor/destroy', [ConductorController::class, 'destroy']);
         });
     });
 
