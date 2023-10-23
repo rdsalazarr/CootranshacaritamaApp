@@ -3,6 +3,7 @@
 namespace App\Util;
 
 use Illuminate\Support\Facades\Crypt;
+use App\Models\Conductor\Conductor;
 use App\Util\redimencionarImagen;
 use App\Models\Asociado\Asociado;
 use App\Models\Persona\Persona;
@@ -98,9 +99,41 @@ class personaManager {
             $persona->persactiva             = $request->estado;
             $persona->save();
 
-            /*Asociado
-            $persona->persactiva             = $request->estado;
-            $persona->save();*/
+            if($request->formulario === 'ASOCIADO' and $request->tipo === 'I'){
+                $personaMaxConsecutio       = Persona::latest('persid')->first();
+				$persid                     = $personaMaxConsecutio->persid;
+
+                $asociado                   = new Asociado();
+                $asociado->persid           = $persid;
+                $asociado->tiesasid         = 'A';
+                $asociado->asocfechaingreso = $request->fechaIngresoAsociado;
+                $asociado->save();
+            }
+
+            if($request->formulario === 'ASOCIADO' and $request->tipo === 'U'){
+                $asociado                   = DB::table('asociado')->select('asocid')->where('persid', $$persona->persid)->first();
+                $asociado                   = Asociado::findOrFail($asociado->asocid);
+                $asociado->asocfechaingreso = $request->fechaIngresoAsociado;
+                $asociado->save();
+            }
+
+            if($request->formulario === 'CONDUCTOR' and $request->tipo === 'I'){
+                $personaMaxConsecutio       = Persona::latest('persid')->first();
+				$persid                     = $personaMaxConsecutio->persid;
+
+                $conductor                   = new Conductor();
+                $conductor->persid           = $persid;
+                $conductor->tiescoid         = 'A';
+                $conductor->condfechaingreso = $request->fechaIngresoConductor;
+                $conductor->save();
+            }
+
+            if($request->formulario === 'CONDUCTOR' and $request->tipo === 'U'){
+                $conductor                   = DB::table('conductor')->select('condid')->where('persid', $$persona->persid)->first();
+                $conductor                   = Conductor::findOrFail($conductor->condid);
+                $conductor->condfechaingreso = $request->fechaIngresoConductor;
+                $conductor->save();
+            }
 
         	DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

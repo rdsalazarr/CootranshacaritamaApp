@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Persona;
 
 use App\Http\Requests\PersonaRequests;
 use App\Http\Controllers\Controller;
+use App\Models\Conductor\Conductor;
+use App\Models\Asociado\Asociado;
 use App\Models\Persona\Persona;
 use Illuminate\Http\Request;
 use App\Util\personaManager;
@@ -30,14 +32,48 @@ class PersonaController extends Controller
         $personaManager = new personaManager();
 		return $personaManager->registrar($request);
 	}
+	
+	public function procesar(Request $request)
+	{ 
+		$this->validate(request(),['tipo' 					 => 'required', 
+									'codigo' 				 => 'required',
+									'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:tipo,ASOCIADO',
+									'fechaIngresoConductor'  => 'nullable|date_format:Y-m-d|required_if:tipo,CONDUCTOR' ]);
+
+		DB::beginTransaction();
+		try {
+			$codigo = $request->codigo;
+			if($request->tipo === 'ASOCIADO' ){
+				$asociado                   = new Asociado();
+				$asociado->persid           = $codigo;
+				$asociado->tiesasid         = 'A';
+				$asociado->asocfechaingreso = $request->fechaIngresoAsociado;
+				$asociado->save();
+			}
+
+			if($request->tipo === 'CONDUCTOR' ){
+                $conductor                   = new Conductor();
+                $conductor->persid           = $codigo;
+                $conductor->tiesasid         = 'A';
+                $conductor->asocfechaingreso = $request->fechaIngresoConductor;
+                $conductor->save();
+            }
+
+			DB::commit();
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+		} catch (Exception $error){
+			DB::rollback();
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+	}
 
     public function destroy(Request $request)
 	{
-		$dependencia = DB::table('dependencia')->select('depeid')->where('depejefeid', $request->codigo)->first();
-        $dependenciapersona = DB::table('dependenciapersona')->select('depperid')->where('depperpersid', $request->codigo)->first();
+		$usuario              = DB::table('usuario')->select('persid')->where('persid', $request->codigo)->first();
+        $coddocumprocesofirma = DB::table('coddocumprocesofirma')->select('persid')->where('persid', $request->codigo)->first();
 
-		if($dependencia || $dependenciapersona){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una dependencia del sistema']);
+		if($usuario || $dependenciapersona){
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un usuario o a ha firmado un documento del sistema']);
 		}else{
 			try {
 				$persona = Persona::findOrFail($request->codigo);

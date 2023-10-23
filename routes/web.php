@@ -56,7 +56,10 @@ use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
 use App\Http\Controllers\Admin\Vehiculos\VehiculoController;
 
-
+use App\Http\Controllers\Admin\Asociado\AsociadoController;
+use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
+use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
+use App\Http\Controllers\Admin\Conductor\ConductorController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -198,6 +201,20 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/agencia/listar/datos', [AgenciaController::class, 'datos']);
         Route::post('/agencia/salve', [AgenciaController::class, 'salve']);
         Route::post('/agencia/destroy', [AgenciaController::class, 'destroy']);
+
+        Route::get('/asociado/list', [AsociadoController::class, 'index']);//->middleware('security:admin/gestionar/asociados');       
+        Route::post('/asociado/salve', [AsociadoController::class, 'salve']);
+        Route::post('/asociado/destroy', [AsociadoController::class, 'destroy']);
+
+        Route::get('/asociado/desvincular', [DesvincularAsociadoController::class, 'index']);//->middleware('security:admin/gestionar/desvincularAsociado');       
+        Route::post('/asociado/desvincular/salve', [AsociadoController::class, 'desvincular']);
+
+        Route::get('/asociado/inactivos', [AsociadoInactivosController::class, 'index']);//->middleware('security:admin/gestionar/asociadosInactivos')
+
+        Route::get('/conductor/list', [ConductorController::class, 'index']);//->middleware('security:admin/gestionar/conductores');       
+        Route::post('/conductor/salve', [ConductorController::class, 'salve']);
+        Route::post('/conductor/destroy', [ConductorController::class, 'destroy']);
+        
 
         Route::prefix('/producion/documental')->group(function(){
 
