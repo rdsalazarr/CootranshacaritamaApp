@@ -480,7 +480,7 @@ export default function New({data, tipo}){
                     </Box>
                 </Grid>
 
-                {(formData.fotografia !== null) ?
+                {(tipo === 'U' && formData.fotografia !== null) ?
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='fotografiaVehiculo'>
                             <img src={fotoVehiculo} style={{width: '100%'}} ></img>

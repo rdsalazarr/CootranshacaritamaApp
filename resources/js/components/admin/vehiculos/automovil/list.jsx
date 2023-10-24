@@ -55,8 +55,8 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Tipo vehículo','Fecha ingreso','Número interno','Placa', 'Modelo', 'Cilindraje', 'Número de motor', 'Númeo de chasis', 'Número de serie', 'Número de ejes', 'Actualizar','Eliminar']}
-                        ver={["tipvehnombre","vehifechaingreso","vehinumerointerno","vehiplaca","vehimodelo","vehicilindraje","vehinumeromotor","vehinumerochasis","vehinumeroserie","vehinumeroejes"]}
+                        titulo={['Tipo vehículo','Fecha ingreso','Número interno','Placa', 'Modelo', 'Cilindraje', 'Número de ejes', 'Actualizar','Eliminar']}
+                        ver={["tipvehnombre","vehifechaingreso","vehinumerointerno","vehiplaca","vehimodelo","vehicilindraje","vehinumeroejes"]}
                         accion={[
                             {tipo: 'T', icono : 'add',    color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

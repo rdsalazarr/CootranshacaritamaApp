@@ -28,9 +28,9 @@ export default function List(){
                 variant={variantTab} >
                 <Tab label="Tipo vehículo" />
                 <Tab label="Referencia" />
-                <Tab label="Marca" /> 
+                <Tab label="Marca" />
                 <Tab label="Color" />
-                <Tab label="Carroceria" />               
+                <Tab label="Carroceria" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
