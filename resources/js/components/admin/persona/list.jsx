@@ -56,7 +56,7 @@ export default function List(){
                     <TablaGeneral
                         datos={data}
                         titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Tipo de persona', 'Activo','Actualizar','Eliminar','Ver']}
-                        ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "tipoPersona", "perscorreoelectronico","estado"]}
+                        ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico", "tipoPersona","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',        color: 'green',  funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },

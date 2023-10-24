@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tipocategorialicencia', function (Blueprint $table) {
             $table->string('ticaliid', 2)->comment('Identificador del tipo de categoría de licencia');
-            $table->string('ticalinombre', 30)->comment('Nombre del tipo del categoría de licencia');
+            $table->string('ticalinombre', 30)->comment('Nombre del tipo de categoría de la licencia');
             $table->primary('ticaliid')->index('pk_ticali');
         });
     }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipocarpetaubicacion', function (Blueprint $table) {
-            $table->tinyInteger('ticrubid')->unsigned()->comment('Identificador del tipo de carpeta ubicación');
+            $table->tinyInteger('ticrubid')->unsigned()->comment('Identificador de la tabla tipo carpeta ubicación');
             $table->string('ticrubnombre', 30)->comment('Nombre del tipo de carpeta ubicación');
             $table->primary('ticrubid')->index('pk_ticrub');  
         });

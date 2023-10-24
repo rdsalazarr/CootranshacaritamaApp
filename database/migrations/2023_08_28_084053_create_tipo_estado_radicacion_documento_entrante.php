@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipoestadoraddocentrante', function (Blueprint $table) {
-            $table->tinyInteger('tierdeid')->unsigned()->comment('Identificador del tipo de estado documento entrante');
-            $table->string('tierdenombre', 30)->comment('Nombre del tipo de estado documento entrante');
+            $table->tinyInteger('tierdeid')->unsigned()->comment('Identificador de la tabla tipo estado documento entrante');
+            $table->string('tierdenombre', 30)->comment('Nombre del tipo estado documento entrante');
             $table->primary('tierdeid')->index('pk_tierde');
         });
     }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipoestadoconductor', function (Blueprint $table) {
-            $table->string('tiescoid', 2)->comment('Identificador del tipo de estado del conductor');
+            $table->string('tiescoid', 2)->comment('Identificador de la tabla tipo estado conductor');
             $table->string('tiesconombre', 30)->comment('Nombre del tipo de estado del conductor');
             $table->primary('tiescoid')->index('pk_tiesco');
         });

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipoestadosolicitudcredito', function (Blueprint $table) {
-            $table->string('tiesscid', 2)->comment('Identificador del tipo de estado de la solicitud de crédito');
+            $table->string('tiesscid', 2)->comment('Identificador de la tabla tipo estado solicitud crédito');
             $table->string('tiesscnombre', 30)->comment('Nombre del tipo de estado de la solicitud de crédito');
             $table->primary('tiesscid')->index('pk_tiessc');
         });

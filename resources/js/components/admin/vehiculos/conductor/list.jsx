@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Typography, Card} from '@mui/material';
+import Eliminar, {SuspenderConductor} from '../../../layout/modalFijas';
+import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
-import { ModalDefaultAuto  } from '../../../layout/modal';
+import { Box, Typography, Card} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
-import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
 import Show from '../../persona/show';
 import Frm from '../../persona/new';
@@ -23,7 +23,8 @@ export default function List(){
                         <Frm tipo={'I'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'1'} />,
                         <Frm data={modal.data} tipo={'U'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'1'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.condid : null} ruta={'/admin/direccion/transporte/conductor/destroy'} cerrarModal={cerrarModal} />,
-                        <Show id={(tipo === 3) ? modal.data.persid : null}/>
+                        <Show id={(tipo === 3) ? modal.data.persid : null}/>,
+                        <SuspenderConductor id={(tipo === 4) ? modal.data.condid : null}/>,
                     ];
 
     const tituloModal = ['Nuevo conductor','Editar conductor','','Visualizar la información del conductor'];
@@ -55,7 +56,7 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Activo','Actualizar','Eliminar','Ver','Sancionar']}
+                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Activo','Actualizar','Eliminar','Ver','Suspender']}
                         ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',               color: 'green',  funcion : (data)=>{edit(data,0)} },

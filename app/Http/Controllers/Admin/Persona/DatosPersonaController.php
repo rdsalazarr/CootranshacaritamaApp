@@ -12,7 +12,7 @@ class DatosPersonaController extends Controller
 	{ 
         $this->validate(request(),['tipo' => 'required', 'codigo' => 'required']);
 
-        $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabactivo',1)->orderBy('carlabnombre')->get();
+        $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabid', '>', 3)->where('carlabactivo',1)->orderBy('carlabnombre')->get();
 		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();		
         $departamentos         = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
         $municipios            = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
@@ -46,7 +46,7 @@ class DatosPersonaController extends Controller
     {  
         $id   = $request->codigo;
         $url  = URL::to('/');
-        $data = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'trl.tirelanombre as nombreTipoRelacionLaboral', 'p.persdocumento',
+        $data = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'tp.tippernombre as nombreTipoPersona', 'p.persdocumento',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     'p.persgenero','p.persrutafoto','p.persrutafirma','p.perstienefirmadigital as firmaDigital',
@@ -65,7 +65,7 @@ class DatosPersonaController extends Controller
                                     DB::raw('(SELECT COUNT(cocaesid) AS cocaesid FROM conductorcambioestado WHERE condid = c.condid ) AS totalCambioEstadoConductor'))
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->join('cargolaboral as cl', 'cl.carlabid', '=', 'p.carlabid')
-                                    ->join('tiporelacionlaboral as trl', 'trl.tirelaid', '=', 'p.tirelaid')
+                                    ->join('tipopersona as tp', 'tp.tipperid', '=', 'p.tipperid')
                                     ->join('departamento as dn', 'dn.depaid', '=', 'p.persdepaidnacimiento') 
                                     ->join('municipio as mn', function($join)
                                     {

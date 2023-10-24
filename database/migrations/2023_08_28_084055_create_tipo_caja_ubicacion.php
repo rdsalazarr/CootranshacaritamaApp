@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipocajaubicacion', function (Blueprint $table) {
-            $table->tinyInteger('ticaubid')->unsigned()->comment('Identificador del tipo de caja ubicación');
+            $table->tinyInteger('ticaubid')->unsigned()->comment('Identificador de la tabla tipo caja ubicación');
             $table->string('ticaubnombre', 30)->comment('Nombre del tipo de caja ubicación');
             $table->primary('ticaubid')->index('pk_ticaub');   
         });

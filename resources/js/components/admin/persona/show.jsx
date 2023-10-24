@@ -9,7 +9,7 @@ export default function Show({id}){
 
     const [loader, setLoader] = useState(false);
     const [formData, setFormData] = useState(
-                                    {documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:'', departamentoNacimiento:'', municipioNacimiento:'',
+                                    {documento:'', cargo: '', tipoIdentificacion: '', nombreTipoPersona:'', departamentoNacimiento:'', municipioNacimiento:'',
                                     departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                     segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', 
                                     genero:'',firma:'', foto:'', showFotografia:'', showFirmaPersona:'', estado: ''
@@ -25,7 +25,7 @@ export default function Show({id}){
             newFormData.documento                 = persona.persdocumento;
             newFormData.cargo                     = persona.nombreCargo;
             newFormData.tipoIdentificacion        = persona.nombreTipoIdentificacion;
-            newFormData.tipoRelacionLaboral       = persona.nombreTipoRelacionLaboral;
+            newFormData.nombreTipoPersona         = persona.nombreTipoPersona;
             newFormData.departamentoNacimiento    = persona.nombreDeptoNacimiento;
             newFormData.municipioNacimiento       = persona.nombreMunicipioNacimiento;
             newFormData.departamentoExpedicion    = persona.nombreDeptoExpedicion;
@@ -199,7 +199,7 @@ export default function Show({id}){
                 <Grid item xl={3} md={3} sm={6} xs={12}>
                     <Box className='frmTexto'>
                         <label>Tipo relación laboral</label>
-                        <span>{formData.tipoRelacionLaboral}</span>
+                        <span>{formData.nombreTipoPersona}</span>
                     </Box>
                 </Grid>
 

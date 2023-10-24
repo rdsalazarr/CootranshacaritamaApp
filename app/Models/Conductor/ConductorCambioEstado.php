@@ -11,5 +11,5 @@ class ConductorCambioEstado extends Model
 
     protected $table      = 'conductorcambioestado';
     protected $primaryKey = 'cocaesid';
-    protected $fillable   = ['asocid','tiescoid','cocaesusuaid','cocaesfechahora','cocaesobservacion'];
+    protected $fillable   = ['condid','tiescoid','cocaesusuaid','cocaesfechahora','cocaesobservacion'];
 }

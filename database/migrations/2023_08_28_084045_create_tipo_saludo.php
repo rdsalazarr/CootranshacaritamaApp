@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tiposaludo', function (Blueprint $table) {
-            $table->smallIncrements('tipsalid')->unsigned()->comment('Identificador del tipo de saludo');
+            $table->smallIncrements('tipsalid')->unsigned()->comment('Identificador de la tabla tipo de saludo');
             $table->string('tipsalnombre', 100)->comment('Nombre del tipo de saludo');
             $table->boolean('tipsalactivo')->default(true)->comment('Determina si el tipo de saludo se encuentra activo'); 
             $table->timestamps();

@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('vehcrtnumero', 30)->comment('Número del CRT del vehículo');
             $table->date('vehcrtfechainicial')->comment('Fecha inicial del CRT del vehículo');
             $table->date('vehcrtfechafinal')->comment('Fecha final del CRT del vehículo');
-            $table->string('vehcrtextension', 5)->comment('Extensión del archivo que se anexa del CRT del vehículo');
-            $table->string('vehcrtnombrearchivooriginal', 200)->comment('Nombre con el cual se ha subido el archivo que se anexa del CRT del vehículo'); 
-            $table->string('vehcrtnombrearchivoeditado', 200)->comment('Nombre con el cual se ha subido el archivo que se anexa del CRT del vehículo pero editado');
-            $table->string('vehcrtrutaarchivo', 500)->comment('Ruta enfuscada del archivo que se anexa del CRT del vehículo');
+            $table->string('vehcrtextension', 5)->nullable()->comment('Extensión del archivo que se anexa del CRT del vehículo');
+            $table->string('vehcrtnombrearchivooriginal', 200)->nullable()->comment('Nombre con el cual se ha subido el archivo que se anexa del CRT del vehículo'); 
+            $table->string('vehcrtnombrearchivoeditado', 200)->nullable()->comment('Nombre editado con el cual se ha subido el archivo que se anexa del CRT del vehículo');
+            $table->string('vehcrtrutaarchivo', 500)->nullable()->comment('Ruta enfuscada del archivo que se anexa del CRT del vehículo');
             $table->timestamps();
             $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehivehcrt'); 
         });

@@ -8,6 +8,7 @@ import anularDocumento from "../../../images/modal/anularDocumento.png";
 import firmarDocumento from "../../../images/modal/firmarDocumento.png";
 import solicitudFirma from "../../../images/modal/solicitudFirma.png";
 import enviarRadicado from "../../../images/modal/enviarRadicado.png";
+import sancionarConductor from "../../../images/modal/enviarRadicado.png";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import {Box, Grid, Button, Avatar, MenuItem} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -692,12 +693,10 @@ export function AceptarRadicadoDE({id, idFirma, cerrarModal}){
     )
 }
 
-export function SancionarConductor({id, cerrarModal}){
-
-    const [formData, setFormData] = useState({id: id, tokenId:'',  token: ''});
+export function SuspenderConductor({id, cerrarModal}){
+    const [formData, setFormData] = useState({id: id, descripcionSancion:''});
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
-    const [mensaje, setMensaje] = useState('');
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -705,12 +704,11 @@ export function SancionarConductor({id, cerrarModal}){
 
     const continuar = () =>{
         setLoader(true);
-        instance.post('/admin/firmar/documento/procesar', formData).then(res=>{
+        instance.post('/admin/direccion/transporte/conductor/sancionar', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? setHabilitado(false) : null;
-            (res.success) ? setTiempoRestante(0) : null;
-            (res.success) ? setFormData({id: id,tokenId:'', token: '' }) : null;
+            (res.success) ? setHabilitado(false) : null; 
+            (res.success) ? setFormData({id: id, descripcionSancion:'' }) : null;
             setLoader(false);
         })
     }
@@ -722,35 +720,30 @@ export function SancionarConductor({id, cerrarModal}){
     return (
         <ValidatorForm onSubmit={continuar} >
 
-            <Grid container spacing={2}>             
+            <Grid container spacing={2}>
 
                 <Box style={{width: '20%', margin: 'auto'}}>
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <Box className='animate__animated animate__rotateIn'>
-                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={firmarDocumento} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={sancionarConductor} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
                         </Box>
                     </Grid>
                 </Box>
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
-                        Para confirmar la recepción del documento, es necesario que indique si requiere emitir una respuesta.
+                        Para confirmar la sanción del conductor, se requiere que ingrese la observación.
                     </p>
                 </Grid>
-           
 
-                <Grid item xl={4} md={4} sm={6} xs={0}>
-
-                </Grid>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={12} md={12} sm={12} xs={12}>
                     <TextValidator
-                        name={'token'}
-                        value={formData.token}
-                        label={'Token'}
+                        name={'descripcionSancion'}
+                        value={formData.descripcionSancion}
+                        label={'Descripción de la sanción'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 20}}
+                        inputProps={{autoComplete: 'off', maxLength: 500}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -767,7 +760,7 @@ export function SancionarConductor({id, cerrarModal}){
                     <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
                         startIcon={<SaveIcon />}>Continuar
                     </Button>
-                </Grid>                 
+                </Grid>
 
             </Grid>
         </ValidatorForm> 

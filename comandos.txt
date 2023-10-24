@@ -21,6 +21,7 @@ php artisan make:migration create_tipo_despedida
 php artisan make:migration create_tipo_estado_documento
 php artisan make:migration create_tipo_destino
 php artisan make:migration create_tipo_relacion_laboral
+php artisan make:migration create_tipo_persona
 php artisan make:migration create_persona
 php artisan make:migration create_dependencia
 php artisan make:migration create_cargo_laboral
@@ -84,10 +85,12 @@ php artisan make:migration create_asociado
 php artisan make:migration create_asociado_cambio_estado
 php artisan make:migration create_asociado_vehiculo
 
+php artisan make:migration create_tipo_conductor
 php artisan make:migration create_conductor
 php artisan make:migration create_tipo_categoria_licencia
 php artisan make:migration create_conductor_licencia
 php artisan make:migration create_conductor_cambio_estado
+php artisan make:migration create_conductor_vehiculo
 
 php artisan make:migration create_tipo_estado_solicitud_credito
 php artisan make:migration create_linea_credito
@@ -160,12 +163,20 @@ php artisan make:model TipoCarroceriaVehiculo
 php artisan make:model TipoReferenciaVehiculo
 php artisan make:model TipoCombustibleVehiculo
 php artisan make:model Vehiculo 
-php artisan make:model VehiculoCambioEstado
+php artisan make:model Vehiculos\VehiculoCrt
+php artisan make:model Vehiculos\VehiculoSoat
+php artisan make:model Vehiculos\VehiculoPoliza
+php artisan make:model Vehiculos\VehiculoCambioEstado
 php artisan make:model Asociado
+php artisan make:model Asociado\AsociadoVehiculo
 php artisan make:model AsociadoCambioEstado
 php artisan make:model LineaCredito
 php artisan make:model Conductor\Conductor
+php artisan make:model Conductor\ConductorLicencia
+php artisan make:model Conductor\ConductorVehiculo
 php artisan make:model Conductor\ConductorCambioEstado
+
+
 php artisan make:model SolicitudCredito
 php artisan make:model SolicitudCreditoCambioEstado
 php artisan make:model SolicitudCreditoDesembolso
@@ -182,6 +193,7 @@ php artisan make:seeder SerieDocumentalSeeder
 php artisan make:seeder SubSerieDocumentalSeeder
 php artisan make:seeder TipoRelacionLaboralSeeder
 php artisan make:seeder CargoLaboralSeeder
+php artisan make:seeder TipoPersonaSeeder
 php artisan make:seeder PersonaSeeder
 php artisan make:seeder TipoActaSeeder
 php artisan make:seeder TipoMedioSeeder
@@ -204,6 +216,7 @@ php artisan make:seeder TipoCarroceriaVehiculoSeeder
 php artisan make:seeder TipoCombustibleVehiculoSeeder
 php artisan make:seeder AgenciaSeeder
 php artisan make:seeder TipoCategoriaLicenciaSeeder
+php artisan make:seeder TipoConductorSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests

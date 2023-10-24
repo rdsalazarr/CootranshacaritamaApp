@@ -19,9 +19,9 @@ class PersonaController extends Controller
                                     DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as tipoIdentificacion"),
-                                    DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"), 'trl.tirelanombre as tipoPersona')
+                                    DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"), 'tp.tippernombre as tipoPersona')
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
-									->join('tiporelacionlaboral as trl', 'trl.tirelaid', '=', 'p.tirelaid')
+									->join('tipopersona as tp', 'tp.tipperid', '=', 'p.tipperid')
                                     ->orderBy('p.persprimernombre')->orderBy('p.perssegundonombre')
                                     ->orderBy('p.persprimerapellido')->orderBy('p.perssegundoapellido')->get();
 

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipoestantearchivador', function (Blueprint $table) {
-            $table->smallIncrements('tiesarid')->unsigned()->comment('Identificador del tipo estante archivador');
-            $table->string('tiesarnombre', 50)->comment('Nombre del tipo  estante archivador');
+            $table->smallIncrements('tiesarid')->unsigned()->comment('Identificador de la tabla tipo estante archivador');
+            $table->string('tiesarnombre', 50)->comment('Nombre del tipo estante archivador');
             $table->boolean('tiesaractivo')->default(true)->comment('Determina si el estante archivador se encuentra activo'); 
             $table->timestamps();
         });

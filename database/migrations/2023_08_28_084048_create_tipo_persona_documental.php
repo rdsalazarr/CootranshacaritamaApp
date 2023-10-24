@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipopersonadocumental', function (Blueprint $table) {
-            $table->tinyIncrements('tipedoid')->index('pk_tipedo')->unsigned()->comment('Identificador del tipo de persona documental');
+            $table->tinyIncrements('tipedoid')->index('pk_tipedo')->unsigned()->comment('Identificador de la tabla tipo de persona documental');
             $table->string('tipedonombre', 150)->comment('Nombre del tipo de persona documental');
             $table->boolean('tipedoactivo')->default(true)->comment('Determina si el tipo de persona documental se encuentra activo'); 
             $table->timestamps();

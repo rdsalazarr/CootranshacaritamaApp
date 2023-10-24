@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tipoacta', function (Blueprint $table) {
-            $table->tinyInteger('tipactid')->unsigned()->comment('Identificador de la tabla tipo de acta');
-            $table->string('tipactnombre', 30)->comment('Nombre del tipo de acta');
-            $table->primary('tipactid')->index('pk_tipact');   
+        Schema::create('tipoconductor', function (Blueprint $table) {
+            $table->string('tipconid', 2)->comment('Identificador de la tabla tipo conductor');
+            $table->string('tipconnombre', 30)->comment('Nombre del tipo de conductor');
+            $table->primary('tipconid')->index('pk_tipcon');
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tipoacta');
+        Schema::dropIfExists('tipoconductor');
     }
 };

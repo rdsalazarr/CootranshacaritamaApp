@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipoestadoasociado', function (Blueprint $table) {
-            $table->string('tiesasid', 2)->comment('Identificador del tipo de estado del asociado');
+            $table->string('tiesasid', 2)->comment('Identificador de la tabla tipo de estado asociado');
             $table->string('tiesasnombre', 30)->comment('Nombre del tipo de estado del asociado');
             $table->primary('tiesasid')->index('pk_tiesas');
         });

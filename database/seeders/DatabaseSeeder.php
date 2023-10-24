@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoDestinoSeeder::class);
         $this->call(TipoDocumentalSeeder::class);
         $this->call(TipoEstadoDocumentoSeeder::class);
-        $this->call(TipoRelacionLaboralSeeder::class);
+        $this->call(TipoPersonaSeeder::class);
         $this->call(TipoSaludoSeeder::class);
         $this->call(SerieDocumentalSeeder::class);
         $this->call(SubSerieDocumentalSeeder::class);
@@ -45,5 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoEstadoSolicitudCreditoSeeder::class);
         $this->call(AgenciaSeeder::class);
         $this->call(TipoEstadoConductorSeeder::class);
+        $this->call(TipoCategoriaLicenciaSeeder::class);        
+        $this->call(TipoConductorSeeder::class);
     }
 }

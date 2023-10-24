@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dependencia', function (Blueprint $table) {
-            $table->smallIncrements('depeid')->unsigned()->comment('Identificador de la tabla cargo dependencia');
+            $table->smallIncrements('depeid')->unsigned()->comment('Identificador de la tabla dependencia');
             $table->integer('depejefeid')->unsigned()->comment('Identificador del jefe de la dependencia');
             $table->string('depecodigo', 10)->unique('uk_dependencia1')->comment('Código de la dependencia');
             $table->string('depesigla', 3)->unique('uk_dependencia2')->comment('Sigla de la dependencia');
-            $table->string('depenombre', 80)->comment('nombre de la dependencia');
+            $table->string('depenombre', 80)->comment('Nombre de la dependencia');
             $table->string('depecorreo', 80)->comment('Correo de la dependencia');
             $table->boolean('depeactiva')->default(false)->comment('Determina si la dependencia se encuentra activa');
             $table->timestamps();        

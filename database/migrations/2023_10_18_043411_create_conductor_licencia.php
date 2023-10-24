@@ -13,33 +13,26 @@ return new class extends Migration
     {
         Schema::create('conductorlicencia', function (Blueprint $table) {
             $table->increments('conlicid')->unsigned()->comment('Identificador de la tabla conductor licencia');
-            $table->integer('asocid')->unsigned()->comment('Identificador del asociado');
-
-            $table->string('ticaliid', 2)->comment('Identificador del tipo de categoría de licencia');
+            $table->integer('condid')->unsigned()->comment('Identificador del conductor');
+            $table->string('ticaliid', 2)->comment('Identificador del tipo de categoría de la licencia');
+            $table->string('conlicnumero', 30)->comment('Número del licencia');
+            $table->date('conlicfechaexpedicion')->comment('Fecha de expedición de la licencia');
+            $table->date('conlicfechavencimiento')->comment('Fecha de vencimiento de la licencia');
+            $table->string('conlicextension', 5)->nullable()->comment('Extensión del archivo que se anexa a la licencia');
+            $table->string('conlicnombrearchivooriginal', 200)->nullable()->comment('Nombre con el cual se ha subido el archivo que se anexa a la licencia');
+            $table->string('conlicnombrearchivoeditado', 200)->nullable()->comment('Nombre editado con el cual se ha subido el archivo que se anexa a la licencia');
+            $table->string('conlicrutaarchivo', 500)->nullable()->comment('Ruta enfuscada del archivo que se anexa a la licencia');
             $table->timestamps();
-            
-            $table->foreign('ticaliid')->references('ticaliid')->on('tipocategorialicencia')->onUpdate('cascade')->index('fk_ticalicond');
+            $table->foreign('condid')->references('condid')->on('conductor')->onUpdate('cascade')->index('fk_condconlic');
+            $table->foreign('ticaliid')->references('ticaliid')->on('tipocategorialicencia')->onUpdate('cascade')->index('fk_ticaliconlic');
         });
     }
-    
-    /*  `id` int NOT NULL AUTO_INCREMENT,
-  `conductor_id` int NOT NULL,
-  `licencia` varchar(45) NOT NULL,
-  `tipo_licencia` varchar(45) NOT NULL,
-  `expedicion` varchar(45) NOT NULL,
-  `vencimiento` date NOT NULL,
-  `imagen` varchar(255) DEFAULT NULL,
-  `imagen_2` varchar(255) DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT '1',
-  `licencia_at` varchar(45) DEFAULT NULL,
-  `licencia_in` varchar(45) DEFAULT NULL,*/
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('conductor_licencia');
+        Schema::dropIfExists('conductorlicencia');
     }
 };

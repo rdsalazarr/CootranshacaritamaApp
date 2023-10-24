@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asociadovehiculo', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('tipopersona', function (Blueprint $table) {
+            $table->string('tipperid', 2)->comment('Identificador de la tabla tipo de persona');
+            $table->string('tippernombre', 30)->comment('Nombre del tipo de persona');
+            $table->primary('tipperid')->index('pk_tipper');
         });
     }
 
@@ -22,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('asociadovehiculo');
+        Schema::dropIfExists('tipopersona');
     }
 };

@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('vehpolnumeropolizaextcontrac', 30)->comment('Número de póliza extra contractual del vehículo');
             $table->date('vehpolfechainicial')->comment('Fecha inicial de la póliza del vehículo');
             $table->date('vehpolfechafinal')->comment('Fecha final de la póliza  del vehículo');
-            $table->string('vehpolextension', 5)->comment('Extensión del archivo que se anexa de la póliza del vehículo');
-            $table->string('vehpolnombrearchivooriginal', 200)->comment('Nombre con el cual se ha subido el archivo que se anexa de la póliza del vehículo'); 
-            $table->string('vehpolnombrearchivoeditado', 200)->comment('Nombre con el cual se ha subido el archivo que se anexa de la póliza del vehículo pero editado');
-            $table->string('vehpolrutaarchivo', 500)->comment('Ruta enfuscada del archivo que se anexa de la póliza del vehículo');
+            $table->string('vehpolextension', 5)->nullable()->comment('Extensión del archivo que se anexa de la póliza del vehículo');
+            $table->string('vehpolnombrearchivooriginal', 200)->nullable()->comment('Nombre con el cual se ha subido el archivo que se anexa de la póliza del vehículo'); 
+            $table->string('vehpolnombrearchivoeditado', 200)->nullable()->comment('Nombre editado con el cual se ha subido el archivo que se anexa de la póliza del vehículo');
+            $table->string('vehpolrutaarchivo', 500)->nullable()->comment('Ruta enfuscada del archivo que se anexa de la póliza del vehículo');
             $table->timestamps();
             $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehivehpol'); 
         });

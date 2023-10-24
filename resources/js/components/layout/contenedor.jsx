@@ -181,7 +181,7 @@ const componenteMenu = [
             {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <ArchivoHistorico /> },
             {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <ConsultarArchivoHistorico /> },
         ]
-    }*/
+    }
 
     {   nombre: 'Asociados',
         icono : 'person_search_icon', 
@@ -211,49 +211,43 @@ const componenteMenu = [
             {ruta : 'admin/cartera/desembolso',   menu: 'Desembolso',       icono : 'attach_money_icon', componente : <EnConstruccion /> },
             {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <EnConstruccion /> },
         ]
-    },
+    },*/
      
 ];
 
 const menuComponente = [
     {id:1,componente : <Menu />},
     {id:2,componente : <InformacionCorreo />},
-    {id:3,componente : <DatosGeograficos />},
-    {id:4,componente : <Empresa />},
+    {id:3,componente : <InformacionGeneralPdf />},
+    {id:4,componente : <DatosGeograficos />},
+    {id:5,componente : <Empresa />},
+    {id:6,componente : <GestionTipos />},
+    {id:7,componente : <SeriesDocumentales />},
+    {id:8,componente : <Dependencia />},
+    {id:9,componente : <Persona />},
+    {id:10,componente : <Usuario />},
 
-    {id:5,componente : <GestionTipos />},
-    {id:6,componente : <SeriesDocumentales />},
-    {id:7,componente : <Dependencia />},
-    {id:8,componente : <Persona />},
-    {id:9,componente : <Usuario />},
-    {id:10,componente : <Festivos />},
-
-    {id:11,componente : <Acta />},
-    {id:12,componente : <Certificado />},
-    {id:13,componente : <Circular />},
-    {id:14,componente : <Citacion />},
-    {id:15,componente : <Constancia />},
-    {id:16,componente : <Oficio />},
-
-    {id:17,componente : <FirmarDocumento />},
-
-    {id:18,componente : <RadicadoEntrante />},
-    {id:19,componente : <AnularRadicadoEntrante />},
-    {id:20,componente : <BandejaRadicadoEntrante />},
-
-    {id:21,componente : <ArchivoHistorico />},
-    {id:22,componente : <ConsultarArchivoHistorico />},
-
-    {id:23,componente : <InformacionGeneralPdf />},
-    {id:24,componente : <DesvincularAsociado />},
-    {id:25,componente : <EnConstruccion />},
-    {id:26,componente : <EnConstruccion />},
-    {id:27,componente : <EnConstruccion />},
-    {id:28,componente : <EnConstruccion />},
-    {id:29,componente : <EnConstruccion />},
-    {id:30,componente : <EnConstruccion />},
-    {id:31,componente : <EnConstruccion />},
-    {id:32,componente : <EnConstruccion />},
+    {id:12,componente : <Festivos />},
+    {id:13,componente : <Agencia />},
+    {id:14,componente : <Acta />},
+    {id:15,componente : <Certificado />},
+    {id:16,componente : <Circular />},
+    {id:17,componente : <Citacion />},
+    {id:18,componente : <Constancia />},
+    {id:19,componente : <Oficio />},
+    {id:20,componente : <FirmarDocumento />},
+    {id:21,componente : <RadicadoEntrante />},
+    {id:22,componente : <AnularRadicadoEntrante />},
+    {id:23,componente : <BandejaRadicadoEntrante />},
+    {id:24,componente : <ArchivoHistorico />},
+    {id:25,componente : <ConsultarArchivoHistorico />},
+    {id:26,componente : <Asociados />},
+    {id:27,componente : <DesvincularAsociado />},
+    {id:28,componente : <AsociadosInactivos />},
+    {id:29,componente : <TiposVehiculos />},
+    {id:30,componente : <Vehiculo />},
+    {id:31,componente : <Conductor />},
+    {id:32,componente : <AsignarVehiculo />},
     {id:33,componente : <EnConstruccion />},
     {id:34,componente : <EnConstruccion />},
     {id:35,componente : <EnConstruccion />},
@@ -262,6 +256,9 @@ const menuComponente = [
     {id:38,componente : <EnConstruccion />},
     {id:39,componente : <EnConstruccion />},
     {id:40,componente : <EnConstruccion />},
+    {id:41,componente : <EnConstruccion />},
+    {id:42,componente : <EnConstruccion />},
+    {id:43,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {

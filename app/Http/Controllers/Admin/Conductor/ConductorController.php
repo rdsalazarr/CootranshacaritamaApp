@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Conductor;
 
+use App\Models\Conductor\ConductorCambioEstado;
 use App\Http\Requests\PersonaRequests;
 use App\Http\Controllers\Controller;
 use App\Models\Conductor\Conductor;
 use Illuminate\Http\Request;
 use App\Util\personaManager;
-use Exception, DB;
+use Exception, Auth, DB;
+use Carbon\Carbon;
 
 class ConductorController extends Controller
 {
@@ -32,6 +34,34 @@ class ConductorController extends Controller
         $personaManager = new personaManager();
 		return $personaManager->registrar($request);
 	}
+
+    public function sancionar(Request $request)
+	{ 
+		$this->validate(request(),['id' => 'required', 'descripcionSancion' => 'required|string|min:20|max:500']);
+
+		DB::beginTransaction();
+		try {
+			$condid              = $request->id;
+            $estado              = 'S';
+            $conductor           = Conductor::findOrFail($condid);
+            $conductor->tiescoid = $estado;
+            $asociado->save();
+
+            $conductorcambioestado 					  = new ConductorCambioEstado();
+            $conductorcambioestado->condid            = $condid;
+            $conductorcambioestado->tiescoid          = $estado;
+            $conductorcambioestado->cocaesusuaid      = Auth::id();
+            $conductorcambioestado->cocaesfechahora   = Carbon::now();
+            $conductorcambioestado->cocaesobservacion = $request->descripcionSancion;
+            $conductorcambioestado->save();
+
+			DB::commit();
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+		} catch (Exception $error){
+			DB::rollback();
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+	}    
 
     public function destroy(Request $request)
 	{

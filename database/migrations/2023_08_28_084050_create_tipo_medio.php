@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipomedio', function (Blueprint $table) {
-            $table->tinyInteger('tipmedid')->unsigned()->comment('Identificador del tipo de medio');
+            $table->tinyInteger('tipmedid')->unsigned()->comment('Identificador de la tabla tipo de medio');
             $table->string('tipmednombre', 20)->comment('Nombre del tipo de medio');
             $table->primary('tipmedid')->index('pk_tipmed');
         });

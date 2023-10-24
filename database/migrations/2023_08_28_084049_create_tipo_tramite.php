@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipotramite', function (Blueprint $table) {
-            $table->tinyInteger('tiptraid')->unsigned()->comment('Identificador del tipo de trámite');
+            $table->tinyInteger('tiptraid')->unsigned()->comment('Identificador de la tabla tipo de trámite');
             $table->string('tiptranombre', 30)->comment('Nombre del tipo de trámite');
             $table->primary('tiptraid')->index('pk_tiptra');
         });

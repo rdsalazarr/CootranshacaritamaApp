@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->smallInteger('carlabid')->unsigned()->comment('Identificador del cargo laboral');
             $table->tinyInteger('tipideid')->unsigned()->comment('Identificador del tipo de identificación');
-            $table->tinyInteger('tirelaid')->unsigned()->comment('Identificador del tipo de realación laboral');
+            $table->string('tipperid', 2)->comment('Identificador del tipo de persona');
             $table->tinyInteger('persdepaidnacimiento')->unsigned()->nullable()->comment('Identificador del departamento de nacimiento del documento');
             $table->smallInteger('persmuniidnacimiento')->unsigned()->nullable()->comment('Identificador del municipio de nacimiento del documento'); 
             $table->tinyInteger('persdepaidexpedicion')->unsigned()->nullable()->comment('Identificador del departamento de expedición del documento');
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->unique(['tipideid','persdocumento'],'uk_personatipoidentificacion');
             $table->foreign('carlabid')->references('carlabid')->on('cargolaboral')->onUpdate('cascade')->index('fk_carglabpers');
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipidepers');
-            $table->foreign('tirelaid')->references('tirelaid')->on('tiporelacionlaboral')->onUpdate('cascade')->index('fk_tirelapers');
+            $table->foreign('tipperid')->references('tipperid')->on('tipopersona')->onUpdate('cascade')->index('fk_tipperpers');
             $table->foreign('persdepaidnacimiento')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapersnac');
             $table->foreign('persmuniidnacimiento')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munipersnac');
             $table->foreign('persdepaidexpedicion')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depapersexp');

@@ -469,7 +469,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
                         <MenuItem value={"M"}>Másculino</MenuItem>
-                        <MenuItem value={"F"}>FEmenino</MenuItem>
+                        <MenuItem value={"F"}>Femenino</MenuItem>
                     </SelectValidator>
                 </Grid>
 

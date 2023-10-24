@@ -11,5 +11,5 @@ class Conductor extends Model
 
     protected $table      = 'conductor';
     protected $primaryKey = 'condid';
-    protected $fillable   = ['persid','tiescoid','codufechaingreso'];
+    protected $fillable   = ['persid','tiescoid','tipconid','agenid','condfechaingreso'];
 }
