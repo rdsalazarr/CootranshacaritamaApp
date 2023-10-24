@@ -73,11 +73,20 @@ php artisan make:migration create_tipo_carroceria_vehiculo
 php artisan make:migration create_tipo_combustible_vehiculo
 php artisan make:migration create_vehiculo
 php artisan make:migration create_vehiculo_cambio_estado
+
+php artisan make:migration create_vehiculo_crt
+php artisan make:migration create_vehiculo_poliza
+php artisan make:migration create_vehiculo_soat
+
+php artisan make:migration create_tipo_estado_conductor
 php artisan make:migration create_tipo_estado_asociado
 php artisan make:migration create_asociado
 php artisan make:migration create_asociado_cambio_estado
-php artisan make:migration create_tipo_estado_conductor
+php artisan make:migration create_asociado_vehiculo
+
 php artisan make:migration create_conductor
+php artisan make:migration create_tipo_categoria_licencia
+php artisan make:migration create_conductor_licencia
 php artisan make:migration create_conductor_cambio_estado
 
 php artisan make:migration create_tipo_estado_solicitud_credito
@@ -85,6 +94,8 @@ php artisan make:migration create_linea_credito
 php artisan make:migration create_solicitud_credito
 php artisan make:migration create_solicitud_credito_cambio_estado
 php artisan make:migration create_solicitud_credito_desembolso
+
+
 
 
 php artisan make:model Festivo
@@ -192,6 +203,7 @@ php artisan make:seeder TipoColorVehiculoSeeder
 php artisan make:seeder TipoCarroceriaVehiculoSeeder
 php artisan make:seeder TipoCombustibleVehiculoSeeder
 php artisan make:seeder AgenciaSeeder
+php artisan make:seeder TipoCategoriaLicenciaSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests

@@ -51,7 +51,7 @@ import ConsultarArchivoHistorico from "../admin/archivoHistorico/consultar/list"
 import TiposVehiculos from "../admin/vehiculos/tipos/list";
 import Vehiculo from "../admin/vehiculos/automovil/list";
 import Conductor from "../admin/vehiculos/conductor/list";
-import PolizasVehiculo from "../admin/vehiculos/polizas/search";
+import AsignarVehiculo from "../admin/vehiculos/asignar/search";
 
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
@@ -194,12 +194,12 @@ const componenteMenu = [
     {   nombre: 'Dirección transporte',
         icono : 'drive_eta_icon',
         itemMenu: [
-            {ruta : 'admin/direccion/transporte/tipoVehiculos', menu: 'Tipos de vehiculos', icono : 'car_crash_icon',      componente : <TiposVehiculos /> },
-            {ruta : 'admin/direccion/transporte/vehiculos',     menu: 'Vehículo',           icono : 'electric_car_icon',   componente : <Vehiculo />},
-            {ruta : 'admin/direccion/transporte/polizas',       menu: 'Polizas',            icono : 'credit_score_icon',   componente : <PolizasVehiculo /> },
-            {ruta : 'admin/direccion/transporte/conductores',   menu: 'Conductores',        icono : 'attach_money_icon',   componente : <Conductor /> },
-            {ruta : 'admin/gestionar/agencia',                  menu: 'Agencia',            icono : 'holiday_village_con', componente : <Agencia /> },
-            {ruta : 'admin/configurar/GeneralPdf',              menu: 'Información PDF',    icono : 'picture_as_pdf',      componente : <InformacionGeneralPdf /> },
+            {ruta : 'admin/direccion/transporte/tipoVehiculos',   menu: 'Tipos de vehiculos',   icono : 'car_crash_icon',      componente : <TiposVehiculos /> },
+            {ruta : 'admin/direccion/transporte/vehiculos',       menu: 'Vehículo',             icono : 'electric_car_icon',   componente : <Vehiculo />},
+            {ruta : 'admin/direccion/transporte/conductores',     menu: 'Conductores',          icono : 'attach_money_icon',   componente : <Conductor /> },
+            {ruta : 'admin/direccion/transporte/asignarVehiculo', menu: 'Asignación vehículos', icono : 'credit_score_icon',   componente : <AsignarVehiculo /> },           
+            {ruta : 'admin/gestionar/agencia',                    menu: 'Agencia',              icono : 'holiday_village_con', componente : <Agencia /> },
+            {ruta : 'admin/configurar/GeneralPdf',                menu: 'Información PDF',      icono : 'picture_as_pdf',      componente : <InformacionGeneralPdf /> },
         ]
     },
     {   nombre: 'Cartera',
