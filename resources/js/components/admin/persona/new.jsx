@@ -1,22 +1,26 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Link } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {ButtonFileImg, ContentFile} from "../../layout/files";
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
 import instance from '../../layout/instance';
 import Files from "react-files";
 
 export default function New({data, tipo, frm, url, tpRelacion}){
 
+    let cargoLaboral = (frm === 'ASOCIADO') ? '2' : ((frm === 'CONDUCTOR') ? '3' : '')
+
     const [formData, setFormData] = useState(
                     (tipo !== 'I') ? {codigo:data.persid,  tipo:tipo, formulario:frm
-                                    } : {codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
+                                    } : {codigo:'000', documento:'', cargo: cargoLaboral, tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
                                         departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                         segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
-                                        estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm, fechaIngresoAsociado:'', fechaIngresoConductor:''
+                                        estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm, fechaIngresoAsociado:'', fechaIngresoConductor:'',
+                                        tipoConductor:'', agencia:''
                                 }); 
 
     const [loader, setLoader] = useState(false); 
@@ -30,14 +34,22 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
     const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
     const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: []});
-
+    const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
+    const [tipoConductores, setTipoConductores] = useState([]);
+    const [agencias, setAgencias] = useState([]); 
+    const [formDataAdicionar, setFormDataAdicionar] = useState({tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:'' });   
+    
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
     const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
-    };
+    }
+
+    const handleChangeAdicionar = (e) =>{
+        setFormDataAdicionar(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
 
     const onFilesChange = (files , nombre) =>  {
         setFormDataFile(prev => ({...prev, [nombre]: files}));
@@ -82,10 +94,11 @@ export default function New({data, tipo, frm, url, tpRelacion}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: '', tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: cargoLaboral, tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
                                                                 departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                                                 segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
-                                                                estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm,  fechaIngresoAsociado:'', fechaIngresoConductor:''}) : null;
+                                                                estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm,  fechaIngresoAsociado:'', fechaIngresoConductor:'', 
+                                                                tipoConductor:'', agencia:''}) : null;
             setLoader(false);
         })
     }
@@ -93,11 +106,14 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     useEffect(()=>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/persona/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
+        instance.post('/admin/persona/listar/datos', {tipo:tipo, codigo:formData.codigo, frm:frm}).then(res=>{
             setTipoCargoLaborales(res.tipoCargoLaborales);
-            setTipoIdentificaciones(res.tipoIdentificaciones);      
+            setTipoIdentificaciones(res.tipoIdentificaciones);
             setDepartamentos(res.departamentos);
             setMunicipios(res.municipios);
+            setTipoConductores(res.tipoConductores);
+            setAgencias(res.agencias);
+            settipoCategoriaLicencias(res.tpCateLicencias);            
 
             if(tipo !== 'I'){     
                 let persona                        = res.persona;
@@ -195,6 +211,32 @@ export default function New({data, tipo, frm, url, tpRelacion}){
             }
         });
         setMunicipiosExpedicion(munExpedicion); 
+    } 
+
+    const adicionarFilaSubSerie = () =>{
+
+        if(formDataAdicionar.serie === ''){
+            showSimpleSnackbar('Debe seleccionar una serie documental', 'error');
+            return
+        }
+
+        if(formDataAdicionar.subSerie === ''){
+            showSimpleSnackbar('Debe seleccionar una sub serie documental', 'error');
+            return
+        }
+
+        if(dependenciaSubSerieDocumental.some(pers => pers.subSerie == formDataAdicionar.subSerie)){
+            showSimpleSnackbar('Este registro ya fue adicionado', 'error');
+            return
+        }
+
+        let newDependenciaSubSerieDocumental = [...dependenciaSubSerieDocumental];
+        const resultSeriesDocumentales       = seriesDocumentales.filter((serie) => serie.serdocid == formDataAdicionar.serie);
+        const resultSubSeriesDocumentales    = subSeriesDocumentales.filter((subSerie) => subSerie.susedoid == formDataAdicionar.subSerie);
+        newDependenciaSubSerieDocumental.push({identificador:'', subSerie:formDataAdicionar.subSerie, nombreSerie: resultSeriesDocumentales[0].serdocnombre, 
+                                                nombreSubSerie: resultSubSeriesDocumentales[0].susedonombre,  estado: 'I'});
+        setFormDataAdicionar({serie:'', subSerie: '', persona: '' });
+        setDependenciaSubSerieDocumental(newDependenciaSubSerieDocumental);
     } 
 
     if(loader){
@@ -473,27 +515,27 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <SelectValidator
-                        name={'cargo'}
-                        value={formData.cargo}
-                        label={'Cargo laboral'}
-                        className={'inputGeneral'}
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Debe hacer una selección"]}
-                        onChange={handleChange} 
-                    >
-                        <MenuItem value={""}>Seleccione</MenuItem>
-                        {tipoCargoLaborales.map(res=>{
-                            return <MenuItem value={res.carlabid} key={res.carlabid}>{res.carlabnombre}</MenuItem>
-                        })}
-                    </SelectValidator>
-                </Grid>
-
                 {(frm === 'PERSONA') ?
                     <Fragment>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'cargo'}
+                                value={formData.cargo}
+                                label={'Cargo laboral'}
+                                className={'inputGeneral'}
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Debe hacer una selección"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoCargoLaborales.map(res=>{
+                                    return <MenuItem value={res.carlabid} key={res.carlabid}>{res.carlabnombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
+               
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <SelectValidator
                                 name={'firmaDigital'}
@@ -532,24 +574,24 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     </Fragment>
                 : null}
 
-                {(frm !== 'PERSONA') ?
+                {(frm === 'ASOCIADO') ?
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
-                                {(frm === 'ASOCIADO') ? 'Información de asociado' : 'Información del conductor'}
+                                Información de asociado
                             </Box>
                         </Grid>
 
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <TextValidator
-                                name={(frm === 'ASOCIADO') ? 'fechaIngresoAsociado' : 'fechaIngresoConductor'}
-                                value={(frm === 'ASOCIADO') ? formData.fechaIngresoAsociado : formData.fechaIngresoConductor }
-                                label={(frm === 'ASOCIADO') ? 'Fecha ingreso como asociado' : 'Fecha ingreso como condutor'}
+                                name={'fechaIngresoAsociado'}
+                                value={formData.fechaIngresoAsociado}
+                                label={'Fecha ingreso como asociado'}
                                 className={'inputGeneral'}
                                 variant={"standard"}
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}                           
+                                errorMessages={["Campo obligatorio"]}
                                 onChange={handleChange}
                                 type={"date"}
                                 InputLabelProps={{
@@ -557,6 +599,181 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 }}
                             />
                         </Grid>
+                    </Fragment>
+                : null}
+
+                {(frm === 'CONDUCTOR') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Información del conductor
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator
+                                name={'fechaIngresoConductor'}
+                                value={formData.fechaIngresoConductor }
+                                label={'Fecha ingreso como condutor'}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                                type={"date"}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tipoConductor'}
+                                value={formData.tipoConductor}
+                                label={'Tipo de conductor'}
+                                className={'inputGeneral'}
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Debe hacer una selección"]}
+                                onChange={handleChange}
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoConductores.map(res=>{
+                                    return <MenuItem value={res.tipconid} key={res.tipconid}>{res.tipconnombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'agencia'}
+                                value={formData.agencia}
+                                label={'Agencia'}
+                                className={'inputGeneral'}
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Debe hacer una selección"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {agencias.map(res=>{
+                                    return <MenuItem value={res.agenid} key={res.agenid}>{res.agennombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Anexar licencia del conducción
+                            </Box>
+                        </Grid>
+                        
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tipoCategoria'}
+                                value={formDataAdicionar.tipoCategoria}
+                                label={'Tipo categoría'}
+                                className={'inputGeneral'}
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Debe hacer una selección"]}
+                                onChange={handleChangeAdicionar} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoCategoriaLicencias.map(res=>{
+                                    return <MenuItem value={res.ticaliid} key={res.ticaliid}>{res.ticalinombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator
+                                name={'numeroLicencia'}
+                                value={formDataAdicionar.numeroLicencia}
+                                label={'Número de licencia'}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off', maxLength: 30}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChangeAdicionar}
+                            />
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator
+                                name={'fechaExpedicion'}
+                                value={formDataAdicionar.fechaExpedicion }
+                                label={'Fecha expedición'}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChangeAdicionar}
+                                type={"date"}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator
+                                name={'fechaVencimiento'}
+                                value={formDataAdicionar.fechaVencimiento }
+                                label={'Fecha vencimiento'}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChangeAdicionar}
+                                type={"date"}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
+                            <Button type={"button"} className={'modalBtn'} 
+                                startIcon={<AddIcon />} onClick={() => {adicionarFilaSubSerie()}}> {"Agregar"}
+                            </Button>
+                        </Grid>
+
+
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='divisionFormulario'>
+                                Licencia del conducción adicionada
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Table className={'tableAdicional'} xl={{width: '90%', margin:'auto'}} md={{width: '90%', margin:'auto'}} sx={{width: '100%', margin:'auto'}} sm={{maxHeight: '100%', margin:'auto'}} >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tipo de categoria</TableCell>
+                                        <TableCell>Número de licencia</TableCell>
+                                        <TableCell>Fecha de expedición</TableCell>
+                                        <TableCell>Fecha de vencimiento</TableCell>
+                                        <TableCell>Imagen</TableCell>
+                                        <TableCell style={{width: '5%'}} className='cellCenter'>Acción </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                </TableBody>
+                             </Table>
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>                            
+                        </Grid>
+
                     </Fragment>
                 : null}
 

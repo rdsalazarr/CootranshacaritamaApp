@@ -59,7 +59,7 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={6} md={6} sm={6} xs={12}>
+                <Grid item xl={5} md={5} sm={6} xs={12}>
                     <TextValidator 
                         name={'nombre'}
                         value={formData.nombre}

@@ -10,13 +10,22 @@ class DatosPersonaController extends Controller
 {
     public function index(Request $request)
 	{ 
-        $this->validate(request(),['tipo' => 'required', 'codigo' => 'required']);
-
-        $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabid', '>', 3)->where('carlabactivo',1)->orderBy('carlabnombre')->get();
-		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();		
+        $this->validate(request(),['tipo' => 'required', 'codigo' => 'required', 'frm' => 'required']);
+        $tipoConductores       = [];
+        $agencias              = [];
+        $persona               = [];
+        $tpCateLicencias       = [];
+        $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabid', '>', 3)->where('carlabactivo', true)->orderBy('carlabnombre')->get();
+		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
         $departamentos         = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
         $municipios            = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
-        $persona               = [];
+       
+        if($request->frm === 'CONDUCTOR'){
+            $tipoConductores   = DB::table('tipoconductor')->select('tipconid','tipconnombre')->orderBy('tipconnombre')->get();
+            $agencias          = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
+            $tpCateLicencias   = DB::table('tipocategorialicencia')->select('ticaliid','ticalinombre')->orderBy('ticalinombre')->get();
+        }
+       
         if($request->tipo !== 'I'){
             $url        = URL::to('/');
             $persona    = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tirelaid','p.persdepaidnacimiento','p.persmuniidnacimiento',
@@ -38,8 +47,10 @@ class DatosPersonaController extends Controller
                                 ->first();
         }
 
-        return response()->json(["tipoCargoLaborales" => $cargoLaborales, "tipoIdentificaciones" => $tipoIdentificaciones,
-                                  "departamentos"     => $departamentos,  "municipios"           => $municipios,            "persona" => $persona ]);
+        return response()->json(["tipoCargoLaborales" => $cargoLaborales, "tipoIdentificaciones" => $tipoIdentificaciones, "agencias" => $agencias,
+                                  "departamentos"     => $departamentos,  "municipios"           => $municipios,            "persona" => $persona,
+                                  "tipoConductores" => $tipoConductores,  "tpCateLicencias"      => $tpCateLicencias]);
+                                   
 	}
 
     public function show(Request $request)

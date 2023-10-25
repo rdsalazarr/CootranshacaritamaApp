@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Icon,Table, TableHead, TableBody, TableRow, TableCell, Box  } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Icon,Table, TableHead, TableBody, TableRow, TableCell, Box } from '@mui/material';
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
@@ -137,7 +137,7 @@ export default function New({data, tipo}){
 
     const eliminarFilaSubSerie = (id) =>{
         let newDependenciaSubSerieDocumental = []; 
-        firmaPersona.map((res,i) =>{
+        dependenciaSubSerieDocumental.map((res,i) =>{
             if(res.estado === 'U' && i === id){
                 newDependenciaSubSerieDocumental.push({ identificador:res.identificador, subSerie: res.subSerie, nombreSerie:res.nombreSerie, nombreSubSerie:res.nombreSubSerie, estado: 'D' }); 
             }else if(res.estado === 'D' && i === id){
@@ -272,7 +272,7 @@ export default function New({data, tipo}){
                         onChange={handleChangeUpperCase}
                     />
                 </Grid>
-                
+
                 <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator
                         name={'correo'}
@@ -355,46 +355,50 @@ export default function New({data, tipo}){
                     </Button>
                 </Grid>
 
-                <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Box className='divisionFormulario'>
-                        Series y sub series documentales adiconada a la dependencia
-                    </Box>
-                </Grid>
+                {(dependenciaSubSerieDocumental.length > 0) ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='divisionFormulario'>
+                                Series y sub series documentales adiconada a la dependencia
+                            </Box>
+                        </Grid>
 
-                <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Table key={'tableSubSerie'}  className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}} >
-                        <TableHead>
-                            <TableRow>
-                                <TableCell style={{width: '60%'}}>Serie documental</TableCell>
-                                <TableCell style={{width: '40%'}}>Sub serie documental </TableCell> 
-                                <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Table key={'tableSubSerie'}  className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}} >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell style={{width: '60%'}}>Serie documental</TableCell>
+                                        <TableCell style={{width: '40%'}}>Sub serie documental </TableCell> 
+                                        <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
 
-                        { dependenciaSubSerieDocumental.map((subSerie, a) => {
-                            return(
-                                <TableRow key={'rowD-' +a} className={(subSerie['estado'] == 'D')? 'tachado': null}>
-                                    <TableCell>
-                                        <p>{subSerie['nombreSerie']}</p>
-                                    </TableCell> 
+                                { dependenciaSubSerieDocumental.map((subSerie, a) => {
+                                    return(
+                                        <TableRow key={'rowD-' +a} className={(subSerie['estado'] == 'D')? 'tachado': null}>
+                                            <TableCell>
+                                                <p>{subSerie['nombreSerie']}</p>
+                                            </TableCell> 
 
-                                    <TableCell>
-                                        <p>{subSerie['nombreSubSerie']}</p>
-                                    </TableCell>
-                                    
-                                    <TableCell className='cellCenter'>
-                                        <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                onClick={() => {eliminarFilaSubSerie(a);}}
-                                            >clear</Icon>
-                                    </TableCell>
-                                </TableRow>
-                                );
-                            })
-                        }
-                        </TableBody>
-                    </Table>
-                </Grid>
+                                            <TableCell>
+                                                <p>{subSerie['nombreSubSerie']}</p>
+                                            </TableCell>
+                                            
+                                            <TableCell className='cellCenter'>
+                                                <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                        onClick={() => {eliminarFilaSubSerie(a);}}
+                                                    >clear</Icon>
+                                            </TableCell>
+                                        </TableRow>
+                                        );
+                                    })
+                                }
+                                </TableBody>
+                            </Table>
+                        </Grid>
+                    </Fragment>
+                : null}
 
                 <Grid item md={12} xl={12} sm={12} xs={12}>
                     <Box className='frmDivision'>
@@ -428,44 +432,48 @@ export default function New({data, tipo}){
                     </Button>
                 </Grid>
 
-                <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Box className='divisionFormulario'>
-                        Personas adicionadas a la dependencia
-                    </Box>
-                </Grid>
+                {(dependenciaPersonas.length > 0) ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='divisionFormulario'>
+                                Personas adicionadas a la dependencia
+                            </Box>
+                        </Grid>
+                        
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Table key={'tablePersona'} className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Persona</TableCell>
+                                        <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
 
-                <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Table key={'tablePersona'} className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}}>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Persona</TableCell>
-                                <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
+                                { dependenciaPersonas.map((pers, a) => {
+                                    return(
+                                        <TableRow key={'rowA-' +a} className={(pers['estado'] == 'D')? 'tachado': null}>
 
-                        { dependenciaPersonas.map((pers, a) => {
-                            return(
-                                <TableRow key={'rowA-' +a} className={(pers['estado'] == 'D')? 'tachado': null}>
+                                            <TableCell>
+                                                <p> {pers['nombrePersona']}</p>
+                                            </TableCell>
+                                            
+                                            <TableCell className='cellCenter'>
+                                                <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                        onClick={() => {eliminarFilaPersona(a);}}
+                                                    >clear</Icon>
+                                            </TableCell>
+                                        </TableRow>
+                                        );
+                                    })
+                                }
+                                </TableBody>
+                            </Table>
+                        </Grid>
 
-                                    <TableCell>
-                                        <p> {pers['nombrePersona']}</p>
-                                    </TableCell>
-                                    
-                                    <TableCell className='cellCenter'>
-                                        <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                onClick={() => {eliminarFilaPersona(a);}}
-                                            >clear</Icon>
-                                    </TableCell>
-                                </TableRow>
-                                );
-                            })
-                        }
-                        </TableBody>
-                    </Table>
-                </Grid>
+                    </Fragment>
+                : null}
 
-                
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">
