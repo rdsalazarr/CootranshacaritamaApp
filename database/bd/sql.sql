@@ -1173,10 +1173,10 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 --Debe existir el municipio y persona
 INSERT INTO empresa (emprid, persidrepresentantelegal,emprdepaid,emprmuniid,emprnit,emprdigitoverificacion,
 emprnombre,emprsigla,emprlema,emprdireccion,emprbarrio, emprcorreo, emprtelefonofijo,emprtelefonocelular,
-emprhorarioatencion,emprurl,emprcodigopostal, emprlogo, created_at, updated_at) VALUES
+emprhorarioatencion,emprurl,emprcodigopostal, emprpersoneriajuridica, emprlogo, created_at, updated_at) VALUES
 (1, 2, 18, 804, '890.505.424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'La empresa que integra la region', 
 'Calle 7 a 56 211 la ondina vía a rio de oro','Santa Clara','cootranshacaritama@hotmail.com', '5611012', '3146034311', 
- 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', '890505424_logoHacaritama.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+ 'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', 'Personería Jurídica No. 73 enero 28 de 1976', '890505424_logoHacaritama.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `modulo` (`moduid`, `modunombre`, `moduicono`, `moduorden`, `moduactivo`, `created_at`, `updated_at`) VALUES
 (1, 'Configuración', 'settings_applications', 1, 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

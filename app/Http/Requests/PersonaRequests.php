@@ -27,7 +27,7 @@ class PersonaRequests extends FormRequest
             'documento'              => 'required|string|max:15|unique:persona,persdocumento,'. $this->input('codigo').',persid,tipideid,'.$this->input('tipoIdentificacion'), 
             'cargo'                  => 'required|numeric',
             'tipoIdentificacion'     => 'required|numeric',
-            'tipoRelacionLaboral'    => 'required|numeric',
+            'tipoRelacionLaboral'    => 'required|string',
             'departamentoNacimiento' => 'required|numeric',
             'municipioNacimiento'    => 'required|numeric',
             'departamentoExpedicion' => 'required|numeric',
@@ -49,7 +49,9 @@ class PersonaRequests extends FormRequest
             'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
             'claveCertificado'       => 'nullable|string|max:20',
             'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:formulario,ASOCIADO',
-            'fechaIngresoConductor'  => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR' 
+            'fechaIngresoConductor'  => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
+            'tipoConductor'          => 'nullable|numeric|required_if:formulario,CONDUCTOR',
+            'agencia'                => 'nullable|numeric|required_if:formulario,CONDUCTOR'             
         ];
     }
 }

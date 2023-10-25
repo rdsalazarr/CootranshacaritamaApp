@@ -37,7 +37,8 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
     const [tipoConductores, setTipoConductores] = useState([]);
     const [agencias, setAgencias] = useState([]); 
-    const [formDataAdicionar, setFormDataAdicionar] = useState({tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:'' });   
+    const [formDataAdicionar, setFormDataAdicionar] = useState({tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:'' });
+    const [licenciasConduccion, setLicenciasConduccion] = useState([]);
     
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -213,30 +214,39 @@ export default function New({data, tipo, frm, url, tpRelacion}){
         setMunicipiosExpedicion(munExpedicion); 
     } 
 
-    const adicionarFilaSubSerie = () =>{
+    //tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:''
+    const adicionarFilaLicencia = () =>{
 
-        if(formDataAdicionar.serie === ''){
-            showSimpleSnackbar('Debe seleccionar una serie documental', 'error');
+        if(formDataAdicionar.tipoCategoria === ''){
+            showSimpleSnackbar('Debe seleccionar un tipo de categoría', 'error');
             return
         }
 
-        if(formDataAdicionar.subSerie === ''){
-            showSimpleSnackbar('Debe seleccionar una sub serie documental', 'error');
+        if(formDataAdicionar.numeroLicencia === ''){
+            showSimpleSnackbar('Debe ingresar un número de licencia', 'error');
             return
         }
 
-        if(dependenciaSubSerieDocumental.some(pers => pers.subSerie == formDataAdicionar.subSerie)){
+        if(formDataAdicionar.fechaExpedicion === ''){
+            showSimpleSnackbar('Debe ingresar la fecha de expedición de licencia', 'error');
+            return
+        }
+
+        if(formDataAdicionar.fechaExpedicion === ''){
+            showSimpleSnackbar('Debe ingresar la fecha de vencimiento de licencia', 'error');
+            return
+        }
+
+        if(licenciasConduccion.some(pers => pers.numeroLicencia == formDataAdicionar.numeroLicencia)){
             showSimpleSnackbar('Este registro ya fue adicionado', 'error');
             return
         }
 
-        let newDependenciaSubSerieDocumental = [...dependenciaSubSerieDocumental];
-        const resultSeriesDocumentales       = seriesDocumentales.filter((serie) => serie.serdocid == formDataAdicionar.serie);
-        const resultSubSeriesDocumentales    = subSeriesDocumentales.filter((subSerie) => subSerie.susedoid == formDataAdicionar.subSerie);
-        newDependenciaSubSerieDocumental.push({identificador:'', subSerie:formDataAdicionar.subSerie, nombreSerie: resultSeriesDocumentales[0].serdocnombre, 
-                                                nombreSubSerie: resultSubSeriesDocumentales[0].susedonombre,  estado: 'I'});
-        setFormDataAdicionar({serie:'', subSerie: '', persona: '' });
-        setDependenciaSubSerieDocumental(newDependenciaSubSerieDocumental);
+        let newLicenciasConduccion = [...licenciasConduccion]; 
+        newLicenciasConduccion.push({identificador:'', tipoCategoria:formDataAdicionar.tipoCategoria, numeroLicencia: formDataAdicionar.numeroLicencia, 
+                                        fechaExpedicion: formDataAdicionar.fechaExpedicion, fechaVencimiento: formDataAdicionar.fechaVencimiento,  estado: 'I'});
+        setFormDataAdicionar({tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:''});
+        setLicenciasConduccion(newLicenciasConduccion);
     } 
 
     if(loader){
@@ -743,7 +753,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
                         <Grid item xl={2} md={2} sm={6} xs={12}>
                             <Button type={"button"} className={'modalBtn'} 
-                                startIcon={<AddIcon />} onClick={() => {adicionarFilaSubSerie()}}> {"Agregar"}
+                                startIcon={<AddIcon />} onClick={() => {adicionarFilaLicencia()}}> {"Agregar"}
                             </Button>
                         </Grid>
 
@@ -769,6 +779,8 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 <TableBody>
                                 </TableBody>
                              </Table>
+
+                             licenciasConduccion
                         </Grid>
 
                         <Grid item xl={4} md={4} sm={6} xs={12}>                            

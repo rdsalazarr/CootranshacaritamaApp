@@ -26,13 +26,13 @@ class EmpresaController extends Controller
 
     public function datos()
 	{
-        $deptos =  DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
-        $municipios =  DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
-        
+        $deptos     = DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
+        $municipios = DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
+
        $jefes = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
                        DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos")
                        )
-                   ->whereIn('carlabid', [1, 2])->get();
+                   ->whereIn('carlabid', [1, 4])->get();
 
         return response()->json(["deptos" => $deptos, "municipios" => $municipios, "jefes" => $jefes]);  
     }

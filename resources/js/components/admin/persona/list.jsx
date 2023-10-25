@@ -20,8 +20,8 @@ export default function List(){
     }
 
     const modales = [
-                        <NewEdit tipo={'I'} frm={'PERSONA'} url={'/admin/persona/salve'} tpRelacion={'1'} />,
-                        <NewEdit data={modal.data} tipo={'U'} frm={'PERSONA'} url={'/admin/persona/salve'} tpRelacion={'1'} /> ,
+                        <NewEdit tipo={'I'} frm={'PERSONA'} url={'/admin/persona/salve'} tpRelacion={'E'} />,
+                        <NewEdit data={modal.data} tipo={'U'} frm={'PERSONA'} url={'/admin/persona/salve'} tpRelacion={'E'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.persid : null} ruta={'/admin/persona/destroy'} cerrarModal={cerrarModal} />,
                         <Show id={(tipo === 3) ? modal.data.persid : null}/>
                     ];
