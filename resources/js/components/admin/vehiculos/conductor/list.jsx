@@ -20,8 +20,8 @@ export default function List(){
     }
 
     const modales = [
-                        <Frm tipo={'I'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'1'} />,
-                        <Frm data={modal.data} tipo={'U'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'1'} /> ,
+                        <Frm tipo={'I'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'C'} />,
+                        <Frm data={modal.data} tipo={'U'} frm={'CONDUCTOR'} url={'/admin/direccion/transporte/conductor/salve'} tpRelacion={'C'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.condid : null} ruta={'/admin/direccion/transporte/conductor/destroy'} cerrarModal={cerrarModal} />,
                         <Show id={(tipo === 3) ? modal.data.persid : null}/>,
                         <SuspenderConductor id={(tipo === 4) ? modal.data.condid : null}/>,

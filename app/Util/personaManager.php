@@ -26,11 +26,11 @@ class personaManager {
             $rutaCarpeta         = public_path().'/archivos/persona/'.$documentoPersona;
             $carpetaServe        = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
             if($request->hasFile('firma')){
-				$file           = $request->file('firma');
-				$nombreOriginal = $file->getclientOriginalName();
-				$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-				$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-				$rutaFirma      = 'Firma_'.$documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file                = $request->file('firma');
+				$nombreOriginalFirma = $file->getclientOriginalName();
+				$filename            = pathinfo($nombreOriginalFirma, PATHINFO_FILENAME);
+				$extension           = pathinfo($nombreOriginalFirma, PATHINFO_EXTENSION);
+				$rutaFirma           = 'Firma_'.$documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 				$file->move($rutaCarpeta, $rutaFirma);
                 $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaFirma, 280, 140);//Se redimenciona a un solo tipo
 			}else{
@@ -38,11 +38,11 @@ class personaManager {
 			}
 
             if($request->hasFile('fotografia')){
-				$file           = $request->file('fotografia');
-				$nombreOriginal = $file->getclientOriginalName();
-				$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-				$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-				$rutaFotografia = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file               = $request->file('fotografia');
+				$nombreOriginalFoto = $file->getclientOriginalName();
+				$filename           = pathinfo($nombreOriginalFoto, PATHINFO_FILENAME);
+				$extension          = pathinfo($nombreOriginalFoto, PATHINFO_EXTENSION);
+				$rutaFotografia     = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 				$file->move($rutaCarpeta, $rutaFotografia);
                 $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaFotografia, 210, 270);//Se redimenciona a un solo tipo
 			}else{
@@ -50,32 +50,32 @@ class personaManager {
 			}
 
             if($request->hasFile('rutaCrt')){
-				$file           = $request->file('rutaCrt');
-				$nombreOriginal = $file->getclientOriginalName();
-				$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-				$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-				$rutaCrt        = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file              = $request->file('rutaCrt');
+				$nombreOriginalCrt = $file->getclientOriginalName();
+				$filename          = pathinfo($nombreOriginalCrt, PATHINFO_FILENAME);
+				$extension         = pathinfo($nombreOriginalCrt, PATHINFO_EXTENSION);
+				$rutaCrt           = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 				$file->move($rutaCarpeta, $rutaCrt);
-                $rutaCrt        = Crypt::encrypt($rutaCrt);
+                $rutaCrt          = Crypt::encrypt($rutaCrt);
 			}else{
 				$rutaCrt = $request->rutaCrtOld;
 			}
 
             if($request->hasFile('rutaPem')){
-				$file           = $request->file('rutaPem');
-				$nombreOriginal = $file->getclientOriginalName();
-				$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-				$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-				$rutaPem        = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+				$file              = $request->file('rutaPem');
+				$nombreOriginalPem = $file->getclientOriginalName();
+				$filename          = pathinfo($nombreOriginalPem, PATHINFO_FILENAME);
+				$extension         = pathinfo($nombreOriginalPem, PATHINFO_EXTENSION);
+				$rutaPem           = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 				$file->move($rutaCarpeta, $rutaPem);
-                $rutaPem        = Crypt::encrypt($rutaPem);
+                $rutaPem           = Crypt::encrypt($rutaPem);
 			}else{
 				$rutaPem = $request->rutaPemOld;
 			}
 
             $persona->carlabid               = $request->cargo;
             $persona->tipideid               = $request->tipoIdentificacion;
-            $persona->tipperid               = $request->tipoRelacionLaboral;
+            $persona->tipperid               = $request->tipoPersona;
             $persona->persdepaidnacimiento   = $request->departamentoNacimiento;
             $persona->persmuniidnacimiento   = $request->municipioNacimiento;
             $persona->persdepaidexpedicion   = $request->departamentoExpedicion;
@@ -120,6 +120,22 @@ class personaManager {
             }
 
             if($request->formulario === 'CONDUCTOR'){
+
+                $debeActualizarImagen = false;
+                if($request->hasFile('imagenLicencia')){
+                    $debeActualizarImagen = true;
+                    $file                 = $request->file('imagenLicencia');
+                    $nombreOriginalLic    = $file->getclientOriginalName();
+                    $filename             = pathinfo($nombreOriginalLic, PATHINFO_FILENAME);
+                    $extension            = pathinfo($nombreOriginalLic, PATHINFO_EXTENSION);
+                    $rutaImagenLicencia   = $request->numeroLicencia."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+                    $file->move($rutaCarpeta, $rutaImagenLicencia);
+                    $rutaArchivo          = Crypt::encrypt($rutaImagenLicencia);
+                    $extension            = mb_strtoupper($extension,'UTF-8');
+                    if($extension !== 'PDF')
+                        $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaImagenLicencia, 480, 340);//Se redimenciona a un solo tipo (alto * largo)
+                }
+
                 if($request->tipo === 'I'){
                     $personaMaxConsecutio       = Persona::latest('persid')->first();
                     $persid                     = $personaMaxConsecutio->persid;
@@ -133,16 +149,52 @@ class personaManager {
                     $conductor->save();
 
                     $personaMaxConductor        = Conductor::latest('condid')->first();
-                    $condid                     = $personaMaxConductor->condid;
+                    $condid                     = $personaMaxConductor->condid;  
+
+                    $conductorlicencia                              = new ConductorLicencia();
+                    $conductorlicencia->condid                      = $condid;
+                    $conductorlicencia->ticaliid                    = $request->tipoCategoria;
+                    $conductorlicencia->conlicnumero                = $request->numeroLicencia;
+                    $conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicion;
+                    $conductorlicencia->conlicfechavencimiento      = $request->fechaVencimiento;
+                    $conductorlicencia->conlicextension             = $extension;
+                    $conductorlicencia->conlicnombrearchivooriginal = $nombreOriginalLic;
+                    $conductorlicencia->conlicnombrearchivoeditado  = $rutaImagenLicencia;
+                    $conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
+                    $conductorlicencia->save();
+
                 }else{
-                    $conductor                   = DB::table('conductor')->select('condid')->where('persid', $persona->persid)->first();
-                    $condid                      = $conductor->condid;
-                    $conductor                   = Conductor::findOrFail($condid);
+                    $conductor                   = Conductor::findOrFail($request->conductor);
+                    $conductor->tipconid         = $request->tipoConductor;
+                    $conductor->agenid           = $request->agencia;
                     $conductor->condfechaingreso = $request->fechaIngresoConductor;
                     $conductor->save();
-                }              
 
-                foreach($request->licenciasConduccion as $licenciaConductor){
+                    if($request->crearHistorial === 'S'){
+                        $conductorlicencia                     = new ConductorLicencia();
+                        $conductorlicencia->condid             = $request->conductor;
+                    }else{
+                        $conductorlicencia                     = ConductorLicencia::findOrFail($request->licencia);
+                    }
+
+                    $conductorlicencia->ticaliid               = $request->tipoCategoria;
+                    $conductorlicencia->conlicnumero           = $request->numeroLicencia;
+                    $conductorlicencia->conlicfechaexpedicion  = $request->fechaExpedicion;
+                    $conductorlicencia->conlicfechavencimiento = $request->fechaVencimiento;
+
+                    if($debeActualizarImagen){
+                        $conductorlicencia->conlicextension             = $extension;
+                        $conductorlicencia->conlicnombrearchivooriginal = $nombreOriginalLic;
+                        $conductorlicencia->conlicnombrearchivoeditado  = $rutaImagenLicencia;
+                        $conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
+                    }
+
+                    $conductorlicencia->save();
+                }
+
+               
+
+                /*foreach($request->licenciasConduccion as $licenciaConductor){
                     $identificadorFirma = $licenciaConductor['identificador'];
                     $tipoCategoria      = $licenciaConductor['tipoCategoria'];
                     $numeroLicencia     = $licenciaConductor['numeroLicencia'];
@@ -157,7 +209,7 @@ class personaManager {
 					$file->move($rutaCarpeta, $nombreArchivo);
 					$rutaArchivo    = Crypt::encrypt($nombreArchivo);*/
 
-                    if($estadoLicencia === 'I'){
+                   /* if($estadoLicencia === 'I'){
                         $conductorlicencia                              = new ConductorLicencia();
                         $conductorlicencia->condid                      = $condid;
                         $conductorlicencia->ticaliid                    = $tipoCategoria;
@@ -174,7 +226,7 @@ class personaManager {
                         $conductorlicencia->delete();
                     }else{//omitir
                     }
-                }
+                }*/
             }
 
         	DB::commit();

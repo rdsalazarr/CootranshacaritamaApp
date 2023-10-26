@@ -312,10 +312,10 @@ export default function New({data, tipo}){
                     </Box>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={1} xs={1}>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={5} xs={11}>
                     <SelectValidator
                         name={'serie'}
                         value={formDataAdicionar.serie}
@@ -349,7 +349,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={12} xs={12}>
                     <Button type={"button"} className={'modalBtn'} 
                         startIcon={<AddIcon />} onClick={() => {adicionarFilaSubSerie()}}> {"Agregar"}
                     </Button>
@@ -364,38 +364,40 @@ export default function New({data, tipo}){
                         </Grid>
 
                         <Grid item md={12} xl={12} sm={12} xs={12}>
-                            <Table key={'tableSubSerie'}  className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}} >
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell style={{width: '60%'}}>Serie documental</TableCell>
-                                        <TableCell style={{width: '40%'}}>Sub serie documental </TableCell> 
-                                        <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-
-                                { dependenciaSubSerieDocumental.map((subSerie, a) => {
-                                    return(
-                                        <TableRow key={'rowD-' +a} className={(subSerie['estado'] == 'D')? 'tachado': null}>
-                                            <TableCell>
-                                                <p>{subSerie['nombreSerie']}</p>
-                                            </TableCell> 
-
-                                            <TableCell>
-                                                <p>{subSerie['nombreSubSerie']}</p>
-                                            </TableCell>
-                                            
-                                            <TableCell className='cellCenter'>
-                                                <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                        onClick={() => {eliminarFilaSubSerie(a);}}
-                                                    >clear</Icon>
-                                            </TableCell>
+                            <Box sx={{maxHeight: '35em', overflow:'auto'}}>
+                                <Table key={'tableSubSerie'}  className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}} >
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell style={{width: '60%'}}>Serie documental</TableCell>
+                                            <TableCell style={{width: '40%'}}>Sub serie documental </TableCell> 
+                                            <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                                         </TableRow>
-                                        );
-                                    })
-                                }
-                                </TableBody>
-                            </Table>
+                                    </TableHead>
+                                    <TableBody>
+
+                                    { dependenciaSubSerieDocumental.map((subSerie, a) => {
+                                        return(
+                                            <TableRow key={'rowD-' +a} className={(subSerie['estado'] == 'D')? 'tachado': null}>
+                                                <TableCell>
+                                                    <p>{subSerie['nombreSerie']}</p>
+                                                </TableCell> 
+
+                                                <TableCell>
+                                                    <p>{subSerie['nombreSubSerie']}</p>
+                                                </TableCell>
+                                                
+                                                <TableCell className='cellCenter'>
+                                                    <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                            onClick={() => {eliminarFilaSubSerie(a);}}
+                                                        >clear</Icon>
+                                                </TableCell>
+                                            </TableRow>
+                                            );
+                                        })
+                                    }
+                                    </TableBody>
+                                </Table>
+                            </Box>
                         </Grid>
                     </Fragment>
                 : null}
@@ -441,34 +443,36 @@ export default function New({data, tipo}){
                         </Grid>
                         
                         <Grid item md={12} xl={12} sm={12} xs={12}>
-                            <Table key={'tablePersona'} className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Persona</TableCell>
-                                        <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-
-                                { dependenciaPersonas.map((pers, a) => {
-                                    return(
-                                        <TableRow key={'rowA-' +a} className={(pers['estado'] == 'D')? 'tachado': null}>
-
-                                            <TableCell>
-                                                <p> {pers['nombrePersona']}</p>
-                                            </TableCell>
-                                            
-                                            <TableCell className='cellCenter'>
-                                                <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                        onClick={() => {eliminarFilaPersona(a);}}
-                                                    >clear</Icon>
-                                            </TableCell>
+                            <Box sx={{maxHeight: '35em', overflow:'auto'}}>
+                                <Table key={'tablePersona'} className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}}>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Persona</TableCell>
+                                            <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                                         </TableRow>
-                                        );
-                                    })
-                                }
-                                </TableBody>
-                            </Table>
+                                    </TableHead>
+                                    <TableBody>
+
+                                    { dependenciaPersonas.map((pers, a) => {
+                                        return(
+                                            <TableRow key={'rowA-' +a} className={(pers['estado'] == 'D')? 'tachado': null}>
+
+                                                <TableCell>
+                                                    <p> {pers['nombrePersona']}</p>
+                                                </TableCell>
+                                                
+                                                <TableCell className='cellCenter'>
+                                                    <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                            onClick={() => {eliminarFilaPersona(a);}}
+                                                        >clear</Icon>
+                                                </TableCell>
+                                            </TableRow>
+                                            );
+                                        })
+                                    }
+                                    </TableBody>
+                                </Table>
+                            </Box>
                         </Grid>
 
                     </Fragment>

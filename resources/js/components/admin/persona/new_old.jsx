@@ -1,18 +1,14 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {ButtonFileImg, ContentFile} from "../../layout/files";
-import { ModalDefaultAuto  } from '../../layout/modal';
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
-import ShowAnexo from '../vehiculos/showAnexo';
+import AddIcon from '@mui/icons-material/Add';
 import instance from '../../layout/instance';
 import Files from "react-files";
-import { green, pink } from '@mui/material/colors';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-
 
 export default function New({data, tipo, frm, url, tpRelacion}){
 
@@ -20,39 +16,40 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
     const [formData, setFormData] = useState(
                     (tipo !== 'I') ? {codigo:data.persid,  tipo:tipo, formulario:frm
-                                    } : {codigo:'000', documento:'', cargo: cargoLaboral, tipoIdentificacion: '', tipoPersona:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
+                                    } : {codigo:'000', documento:'', cargo: cargoLaboral, tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
                                         departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                         segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                         estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm, fechaIngresoAsociado:'', fechaIngresoConductor:'',
-                                        tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:''
+                                        tipoConductor:'', agencia:''
                                 }); 
 
-    const [modal, setModal] = useState({open : false, extencion:'', ruta:''});
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
     const [showFotografia, setShowFotografia] = useState('');
-    const [showFirmaPersona, setFirmaPersona] = useState('');    
-    const [rutaArchivoEnfuscada, setRutaArchivoEnfuscada] = useState('');
-    const [rutaLicenciaAdjunta, setRutaLicenciaAdjunta] = useState('');
-    const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState('');
+    const [showFirmaPersona, setFirmaPersona] = useState('');
     const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
-    const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
+    const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);  
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
     const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
-    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]});
+    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: []});
     const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
     const [tipoConductores, setTipoConductores] = useState([]);
-    const [historialLicencias, setHistorialLicencias] = useState([]); 
-    const [agencias, setAgencias] = useState([]);     
-
+    const [agencias, setAgencias] = useState([]); 
+    const [formDataAdicionar, setFormDataAdicionar] = useState({tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:'' });
+    const [licenciasConduccion, setLicenciasConduccion] = useState([]);
+    
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
     const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
+    }
+
+    const handleChangeAdicionar = (e) =>{
+        setFormDataAdicionar(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
     const onFilesChange = (files , nombre) =>  {
@@ -69,11 +66,10 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     }
 
     const handleSubmit = () =>{
-        let fotografia     = formDataFile.fotografia;
-        let firma          = formDataFile.firma;
-        let rutaCrt        = formDataFile.rutaCrt;
-        let rutaPem        = formDataFile.rutaPem;
-        let imagenLicencia = formDataFile.imagenLicencia;
+        let fotografia = formDataFile.fotografia;
+        let firma      = formDataFile.firma;
+        let rutaCrt    = formDataFile.rutaCrt;
+        let rutaPem    = formDataFile.rutaPem;
 
         if(tipo === '' && formData.firmaDigital.toString() === '1' && rutaCrt.length < 1){
             showSimpleSnackbar("Debe subir el certificado digital en formato crt", 'error');
@@ -94,19 +90,16 @@ export default function New({data, tipo, frm, url, tpRelacion}){
         dataFile.append('fotografia', (fotografia[0] != undefined) ? fotografia[0] : '');
         dataFile.append('rutaCrt', (rutaCrt[0] != undefined) ? rutaCrt[0] : '');
         dataFile.append('rutaPem', (rutaPem[0] != undefined) ? rutaPem[0] : '');
-        dataFile.append('imagenLicencia', (imagenLicencia[0] != undefined) ? imagenLicencia[0] : '');
-
         setLoader(true);
         instance.post(url, dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: cargoLaboral, tipoIdentificacion: '', tipoPersona:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', documento:'', cargo: cargoLaboral, tipoIdentificacion: '', tipoRelacionLaboral:tpRelacion, departamentoNacimiento:'', municipioNacimiento:'',
                                                                 departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                                                 segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                                                 estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm,  fechaIngresoAsociado:'', fechaIngresoConductor:'', 
                                                                 tipoConductor:'', agencia:''}) : null;
-            (formData.tipo === 'I' && res.success) ? setFormDataFile({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]}) : null;
             setLoader(false);
         })
     }
@@ -121,14 +114,14 @@ export default function New({data, tipo, frm, url, tpRelacion}){
             setMunicipios(res.municipios);
             setTipoConductores(res.tipoConductores);
             setAgencias(res.agencias);
-            settipoCategoriaLicencias(res.tpCateLicencias);
+            settipoCategoriaLicencias(res.tpCateLicencias);            
 
-            if(tipo !== 'I'){
+            if(tipo !== 'I'){     
                 let persona                        = res.persona;
                 newFormData.documento              = persona.persdocumento;
                 newFormData.cargo                  = persona.carlabid;
                 newFormData.tipoIdentificacion     = persona.tipideid;
-                newFormData.tipoPersona            = persona.tipperid;
+                newFormData.tipoRelacionLaboral    = persona.tirelaid;
                 newFormData.departamentoNacimiento = persona.persdepaidnacimiento;
                 newFormData.municipioNacimiento    = persona.persmuniidnacimiento;
                 newFormData.departamentoExpedicion = persona.persdepaidexpedicion;
@@ -153,31 +146,10 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                 newFormData.rutaDescargaCrt        = (persona.rutaCrt !== null) ? persona.rutaCrt : '';
                 newFormData.rutaDescargaPem        = (persona.rutaPem !== null) ? persona.rutaPem : '';
                 newFormData.estado                 = persona.persactiva;
-
                 if(frm == 'ASOCIADO'){
-                    newFormData.fechaIngresoAsociado  = persona.asocfechaingreso;
-                }
-
-                if(frm == 'CONDUCTOR'){
-                    newFormData.conductor               = persona.condid;
-                    newFormData.tipoConductor           = persona.tipconid;
-                    newFormData.agencia                 = persona.agenid;
-                    newFormData.fechaIngresoConductor   = persona.condfechaingreso;
-                    newFormData.crearHistorial          = (persona.totalLicenciaPorVencer === 1) ? 'S' : 'N';
-
-                    let conductorLicencia               = res.conductorLicencia;
-                    if(persona.totalLicenciaPorVencer !== 1){
-                        newFormData.licencia                = conductorLicencia.conlicid;
-                        newFormData.tipoCategoria           = conductorLicencia.ticaliid;
-                        newFormData.numeroLicencia          = conductorLicencia.conlicnumero;
-                        newFormData.fechaExpedicionLicencia = conductorLicencia.conlicfechaexpedicion;
-                        newFormData.fechaVencimiento        = conductorLicencia.conlicfechavencimiento;
-                        let extencionArchivoLicencia        = (conductorLicencia.conlicextension !== null) ? conductorLicencia.conlicextension : '';
-                        setExtencionArchivoLicencia(extencionArchivoLicencia);
-                        setRutaArchivoEnfuscada((extencionArchivoLicencia !== null) ? conductorLicencia.conlicrutaarchivo : '');
-                        setRutaLicenciaAdjunta((extencionArchivoLicencia !== null) ? conductorLicencia.rutaAdjuntoLicencia : '');
-                    }
-                    setHistorialLicencias(res.historialLicencias);
+                    newFormData.fechaIngresoAsociado  = (persona.fechaIngresoAsocido !== null) ? persona.fechaIngresoAsocido : '' ;
+                }else{
+                    newFormData.fechaIngresoConductor = (persona.fechaIngresoConductor !== null) ? persona.fechaIngresoConductor : '' ;
                 }
 
                 let munNacimiento   = [];
@@ -240,7 +212,42 @@ export default function New({data, tipo, frm, url, tpRelacion}){
             }
         });
         setMunicipiosExpedicion(munExpedicion); 
-    }
+    } 
+
+    //tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:''
+    const adicionarFilaLicencia = () =>{
+
+        if(formDataAdicionar.tipoCategoria === ''){
+            showSimpleSnackbar('Debe seleccionar un tipo de categoría', 'error');
+            return
+        }
+
+        if(formDataAdicionar.numeroLicencia === ''){
+            showSimpleSnackbar('Debe ingresar un número de licencia', 'error');
+            return
+        }
+
+        if(formDataAdicionar.fechaExpedicion === ''){
+            showSimpleSnackbar('Debe ingresar la fecha de expedición de licencia', 'error');
+            return
+        }
+
+        if(formDataAdicionar.fechaExpedicion === ''){
+            showSimpleSnackbar('Debe ingresar la fecha de vencimiento de licencia', 'error');
+            return
+        }
+
+        if(licenciasConduccion.some(pers => pers.numeroLicencia == formDataAdicionar.numeroLicencia)){
+            showSimpleSnackbar('Este registro ya fue adicionado', 'error');
+            return
+        }
+
+        let newLicenciasConduccion = [...licenciasConduccion]; 
+        newLicenciasConduccion.push({identificador:'', tipoCategoria:formDataAdicionar.tipoCategoria, numeroLicencia: formDataAdicionar.numeroLicencia, 
+                                        fechaExpedicion: formDataAdicionar.fechaExpedicion, fechaVencimiento: formDataAdicionar.fechaVencimiento,  estado: 'I'});
+        setFormDataAdicionar({tipoCategoria:'', numeroLicencia:'', fechaExpedicion:'', fechaVencimiento:''});
+        setLicenciasConduccion(newLicenciasConduccion);
+    } 
 
     if(loader){
         return <LoaderModal />
@@ -248,7 +255,6 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
     return (
         <ValidatorForm onSubmit={handleSubmit}>
-
             <Grid container spacing={2}>
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
@@ -672,21 +678,21 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
-                                Información de la licencia del conducción
+                                Anexar licencia del conducción
                             </Box>
                         </Grid>
                         
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <SelectValidator
                                 name={'tipoCategoria'}
-                                value={formData.tipoCategoria}
+                                value={formDataAdicionar.tipoCategoria}
                                 label={'Tipo categoría'}
                                 className={'inputGeneral'}
                                 variant={"standard"} 
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
                                 errorMessages={["Debe hacer una selección"]}
-                                onChange={handleChange} 
+                                onChange={handleChangeAdicionar} 
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
                                 {tipoCategoriaLicencias.map(res=>{
@@ -698,28 +704,28 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <TextValidator
                                 name={'numeroLicencia'}
-                                value={formData.numeroLicencia}
+                                value={formDataAdicionar.numeroLicencia}
                                 label={'Número de licencia'}
                                 className={'inputGeneral'}
                                 variant={"standard"}
                                 inputProps={{autoComplete: 'off', maxLength: 30}}
                                 validators={["required"]}
                                 errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
+                                onChange={handleChangeAdicionar}
                             />
                         </Grid>
 
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <TextValidator
-                                name={'fechaExpedicionLicencia'}
-                                value={formData.fechaExpedicionLicencia }
+                                name={'fechaExpedicion'}
+                                value={formDataAdicionar.fechaExpedicion }
                                 label={'Fecha expedición'}
                                 className={'inputGeneral'}
                                 variant={"standard"}
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
                                 errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
+                                onChange={handleChangeAdicionar}
                                 type={"date"}
                                 InputLabelProps={{
                                     shrink: true,
@@ -730,14 +736,14 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <TextValidator
                                 name={'fechaVencimiento'}
-                                value={formData.fechaVencimiento }
+                                value={formDataAdicionar.fechaVencimiento }
                                 label={'Fecha vencimiento'}
                                 className={'inputGeneral'}
                                 variant={"standard"}
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
                                 errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
+                                onChange={handleChangeAdicionar}
                                 type={"date"}
                                 InputLabelProps={{
                                     shrink: true,
@@ -745,97 +751,40 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                             />
                         </Grid>
 
-                        <Grid item md={5} xl={5} sm={12} xs={12}>
-                            <Files
-                                className='files-dropzone'
-                                onChange={(file ) =>{onFilesChange(file, 'imagenLicencia') }}
-                                onError={onFilesError}
-                                accepts={['.jpg', '.png', '.jpeg', '.pdf', '.PDF']} 
-                                multiple
-                                maxFiles={1}
-                                maxFileSize={1000000}
-                                clickable
-                                dropActiveClassName={"files-dropzone-active"}
-                            >
-                            <ButtonFileImg title={"Adicionar imagen de la licencia en formato jpg, png o pdf"} />
-                            </Files>
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
+                            <Button type={"button"} className={'modalBtn'} 
+                                startIcon={<AddIcon />} onClick={() => {adicionarFilaLicencia()}}> {"Agregar"}
+                            </Button>
                         </Grid>
 
-                        <Grid item md={4} xl={4} sm={12} xs={12}>
-                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                {formDataFile.imagenLicencia.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                })}
+
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='divisionFormulario'>
+                                Licencia del conducción adicionada
                             </Box>
                         </Grid>
 
-                        {(extencionArchivoLicencia !== ''  && tipo === 'U') ?
-                            <Grid item md={3} xl={3} sm={12} xs={12}>
-                                <Box className='frmTexto'>
-                                    <label>Visualizar adjunto de la licencia</label> 
-                                </Box>
-                                <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
-                                    <VisibilityIcon onClick={() => {setModal({open: true, extencion: extencionArchivoLicencia, ruta:rutaLicenciaAdjunta,  rutaEnfuscada: rutaArchivoEnfuscada })}} />
-                                </Avatar>
-                            </Grid>
-                        : null }
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Table className={'tableAdicional'} xl={{width: '90%', margin:'auto'}} md={{width: '90%', margin:'auto'}} sx={{width: '100%', margin:'auto'}} sm={{maxHeight: '100%', margin:'auto'}} >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tipo de categoria</TableCell>
+                                        <TableCell>Número de licencia</TableCell>
+                                        <TableCell>Fecha de expedición</TableCell>
+                                        <TableCell>Fecha de vencimiento</TableCell>
+                                        <TableCell>Imagen</TableCell>
+                                        <TableCell style={{width: '5%'}} className='cellCenter'>Acción </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                </TableBody>
+                             </Table>
 
-                        {(historialLicencias.length > 0 ) ?
-                            <Fragment>
-                                <Grid item md={12} xl={12} sm={12} xs={12}>
-                                    <Box className='divisionFormulario'>
-                                        Historial de licencias del conducción
-                                    </Box>
-                                </Grid>
-                                
-                                <Grid item xl={12} md={12} sm={12} xs={12}>
-                                    <Box sx={{maxHeight: '35em', overflow:'auto'}}>
-                                        <Table className={'tableAdicional'} xl={{width: '70%', margin:'auto'}} md={{width: '80%', margin:'auto'}} sx={{width: '90%', margin:'auto'}} sm={{maxHeight: '100%', margin:'auto'}} >
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Tipo de categoria</TableCell>
-                                                    <TableCell>Número de licencia</TableCell>
-                                                    <TableCell>Fecha de expedición</TableCell>
-                                                    <TableCell>Fecha de vencimiento</TableCell>
-                                                    <TableCell>Adjunto</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                            { historialLicencias.map((historial, a) => {
-                                                return(
-                                                    <TableRow key={'rowD-' +a}>
-                                                        <TableCell>
-                                                            <p>{historial['ticalinombre']}</p>
-                                                        </TableCell>
-        
-                                                        <TableCell>
-                                                            <p>{historial['conlicnumero']}</p>
-                                                        </TableCell>
-        
-                                                        <TableCell>
-                                                            <p>{historial['conlicfechaexpedicion']}</p>
-                                                        </TableCell>
-        
-                                                        <TableCell>
-                                                            <p>{historial['conlicfechavencimiento']}</p>
-                                                        </TableCell>
-        
-                                                        <TableCell>                              
-                                                            <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
-                                                                <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicfechaexpedicion'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
-                                                            </Avatar>
-                                                        </TableCell>
-                                                    
-                                                    </TableRow>
-                                                    );
-                                                })
-                                            }                                
-                                            </TableBody>
-                                        </Table>
-                                    </Box>
-                                </Grid>
-                            </Fragment>
-                        :null}
+                             licenciasConduccion
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>                            
+                        </Grid>
 
                     </Fragment>
                 : null}
@@ -1021,15 +970,6 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     </Button>
                 </Stack>
             </Grid>
-
-            <ModalDefaultAuto
-                title={'Visualizar adjunto'}
-                content={<ShowAnexo extencion = {modal.extencion} ruta = {modal.ruta} rutaEnfuscada = {modal.rutaEnfuscada} />}
-                close={() =>{setModal({open : false})}}
-                tam = {'smallFlot'}
-                abrir ={modal.open}
-            />
-
         </ValidatorForm>
     );
 }

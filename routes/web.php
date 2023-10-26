@@ -61,9 +61,7 @@ use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
 use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
 
 use App\Http\Controllers\Admin\Conductor\ConductorController;
-
 use App\Http\Controllers\Admin\Vehiculos\AsignarVehiculoController;
-
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -76,6 +74,7 @@ Route::get('/download/digitalizados/{anyo}/{ruta}', [DownloadFileController::cla
 Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
 Route::get('/download/adjunto/documental/{sigla}/{anyo}/{ruta}', [DownloadFileController::class, 'download']);
 Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);//Decarga el documento con el QR
+Route::post('/admin/show/adjunto', [DownloadFileController::class, 'showAdjunto']);
 
 Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
 Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);

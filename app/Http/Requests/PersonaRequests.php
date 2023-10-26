@@ -21,13 +21,11 @@ class PersonaRequests extends FormRequest
      */
     public function rules(): array
     {
-        //dd($this->input('fechaIngreso'));
-
         return [
             'documento'              => 'required|string|max:15|unique:persona,persdocumento,'. $this->input('codigo').',persid,tipideid,'.$this->input('tipoIdentificacion'), 
             'cargo'                  => 'required|numeric',
             'tipoIdentificacion'     => 'required|numeric',
-            'tipoRelacionLaboral'    => 'required|string',
+            'tipoPersona'            => 'required|string',
             'departamentoNacimiento' => 'required|numeric',
             'municipioNacimiento'    => 'required|numeric',
             'departamentoExpedicion' => 'required|numeric',
@@ -49,9 +47,15 @@ class PersonaRequests extends FormRequest
             'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
             'claveCertificado'       => 'nullable|string|max:20',
             'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:formulario,ASOCIADO',
-            'fechaIngresoConductor'  => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
-            'tipoConductor'          => 'nullable|numeric|required_if:formulario,CONDUCTOR',
-            'agencia'                => 'nullable|numeric|required_if:formulario,CONDUCTOR'             
+
+            'fechaIngresoConductor'   => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
+            'tipoConductor'           => 'nullable|string|required_if:formulario,CONDUCTOR',
+            'agencia'                 => 'nullable|numeric|required_if:formulario,CONDUCTOR',
+            'tipoCategoria'           => 'nullable|string|required_if:formulario,CONDUCTOR',
+            'numeroLicencia'          => 'nullable|string|min:4|max:30|required_if:formulario,CONDUCTOR',
+            'fechaExpedicionLicencia' => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
+            'fechaVencimiento'        => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
+            'imagenLicencia' 	      => 'nullable|mimes:jpg,png,jpeg,pdf|max:1000'
         ];
     }
 }

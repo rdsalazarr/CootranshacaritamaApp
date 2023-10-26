@@ -71,5 +71,32 @@ class DownloadFileController extends Controller
 		} catch (DecryptException $e) {
 		   return redirect('/error/url');
 		}
-    }    
+    }
+
+    public function showAdjunto(Request $request)
+	{
+        $this->validate(request(),['ruta' => 'required']);
+        try {
+	    	$ruta    = Crypt::decrypt($request->rutaEnfuscada);
+            $carpeta = $request->ruta;
+            $file = public_path().$carpeta.'/'.$ruta;
+            if (file_exists($file)) {
+
+                //return response()->download($file, $ruta);
+            } else {
+                return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
+            }
+		} catch (DecryptException $e) {
+		   return redirect('/error/url');
+		}    
+      
+        try{
+       
+
+            $generarPdf   = new generarPdf();
+            return response()->json(["data" => $generarPdf->generarStickersRadicado($dataRadicado, $dataCopia)]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);
+        }
+    } 
 }

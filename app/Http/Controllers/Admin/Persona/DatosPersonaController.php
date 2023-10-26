@@ -5,30 +5,37 @@ namespace App\Http\Controllers\Admin\Persona;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Exception, DB, URL;
+use Carbon\Carbon;
 
 class DatosPersonaController extends Controller
 {
     public function index(Request $request)
 	{ 
         $this->validate(request(),['tipo' => 'required', 'codigo' => 'required', 'frm' => 'required']);
+
+        $fechaHoraActual       = Carbon::now();
+        $fechaActual           = $fechaHoraActual->format('Y-m-d');
+        $fechaAnterior         = $fechaHoraActual->subDays(10);
         $tipoConductores       = [];
         $agencias              = [];
         $persona               = [];
         $tpCateLicencias       = [];
+        $conductorLicencia     = [];
+        $historialLicencias    = [];
         $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabid', '>', 3)->where('carlabactivo', true)->orderBy('carlabnombre')->get();
 		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
         $departamentos         = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
         $municipios            = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
-       
+
         if($request->frm === 'CONDUCTOR'){
             $tipoConductores   = DB::table('tipoconductor')->select('tipconid','tipconnombre')->orderBy('tipconnombre')->get();
             $agencias          = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
             $tpCateLicencias   = DB::table('tipocategorialicencia')->select('ticaliid','ticalinombre')->orderBy('ticalinombre')->get();
         }
-       
+
         if($request->tipo !== 'I'){
             $url        = URL::to('/');
-            $persona    = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tirelaid','p.persdepaidnacimiento','p.persmuniidnacimiento',
+            $persona    = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tipperid','p.persdepaidnacimiento','p.persmuniidnacimiento',
                                 'p.persdepaidexpedicion','p.persmuniidexpedicion','p.persdocumento','p.perstienefirmadigital',
                                 'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                 'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
@@ -39,22 +46,56 @@ class DatosPersonaController extends Controller
                                 DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"),
                                 DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutacrt ) as rutaCrt"),
                                 DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutapem ) as rutaPem"),
-                                'a.asocfechaingreso as fechaIngresoAsocido', 'c.condfechaingreso as fechaIngresoConductor')
+                                'a.asocfechaingreso', 'c.condid','c.tiescoid','c.tipconid','c.agenid','c.condfechaingreso',
+                                DB::raw("(SELECT MAX(cl.conlicfechavencimiento) FROM conductorlicencia as cl
+                                                        INNER JOIN conductor as c on c.condid = cl.condid
+                                                        WHERE c.persid = p.persid) AS maxFechaVencimiento"),
+                                DB::raw("(SELECT COUNT(cl.conlicid) AS conlicid FROM conductorlicencia as cl
+                                                        INNER JOIN conductor as c on c.condid = cl.condid
+                                                        WHERE c.persid = p.persid 
+                                                        and conlicfechavencimiento > '$fechaAnterior'
+                                                        and conlicfechavencimiento < '$fechaActual'
+                                                        and conlicfechavencimiento = (SELECT MAX(conlicfechavencimiento) FROM conductorlicencia WHERE condid = c.condid )
+                                                        ) AS totalLicenciaPorVencer")
+                                )
                                 ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                 ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
                                 ->leftJoin('conductor as c', 'c.persid', '=', 'p.persid')
                                 ->where('p.persid', $request->codigo)
                                 ->first();
+
+            if($request->frm === 'CONDUCTOR'){
+                $documento           = $persona->persdocumento;
+                $maxFechaVencimiento = $persona->maxFechaVencimiento;
+                $conductorLicencia   = DB::table('conductorlicencia')
+                                        ->select('conlicid','condid','ticaliid','conlicnumero','conlicfechaexpedicion','conlicfechavencimiento',
+                                                'conlicextension', 'conlicnombrearchivooriginal', 'conlicnombrearchivoeditado', 'conlicrutaarchivo',
+                                                DB::raw("CONCAT('archivos/persona/',$documento) as rutaAdjuntoLicencia"))
+                                        ->where('condid', $persona->condid)
+                                        ->where('conlicfechavencimiento', '>', $fechaActual)
+                                        ->where('conlicfechavencimiento', '<=', $maxFechaVencimiento)
+                                        ->first();
+                $conductorLicencia = ($conductorLicencia) ? $conductorLicencia : [];
+
+                $historialLicencias  = DB::table('conductorlicencia as cl')
+                                        ->select('tcl.ticalinombre','cl.conlicnumero','cl.conlicfechaexpedicion','cl.conlicfechavencimiento',
+                                                'cl.conlicextension', 'cl.conlicnombrearchivooriginal', 'cl.conlicnombrearchivoeditado', 'cl.conlicrutaarchivo',
+                                                DB::raw("CONCAT('archivos/persona/',$documento) as rutaAdjuntoLicencia"))
+                                       ->join('tipocategorialicencia as tcl', 'tcl.ticaliid', '=', 'cl.ticaliid')
+                                        ->where('cl.condid', $persona->condid)
+                                        ->where('cl.conlicfechavencimiento', '<', $maxFechaVencimiento)
+                                        ->get();
+            }
         }
 
-        return response()->json(["tipoCargoLaborales" => $cargoLaborales, "tipoIdentificaciones" => $tipoIdentificaciones, "agencias" => $agencias,
-                                  "departamentos"     => $departamentos,  "municipios"           => $municipios,            "persona" => $persona,
-                                  "tipoConductores" => $tipoConductores,  "tpCateLicencias"      => $tpCateLicencias]);
-                                   
+        return response()->json(["tipoCargoLaborales"  => $cargoLaborales,   "tipoIdentificaciones" => $tipoIdentificaciones,  "agencias"          => $agencias,
+                                  "departamentos"      => $departamentos,    "municipios"           => $municipios,            "persona"           => $persona,
+                                  "tipoConductores"    => $tipoConductores,  "tpCateLicencias"      => $tpCateLicencias,       "conductorLicencia" => $conductorLicencia,
+                                  "historialLicencias" => $historialLicencias ]);
 	}
 
     public function show(Request $request)
-    {  
+    {
         $id   = $request->codigo;
         $url  = URL::to('/');
         $data = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'tp.tippernombre as nombreTipoPersona', 'p.persdocumento',

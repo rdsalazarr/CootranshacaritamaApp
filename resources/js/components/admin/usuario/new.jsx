@@ -259,7 +259,7 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={4} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
                         name={'alias'}
                         value={formData.alias}
@@ -335,10 +335,10 @@ export default function New({data, tipo}){
                     </Box>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={0} xs={0}>
+                <Grid item xl={4} md={4} sm={1} xs={1}>
                 </Grid>
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={8} xs={11}>
                     <SelectValidator
                         name={'rol'}
                         value={formDataAdicionar.rol}
@@ -355,7 +355,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={2} md={2} sm={2} xs={12}>
                     <Button type={"button"} className={'modalBtn'} 
                         startIcon={<AddIcon />} onClick={() => {adicionarFilaRol()}}> {"Agregar"}
                     </Button>
