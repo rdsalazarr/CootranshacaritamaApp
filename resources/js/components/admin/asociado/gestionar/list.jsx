@@ -23,7 +23,7 @@ export default function List(){
                         <Frm tipo={'I'} frm={'ASOCIADO'} url={'/admin/asociado/salve'} tpRelacion={'A'} />,
                         <Frm data={modal.data} tipo={'U'} frm={'ASOCIADO'} url={'/admin/asociado/salve'} tpRelacion={'A'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.asocid : null} ruta={'/admin/asociado/destroy'} cerrarModal={cerrarModal} />,
-                        <Show id={(tipo === 3) ? modal.data.persid : null}/>
+                        <Show id={(tipo === 3) ? modal.data.persid : null} frm={'ASOCIADO'}/>
                     ];
 
     const tituloModal = ['Nuevo asociado','Editar asociado','','Visualizar la información del asociado'];

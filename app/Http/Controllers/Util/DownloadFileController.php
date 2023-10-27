@@ -79,24 +79,21 @@ class DownloadFileController extends Controller
         try {
 	    	$ruta    = Crypt::decrypt($request->rutaEnfuscada);
             $carpeta = $request->ruta;
-            $file = public_path().$carpeta.'/'.$ruta;
+            $file = public_path().'/'.$carpeta.'/'.$ruta;
             if (file_exists($file)) {
-
-                //return response()->download($file, $ruta);
+                $stream = @fopen($file, 'r');
+                if (!$stream) {
+                    return response()->json(['successError' => true, 'message'=> 'Error al abir el archivo => '.$ruta]); 
+                }
+                $img = @stream_get_contents($stream);
+                $archivo = base64_encode($img);
+                @fclose($stream);
+                return response()->json(["data" => $archivo]);
             } else {
-                return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
+                return response()->json(['successError' => true, 'message'=> 'Error el archivo no fue encontrado']);
             }
 		} catch (DecryptException $e) {
 		   return redirect('/error/url');
-		}    
-      
-        try{
-       
-
-            $generarPdf   = new generarPdf();
-            return response()->json(["data" => $generarPdf->generarStickersRadicado($dataRadicado, $dataCopia)]);
-        }catch(Exception $e){
-            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);
-        }
-    } 
+		} 
+    }
 }

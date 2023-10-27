@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar} from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {ButtonFileImg, ContentFile} from "../../layout/files";
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -29,7 +29,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
     const [showFotografia, setShowFotografia] = useState('');
-    const [showFirmaPersona, setFirmaPersona] = useState('');    
+    const [showFirmaPersona, setFirmaPersona] = useState('');
     const [rutaArchivoEnfuscada, setRutaArchivoEnfuscada] = useState('');
     const [rutaLicenciaAdjunta, setRutaLicenciaAdjunta] = useState('');
     const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState('');
@@ -43,7 +43,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
     const [tipoConductores, setTipoConductores] = useState([]);
     const [historialLicencias, setHistorialLicencias] = useState([]); 
-    const [agencias, setAgencias] = useState([]);     
+    const [agencias, setAgencias] = useState([]);
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -238,6 +238,10 @@ export default function New({data, tipo, frm, url, tpRelacion}){
             }
         });
         setMunicipiosExpedicion(munExpedicion); 
+    }
+
+    const cerrarModal = () =>{
+        setModal({open : false});
     }
 
     if(loader){
@@ -788,7 +792,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 
                                 <Grid item xl={12} md={12} sm={12} xs={12}>
                                     <Box sx={{maxHeight: '35em', overflow:'auto'}}>
-                                        <Table className={'tableAdicional'} xl={{width: '70%', margin:'auto'}} md={{width: '80%', margin:'auto'}} sx={{width: '90%', margin:'auto'}} sm={{maxHeight: '100%', margin:'auto'}} >
+                                        <Table className={'tableAdicional'} sx={{width: '90%', margin:'auto'}} sm={{width: '100%', margin:'auto'}} >
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>Tipo de categoria</TableCell>
@@ -805,29 +809,31 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                                         <TableCell>
                                                             <p>{historial['ticalinombre']}</p>
                                                         </TableCell>
-        
+
                                                         <TableCell>
                                                             <p>{historial['conlicnumero']}</p>
                                                         </TableCell>
-        
+
                                                         <TableCell>
                                                             <p>{historial['conlicfechaexpedicion']}</p>
                                                         </TableCell>
-        
+
                                                         <TableCell>
                                                             <p>{historial['conlicfechavencimiento']}</p>
                                                         </TableCell>
-        
-                                                        <TableCell>                              
-                                                            <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
-                                                                <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicfechaexpedicion'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
-                                                            </Avatar>
+
+                                                        <TableCell>
+                                                            {(historial['conlicextension'] !== '') ?
+                                                                <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
+                                                                    <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicextension'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
+                                                                </Avatar>
+                                                            :null}
                                                         </TableCell>
-                                                    
+
                                                     </TableRow>
                                                     );
                                                 })
-                                            }                                
+                                            }
                                             </TableBody>
                                         </Table>
                                     </Box>
@@ -866,7 +872,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                             return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
                         })}
                     </Box>
-                </Grid>             
+                </Grid>
 
                 {(showFotografia !== '' && tipo === 'U') ?
                     <Grid item md={3} xl={3} sm={12} xs={12}>
@@ -1022,7 +1028,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
             <ModalDefaultAuto
                 title={'Visualizar adjunto'}
-                content={<ShowAnexo extencion = {modal.extencion} ruta = {modal.ruta} rutaEnfuscada = {modal.rutaEnfuscada} />}
+                content={<ShowAnexo extencion={modal.extencion} ruta={modal.ruta} rutaEnfuscada={modal.rutaEnfuscada} cerrarModal={cerrarModal} />}
                 close={() =>{setModal({open : false})}}
                 tam = {'smallFlot'}
                 abrir ={modal.open}

@@ -11,6 +11,6 @@ class VehiculoSoat extends Model
 
     protected $table      = 'vehiculosoat';
     protected $primaryKey = 'vehsoaid';
-    protected $fillable   = ['vehiid','vehpolnumeropolizacontractual','vehpolnumeropolizaextcontrac','vehpolfechainicial', 'vehpolfechafinal',
-                             'vehpolextension', 'vehpolnombrearchivooriginal', 'vehpolnombrearchivoeditado', 'vehpolrutaarchivo'];
+    protected $fillable   = ['vehiid','vehsoanumero','vehsoafechainicial', 'vehsoafechafinal','vehsoaextension', 
+                             'vehsoanombrearchivooriginal', 'vehsoanombrearchivoeditado', 'vehsoarutaarchivo'];
 }

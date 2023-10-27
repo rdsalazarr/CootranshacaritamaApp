@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vehiculocambioestado', function (Blueprint $table) {
             $table->increments('vecaesid')->unsigned()->comment('Identificador de la tabla vehículo cambio estado');
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
-            $table->tinyInteger('tiesveid')->unsigned()->comment('Identificador del tipo de estado vehículo');
+            $table->string('tiesveid', 2)->unsigned()->comment('Identificador del tipo de estado vehículo');
             $table->smallInteger('vecaesusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del vehículo');
             $table->dateTime('vecaesfechahora')->comment('Fecha y hora en la cual se crea el cambio estado del vehículo');
             $table->string('vecaesobservacion', 500)->nullable()->comment('Observación del cambio estado del vehículo');

@@ -1,11 +1,14 @@
 import React, {useState, useEffect, Fragment} from 'react';
+import {Grid, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar} from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
-import {Grid, Box, Link} from '@mui/material';
+import ShowAnexo from '../vehiculos/showAnexo';
 import instance from '../../layout/instance';
 import Trazabilidad from './trazabilidad';
 
-export default function Show({id}){
+export default function Show({id, frm}){
 
     const [loader, setLoader] = useState(false);
     const [formData, setFormData] = useState(
@@ -14,14 +17,21 @@ export default function Show({id}){
                                     segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', 
                                     genero:'',firma:'', foto:'', showFotografia:'', showFirmaPersona:'', estado: ''
                                     } );
+
     const [cambiosEstadoAsociado, setCambiosEstadoAsociado] = useState([]);
     const [cambiosEstadoConductor, setCambiosEstadoConductor] = useState([]);
+    const [licenciasConducion, setLicenciasConducion] = useState([]);
+    const [modal, setModal] = useState({open : false, extencion:'', ruta:''});
+
+    const cerrarModal = () =>{
+        setModal({open : false});
+    }
 
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData};
-        instance.post('/admin/show/persona', {codigo: id}).then(res=>{
-            let persona                           = res.data;
+        instance.post('/admin/show/persona', {codigo: id, frm: frm}).then(res=>{
+            let persona                           = res.persona;
             newFormData.documento                 = persona.persdocumento;
             newFormData.cargo                     = persona.nombreCargo;
             newFormData.tipoIdentificacion        = persona.nombreTipoIdentificacion;
@@ -52,6 +62,17 @@ export default function Show({id}){
             newFormData.rutaDescargaPem           = persona.rutaPem;
             newFormData.totalCambioEstadoAsociado  = persona.totalCambioEstadoAsociado
             newFormData.totalCambioEstadoConductor = persona.totalCambioEstadoConductor
+
+            if(frm == 'ASOCIADO'){
+                newFormData.fechaIngresoAsociado  = persona.asocfechaingreso;
+            }
+
+            if(frm == 'CONDUCTOR'){
+                newFormData.tipoConductor           = persona.tipconnombre;
+                newFormData.agencia                 = persona.agennombre;
+                newFormData.fechaIngresoConductor   = persona.condfechaingreso;
+                setLicenciasConducion(res.licenciasConducion);
+            }
 
             setFormData(newFormData);
             setCambiosEstadoAsociado(res.cambiosEstadoAsociado);
@@ -189,33 +210,139 @@ export default function Show({id}){
                     </Box>
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                   <Box className='frmTexto'>
-                        <label>Cargo laboral</label>
-                        <span>{formData.cargo}</span>
-                    </Box>
-                </Grid>
+                {(frm === 'PERSONA') ?
+                    <Fragment>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <Box className='frmTexto'>
+                                <label>Cargo laboral</label>
+                                <span>{formData.cargo}</span>
+                            </Box>
+                        </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <Box className='frmTexto'>
-                        <label>Tipo relación laboral</label>
-                        <span>{formData.nombreTipoPersona}</span>
-                    </Box>
-                </Grid>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Tipo relación laboral</label>
+                                <span>{formData.nombreTipoPersona}</span>
+                            </Box>
+                        </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <Box className='frmTexto'>
-                        <label>Activo</label>
-                        <span>{formData.estado}</span>
-                    </Box>
-                </Grid>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Activo</label>
+                                <span>{formData.estado}</span>
+                            </Box>
+                        </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <Box className='frmTexto'>
-                        <label>¿Tiene firma digital?</label>
-                        <span>{formData.tieneFirmaDigital}</span>
-                    </Box>
-                </Grid>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>¿Tiene firma digital?</label>
+                                <span>{formData.tieneFirmaDigital}</span>
+                            </Box>
+                        </Grid>
+                    </Fragment>
+                    : null}
+
+                {(frm === 'ASOCIADO') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Información de asociado
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Fecha ingreso como asociado</label>
+                                <span>{formData.fechaIngresoAsociado}</span>
+                            </Box>
+                        </Grid>
+                    </Fragment>
+                : null}
+
+                {(frm === 'CONDUCTOR') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Información del conductor
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Fecha ingreso como condutor</label>
+                                <span>{formData.fechaIngresoConductor}</span>
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Tipo de conductor</label>
+                                <span>{formData.tipoConductor}</span>
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Agencia</label>
+                                <span>{formData.agencia}</span>
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Información de la licencia del conducción
+                            </Box>
+                        </Grid>
+                                
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box sx={{maxHeight: '35em', overflow:'auto'}}>
+                                <Table className={'tableAdicional'}  sx={{width: '70%', margin:'auto'}}  >
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Tipo de categoria</TableCell>
+                                            <TableCell>Número de licencia</TableCell>
+                                            <TableCell>Fecha de expedición</TableCell>
+                                            <TableCell>Fecha de vencimiento</TableCell>
+                                            <TableCell>Adjunto</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                    { licenciasConducion.map((historial, a) => {
+                                        return(
+                                            <TableRow key={'rowD-' +a}>
+                                                <TableCell>
+                                                    <p>{historial['ticalinombre']}</p>
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    <p>{historial['conlicnumero']}</p>
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    <p>{historial['conlicfechaexpedicion']}</p>
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    <p>{historial['conlicfechavencimiento']}</p>
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
+                                                        <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicextension'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
+                                                    </Avatar>
+                                                </TableCell>
+                                            
+                                            </TableRow>
+                                            );
+                                        })
+                                    }                                
+                                    </TableBody>
+                                </Table>
+                            </Box>
+                        </Grid>
+                       
+                    </Fragment>
+                : null}
 
                 {(formData.foto !== null) ?
                     <Grid item md={3} xl={3} sm={12} xs={12}>
@@ -270,6 +397,14 @@ export default function Show({id}){
                 : null }
 
             </Grid>
+
+            <ModalDefaultAuto
+                title={'Visualizar adjunto'}
+                content={<ShowAnexo extencion={modal.extencion} ruta={modal.ruta} rutaEnfuscada={modal.rutaEnfuscada} cerrarModal={cerrarModal} />}
+                close={() =>{setModal({open : false})}}
+                tam = {'smallFlot'}
+                abrir ={modal.open}
+            />
         </Box>
     )
 }

@@ -14,17 +14,17 @@ class TipoEstadoVehiculoSeeder extends Seeder
     public function run(): void
     {
         DB::table('tipoestadovehiculo')->insert([
-            'tiesveid'     => '1',
+            'tiesveid'     => 'A',
             'tiesvenombre' => 'Activo'
         ]);
 
         DB::table('tipoestadovehiculo')->insert([
-            'tiesveid'     => '2',
+            'tiesveid'     => 'S',
             'tiesvenombre' => 'Suspendido'
         ]);
 
         DB::table('tipoestadovehiculo')->insert([
-            'tiesveid'     => '3',
+            'tiesveid'     => 'D',
             'tiesvenombre' => 'Desvinculado'
         ]);
     }

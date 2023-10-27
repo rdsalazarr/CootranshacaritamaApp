@@ -96,14 +96,17 @@ class DatosPersonaController extends Controller
 
     public function show(Request $request)
     {
+        $this->validate(request(),['codigo' => 'required', 'frm' => 'required']);
+
         $id   = $request->codigo;
+        $frm  = $request->frm;
         $url  = URL::to('/');
-        $data = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'tp.tippernombre as nombreTipoPersona', 'p.persdocumento',
+        $persona = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'tp.tippernombre as nombreTipoPersona', 'p.persdocumento',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     'p.persgenero','p.persrutafoto','p.persrutafirma','p.perstienefirmadigital as firmaDigital',
                                     'dn.depanombre as nombreDeptoNacimiento', 'mn.muninombre as nombreMunicipioNacimiento',   
-                                    'de.depanombre as nombreDeptoExpedicion', 'me.muninombre as nombreMunicipioExpedicion',  
+                                    'de.depanombre as nombreDeptoExpedicion', 'me.muninombre as nombreMunicipioExpedicion',
                                     DB::raw("if(p.persgenero = 'M' ,'Masculino', 'Femenino') as genero"),
                                     DB::raw("if(p.perstienefirmadigital = 1 ,'Sí', 'No') as tieneFirmaDigital"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
@@ -112,7 +115,7 @@ class DatosPersonaController extends Controller
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaPersona"),
                                     DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutacrt ) as rutaCrt"),
                                     DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutapem ) as rutaPem"),
-                                    'a.asocfechaingreso as fechaIngresoAsocido', 'c.condfechaingreso as fechaIngresoConductor','a.asocid',
+                                    'a.asocfechaingreso', 'tc.tipconnombre','ag.agennombre','c.condfechaingreso',
                                     DB::raw('(SELECT COUNT(ascaesid) AS ascaesid FROM asociadocambioestado WHERE asocid = a.asocid ) AS totalCambioEstadoAsociado'),
                                     DB::raw('(SELECT COUNT(cocaesid) AS cocaesid FROM conductorcambioestado WHERE condid = c.condid ) AS totalCambioEstadoConductor'))
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
@@ -132,12 +135,26 @@ class DatosPersonaController extends Controller
                                     })
                                     ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
                                     ->leftJoin('conductor as c', 'c.persid', '=', 'p.persid')
+                                    ->leftJoin('tipoconductor as tc', 'tc.tipconid', '=', 'c.tipconid')
+                                    ->leftJoin('agencia as ag', 'ag.agenid', '=', 'c.agenid')                                 
                                     ->orderBy('persprimernombre')->orderBy('perssegundonombre')
                                     ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')
                                     ->where('p.persid', $id)->first();
 
+        $licenciasConducion  = [];
+        if($frm === 'CONDUCTOR'){
+            $documento           = $persona->persdocumento;
+            $licenciasConducion  = DB::table('conductorlicencia as cl')
+                        ->select('tcl.ticalinombre','cl.conlicnumero','cl.conlicfechaexpedicion','cl.conlicfechavencimiento',
+                                'cl.conlicextension', 'cl.conlicnombrearchivooriginal', 'cl.conlicnombrearchivoeditado', 'cl.conlicrutaarchivo',
+                                DB::raw("CONCAT('archivos/persona/',$documento) as rutaAdjuntoLicencia"))
+                        ->join('tipocategorialicencia as tcl', 'tcl.ticaliid', '=', 'cl.ticaliid')
+                        ->join('conductor as c', 'c.condid', '=', 'cl.condid')
+                        ->where('c.persid', $id)->get();
+        }
+
         $cambiosEstadoAsociado  = [];
-        if($data->totalCambioEstadoAsociado > 0 ){
+        if($persona->totalCambioEstadoAsociado > 0 ){
             $cambiosEstadoAsociado =  DB::table('asociadocambioestado as ace')
                                     ->select('ace.ascaesfechahora as fecha','ace.ascaesobservacion as observacion','tea.tiesasnombre as estado',
                                         DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
@@ -148,7 +165,7 @@ class DatosPersonaController extends Controller
         }
 
         $cambiosEstadoConductor = [];
-        if($data->totalCambioEstadoConductor > 0 ){
+        if($persona->totalCambioEstadoConductor > 0 ){
             $cambiosEstadoConductor =  DB::table('conductorcambioestado as cce')
                                     ->select('cce.cocaesfechahora as fecha','cce.cocaesobservacion as observacion','tec.tiesconombre as estado',
                                         DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
@@ -158,6 +175,7 @@ class DatosPersonaController extends Controller
                                     ->where('c.persid', $id)->get();
         }
 
-        return response()->json(["data" => $data, "cambiosEstadoAsociado" => $cambiosEstadoAsociado, "cambiosEstadoConductor" => $cambiosEstadoConductor]);
+        return response()->json(["persona" => $persona,                              "cambiosEstadoAsociado" => $cambiosEstadoAsociado, 
+                                "cambiosEstadoConductor" => $cambiosEstadoConductor, "licenciasConducion" => $licenciasConducion]);
     }
 }

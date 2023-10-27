@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tipoestadovehiculo', function (Blueprint $table) {
-            $table->tinyInteger('tiesveid')->unsigned()->comment('Identificador de la tabla tipo estado vehículo');
+        Schema::create('tipoestadovehiculo', function (Blueprint $table) {        
+            $table->string('tiesveid', 2)->comment('Identificador de la tabla tipo estado vehículo');
             $table->string('tiesvenombre', 50)->comment('Nombre del tipo estado vehículo');;
             $table->primary('tiesveid')->index('pk_tiesve');
         });

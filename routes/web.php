@@ -358,14 +358,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/listar/vehiculos', [AsignarVehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/asignarVehiculo');
             Route::post('/consultar/asignacion/vehiculo', [AsignarVehiculoController::class, 'asignacionVehiculo']);
             Route::get('/listar/asociados', [AsignarVehiculoController::class, 'listAsociados']);
-            Route::post('/asociados/salve', [AsignarVehiculoController::class, 'salveAsocidos']);
-            Route::get('/listar/conductores', [AsignarVehiculoController::class, 'listConducores']);
-            Route::post('/conductores/salve', [AsignarVehiculoController::class, 'salveConductores']);
-            Route::get('/listar/soat', [AsignarVehiculoController::class, 'listSoat']);
+            Route::post('/asociados/salve', [AsignarVehiculoController::class, 'salveAsocido']);
+            Route::get('/listar/conductores', [AsignarVehiculoController::class, 'listCondutores']);
+            Route::post('/conductores/salve', [AsignarVehiculoController::class, 'salveConductor']);
+
+            Route::post('/listar/soat', [AsignarVehiculoController::class, 'listSoat']);
             Route::post('/soat/salve', [AsignarVehiculoController::class, 'salveSoat']);
-            Route::get('/crt/conductores', [AsignarVehiculoController::class, 'listCrt']);
+            Route::post('/crt/conductores', [AsignarVehiculoController::class, 'listCrt']);
             Route::post('/crt/salve', [AsignarVehiculoController::class, 'salveCrt']);
-            Route::get('/listar/polizas', [AsignarVehiculoController::class, 'listPolizas']);
+            Route::post('/listar/polizas', [AsignarVehiculoController::class, 'listPolizas']);
             Route::post('/polizas/salve', [AsignarVehiculoController::class, 'salvePolizas']);
 
         });

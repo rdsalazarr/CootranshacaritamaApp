@@ -2,8 +2,8 @@
 
 namespace App\Util;
 
-use Illuminate\Support\Facades\Crypt;
 use App\Models\Conductor\ConductorLicencia;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\Conductor\Conductor;
 use App\Util\redimencionarImagen;
 use App\Models\Asociado\Asociado;
@@ -124,16 +124,17 @@ class personaManager {
                 $debeActualizarImagen = false;
                 if($request->hasFile('imagenLicencia')){
                     $debeActualizarImagen = true;
+                    $numeroAleatorio      = rand(100, 1000);
                     $file                 = $request->file('imagenLicencia');
                     $nombreOriginalLic    = $file->getclientOriginalName();
                     $filename             = pathinfo($nombreOriginalLic, PATHINFO_FILENAME);
                     $extension            = pathinfo($nombreOriginalLic, PATHINFO_EXTENSION);
-                    $rutaImagenLicencia   = $request->numeroLicencia."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+                    $rutaImagenLicencia   = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
                     $file->move($rutaCarpeta, $rutaImagenLicencia);
                     $rutaArchivo          = Crypt::encrypt($rutaImagenLicencia);
                     $extension            = mb_strtoupper($extension,'UTF-8');
                     if($extension !== 'PDF')
-                        $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaImagenLicencia, 480, 340);//Se redimenciona a un solo tipo (alto * largo)
+                        $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaImagenLicencia, 480, 340);//Se redimenciona a un solo tipo (ancho * alto)
                 }
 
                 if($request->tipo === 'I'){
@@ -191,42 +192,6 @@ class personaManager {
 
                     $conductorlicencia->save();
                 }
-
-               
-
-                /*foreach($request->licenciasConduccion as $licenciaConductor){
-                    $identificadorFirma = $licenciaConductor['identificador'];
-                    $tipoCategoria      = $licenciaConductor['tipoCategoria'];
-                    $numeroLicencia     = $licenciaConductor['numeroLicencia'];
-                    $fechaExpedicion    = $licenciaConductor['fechaExpedicion'];
-                    $fechaVencimiento   = $licenciaConductor['fechaVencimiento'];
-                    $estadoLicencia     = $licenciaConductor['estado'];
-
-                    /*$nombreOriginal = $file->getclientOriginalName();
-					$filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
-					$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
-					$nombreArchivo  = $numeroLicencia."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-					$file->move($rutaCarpeta, $nombreArchivo);
-					$rutaArchivo    = Crypt::encrypt($nombreArchivo);*/
-
-                   /* if($estadoLicencia === 'I'){
-                        $conductorlicencia                              = new ConductorLicencia();
-                        $conductorlicencia->condid                      = $condid;
-                        $conductorlicencia->ticaliid                    = $tipoCategoria;
-                        $conductorlicencia->conlicnumero                = $numeroLicencia;
-                        $conductorlicencia->conlicfechaexpedicion       = $fechaExpedicion;
-                        $conductorlicencia->conlicfechavencimiento      = $fechaVencimiento;
-                        //$conductorlicencia->conlicextension             = $extension;
-                        //$conductorlicencia->conlicnombrearchivooriginal = $nombreOriginal;
-                        //$conductorlicencia->conlicnombrearchivoeditado  = $nombreArchivo;
-                        //$conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
-                        $conductorlicencia->save();
-                    }else if($estadoLicencia === 'D'){
-                        $conductorlicencia = ConductorLicencia::findOrFail($identificadorFirma);
-                        $conductorlicencia->delete();
-                    }else{//omitir
-                    }
-                }*/
             }
 
         	DB::commit();

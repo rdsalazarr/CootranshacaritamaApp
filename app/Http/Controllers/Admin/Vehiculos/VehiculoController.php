@@ -15,7 +15,7 @@ class VehiculoController extends Controller
     public function index()
     {
         $data = DB::table('vehiculo as v')->select('v.vehiid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
-                                                    'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','tipvehnombre')
+                                                    'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','tv.tipvehnombre')
                                                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                                                     ->orderBy('v.vehiplaca')->get();
         return response()->json(["data" => $data]);
