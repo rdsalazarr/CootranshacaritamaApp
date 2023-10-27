@@ -27,7 +27,7 @@ export default function Search(){
 
     const consultarVehiculo = () =>{
         setDatosEncontrados(false);
-        instance.post('/admin/asociado/consultar', formData).then(res=>{
+        instance.post('/admin/direccion/transporte/consultar/asignacion/vehiculo', formData).then(res=>{
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');
             }else{
@@ -37,10 +37,9 @@ export default function Search(){
         })
     }
 
-
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/asociado/desvincular').then(res=>{
+        instance.get('/admin/direccion/transporte/listar/vehiculos').then(res=>{
             setVehiculos(res.tipoIdentificaciones);           
             setLoader(false);
         })
@@ -62,7 +61,7 @@ export default function Search(){
                         <Grid container spacing={2}>
                             <Grid item xl={12} md={12} sm={12} xs={12} sx={{position: 'relative'}}>                                            
                                 <Autocomplete
-                                    id="lugar"
+                                    id="vehiculo"
                                     style={{height: "26px"}}
                                     options={vehiculos}
                                     freeSolo

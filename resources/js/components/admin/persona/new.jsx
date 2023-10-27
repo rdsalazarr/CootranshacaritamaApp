@@ -3,6 +3,7 @@ import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui
 import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import {ButtonFileImg, ContentFile} from "../../layout/files";
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
@@ -10,9 +11,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import ShowAnexo from '../vehiculos/showAnexo';
 import instance from '../../layout/instance';
 import Files from "react-files";
-import { green, pink } from '@mui/material/colors';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-
 
 export default function New({data, tipo, frm, url, tpRelacion}){
 
