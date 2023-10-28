@@ -225,7 +225,7 @@ export default function Polizas({id}){
                 <Grid container spacing={2}>
                     <Grid item md={12} xl={12} sm={12} xs={12}>
                         <Box className='frmDivision'>
-                            Historial de póliza asignado al vehículo
+                            Historial de pólizas asignado al vehículo
                         </Box>
                     </Grid>
 
