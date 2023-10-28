@@ -10,7 +10,7 @@ import instance from '../../../layout/instance';
 import AddIcon from '@mui/icons-material/Add';
 import ShowPersona from '../../persona/show';
 
-export default function Asociados({id, data}){
+export default function Asociados({id}){
 
     const [formData, setFormData] = useState({asociadoId:'', vehiculo:id})
     const [loader, setLoader] = useState(false);
@@ -68,8 +68,8 @@ export default function Asociados({id, data}){
     const inicio = () =>{
         setLoader(true);
         let newAsociados = []; 
-        instance.get('/admin/direccion/transporte/listar/asociados').then(res=>{
-            data.map((res) =>{
+        instance.post('/admin/direccion/transporte/listar/asociados', {vehiculoId: id}).then(res=>{
+            res.asociadoVehiculos.map((res) =>{
                 newAsociados.push({identificador:res.asovehid, asociadoId: res.asocid, nombreAsociado:res.nombrePersona, personaId: res.persid, estado: 'U'});
             })
             setAsociados(newAsociados);

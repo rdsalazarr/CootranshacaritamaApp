@@ -14,16 +14,9 @@ import Crt from './crt';
 export default function Search(){
 
     const [formData, setFormData] = useState({vehiculoId:''})
-    const [formDataConsulta, setFormDataConsulta] = useState({vehiculoId:''})
     const [loader, setLoader] = useState(false);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [vehiculos, setVehiculos] = useState([]);
-    const [asociadoVehiculos, setAsociadoVehiculos] = useState([]);
-    const [conductoresVehiculo, setConductoresVehiculo] = useState([]);    
-    const [soatVehiculo, setSoatVehiculos] = useState([]);
-    const [crtVehiculo, setCrtVehiculo] = useState([]);
-    const [polizasVehiculo, setPolizasVehiculos] = useState([]);
-    
     const [variantTab, setVariantTab] = useState((window.innerWidth <= 768) ? 'scrollable' : 'fullWidth');
     const [value, setValue] = useState(0); 
 
@@ -32,27 +25,19 @@ export default function Search(){
     }
 
     const consultarVehiculo = () =>{
+        setDatosEncontrados(false);
         if(formData.vehiculoId === ''){
             showSimpleSnackbar("Debe seleccionar un vehículo", 'error');
             return;
         }
-        let newFormDataConsulta = {...formDataConsulta}
-        setDatosEncontrados(false);
-        instance.post('/admin/direccion/transporte/consultar/asignacion/vehiculo', formData).then(res=>{
-            if(!res.success){
-                showSimpleSnackbar(res.message, 'error');
-            }else{
-                setDatosEncontrados(true);
-                newFormDataConsulta.vehiculoId = formData.vehiculoId
-                setAsociadoVehiculos(res.asociadoVehiculos);
-                setConductoresVehiculo(res.conductoresVehiculo);
-                setSoatVehiculos(res.soatVehiculo);
-                setCrtVehiculo(res.crtVehiculo);
-                setPolizasVehiculos(res.polizasVehiculo);
-                setFormDataConsulta(newFormDataConsulta);
-            }
-            setLoader(false);
-        })
+        setLoader(true);
+        setInterval(() => {recargarPagina(); }, 400)
+        setDatosEncontrados(true);
+    }
+
+    const recargarPagina = () =>{
+        setDatosEncontrados(true);
+        setLoader(false);
     }
 
     const inicio = () =>{
@@ -128,23 +113,23 @@ export default function Search(){
                         </Tabs>
     
                         <TabPanel value={value} index={0}>
-                            <Asociados id={formDataConsulta.vehiculoId} data={asociadoVehiculos} />
+                            <Asociados id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={1}>
-                            <Conductores id={formDataConsulta.vehiculoId} data={conductoresVehiculo} />
+                            <Conductores id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={2}>
-                            <Soat id={formDataConsulta.vehiculoId} data={soatVehiculo} />
+                            <Soat id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={3}>
-                            <Crt id={formDataConsulta.vehiculoId} data={crtVehiculo} />
+                            <Crt id={formData.vehiculoId} />
                         </TabPanel>
     
                         <TabPanel value={value} index={4}>
-                            <Polizas id={formDataConsulta.vehiculoId} data={polizasVehiculo} />
+                            <Polizas id={formData.vehiculoId} />
                         </TabPanel>
     
                     </Grid>

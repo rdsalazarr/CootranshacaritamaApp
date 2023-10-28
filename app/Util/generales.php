@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Util;
+
+use Carbon\Carbon;
 use DB;
 
 class generales
@@ -211,4 +213,26 @@ class generales
 
 		return ($estado === 0) ? true : false;
 	}
+
+	function validarFechaVencimiento($fechaActual, $fechaVencimiento) {
+        // Parsea las fechas a objetos Carbon
+        $fechaActual      = Carbon::parse($fechaActual);
+        $fechaVencimiento = Carbon::parse($fechaVencimiento);
+    
+        // Resta 10 días a la fecha actual
+        $fechaPosterior = $fechaActual->copy()->addDays(10);
+    
+        // Comprueba si la fecha actual es mayor o igual a la fecha de vencimiento
+        if ($fechaActual->greaterThanOrEqualTo($fechaVencimiento)) {
+            return true; // Debe actualizar
+        }
+    
+        // Comprueba si la fecha de vencimiento está entre la fecha posterior y la fecha actual
+        if ($fechaVencimiento->between($fechaPosterior, $fechaActual)) {
+            return true; // Debe actualizar
+        }
+    
+        return false; // No debe actualizar
+    }
+
 }

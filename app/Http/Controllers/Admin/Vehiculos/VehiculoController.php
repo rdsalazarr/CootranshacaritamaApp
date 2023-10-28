@@ -110,7 +110,7 @@ class VehiculoController extends Controller
 
         DB::beginTransaction();
         try {
-            $estado              = 1;
+            $estado              = 'A';
             $redimencionarImagen = new redimencionarImagen();
             $funcion 		     = new generales();
             $rutaCarpeta         = public_path().'/archivos/vehiculo/'.$request->placa;

@@ -221,6 +221,23 @@ body{
   }
 }
 
+.mensajeAdvertencia{
+  display: flex;
+  align-items: center;
+  background: #ec801c;
+  border-color: #cdcdcd;
+  border-radius: 10px;
+  border-style: outset;
+  border-width: 1px;
+  padding-left: 10px;
+  color: #fdfdfd;
+  font-weight: 600;
+  p{
+    text-align: justify;
+    padding-left: 10px;
+  }
+}
+
 .iconAdd{
   text-align: right;
   width: 98%;

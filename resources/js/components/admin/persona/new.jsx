@@ -6,6 +6,7 @@ import {ButtonFileImg, ContentFile} from "../../layout/files";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import showSimpleSnackbar from '../../layout/snackBar';
+import ErrorIcon from '@mui/icons-material/Error';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import ShowAnexo from '../vehiculos/showAnexo';
@@ -32,7 +33,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     const [showFirmaPersona, setFirmaPersona] = useState('');
     const [rutaArchivoEnfuscada, setRutaArchivoEnfuscada] = useState('');
     const [rutaLicenciaAdjunta, setRutaLicenciaAdjunta] = useState('');
-    const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState('');
+    const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState(null);
     const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
@@ -161,20 +162,22 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     newFormData.tipoConductor           = persona.tipconid;
                     newFormData.agencia                 = persona.agenid;
                     newFormData.fechaIngresoConductor   = persona.condfechaingreso;
-                    newFormData.crearHistorial          = (persona.totalLicenciaPorVencer === 1) ? 'S' : 'N';
+                    let debeCrearRegistro               = res.debeCrearRegistro;
+                    newFormData.crearHistorial          = (debeCrearRegistro) ? 'S' : 'N';
+                    newFormData.maxFechaVencimiento     = persona.maxFechaVencimiento;
 
-                    let conductorLicencia               = res.conductorLicencia;
-                    if(persona.totalLicenciaPorVencer !== 1){
+                   if(!debeCrearRegistro){
+                    let conductorLicencia                   = res.conductorLicencia;
                         newFormData.licencia                = conductorLicencia.conlicid;
                         newFormData.tipoCategoria           = conductorLicencia.ticaliid;
                         newFormData.numeroLicencia          = conductorLicencia.conlicnumero;
                         newFormData.fechaExpedicionLicencia = conductorLicencia.conlicfechaexpedicion;
                         newFormData.fechaVencimiento        = conductorLicencia.conlicfechavencimiento;
-                        let extencionArchivoLicencia        = (conductorLicencia.conlicextension !== null) ? conductorLicencia.conlicextension : '';
+                        let extencionArchivoLicencia        = (conductorLicencia.conlicextension !== undefined) ? conductorLicencia.conlicextension : null 
                         setExtencionArchivoLicencia(extencionArchivoLicencia);
                         setRutaArchivoEnfuscada((extencionArchivoLicencia !== null) ? conductorLicencia.conlicrutaarchivo : '');
                         setRutaLicenciaAdjunta((extencionArchivoLicencia !== null) ? conductorLicencia.rutaAdjuntoLicencia : '');
-                    }
+                   }
                     setHistorialLicencias(res.historialLicencias);
                 }
 
@@ -771,16 +774,25 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                             </Box>
                         </Grid>
 
-                        {(extencionArchivoLicencia !== ''  && tipo === 'U') ?
+                        {(extencionArchivoLicencia !== null  && tipo === 'U') ?
                             <Grid item md={3} xl={3} sm={12} xs={12}>
                                 <Box className='frmTexto'>
-                                    <label>Visualizar adjunto de la licencia</label> 
+                                    <label>Visualizar adjunto de la licencia </label> 
                                 </Box>
                                 <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
                                     <VisibilityIcon onClick={() => {setModal({open: true, extencion: extencionArchivoLicencia, ruta:rutaLicenciaAdjunta,  rutaEnfuscada: rutaArchivoEnfuscada })}} />
                                 </Avatar>
                             </Grid>
                         : null }
+
+                        {(formData.crearHistorial === 'S') ?
+                            <Grid item md={12} xl={12} sm={12} xs={12}>
+                                <Box className='mensajeAdvertencia'>
+                                    <ErrorIcon />
+                                    <p>La licencia de conducción registrada vencerá o vencío el {formData.maxFechaVencimiento}, por lo que el sistema le ha habilitado las casillas para que pueda ingresar una nueva licencia.</p>
+                                </Box>
+                            </Grid>
+                        : null}
 
                         {(historialLicencias.length > 0 ) ?
                             <Fragment>
@@ -823,7 +835,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                                         </TableCell>
 
                                                         <TableCell>
-                                                            {(historial['conlicextension'] !== '') ?
+                                                            {(historial['conlicextension'] !== null) ?
                                                                 <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
                                                                     <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicextension'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
                                                                 </Avatar>

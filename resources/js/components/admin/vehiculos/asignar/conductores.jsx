@@ -10,7 +10,7 @@ import instance from '../../../layout/instance';
 import AddIcon from '@mui/icons-material/Add';
 import ShowPersona from '../../persona/show';
 
-export default function Conductors({id, data}){
+export default function Conductors({id}){
 
     const [formData, setFormData] = useState({conductorId:'', vehiculo:id})
     const [loader, setLoader] = useState(false);
@@ -68,8 +68,8 @@ export default function Conductors({id, data}){
     const inicio = () =>{
         setLoader(true);
         let newConductores = []; 
-        instance.get('/admin/direccion/transporte/listar/conductores').then(res=>{
-            data.map((res) =>{
+        instance.post('/admin/direccion/transporte/listar/conductores', {vehiculoId: id}).then(res=>{
+            res.conductoresVehiculo.map((res) =>{
                 newConductores.push({identificador:res.asovehid, conductorId: res.condid, nombreConductor:res.nombrePersona, personaId: res.persid, estado: 'U'});
             })
             setConductores(newConductores);

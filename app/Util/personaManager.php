@@ -140,7 +140,7 @@ class personaManager {
                 if($request->tipo === 'I'){
                     $personaMaxConsecutio       = Persona::latest('persid')->first();
                     $persid                     = $personaMaxConsecutio->persid;
-    
+
                     $conductor                   = new Conductor();
                     $conductor->persid           = $persid;
                     $conductor->tiescoid         = 'A';
@@ -150,7 +150,7 @@ class personaManager {
                     $conductor->save();
 
                     $personaMaxConductor        = Conductor::latest('condid')->first();
-                    $condid                     = $personaMaxConductor->condid;  
+                    $condid                     = $personaMaxConductor->condid;
 
                     $conductorlicencia                              = new ConductorLicencia();
                     $conductorlicencia->condid                      = $condid;
@@ -158,10 +158,12 @@ class personaManager {
                     $conductorlicencia->conlicnumero                = $request->numeroLicencia;
                     $conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicion;
                     $conductorlicencia->conlicfechavencimiento      = $request->fechaVencimiento;
-                    $conductorlicencia->conlicextension             = $extension;
-                    $conductorlicencia->conlicnombrearchivooriginal = $nombreOriginalLic;
-                    $conductorlicencia->conlicnombrearchivoeditado  = $rutaImagenLicencia;
-                    $conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
+                    if($debeActualizarImagen){
+                        $conductorlicencia->conlicextension             = $extension;
+                        $conductorlicencia->conlicnombrearchivooriginal = $nombreOriginalLic;
+                        $conductorlicencia->conlicnombrearchivoeditado  = $rutaImagenLicencia;
+                        $conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
+                    }
                     $conductorlicencia->save();
 
                 }else{

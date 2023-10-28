@@ -11,6 +11,6 @@ class VehiculoPoliza extends Model
 
     protected $table      = 'vehiculopoliza';
     protected $primaryKey = 'vehpolid';
-    protected $fillable   = ['vehiid','vehsoanumero','vehsoafechainicial','vehsoafechafinal', 'vehsoaextension',
-                                'vehsoanombrearchivooriginal', 'vehsoanombrearchivoeditado', 'vehsoarutaarchivo'];
+    protected $fillable   = ['vehiid','vehpolnumeropolizacontractual','vehpolnumeropolizaextcontrac','vehpolfechainicial', 'vehpolfechafinal',
+                             'vehpolextension', 'vehpolnombrearchivooriginal', 'vehpolnombrearchivoeditado', 'vehpolrutaarchivo'];
 }

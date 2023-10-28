@@ -59,11 +59,11 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo: '000',    tipoVehiculo: '',   tipoReferencia: '', tipoMarca: '',       tipoCombustible: '', 
-                                                                tipoModalidad: '',  tipoCarroceria: '', tipoColor: '',      agencia: '',          fechaIngreso: '', 
-                                                                numeroInterno: '',  placa: '',          modelo: '',         cilindraje: '',       numeroMotor: '', 
-                                                                numeroChasis: '',   numeroSerie: '',    numeroEjes: '1',     motorRegrabado: '0', chasisRegrabado: '0', 
-                                                                serieRegrabado: '', fotografia: '',     tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo: '000',     tipoVehiculo: '',   tipoReferencia: '', tipoMarca: '',       tipoCombustible: '', 
+                                                                tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',         fechaIngreso: '', 
+                                                                numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',      numeroMotor: '', 
+                                                                numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
+                                                                serieRegrabado: '0', fotografia: '',     tipo:tipo}) : null;
 
             setLoader(false);
         })

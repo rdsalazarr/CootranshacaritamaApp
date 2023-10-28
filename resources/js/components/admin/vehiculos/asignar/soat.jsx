@@ -6,6 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
+import ErrorIcon from '@mui/icons-material/Error';
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 import ShowAnexo from '../showAnexo';
@@ -13,7 +14,7 @@ import Files from "react-files";
 
 export default function Soat({id}){
 
-    const [formData, setFormData] = useState({vehiculoId: id, codigo:'000', numeroSoat:'', fechaInicio: '', fechaVencimiento: '' });
+    const [formData, setFormData] = useState({vehiculoId: id, codigo:'000', numeroSoat:'', fechaInicio: '', fechaVencimiento: '', extension: '' });
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [historialSoatVehiculo, setHistorialSoatVehiculo] = useState([]); 
@@ -64,20 +65,22 @@ export default function Soat({id}){
         setLoader(true);
         let newFormData  = {...formData}
         instance.post('/admin/direccion/transporte/listar/soat', {vehiculoId: id}).then(res=>{ 
-            let soatVehiculo             = res.soatVehiculo
-            newFormData.crearHistorial    = (soatVehiculo.totalSoatPorVencer === 1) ? 'S' : 'N';
+            let soatVehiculo             = res.soatVehiculo;
+            let debeCrearRegistro        = res.debeCrearRegistro;
 
-            console.log(soatVehiculo.totalSoatPorVencer );
-            if(soatVehiculo.totalSoatPorVencer !== 1){
+            if(!debeCrearRegistro && soatVehiculo.length > 0){
                 newFormData.codigo           = soatVehiculo.vehsoaid;
                 newFormData.numeroSoat       = soatVehiculo.vehsoanumero;
                 newFormData.fechaInicio      = soatVehiculo.vehsoafechainicial;
                 newFormData.fechaVencimiento = soatVehiculo.vehsoafechafinal;
-                newFormData.extension        = soatVehiculo.vehsoaextension;
+                newFormData.extension        = (soatVehiculo.vehsoaextension !== null) ? soatVehiculo.vehsoaextension : '';
                 newFormData.rutaAdjuntoSoat  = soatVehiculo.rutaAdjuntoSoat;
                 newFormData.rutaArchivoSoat  = soatVehiculo.vehsoarutaarchivo;
-                setFormData(newFormData);
-            }  
+            } 
+
+            newFormData.maxFechaVencimiento = res.maxFechaVencimiento;
+            newFormData.crearHistorial      = debeCrearRegistro;
+            setFormData(newFormData);
             setHistorialSoatVehiculo(res.historialSoatVehiculo);
             setLoader(false);
         })
@@ -100,7 +103,7 @@ export default function Soat({id}){
             <ValidatorForm onSubmit={handleSubmit} style={{marginTop:'1em'}}>
                 <Grid container spacing={2}>
                     <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <TextValidator 
+                        <TextValidator
                             name={'numeroSoat'}
                             value={formData.numeroSoat}
                             label={'Número del SOAT'}
@@ -176,7 +179,7 @@ export default function Soat({id}){
                     {(formData.extension !== '') ?
                         <Grid item md={3} xl={3} sm={12} xs={12}>
                             <Box className='frmTexto'>
-                                <label>Visualizar adjunto del SOAT</label> 
+                                <label>Visualizar adjunto del SOAT </label> 
                             </Box>
                             <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
                                 <VisibilityIcon onClick={() => {setModal({open: true, extencion: formData.extension, ruta:formData.rutaAdjuntoSoat,  rutaEnfuscada: formData.rutaArchivoSoat })}} />
@@ -184,9 +187,27 @@ export default function Soat({id}){
                         </Grid>
                     : null }
 
+                    {(formData.crearHistorial === 'S') ?
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='mensajeAdvertencia'>
+                                <ErrorIcon />
+                                <p>El SOAT registrado vencerá o vencío el {formData.fechaVencimiento}, por lo que el sistema le ha habilitado las casillas para que pueda ingresar una nuevo SOAT.</p>
+                            </Box>
+                        </Grid>
+                    : null}
+
                 </Grid>
 
-                <Grid container direction="row"  justifyContent="right">
+                {(formData.crearHistorial) ?
+                    <Grid item md={12} xl={12} sm={12} xs={12} style={{marginTop:'1em'}}>
+                        <Box className='mensajeAdvertencia'>
+                            <ErrorIcon />
+                            <p>El SOAT registrado vencerá o vencío el {formData.maxFechaVencimiento}, por lo que el sistema le ha habilitado las casillas para que pueda ingresar una nuevo SOAT.</p>
+                        </Box>
+                    </Grid>
+                : null}
+
+                <Grid container direction="row"  justifyContent="right" style={{marginTop:'1em'}}>
                     <Stack direction="row" spacing={2}>
                         <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
                             startIcon={<SaveIcon />}> {"Guardar" }
@@ -196,7 +217,7 @@ export default function Soat({id}){
             </ValidatorForm>
 
             {(historialSoatVehiculo.length > 0) ?
-                <Grid container spacing={2} style={{marginTop:'1em'}}>
+                <Grid container spacing={2}>
                     <Grid item md={12} xl={12} sm={12} xs={12}>
                         <Box className='frmDivision'>
                             Historial de SOAT asignado al vehículo
@@ -231,7 +252,7 @@ export default function Soat({id}){
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>
-                                                {(historial['vehsoaextension'] !== '') ?
+                                                {(historial['vehsoaextension'] !== null) ?
                                                     <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
                                                         <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['vehsoaextension'], ruta:historial['rutaAdjuntoSoat'],  rutaEnfuscada:historial['vehsoarutaarchivo']})}} />
                                                     </Avatar>

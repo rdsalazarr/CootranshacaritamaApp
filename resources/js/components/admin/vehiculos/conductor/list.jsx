@@ -31,7 +31,7 @@ export default function List(){
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'bigFlot'});
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 || tipo === 4 ) ? 'smallFlot' :  'bigFlot'});
     }
 
     const inicio = () =>{

@@ -323,24 +323,26 @@ export default function Show({id, frm}){
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <p>{historial['conlicfechavencimiento']}</p>
+                                                    <p>{historial['conlicfechavencimiento']} {historial['conlicextension']}</p>
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
-                                                        <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicextension'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
-                                                    </Avatar>
+                                                    {(historial['conlicextension'] !== null) ?
+                                                        <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
+                                                            <VisibilityIcon onClick={() => {setModal({open: true, extencion: historial['conlicextension'], ruta:historial['rutaAdjuntoLicencia'],  rutaEnfuscada:historial['conlicrutaarchivo']})}} />
+                                                        </Avatar>
+                                                    : null}
                                                 </TableCell>
-                                            
+
                                             </TableRow>
                                             );
                                         })
-                                    }                                
+                                    }
                                     </TableBody>
                                 </Table>
                             </Box>
                         </Grid>
-                       
+
                     </Fragment>
                 : null}
 
