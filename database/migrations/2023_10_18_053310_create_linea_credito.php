@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('lineacredito', function (Blueprint $table) {
             $table->increments('lincreid')->unsigned()->comment('Identificador de la tabla línea de crédito');
-            $table->string('lincrenombre', 50)->comment('Nombre de la línea de crédito');
+            $table->string('lincrenombre', 100)->comment('Nombre de la línea de crédito');
             $table->decimal('lincreporcentaje',6,2)->nullable()->comment('Porcentaje de interés para línea de crédito'); 
-
-            $table->boolean('lincreactiva')->default(true)->comment('Determina si las línea de crédito se encuentra activa'); 
-            $table->timestamps();       
+            $table->boolean('lincreactiva')->default(true)->comment('Determina si la línea de crédito se encuentra activa');
+            $table->timestamps();
         });
     }
 

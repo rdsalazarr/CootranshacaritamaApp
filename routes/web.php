@@ -48,20 +48,24 @@ use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteContro
 use App\Http\Controllers\Admin\Archivo\HistoricoController;
 use App\Http\Controllers\Admin\Archivo\HistoricoShowController;
 use App\Http\Controllers\Admin\Archivo\HistoricoConsultarController;
-
 use App\Http\Controllers\Admin\Vehiculos\TipoVehiculoController;
 use App\Http\Controllers\Admin\Vehiculos\TipoReferenciaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoCarroceriaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
 use App\Http\Controllers\Admin\Vehiculos\VehiculoController;
-
 use App\Http\Controllers\Admin\Asociado\AsociadoController;
 use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
 use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
-
 use App\Http\Controllers\Admin\Conductor\ConductorController;
 use App\Http\Controllers\Admin\Vehiculos\AsignarVehiculoController;
+
+use App\Http\Controllers\Admin\Cartera\LineaCreditoController;
+use App\Http\Controllers\Admin\Cartera\SolicitudCreditoController;
+use App\Http\Controllers\Admin\Cartera\AprobarSolicitudCreditoController;
+use App\Http\Controllers\Admin\Cartera\DesembolsarSolicitudCreditoController;
+use App\Http\Controllers\Admin\Cartera\GestionCobroCarteraController;
+
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -367,8 +371,24 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/crt/salve', [AsignarVehiculoController::class, 'salveCrt']);
             Route::post('/listar/poliza', [AsignarVehiculoController::class, 'listPoliza']);
             Route::post('/poliza/salve', [AsignarVehiculoController::class, 'salvePoliza']);
+        });
+
+        Route::prefix('/cartera')->group(function(){
+            Route::get('/linea/credito/list', [LineaCreditoController::class, 'index'])->middleware('security:admin/cartera/lineaCredito');
+            Route::post('/linea/credito/salve', [LineaCreditoController::class, 'salve']);
+            Route::post('/linea/credito/destroy', [LineaCreditoController::class, 'destroy']);
+
+            Route::get('/solicitud/credito', [SolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/solicitud');
+
+            Route::get('/aprobar/solicitud/credito', [AprobarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/aprobacion');
+
+            Route::get('/desembolsar/solicitud/credito', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/desembolso');
+
+            Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');
 
         });
+
+        
     });
 
 }); 

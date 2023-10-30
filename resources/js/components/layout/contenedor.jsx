@@ -53,6 +53,8 @@ import Vehiculo from "../admin/vehiculos/automovil/list";
 import Conductor from "../admin/vehiculos/conductor/list";
 import AsignarVehiculo from "../admin/vehiculos/asignar/search";
 
+import LineaCredito from "../admin/cartera/lineaCredito/list";
+
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
     return (
@@ -247,7 +249,7 @@ const menuComponente = [
     {id:29,componente : <TiposVehiculos />},
     {id:30,componente : <Vehiculo />},
     {id:31,componente : <Conductor />},
-    {id:32,componente : <AsignarVehiculo />},
+    {id:32,componente : <LineaCredito />},
     {id:33,componente : <EnConstruccion />},
     {id:34,componente : <EnConstruccion />},
     {id:35,componente : <EnConstruccion />},

@@ -270,6 +270,12 @@ php artisan make:controller Admin\Asociado\AsociadoController
 php artisan make:controller Admin\Asociado\DesvincularAsociadoController
 php artisan make:controller Admin\Asociado\AsociadoInactivosController
 
+php artisan make:controller Admin\Cartera\LineaCreditoController 
+php artisan make:controller Admin\Cartera\SolicitudCreditoController
+php artisan make:controller Admin\Cartera\AprobarSolicitudCreditoController
+php artisan make:controller Admin\Cartera\DesembolsarSolicitudCreditoController
+php artisan make:controller Admin\Cartera\GestionCobroCarteraController
+
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 
