@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
+import { Box, Card, Typography} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
-import { Box, Card} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
@@ -46,13 +46,15 @@ export default function List(){
     }
 
     return (
-        <Box className={'containerSmall'} >
-            <Card className={'cardContainer'} >
+        <Box className={'containerMedium'}>
+            <Card className={'cardContainer'}>
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar líneas de créditos</Typography>
+                </Box>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Nombre','Porcentaje','Activo','Actualizar','Eliminar']}
-                        ver={["lincrenombre","lincreporcentaje","estado"]}
+                        titulo={['Nombre','Tasa nominal','Monto mínimo','Monto máximo','Plazo máximo', 'Activo','Actualizar','Eliminar']}
+                        ver={["lincrenombre","tasaNominal","montoMinimo","montoMaximo","plazoMaximo", "estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

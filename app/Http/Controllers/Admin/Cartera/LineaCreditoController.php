@@ -11,9 +11,13 @@ class LineaCreditoController extends Controller
 {
     public function index()
     {
-        $data = DB::table('lineacredito')->select('lincreid','lincrenombre','lincreporcentaje','lincreactiva',
+        $data = DB::table('lineacredito')->select('lincreid','lincrenombre','lincretasanominal','lincremontominimo','lincremontomaximo',
+									'lincreplazomaximo','lincreactiva',DB::raw("CONCAT(lincretasanominal,' %') as tasaNominal"),
+									DB::raw("CONCAT('$ ', FORMAT(lincremontominimo, 0)) as montoMinimo"),
+									DB::raw("CONCAT('$ ', FORMAT(lincremontomaximo, 0)) as montoMaximo"),
+									DB::raw("CONCAT(lincreplazomaximo,' meses') as plazoMaximo"),
                                     DB::raw("if(lincreactiva = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('ticavenombre')->get();
+                                    ->orderBy('lincrenombre')->get();
         return response()->json(["data" => $data]);
     }
 
@@ -23,15 +27,21 @@ class LineaCreditoController extends Controller
         $lineacredito = ($id != 000) ? LineaCredito::findOrFail($id) : new LineaCredito();
 
 	    $this->validate(request(),[
-	   	        'nombre'     => 'required|string|min:4|max:100',
-	            'porcentaje' => 'required',
-                'estado'    => 'required'
+	   	        'nombre'      => 'required|string|min:4|max:100',
+				'tasaNominal' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+				'montoMinimo' => 'required|numeric|between:1,999999999',
+				'montoMaximo' => 'required|numeric|between:1,999999999',
+				'plazoMaximo' => 'required|numeric|between:1,99',
+                'estado'      => 'required'
 	        ]);
 
         try {
-            $lineacredito->lincrenombre     = mb_strtoupper($request->nombre,'UTF-8');
-            $lineacredito->lincreporcentaje = $request->porcentaje;
-            $lineacredito->lincreactiva     = $request->estado;
+            $lineacredito->lincrenombre      = mb_strtoupper($request->nombre,'UTF-8');
+            $lineacredito->lincretasanominal = $request->tasaNominal;
+			$lineacredito->lincremontominimo = $request->montoMinimo;
+			$lineacredito->lincremontomaximo = $request->montoMaximo;
+			$lineacredito->lincreplazomaximo = $request->plazoMaximo;
+            $lineacredito->lincreactiva      = $request->estado;
             $lineacredito->save();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){

@@ -110,4 +110,4 @@ export function Contador({tiempoInicial, onTiempoFinalizado}){
     return ( 
         <>{contador} </> 
     );
-  }
+}

@@ -132,9 +132,7 @@ class DatosPersonaController extends Controller
                                     ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
                                     ->leftJoin('conductor as c', 'c.persid', '=', 'p.persid')
                                     ->leftJoin('tipoconductor as tc', 'tc.tipconid', '=', 'c.tipconid')
-                                    ->leftJoin('agencia as ag', 'ag.agenid', '=', 'c.agenid')                                 
-                                    ->orderBy('persprimernombre')->orderBy('perssegundonombre')
-                                    ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')
+                                    ->leftJoin('agencia as ag', 'ag.agenid', '=', 'c.agenid')
                                     ->where('p.persid', $id)->first();
 
         $licenciasConducion  = [];

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('solcrevalorsolicitado', 10)->comment('Monto o valor de la solicitud de crédito');
             $table->decimal('solcretasa',6,2)->comment('Tasa de interés para solicitud de crédito');
             $table->string('solcrenumerocuota', 3)->comment('Número de cuota de la solicitud de crédito');
-            $table->string('solcreobservacion', 100)->nullable()->comment('Observación general de la  solicitud de crédito');
+            $table->string('solcreobservacion', 1000)->nullable()->comment('Observación general de la  solicitud de crédito');
 
             $table->timestamps();
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuasolcre'); 

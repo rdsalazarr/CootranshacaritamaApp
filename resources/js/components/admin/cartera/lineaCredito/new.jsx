@@ -6,11 +6,24 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
+ValidatorForm.addValidationRule('isTasaNominal', (value) => {
+    // Verificar si el valor es un número válido en formato "10.50"
+    const regex = /^\d+(\.\d{1,2})?$/;
+    if (!regex.test(value)) {
+      return false;
+    }
+  
+    // Verificar si el número está en el rango de 0 a 100 (porcentaje válido)
+    const numValue = parseFloat(value);
+    return numValue >= 0 && numValue <= 100;
+});
+
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo: data.lincreid, nombre: data.lincrenombre, porcentaje: data.lincreporcentaje, estado: data.lincreactiva, tipo:tipo 
-                                    } : {codigo:'000', nombre: '', porcentaje: '',  estado: '1', tipo:tipo
+                    (tipo !== 'I') ? {codigo: data.lincreid, nombre: data.lincrenombre, tasaNominal: data.lincretasanominal, montoMinimo: data.lincremontominimo,
+                                       montoMaximo: data.lincremontomaximo, plazoMaximo: data.lincreplazomaximo, estado: data.lincreactiva, tipo:tipo 
+                                    } : {codigo:'000', nombre: '', tasaNominal: '',  montoMinimo: '', montoMaximo: '', plazoMaximo:'', estado: '1', tipo:tipo
                                 });
 
     const [loader, setLoader] = useState(false); 
@@ -30,7 +43,7 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '',  estado: '1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', tasaNominal: '',  montoMinimo: '', montoMaximo: '', plazoMaximo:'', estado: '1', tipo:tipo}) : null;
 
             setLoader(false);
         })
@@ -44,7 +57,7 @@ export default function New({data, tipo}){
         <ValidatorForm onSubmit={handleSubmit} >
             
             <Grid container spacing={2}>
-                <Grid item xl={8} md={8} sm={6} xs={12}>
+                <Grid item xl={9} md={9} sm={6} xs={12}>
                     <TextValidator 
                         name={'nombre'}
                         value={formData.nombre}
@@ -56,23 +69,68 @@ export default function New({data, tipo}){
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChangeUpperCase}
                     />
-                </Grid>   
+                </Grid>
 
-                <Grid item xl={2} md={2} sm={3} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator 
-                        name={'porcentaje'}
-                        value={formData.porcentaje}
-                        label={'Porcentaje'}
+                        name={'tasaNominal'}
+                        value={formData.tasaNominal}
+                        label={'Tasa nominal'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
-                        validators={["required"]}
-                        errorMessages={["Campo obligatorio"]}
-                        onChange={handleChangeUpperCase}
+                        validators={["required", 'isTasaNominal']}
+                        errorMessages={["Campo obligatorio", 'Ingrese un tasa nominal válida']}
+                        onChange={handleChange}
                     />
-                </Grid>               
-                
-                <Grid item xl={2} md={2} sm={3} xs={12}>
+                </Grid> 
+
+               <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator 
+                        name={'montoMinimo'}
+                        value={formData.montoMinimo}
+                        label={'Monto mínimo'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required","minNumber:9999"]}
+                        errorMessages={["campo obligatorio","Número mínimo permitido es el 9999"]}
+                        onChange={handleChange}
+                        type={"number"}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator 
+                        name={'montoMaximo'}
+                        value={formData.montoMaximo}
+                        label={'Monto máximo'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required","maxNumber:99999999"]}
+                        errorMessages={["campo obligatorio","Número máximo permitido es el 99999999"]}
+                        onChange={handleChange}
+                        type={"number"}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <TextValidator 
+                        name={'plazoMaximo'}
+                        value={formData.plazoMaximo}
+                        label={'Plazo máximo (En meses)'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required","maxNumber:99"]}
+                        errorMessages={["campo obligatorio","Número máximo permitido es el 99"]}
+                        onChange={handleChange}
+                        type={"number"}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}
@@ -89,7 +147,7 @@ export default function New({data, tipo}){
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
                 </Grid>
-                
+
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vehiculocambioestado', function (Blueprint $table) {
-            $table->increments('vecaesid')->unsigned()->comment('Identificador de la tabla vehículo cambio estado');
+            $table->bigIncrements('vecaesid')->unsigned()->comment('Identificador de la tabla vehículo cambio estado');
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
             $table->string('tiesveid', 2)->comment('Identificador del tipo de estado vehículo');
             $table->smallInteger('vecaesusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del vehículo');

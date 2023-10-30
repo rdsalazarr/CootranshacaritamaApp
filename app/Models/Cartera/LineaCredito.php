@@ -11,5 +11,5 @@ class LineaCredito extends Model
 
     protected $table      = 'lineacredito';
     protected $primaryKey = 'lincreid';
-    protected $fillable   = ['lincrenombre', 'lincreporcentaje','lincreactiva'];
+    protected $fillable   = ['lincrenombre', 'lincretasanominal','lincremontominimo','lincremontomaximo','lincreplazomaximo','lincreactiva'];
 }

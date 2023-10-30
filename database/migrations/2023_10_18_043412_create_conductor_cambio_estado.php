@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('conductorcambioestado', function (Blueprint $table) {
-            $table->increments('cocaesid')->unsigned()->comment('Identificador de la tabla conductor cambio estado');
+            $table->bigIncrements('cocaesid')->unsigned()->comment('Identificador de la tabla conductor cambio estado');
             $table->integer('condid')->unsigned()->comment('Identificador del conductor');
             $table->string('tiescoid', 2)->comment('Identificador del tipo de estado conductor');
             $table->smallInteger('cocaesusuaid')->unsigned()->comment('Identificador del usuario que crea el estado del conductor');

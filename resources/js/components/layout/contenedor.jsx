@@ -54,6 +54,10 @@ import Conductor from "../admin/vehiculos/conductor/list";
 import AsignarVehiculo from "../admin/vehiculos/asignar/search";
 
 import LineaCredito from "../admin/cartera/lineaCredito/list";
+import SolicitudCredito from "../admin/cartera/solicitudCredito/search";
+import AprobacionCredito from "../admin/cartera/cambiarEstado/aprobar/list";
+import DesembolsarCredito from "../admin/cartera/cambiarEstado/desembolsar/list";
+import CobroCartera from "../admin/cartera/gestionCobro/list";
 
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
@@ -249,12 +253,12 @@ const menuComponente = [
     {id:29,componente : <TiposVehiculos />},
     {id:30,componente : <Vehiculo />},
     {id:31,componente : <Conductor />},
-    {id:32,componente : <LineaCredito />},
-    {id:33,componente : <EnConstruccion />},
-    {id:34,componente : <EnConstruccion />},
-    {id:35,componente : <EnConstruccion />},
-    {id:36,componente : <EnConstruccion />},
-    {id:37,componente : <EnConstruccion />},
+    {id:32,componente : <AsignarVehiculo />},
+    {id:33,componente : <LineaCredito />},
+    {id:34,componente : <SolicitudCredito />},
+    {id:35,componente : <AprobacionCredito />},
+    {id:36,componente : <DesembolsarCredito />},
+    {id:37,componente : <CobroCartera />},
     {id:38,componente : <EnConstruccion />},
     {id:39,componente : <EnConstruccion />},
     {id:40,componente : <EnConstruccion />},
