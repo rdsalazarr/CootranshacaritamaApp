@@ -184,6 +184,15 @@ class MantenimientoController extends Controller
 
 
        
+        $lineaCredito        = 'EMERGENCIA PERSONAL ';
+        $asociado            = 'MAYERLY PAOLA CASTRO PAEZ';
+        $descripcionCredito  = 'Cunplir con pagos no relacionados en el dia de hoy';
+        $valorSolicitado     = 2000000; 
+        $tasaNominal         = 1.3; 
+        $plazoMensual        = 12;
+        $generarPdf          = new generarPdf();
+        $generarPdf->generarSimuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual);
+
         
         // Parámetros del préstamo
         $montoPrestamo = 2000000; // Monto del préstamo
@@ -191,7 +200,7 @@ class MantenimientoController extends Controller
         $plazo = 12; // Plazo en meses
         
         // Generar la tabla de liquidación
-        $tablaLiquidacion = $this->generarTablaLiquidacion($montoPrestamo, $tasaInteresMensual, $plazo);
+        /*$tablaLiquidacion = $this->generarTablaLiquidacion($montoPrestamo, $tasaInteresMensual, $plazo);
              
 
 
@@ -216,25 +225,19 @@ class MantenimientoController extends Controller
         $plazo = 12; // Plazo en meses
         
         $cuotaMensual = calculcularValorCuota($montoPrestamo, $tasaInteresMensual, $plazo);
-        echo "El valor de la cuota mensual es: $cuotaMensual";
+        echo "El valor de la cuota mensual es: $cuotaMensual";*/
 
- /*
 
         // Simulador de credito
-
-        /*$generales = new generales();
+/*
+        $generales = new generales();
 
         $tasaNominal = '1.30';
         $plazoMensual = '12';
         $valorSolicitado = '2000000';
         $nombre  = 'Ramon salazar';
         $descripcion = 'Prueba';
-
-        $valorCuotaInicial =  $generales->calculcularValorCuota($tasaNominal, $plazoMensual, $valorSolicitado);
-
-       // $generales->calculcularValorCuota($tasaNominal, $plazoMensual, $valorSolicitado);
-       // $generales->calcularValorInteres($valorSolicitado, $tasaNominal);
-
+        $valorCuota = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
 
         PDF::SetPrintHeader(false);
 		PDF::SetPrintFooter(false);
@@ -250,64 +253,77 @@ class MantenimientoController extends Controller
         PDF::Cell(180,5,'GENERACIÓN DEL PLAN DE PAGO ',0,0,'C');      
 	    PDF::Ln(12); 
 		PDF::SetFont('helvetica','',11);
-		PDF::Cell(45,4,'Línea de Crédito:',0,0,'');
+		PDF::Cell(45,4,'Línea de crédito:',0,0,'');
 		PDF::Cell(45,4,$nombre,0,0,'');
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Descripción:',0,0,'');
 		PDF::MultiCell(0,4,$descripcion,0,'',0);  
-		PDF::Cell(45,4,'Valor Solicitado:',0,0,'');
+		PDF::Cell(45,4,'Valor solicitado:',0,0,'');
 		PDF::Cell(45,4,'$'.number_format($valorSolicitado,0,',','.'),0,0,'');
 		PDF::Ln(4);
-		PDF::Cell(45,4,'Plazo Mensual:',0,0,'');
+		PDF::Cell(45,4,'Plazo mensual:',0,0,'');
 		PDF::Cell(45,4,$plazoMensual,0,0,'');
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Cuota mensual:',0,0,'');
-		PDF::Cell(45,4,'$'.number_format($valorCuotaInicial,0,',','.'),0,0,'');
+		PDF::Cell(45,4,'$'.number_format($valorCuota,0,',','.'),0,0,'');
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Tasa nominal mensual:',0,0,'');
-        PDF::Cell(45,4,$tasaNominal.'%',0,0,'');
+        PDF::Cell(45,4,number_format($tasaNominal,1,',','.').'%',0,0,'');
+        PDF::Ln(4);
+		PDF::Cell(45,4,'Tasa efectiva anual:',0,0,'');
+		PDF::Cell(45,4,number_format($generales->calcularTasaEfectivaAnual($tasaNominal), 2,',','.').'%',0,0,'');	
 		
-
 		PDF::Ln(12);
 		PDF::SetFont('helvetica','',8);
 		PDF::Cell(180,4,'* Los valores resultantes de esta simulación, son informativos, aproximados y podrán variar de acuerdo a las políticas',0,0,'');
 		PDF::Ln(12);
 		PDF::SetFont('helvetica','',11);
-		PDF::Cell(180,4,'Tabla de Liquidación:',0,0,'');
+		PDF::Cell(180,4,'Tabla de liquidación:',0,0,'');
 		PDF::Ln(6);
 		PDF::SetFillColor(231,231,231);//color de fondo
 		PDF::SetDrawColor(0);//color linea
 		PDF::SetFont('helvetica','B',11);//texto del contenido de la tabla	
 		PDF::Cell(12,5,'Nº',1,0,'C',true);
-		PDF::Cell(42,5,'Saldo Capital',1,0,'C',true);
+
+
+        PDF::Cell(42,5,'Abono Capital',1,0,'C',true);
+        PDF::Cell(42,5,'Abono Intereses',1,0,'C',true);
+		PDF::Cell(42,5,'Valor Cuota',1,0,'C',true);
+        PDF::Cell(42,5,'Saldo Capital',1,0,'C',true);
+
+        /*PDF::Cell(42,5,'Saldo Capital',1,0,'C',true);
 		PDF::Cell(42,5,'Abono Capital',1,0,'C',true);
 		PDF::Cell(42,5,'Valor Cuota',1,0,'C',true);
-		PDF::Cell(42,5,'Abono Intereses',1,0,'C',true);
-		PDF::Ln();
+		PDF::Cell(42,5,'Abono Intereses',1,0,'C',true);*/
+
+		/*PDF::Ln();
 		PDF::SetFont('helvetica','',11);
 
-		$saldoCapital = $valorSolicitado;
-		$numeroCuota = 0;
-		$valorCuota =  $generales->calculcularValorCuota($tasaNominal, $plazoMensual, $saldoCapital);
-		do {
-			$numeroCuota +=1;
-			$valorInteres =  $generales->calcularValorInteres($saldoCapital, $tasaNominal);
-			$abonoCapital = round($valorCuota - $valorInteres, 0);
+        $saldoCapital = $valorSolicitado;       
+        for ($numeroCuota = 1; $numeroCuota <= $plazoMensual; $numeroCuota++) {
+            $valorInteres = $generales->calcularValorInteresMensula($saldoCapital, $tasaNominal);      
+            $abonoCapital = round($valorCuota - $valorInteres, 0);
 
-			if($saldoCapital < $abonoCapital){
-				$abonoCapital = $saldoCapital;
-				$valorCuota = $saldoCapital + $valorInteres;
-			}
+            if ($saldoCapital < $valorCuota) {
+                $abonoCapital = $saldoCapital;
+                $valorCuota   = $saldoCapital + $valorInteres;
+            }
 
-			$saldoCapital -= $abonoCapital;
-			PDF::Cell(12,5,$numeroCuota,1,0,'C',false);
-			PDF::Cell(42,5,'$'.number_format($saldoCapital, 0, '.', ','),1,0,'R');
-			PDF::Cell(42,5,'$'.number_format($abonoCapital, 0, '.', ','),1,0,'R');
-			PDF::Cell(42,5,'$'.number_format($valorCuota, 0, '.', ','),1,0,'R');
-			PDF::Cell(42,5,'$'.number_format($valorInteres, 0, '.', ','),1,0,'R');
-			PDF::Ln();
+            $saldoCapital -= $abonoCapital;
+            
+            PDF::Cell(12, 5, $numeroCuota, 1, 0, 'C', false);
+            PDF::Cell(42, 5, '$' . number_format($abonoCapital, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(42, 5, '$' . number_format($valorInteres, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(42, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(42, 5, '$' . number_format($saldoCapital, 0, '.', ','), 1, 0, 'R');
 
-		} while ($saldoCapital > 0);
+            /*PDF::Cell(42, 5, '$' . number_format($saldoCapital, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(42, 5, '$' . number_format($abonoCapital, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(42, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(42, 5, '$' . number_format($valorInteres, 0, '.', ','), 1, 0, 'R');*/
+            /*PDF::Ln();
+        }
+       
      
      	$fecahaActual = str_replace(":", "-", date('Y-m-d-h:m:s'));
         PDF::output('Formulario_Solicitud_Credito_'.$fecahaActual.'.pdf', 'I');  
@@ -382,10 +398,10 @@ class MantenimientoController extends Controller
         return round($valor/100.0,0)*100;
     }
 
-    function generarTablaLiquidacion($montoPrestamo, $tasaInteresMensual, $plazo) {
-       // $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+    function generarTablaLiquidacion($montoPrestamo, $tasaInteresMensual, $plazo) {            
         $cuotaMensual = $this->calcularCuota($montoPrestamo, $tasaInteresMensual, $plazo);
-
+  
+        $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
            
         $tabla = "<table border='1'>
                     <tr>
@@ -398,15 +414,33 @@ class MantenimientoController extends Controller
     
         $saldo = $montoPrestamo;
         for ($mes = 1; $mes <= $plazo; $mes++) {
-            $intereses = $saldo * $tasaInteresMensual;
+            $intereses    = $saldo * $tasaInteresMensual;
             $abonoCapital = $cuotaMensual - $intereses;
-            $saldo -= $abonoCapital;
+            $saldo        -= $abonoCapital;
 
-            $intereses    = $this->redonderarCienMasCercano($intereses);
+            
             $saldo        = $this->redonderarCienMasCercano($saldo);
             $abonoCapital = $this->redonderarCienMasCercano($abonoCapital);
             $cuotaMensual = $this->redonderarCienMasCercano($cuotaMensual);
-    
+            $intereses    = $this->redonderarCienMasCercano($intereses);
+           
+      
+            if($saldo < $abonoCapital){
+                $saldo = $intereses;
+				//$abonoCapital = $saldo;
+				//$cuotaMensual = $saldo + $intereses;
+			}
+
+            /*	
+            $valorInteres =  $generales->calcularValorInteres($saldoCapital, $tasaNominal);
+			$abonoCapital = round($valorCuota - $valorInteres, 0);
+
+			if($saldoCapital < $abonoCapital){
+				$abonoCapital = $saldoCapital;
+				$valorCuota = $saldoCapital + $valorInteres;
+			}*/
+
+
             $tabla .= "<tr>
                         <td>$mes</td>
                         <td>$saldo</td>

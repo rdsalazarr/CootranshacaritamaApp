@@ -1,10 +1,13 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Autocomplete, createFilterOptions} from '@mui/material';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
+import VisualizarPdf from './visualizarPdf';
 
 ValidatorForm.addValidationRule('isTasaNominal', (value) => {
     // Verificar si el valor es un número válido en formato "10.50"
@@ -30,6 +33,7 @@ export default function Search(){
     const [lineasCreditos, setLineasCreditos] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
     const [deshabilitado, setDeshabilitado] = useState(true); 
+    const [modal, setModal] = useState({open: false});
     
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -127,6 +131,50 @@ export default function Search(){
         }
         newFormData.lineaCredito  = e.target.value;
         setFormData(newFormData);
+    }
+
+    const generarSimulacionCredito = () =>{
+        if(formData.decripcionCredito === ''){
+            showSimpleSnackbar("Debe ingresar la descripción del crédito", 'error');
+            return;
+        }
+
+        if(formData.valorSolicitado === ''){
+            showSimpleSnackbar("Debe ingresar el valor solicitado del crédito", 'error');
+            return;
+        }
+
+        if(formData.tasaNominal === ''){
+            showSimpleSnackbar("Debe ingresar la tasa nominal del crédito", 'error');
+            return;
+        }
+
+        if(formData.plazo === ''){
+            showSimpleSnackbar("Debe ingresar el plazo del crédito", 'error');
+            return;
+        }
+
+        if(formData.tasaNominal > formData.tasaNominalLineaCredito){
+            showSimpleSnackbar("La tasa máxima permita es "+formData.tasaNominalLineaCredito , 'error');
+            return;
+        }
+
+        if(formData.valorSolicitado < formData.valorMinimoLineaCredito){
+            showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
+            return;
+        }
+
+        if(formData.valorSolicitado > formData.valorMaximoLineaCredito){
+            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
+            return;
+        }
+
+        if(formData.plazo > formData.plazoMaximoLineaCredito){
+            showSimpleSnackbar("El plazo máximo permito es "+formData.plazoMaximoLineaCredito+" meses", 'error');
+            return;
+        }
+
+        setModal({open: true});
     }
 
     const inicio = () =>{
@@ -394,6 +442,12 @@ export default function Search(){
                         </Grid>
 
                         <Grid container direction="row"  justifyContent="right" style={{marginTop: '0.8em'}}>
+                            <Stack direction="row" spacing={2} style={{marginRight: '3em'}}>
+                                <Button type={"button"} className={'btnAdvertencia'} disabled={deshabilitado}
+                                    startIcon={<PictureAsPdfIcon />} onClick={generarSimulacionCredito}> Simulación
+                                </Button>
+                            </Stack>
+
                             <Stack direction="row" spacing={2}>
                                 <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
                                     startIcon={<SaveIcon />}> Registrar
@@ -404,7 +458,14 @@ export default function Search(){
                     </Card>
                 </Box>
 
-                
+                <ModalDefaultAuto
+                    title={'Muestra el PDF de la simulación del crédito'}
+                    content={<VisualizarPdf data={formData} />}
+                    close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
+                    tam    ={'mediumFlot'}
+                    abrir  ={modal.open}
+                />
+
             </ValidatorForm>
 
             {(datosEncontrados) ?

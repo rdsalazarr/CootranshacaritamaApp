@@ -104,4 +104,39 @@ class SolicitudCreditoController extends Controller
 		}
 	}
 
+    public function simular(Request $request)
+	{
+	    $this->validate(request(),[
+                'asociadoId'         => 'required|numeric',
+                'lineaCredito'       => 'required|numeric',
+	   	        'decripcionCredito'  => 'required|string|min:20|max:1000',
+                'valorSolicitado'    => 'required|numeric|between:1,999999999',
+				'tasaNominal'        => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+                'plazo'              => 'required|numeric|between:1,99',
+				'observacionGeneral' => 'nullable|string|min:20|max:1000'
+	        ]);
+
+        try {
+            $lineasCredito = DB::table('lineacredito')->select('lincrenombre')->where('lincreid', $request->lineaCredito)->first();
+            $asociado      = DB::table('persona as p')->select('a.asocid', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
+                                            ->join('asociado as a', 'a.persid', '=', 'p.persid')
+                                            ->where('a.asocid', $lineasCredito->asociadoId)->first();
+
+            $lineaCredito        = $lineasCredito->lincrenombre;
+            $asociado            = $asociado->nombrePersona;
+            $descripcionCredito  = $request->decripcionCredito;
+            $valorSolicitado     = $request->valorSolicitado;
+            $tasaNominal         = $request->tasaNominal;
+            $plazoMensual        = $request->plazo;
+
+			$generarPdf    = new generarPdf();
+			$dataDocumento = $generarPdf->generarSimuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, 'S');
+			return response()->json(["data" => $dataDocumento]);
+		} catch (Exception $error){
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+   }
+
+   
 }

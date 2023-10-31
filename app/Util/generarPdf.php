@@ -39,7 +39,7 @@ class generarPdf
 		$tipactid     		  = $infodocumento->tipactid;
 		$tipoActa     		  = $infodocumento->tipactnombre;
 		$horaInicial  		  = $infodocumento->codopahorainicio." a ".$infodocumento->codopahorafinal." horas";
-		$lugar        		  = $infodocumento->codopalugar;   
+		$lugar        		  = $infodocumento->codopalugar;
 		$asistente    		  = $infodocumento->codoprnombredirigido;
 		$invitados    		  = $infodocumento->codopainvitado;
 		$ausentes     		  = $infodocumento->codopaausente;
@@ -53,7 +53,7 @@ class generarPdf
 		$convocatoriahora     = $infodocumento->codopaconvocatoriahora;
 		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
-		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';		
+		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -62,7 +62,7 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional, $codigoDocumental);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
@@ -192,8 +192,8 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional, $codigoDocumental);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -215,7 +215,7 @@ class generarPdf
 		PDF::Ln(8);
 		PDF::Cell(60,4,$fechaDocumento,0,0,'');
 		PDF::Ln(26);
-		
+
 		foreach ($firmasDocumento as $firma)
 		{
 			$remitente      = $firma->nombrePersona;
@@ -269,7 +269,7 @@ class generarPdf
 		$correos              = $infodocumento->codoprcorreo;
 		$asunto               = $infodocumento->codoprasunto;
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;
-		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;	
+		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;
 		$contenido            = $infodocumento->codoprcontenido;
 		$despedida            = $infodocumento->tipdesnombre;
 		$tipoDestino          = $infodocumento->tipdetid;
@@ -283,7 +283,7 @@ class generarPdf
 		$fechaDocumento 	  = $ciudadEmpresa.", " .$funcion->formatearFecha($infodocumento->codoprfecha);
 		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
-		
+
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($asunto);
@@ -291,8 +291,8 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional, $codigoDocumental);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -358,7 +358,7 @@ class generarPdf
         $funcion          = new generales();
 		$encrypt          = new encrypt();
         $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $firmaInvitados) = $visualizar->citacion($id);
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
@@ -398,8 +398,8 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional, $codigoDocumental);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LEGAL');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -412,7 +412,7 @@ class generarPdf
 		PDF::Ln(16);
 	    PDF::SetFont('helvetica', 'B', 12);
 	    PDF::MultiCell(170, 0, $dependencia, 0, 'C', false, 1);
-	    PDF::Cell(170, 4, 'CITACIÓN ' . $consecutivo, 0, 0, 'C');  
+	    PDF::Cell(170, 4, 'CITACIÓN ' . $consecutivo, 0, 0, 'C');
 	    if ($tipactid >= '2'){
 	    	PDF::Ln(5);
 	        PDF::Cell(170, 5, $tipoActa, 0, 0, 'C');
@@ -495,7 +495,7 @@ class generarPdf
 
 		$titulo               = $infodocumento->codopntitulo;
 		$contenido            = '<p style="text-align:justify">'.$infodocumento->tipedonombre.' <b>'.$infodocumento->codoprnombredirigido.'</b>, '.$infodocumento->codopncontenidoinicial.'</p>';
-		$contenidoAdicional   = $infodocumento->codoprcontenido;	
+		$contenidoAdicional   = $infodocumento->codoprcontenido;
 		$tipoMedio            = $infodocumento->tipmedid;
 		$firmado              = $infodocumento->codoprfirmado;
 		$transcriptor         = $infodocumento->alias;
@@ -510,8 +510,8 @@ class generarPdf
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional, $codigoDocumental);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -522,10 +522,10 @@ class generarPdf
 		PDF::SetY(32); 
 		PDF::SetFont('helvetica','B',14);
 		PDF::Ln(24);
-		PDF::Cell(175,5,$titulo,0,0,'C'); 
+		PDF::Cell(175,5,$titulo,0,0,'C');
 		PDF::Ln(20);
 		PDF::Cell(175,4,'HACER CONSTAR QUE: ',0,0,'C');
-		PDF::SetFont('helvetica','',12); 
+		PDF::SetFont('helvetica','',12);
 		PDF::Ln(20);
 		PDF::writeHTML($contenido, true, 1, true, true);
 		PDF::Ln(4);
@@ -533,7 +533,7 @@ class generarPdf
 		PDF::Ln(8);
 		PDF::Cell(60,4,$fechaDocumento,0,0,'');
 		PDF::Ln(26);
-		
+
 		foreach ($firmasDocumento as $firma)
 		{
 			$remitente      = $firma->nombrePersona;
@@ -541,7 +541,7 @@ class generarPdf
 			$rutaFirma      = $firma->firmaPersona;
 			$firmado        = $firma->codopffirmado;
 
-			($firmado == 1) ? PDF::Image($rutaFirma, 80, PDF::GetY(), 46, 13) : $this->mensajeFirmarCentro(); 
+			($firmado == 1) ? PDF::Image($rutaFirma, 80, PDF::GetY(), 46, 13) : $this->mensajeFirmarCentro();
 			PDF::Ln(($firmado == 1) ? 4 : 0);
 
 			PDF::Ln(8);
@@ -549,7 +549,7 @@ class generarPdf
 			PDF::Cell(165,4,$remitente,0,0,'C'); 
 			PDF::Ln(4);
 			PDF::Cell(165,4,$cargoRemitente,0,0,'C');
-		}		
+		}
 
 		PDF::Ln(12);
 		PDF::SetFont('helvetica', 'I', 10);
@@ -568,7 +568,7 @@ class generarPdf
         $funcion          = new generales();
 		$encrypt          = new encrypt();
         $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
 	    $visualizar       = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
@@ -582,7 +582,7 @@ class generarPdf
   		$codigoInstitucional  = $tipoDocumento.'-'.$siglaDependencia.'-'.$infodocumento->codopoconsecutivo;
 		$codigoDocumental     = $infodocumento->depecodigo.' '.$infodocumento->serdoccodigo.','.$infodocumento->susedocodigo;
 		$estadoDocumento      = $infodocumento->tiesdoid;
-			
+
 		$correos              = $infodocumento->codoprcorreo;
 		$titulo               = $infodocumento->codopotitulo;
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;
@@ -595,8 +595,8 @@ class generarPdf
 		$tipoDestino          = $infodocumento->tipdetid;
 		$empresaOficio        = $infodocumento->codopoempresa;
 		$direreccionOficio    = $infodocumento->codopodireccion;
-		$telefonoOficio       = $infodocumento->codopotelefono; 
-		$tieneCopia           = $infodocumento->codoprtienecopia; 
+		$telefonoOficio       = $infodocumento->codopotelefono;
+		$tieneCopia           = $infodocumento->codoprtienecopia;
 		$tieneAnexo     	  = $infodocumento->codoprtieneanexo;
 		$nombreAnexo    	  = $infodocumento->codopranexonombre;
 		$nombreCopia    	  = $infodocumento->codoprcopianombre;
@@ -607,15 +607,15 @@ class generarPdf
 		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
-        PDF::SetAuthor('IMPLESOFT'); 
+        PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($asunto);
 		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$asunto);
         PDF::SetTitle($codigoInstitucional);
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional, $codigoDocumental);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
 
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -665,7 +665,7 @@ class generarPdf
         PDF::Cell(20, 4, 'Asunto: ', 0, 0, '');
         PDF::SetFont('helvetica', '', 12);
 	    PDF::MultiCell(0, 4, $asunto, 0, '', 0);
-		
+
 		PDF::Ln(8);
 	    PDF::Cell(60, 4,$saludo, 0, 0, '');
 		PDF::Ln(16);
@@ -693,7 +693,7 @@ class generarPdf
 		if($tieneCopia == 1 || $correos !== null){
 			$this->imprimirCopiaDocumento($copiaDependencias, $nombreCopia, $correos);
 		}
-	
+
 		PDF::SetFont('helvetica', 'I', 10);
 		PDF::Cell(30,4,$transcriptor,0,0,'');
 
@@ -729,8 +729,8 @@ class generarPdf
 
 		return array ($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa);
 	}
-	
-	function headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
+
+	function headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional = '', $codigoDocumental = ''){
 		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa){
 			$linea = str_pad('',  71, "_", STR_PAD_LEFT); //Diibuja la linea
 			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,26,24);
@@ -740,7 +740,7 @@ class generarPdf
 		    PDF::Cell(144,5,$nombreEmpresa,0,0,'C');
 			PDF::SetFont('helvetica','B',14);
 		    PDF::Ln(6);
-		    PDF::SetX(46);			
+		    PDF::SetX(46);
 		    PDF::Cell(144,4,$siglaEmpresa,0,0,'C');
 			PDF::SetFont('helvetica','I',9);
 			PDF::Ln(6);
@@ -766,9 +766,9 @@ class generarPdf
 		});
 	}
 
-	function footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, $tipoDocumeto = 'LETTER'){
+	function footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado = '', $estadoDocumento = '', $tipoDocumeto = 'LETTER'){
 		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, $tipoDocumeto){
-			$posicionY  = ($tipoDocumeto === 'LETTER') ? 268 : 303;		
+			$posicionY  = ($tipoDocumeto === 'LETTER') ? 268 : 303;
 			$linea = str_pad('',  52, "_", STR_PAD_LEFT); //Diibuja la linea
 			PDF::SetFont('helvetica','I',12);
 			PDF::Ln(2);
@@ -978,7 +978,7 @@ EOD;
 		}
 	}
 
-	function outputPdfDocumental($codigoInstitucional, $fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia, $anioDocumento){	
+	function outputPdfDocumental($codigoInstitucional, $fechaActualDocumento, $codigoDocumental, $metodo, $siglaDependencia, $anioDocumento){
 		$nombrePdf = $codigoInstitucional.'-'.$fechaActualDocumento.'.pdf';	
 		$tituloPdf = $codigoDocumental.'.pdf';
 		if($metodo === 'S'){
@@ -1012,10 +1012,10 @@ EOD;
 		$asuntoRadicado = $data->asunto;
 		$correo         = $data->correo;
 		$funcionario    = $data->usuario;
-		
+
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
-		
+
 		$documentoRadicado = true;
         $mensajeRadicar    = '';     
 		$tcpdf =new FPDI();
@@ -1146,7 +1146,7 @@ EOD;
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
-				
+
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($asuntoRadicado);
@@ -1157,13 +1157,13 @@ EOD;
         PDF::SetPrintHeader(false);
         PDF::SetPrintFooter(false); 
         PDF::AddPage('L', array(110,35));
-   
+
         PDF::SetMargins(25, 1, 0);//Funciona con la impresora propia 25
 		PDF::Image('archivos/logoEmpresa/'.$logoEmpresa, 90, 4, 15, 10);
         PDF::SetAutoPageBreak(true, 1);
         PDF::SetFont('Helvetica','B',6);
         PDF::SetY(0.5);
-        PDF::Cell(45,4,$nombreEmpresa,0,0,'');     
+        PDF::Cell(45,4,$nombreEmpresa,0,0,'');
         PDF::Ln(3);
         PDF::SetFont('Helvetica','',7);
         PDF::Cell(12,4,'Radicado: ',0,0,'');
@@ -1191,7 +1191,7 @@ EOD;
 			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa, 90, 4, 15, 10);
             PDF::SetFont('Helvetica','B',6);
             PDF::SetY(2.6);
-            PDF::Cell(45,4, $nombreEmpresa ,0,0,'');         
+            PDF::Cell(45,4, $nombreEmpresa ,0,0,'');
             PDF::Ln(3);
             PDF::SetFont('Helvetica','',7);
             PDF::Cell(12,4,'Radicado: ',0,0,'');
@@ -1199,14 +1199,14 @@ EOD;
             PDF::Ln(2.3);
             PDF::Cell(12,4,'Fecha: ',0,0,'');
             PDF::Cell(30,4,$fecha,0,0,'');
-            PDF::Ln(2.4);           
+            PDF::Ln(2.4);
             foreach($dataCopia as $copia){
                 PDF::SetFont('Helvetica','',6);
                 PDF::Cell(12,4,'Copia: ',0,0,'');
                 PDF::SetFont('Helvetica','',5);
                 PDF::Cell(60,4,$copia->dependencia,0,0,'');
                 PDF::Ln(2.4);
-            }    
+            }
             PDF::SetFont('Helvetica','',6);
             if($correo !=''){
                 PDF::Cell(12,4,'Correo: ',0,0,'');
@@ -1240,7 +1240,7 @@ EOD;
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
-			
+
         $mensajeRadicar    = '';
 		$tcpdf = new FpdiProtection();
         $tcpdf->SetAuthor('IMPLESOFT');
@@ -1260,16 +1260,15 @@ EOD;
 						$templateId = $tcpdf->importPage($pageNo);
 						$tcpdf->useTemplate($templateId, 0, 0, 210);
 					} catch (Exception $e) {
-						$mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();						
+						$mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();
 					}
 				}
 			} catch (Exception $e) {
-				$mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();				
-			}			
+				$mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();
+			}
 		}
 
 		$nombrePDF   = 'Expediente.pdf';
-
 		return base64_encode($tcpdf->output($nombrePDF, $metodo));
 	}
 
@@ -1278,10 +1277,6 @@ EOD;
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
-		$codigoInstitucional = '';
-		$codigoDocumental    = '';
-		$idCifrado           = '';
-		$estadoDocumento     = '';
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($titulo.' '.$placa);
@@ -1289,8 +1284,8 @@ EOD;
         PDF::SetTitle($titulo);	
 
 		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
 
 		PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -1305,7 +1300,7 @@ EOD;
 		PDF::Ln(12);
 		PDF::SetFont('helvetica', '', 11);
 		PDF::writeHTML($contenido, true, false, true, false, '');
-	 
+
 		$tituloPdf = $titulo.'.pdf';
 		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
@@ -1365,19 +1360,11 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
-	
+
 	public function generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 		$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
-
-		$codigoInstitucional = '';
-		$codigoDocumental    = '';
-		$idCifrado           = '';
-		$estadoDocumento     = '';
-
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 	
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -1385,8 +1372,8 @@ EOD;
 		PDF::SetKeywords('Colocación, Vehículo, '.$siglaEmpresa.', '.$numeroPagare.', '.$documento.', '.$titulo);
         PDF::SetTitle($titulo);	
 
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $codigoInstitucional, $codigoDocumental, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa,$celularEmpresa, $urlEmpresa, $idCifrado, $estadoDocumento, 'LETTER');
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
 
 		PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
@@ -1431,6 +1418,112 @@ EOD;
 			return $rutaPdf;
 		}else{
 			PDF::output($tituloPdf, $metodo);
+		}
+	}
+
+	public function generarSimuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+		$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+
+		$titulo           = 'Simulación del crédito para el asociado '.$asociado;
+		$generales        = new generales();
+		$valorCuota       = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
+		$fechaHoraActual  = Carbon::now();
+		$fechaActual      = $generales->formatearFecha($fechaHoraActual->format('Y-m-d'));
+
+        PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Simulador, Crédito, '.$siglaEmpresa.', '.$valorSolicitado.', tasa nominal mensual de '.$tasaNominal.', Número total de meses '.$plazoMensual);
+        PDF::SetTitle($titulo);	
+
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 20);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(20);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica','B',12);
+        PDF::Cell(180,5,'GENERACIÓN DEL PLAN DE PAGO',0,0,'C');
+	    PDF::Ln(12); 
+		PDF::SetFont('helvetica','',11);
+		PDF::Cell(45,4,'Fecha:',0,0,'');
+		PDF::Cell(45,4,$fechaActual,0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Asociado:',0,0,'');
+		PDF::SetFont('helvetica','B',11);
+		PDF::Cell(45,4,$asociado,0,0,'');
+		PDF::Ln(4);
+		PDF::SetFont('helvetica','',11);
+		PDF::Cell(45,4,'Línea de crédito:',0,0,'');
+		PDF::Cell(45,4,$lineaCredito,0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Descripción:',0,0,'');
+		PDF::MultiCell(0,4,$descripcionCredito,0,'',0);  
+		PDF::Cell(45,4,'Valor solicitado:',0,0,'');
+		PDF::Cell(45,4,'$'.number_format($valorSolicitado,0,',','.'),0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Plazo mensual:',0,0,'');
+		PDF::Cell(45,4,$plazoMensual,0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Cuota mensual:',0,0,'');
+		PDF::Cell(45,4,'$'.number_format($valorCuota,0,',','.'),0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Tasa nominal mensual:',0,0,'');
+        PDF::Cell(45,4,number_format($tasaNominal,1,',','.').'%',0,0,'');
+        PDF::Ln(4);
+		PDF::Cell(45,4,'Tasa efectiva anual:',0,0,'');
+		PDF::Cell(45,4,number_format($generales->calcularTasaEfectivaAnual($tasaNominal), 2,',','.').'%',0,0,'');
+
+		PDF::Ln(8);
+		PDF::SetFont('helvetica','',8);	
+		PDF::Cell(180,4,'* Los valores resultantes de esta simulación, son informativos, aproximados y podrán variar de acuerdo a las políticas',0,0,'');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica','',11);
+		PDF::Cell(180,4,'Tabla de liquidación:',0,0,'');
+		PDF::Ln(6);
+		PDF::SetFillColor(231,231,231);//color de fondo
+		PDF::SetDrawColor(0);//color linea
+		PDF::SetFont('helvetica','B',11);//texto del contenido de la tabla	
+		PDF::Cell(12,5,'Nº',1,0,'C',true);
+		PDF::Cell(40,5,'Abono Capital',1,0,'R',true);
+        PDF::Cell(40,5,'Abono Intereses',1,0,'R',true);
+		PDF::Cell(40,5,'Valor Cuota',1,0,'R',true);
+        PDF::Cell(40,5,'Saldo Capital',1,0,'R',true);
+
+		PDF::Ln();
+		PDF::SetFont('helvetica','',11);
+        $saldoCapital = $valorSolicitado;
+        for ($numeroCuota = 1; $numeroCuota <= $plazoMensual; $numeroCuota++) {
+            $valorInteres = $generales->calcularValorInteresMensula($saldoCapital, $tasaNominal);
+            $abonoCapital = round($valorCuota - $valorInteres, 0);
+
+            if ($saldoCapital < $valorCuota) {
+                $abonoCapital = $saldoCapital;
+                $valorCuota   = $saldoCapital + $valorInteres;
+            }
+
+            $saldoCapital -= $abonoCapital;
+            
+            PDF::Cell(12, 5, $numeroCuota, 1, 0, 'C', false);
+            PDF::Cell(40, 5, '$' . number_format($abonoCapital, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(40, 5, '$' . number_format($valorInteres, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(40, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
+            PDF::Cell(40, 5, '$' . number_format($saldoCapital, 0, '.', ','), 1, 0, 'R');
+            PDF::Ln();
+        }
+
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo = 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		} else{
+			PDF::output($tituloPdf, 'I');
 		}
 	}
 }
