@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Security;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Util\notificar;
-use DB, Auth, URL, Artisan;
+use DB, PDF, Auth, URL, Artisan;
 use Carbon\Carbon;
 use setasign\Fpdi\Fpdi;
 use App\Util\generarPdf;
+use App\Util\generales;
 use App\Util\convertirNumeroALetras;
-
-
 
 class MantenimientoController extends Controller
 {
@@ -169,7 +168,7 @@ class MantenimientoController extends Controller
        
         $generarPdf->generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, 'I' );*/
 
-
+/*
         $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfid', 3)->first();   
         $nombreAsociado             = 'DIONISIO DE JESUS ANGARITA ANGARITA ';   
         $fechaLargaPrestamo         = '29 de AGOSTO del 2023';
@@ -181,10 +180,139 @@ class MantenimientoController extends Controller
         $titulo                     = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
         $contenido                  = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);
         $generarPdf                  = new generarPdf();       
-        $generarPdf->generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, 'I' );
+        $generarPdf->generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, 'I' );*/
 
 
-        //
+       
+        
+        // Parámetros del préstamo
+        $montoPrestamo = 2000000; // Monto del préstamo
+        $tasaInteresMensual = 1.3; // Tasa de interés nominal mensual (1.3%)
+        $plazo = 12; // Plazo en meses
+        
+        // Generar la tabla de liquidación
+        $tablaLiquidacion = $this->generarTablaLiquidacion($montoPrestamo, $tasaInteresMensual, $plazo);
+             
+
+
+        echo $tablaLiquidacion;
+
+       
+
+        function redonderarCienMasCercano($valor){
+            return round($valor/100.0,0)*100;
+        }
+
+
+        function calculcularValorCuota($montoPrestamo, $tasaInteresMensual, $plazo) {
+            $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+            $denominador        = 1 - pow(1 + $tasaInteresMensual, -$plazo);
+            $valorCuota         = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+            return redonderarCienMasCercano($valorCuota);
+        }
+        
+        $montoPrestamo = 2000000; // Monto del préstamo
+        $tasaInteresMensual = 1.3; // Tasa de interés nominal mensual (1.3%)
+        $plazo = 12; // Plazo en meses
+        
+        $cuotaMensual = calculcularValorCuota($montoPrestamo, $tasaInteresMensual, $plazo);
+        echo "El valor de la cuota mensual es: $cuotaMensual";
+
+ /*
+
+        // Simulador de credito
+
+        /*$generales = new generales();
+
+        $tasaNominal = '1.30';
+        $plazoMensual = '12';
+        $valorSolicitado = '2000000';
+        $nombre  = 'Ramon salazar';
+        $descripcion = 'Prueba';
+
+        $valorCuotaInicial =  $generales->calculcularValorCuota($tasaNominal, $plazoMensual, $valorSolicitado);
+
+       // $generales->calculcularValorCuota($tasaNominal, $plazoMensual, $valorSolicitado);
+       // $generales->calcularValorInteres($valorSolicitado, $tasaNominal);
+
+
+        PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+
+        //Construccion del PDF
+        PDF::AddPage('P', 'Letter');
+        #Establecemos los márgenes izquierda, arriba y derecha: 
+        PDF::SetMargins(20, 40 , 10);
+        #Establecemos el margen inferior: 
+        PDF::SetAutoPageBreak(true,35);
+        PDF::Ln(30); 
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(180,5,'GENERACIÓN DEL PLAN DE PAGO ',0,0,'C');      
+	    PDF::Ln(12); 
+		PDF::SetFont('helvetica','',11);
+		PDF::Cell(45,4,'Línea de Crédito:',0,0,'');
+		PDF::Cell(45,4,$nombre,0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Descripción:',0,0,'');
+		PDF::MultiCell(0,4,$descripcion,0,'',0);  
+		PDF::Cell(45,4,'Valor Solicitado:',0,0,'');
+		PDF::Cell(45,4,'$'.number_format($valorSolicitado,0,',','.'),0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Plazo Mensual:',0,0,'');
+		PDF::Cell(45,4,$plazoMensual,0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Cuota mensual:',0,0,'');
+		PDF::Cell(45,4,'$'.number_format($valorCuotaInicial,0,',','.'),0,0,'');
+		PDF::Ln(4);
+		PDF::Cell(45,4,'Tasa nominal mensual:',0,0,'');
+        PDF::Cell(45,4,$tasaNominal.'%',0,0,'');
+		
+
+		PDF::Ln(12);
+		PDF::SetFont('helvetica','',8);
+		PDF::Cell(180,4,'* Los valores resultantes de esta simulación, son informativos, aproximados y podrán variar de acuerdo a las políticas',0,0,'');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica','',11);
+		PDF::Cell(180,4,'Tabla de Liquidación:',0,0,'');
+		PDF::Ln(6);
+		PDF::SetFillColor(231,231,231);//color de fondo
+		PDF::SetDrawColor(0);//color linea
+		PDF::SetFont('helvetica','B',11);//texto del contenido de la tabla	
+		PDF::Cell(12,5,'Nº',1,0,'C',true);
+		PDF::Cell(42,5,'Saldo Capital',1,0,'C',true);
+		PDF::Cell(42,5,'Abono Capital',1,0,'C',true);
+		PDF::Cell(42,5,'Valor Cuota',1,0,'C',true);
+		PDF::Cell(42,5,'Abono Intereses',1,0,'C',true);
+		PDF::Ln();
+		PDF::SetFont('helvetica','',11);
+
+		$saldoCapital = $valorSolicitado;
+		$numeroCuota = 0;
+		$valorCuota =  $generales->calculcularValorCuota($tasaNominal, $plazoMensual, $saldoCapital);
+		do {
+			$numeroCuota +=1;
+			$valorInteres =  $generales->calcularValorInteres($saldoCapital, $tasaNominal);
+			$abonoCapital = round($valorCuota - $valorInteres, 0);
+
+			if($saldoCapital < $abonoCapital){
+				$abonoCapital = $saldoCapital;
+				$valorCuota = $saldoCapital + $valorInteres;
+			}
+
+			$saldoCapital -= $abonoCapital;
+			PDF::Cell(12,5,$numeroCuota,1,0,'C',false);
+			PDF::Cell(42,5,'$'.number_format($saldoCapital, 0, '.', ','),1,0,'R');
+			PDF::Cell(42,5,'$'.number_format($abonoCapital, 0, '.', ','),1,0,'R');
+			PDF::Cell(42,5,'$'.number_format($valorCuota, 0, '.', ','),1,0,'R');
+			PDF::Cell(42,5,'$'.number_format($valorInteres, 0, '.', ','),1,0,'R');
+			PDF::Ln();
+
+		} while ($saldoCapital > 0);
+     
+     	$fecahaActual = str_replace(":", "-", date('Y-m-d-h:m:s'));
+        PDF::output('Formulario_Solicitud_Credito_'.$fecahaActual.'.pdf', 'I');  
+  
+
 
         
 
@@ -240,6 +368,57 @@ class MantenimientoController extends Controller
            // return false;
 		}*/
 
+    }
+
+
+    function calcularCuota($montoPrestamo, $tasaInteresMensual, $plazo) {
+        $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+        $denominador        = 1 - pow(1 + $tasaInteresMensual, -$plazo);
+        $valorCuota         = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+        return $valorCuota;
+    }
+
+    function redonderarCienMasCercano($valor){
+        return round($valor/100.0,0)*100;
+    }
+
+    function generarTablaLiquidacion($montoPrestamo, $tasaInteresMensual, $plazo) {
+       // $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+        $cuotaMensual = $this->calcularCuota($montoPrestamo, $tasaInteresMensual, $plazo);
+
+           
+        $tabla = "<table border='1'>
+                    <tr>
+                        <th>Mes</th>
+                        <th>Saldo a Capital</th>
+                        <th>Abono a Capital</th>
+                        <th>Valor Cuota</th>
+                        <th>Abono a Intereses</th>
+                    </tr>";
+    
+        $saldo = $montoPrestamo;
+        for ($mes = 1; $mes <= $plazo; $mes++) {
+            $intereses = $saldo * $tasaInteresMensual;
+            $abonoCapital = $cuotaMensual - $intereses;
+            $saldo -= $abonoCapital;
+
+            $intereses    = $this->redonderarCienMasCercano($intereses);
+            $saldo        = $this->redonderarCienMasCercano($saldo);
+            $abonoCapital = $this->redonderarCienMasCercano($abonoCapital);
+            $cuotaMensual = $this->redonderarCienMasCercano($cuotaMensual);
+    
+            $tabla .= "<tr>
+                        <td>$mes</td>
+                        <td>$saldo</td>
+                        <td>$abonoCapital</td>
+                        <td>$cuotaMensual</td>
+                        <td>$intereses</td>
+                    </tr>";
+        }
+    
+        $tabla .= "</table>";
+    
+        return $tabla;
     }
 
 }

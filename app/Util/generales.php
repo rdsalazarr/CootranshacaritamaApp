@@ -235,4 +235,31 @@ class generales
         return false; // No debe actualizar
     }
 
+	//Funcion para calcular el Valor de al cuota
+	function calculcularValorCuota($tasaNominal, $plazoMensual, $valorSolicitado){	
+		$I = ($tasaNominal/100) / 12;
+		$J = pow((1 + $I), $plazoMensual); 
+		$factorCuota = ($I*$J)/($J-1) ;	
+		return $this->redonderarMilSiguiente($factorCuota * $valorSolicitado);
+	}
+
+	//funcion para redondear al mil siguiente
+	function redonderarMilSiguiente($valor){
+		return ceil($valor/1000)*1000;
+	}
+
+	//Funcion para calcular el valor de los interese
+	function calcularValorInteres($valorSolicitado, $tasaNominalMensual){
+		//$interes = abs($valorSolicitado*(pow((($tasaNominalMensual/100)+1),(30/360))-1)); 
+
+		$interes = abs($valorSolicitado * ($tasaNominalMensual / 100));
+
+		//$interes = abs($valorSolicitado*(pow((($tasaNominalMensual/100)+1),(30/360))-1)); 
+		return $this->redonderarCienMasCercano($interes);
+	}
+
+	//funcion para redondear al cien mas cercano
+	function redonderarCienMasCercano($valor){
+		return round($valor/100.0,0)*100;
+	}
 }
