@@ -29,6 +29,11 @@ class TipoEstadoSolicitudCreditoSeeder extends Seeder
         ]);
 
         DB::table('tipoestadosolicitudcredito')->insert([
+            'tiesscid'     => 'D',
+            'tiesscnombre' => 'Desembolsado'
+        ]);
+
+        DB::table('tipoestadosolicitudcredito')->insert([
             'tiesscid'     => 'S',
             'tiesscnombre' => 'Asesoria'
         ]);

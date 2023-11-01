@@ -56,8 +56,10 @@ import AsignarVehiculo from "../admin/vehiculos/asignar/search";
 import LineaCredito from "../admin/cartera/lineaCredito/list";
 import SolicitudCredito from "../admin/cartera/solicitudCredito/search";
 import AprobacionCredito from "../admin/cartera/cambiarEstado/aprobar/list";
-import DesembolsarCredito from "../admin/cartera/cambiarEstado/desembolsar/list";
+import DesembolsarCredito from "../admin/cartera/cambiarEstado/desembolsar/search";
 import CobroCartera from "../admin/cartera/gestionCobro/list";
+import HistorialSolicitudCredito from "../admin/cartera/solicitudCredito/historial";
+
 
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
@@ -258,13 +260,15 @@ const menuComponente = [
     {id:34,componente : <SolicitudCredito />},
     {id:35,componente : <AprobacionCredito />},
     {id:36,componente : <DesembolsarCredito />},
-    {id:37,componente : <CobroCartera />},
-    {id:38,componente : <EnConstruccion />},
+    {id:37,componente : <HistorialSolicitudCredito />},
+    {id:38,componente : <CobroCartera />},
     {id:39,componente : <EnConstruccion />},
     {id:40,componente : <EnConstruccion />},
     {id:41,componente : <EnConstruccion />},
     {id:42,componente : <EnConstruccion />},
     {id:43,componente : <EnConstruccion />},
+    {id:44,componente : <EnConstruccion />},
+    {id:45,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {

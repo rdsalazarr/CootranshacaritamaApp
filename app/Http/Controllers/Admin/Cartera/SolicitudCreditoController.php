@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Cartera;
 
 use App\Models\Cartera\SolicitudCreditoCambioEstado;
-use App\Models\Cartera\SolicitudCreditoDesembolso;
 use App\Models\Cartera\SolicitudCredito;
 use App\Http\Controllers\Controller;
 use Exception, DB, Auth, URL;
@@ -61,7 +60,7 @@ class SolicitudCreditoController extends Controller
 	    $this->validate(request(),[
                 'asociadoId'         => 'required|numeric',
                 'lineaCredito'       => 'required|numeric',
-	   	        'decripcionCredito'  => 'required|string|min:20|max:1000',
+	   	        'destinoCredito'     => 'required|string|min:20|max:1000',
                 'valorSolicitado'    => 'required|numeric|between:1,999999999',
 				'tasaNominal'        => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
                 'plazo'              => 'required|numeric|between:1,99',
@@ -78,7 +77,7 @@ class SolicitudCreditoController extends Controller
 			$solicitudcredito->asocid                = $request->asociadoId;
 			$solicitudcredito->tiesscid              = $estadoSolicitudCredito;
 			$solicitudcredito->solcrefechasolicitud  = $fechaHoraActual;
-            $solicitudcredito->solcredescripcion     = $request->decripcionCredito;
+            $solicitudcredito->solcredescripcion     = $request->destinoCredito;
             $solicitudcredito->solcrevalorsolicitado = $request->valorSolicitado;
 			$solicitudcredito->solcretasa            = $request->tasaNominal;
             $solicitudcredito->solcrenumerocuota     = $request->plazo;
@@ -109,7 +108,7 @@ class SolicitudCreditoController extends Controller
 	    $this->validate(request(),[
                 'asociadoId'         => 'required|numeric',
                 'lineaCredito'       => 'required|numeric',
-	   	        'decripcionCredito'  => 'required|string|min:20|max:1000',
+	   	        'destinoCredito'     => 'required|string|min:20|max:1000',
                 'valorSolicitado'    => 'required|numeric|between:1,999999999',
 				'tasaNominal'        => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
                 'plazo'              => 'required|numeric|between:1,99',
@@ -125,7 +124,7 @@ class SolicitudCreditoController extends Controller
 
             $lineaCredito        = $lineasCredito->lincrenombre;
             $asociado            = $asociado->nombrePersona;
-            $descripcionCredito  = $request->decripcionCredito;
+            $descripcionCredito  = $request->destinoCredito;
             $valorSolicitado     = $request->valorSolicitado;
             $tasaNominal         = $request->tasaNominal;
             $plazoMensual        = $request->plazo;
@@ -136,7 +135,5 @@ class SolicitudCreditoController extends Controller
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-   }
-
-   
+   }   
 }

@@ -64,6 +64,8 @@ use App\Http\Controllers\Admin\Cartera\LineaCreditoController;
 use App\Http\Controllers\Admin\Cartera\SolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\AprobarSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\DesembolsarSolicitudCreditoController;
+use App\Http\Controllers\Admin\Cartera\HistorialSolicitudCreditoController;
+use App\Http\Controllers\Admin\Cartera\ShowSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\GestionCobroCarteraController;
 
 
@@ -384,9 +386,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/simular/solicitud/credito', [SolicitudCreditoController::class, 'simular']);
 
             Route::get('/aprobar/solicitud/credito', [AprobarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/aprobacion');
+            Route::get('/listar/estados/solicitud/credito', [AprobarSolicitudCreditoController::class, 'estados']);
+            Route::post('/tomar/decision/solicitud/credito', [AprobarSolicitudCreditoController::class, 'salve']);
 
-            Route::get('/desembolsar/solicitud/credito', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/desembolso');
+            Route::post('/show/solicitud/credito', [ShowSolicitudCreditoController::class, 'index']);//No debe tener control de ruta
+            
+            Route::get('/desembolsar/solicitud/credito/datos', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/desembolso');
+            Route::post('/desembolsar/solicitud/credito', [DesembolsarSolicitudCreditoController::class, 'salve']);
 
+            Route::get('/historial/solicitud/credito', [HistorialSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/historial');
             Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');
 
         });

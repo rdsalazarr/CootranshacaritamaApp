@@ -8,6 +8,7 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import VisualizarPdf from './visualizarPdf';
+import ShowAsociado from './showAsociado';
 
 ValidatorForm.addValidationRule('isTasaNominal', (value) => {
     // Verificar si el valor es un número válido en formato "10.50"
@@ -23,15 +24,14 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 
 export default function Search(){
 
-    const [formData, setFormData] = useState({asociadoId:'', lineaCredito:'', decripcionCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
+    const [formData, setFormData] = useState({asociadoId:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
                                             tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:''  })
     const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
                                                                 direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:''})
     const [loader, setLoader] = useState(false);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [listaAsociados, setListaAsociados] = useState([]);
-    const [lineasCreditos, setLineasCreditos] = useState([]);
-    const [habilitado, setHabilitado] = useState(true);
+    const [lineasCreditos, setLineasCreditos] = useState([]);   
     const [deshabilitado, setDeshabilitado] = useState(true); 
     const [modal, setModal] = useState({open: false});
     
@@ -107,7 +107,7 @@ export default function Search(){
             showSimpleSnackbar(res.message, icono);
             if(res.success){
                 setDatosEncontrados(false);
-                setFormData({asociadoId:'', lineaCredito:'', decripcionCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
+                setFormData({asociadoId:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
                             tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:''});
                 setFormDataConsulta({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
                                                                 direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:''});
@@ -134,8 +134,8 @@ export default function Search(){
     }
 
     const generarSimulacionCredito = () =>{
-        if(formData.decripcionCredito === ''){
-            showSimpleSnackbar("Debe ingresar la descripción del crédito", 'error');
+        if(formData.destinoCredito === ''){
+            showSimpleSnackbar("Debe ingresar el destino del crédito", 'error');
             return;
         }
 
@@ -238,108 +238,7 @@ export default function Search(){
                         <Grid container spacing={2}>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
-                                <Box className='frmDivision'>
-                                    Información de asociado
-                                </Box>
-                            </Grid>
-
-                            <Grid item xl={10} md={10} sm={12} xs={12}>
-                                <Grid container spacing={2}>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Tipo identificación</label>
-                                            <span>{formDataConsulta.tipoIdentificacion}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Documento</label>
-                                            <span>{formDataConsulta.documento}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Primer nombre</label>
-                                            <span>{formDataConsulta.primerNombre}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Segundo nombre</label>
-                                            <span>{formDataConsulta.segundoNombre}</span>
-                                        </Box>
-                                    </Grid>
-                                    
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Primer apellido</label>
-                                            <span>{formDataConsulta.primerApellido}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Segundo apellido</label>
-                                            <span>{formDataConsulta.segundoApellido}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Fecha nacimiento</label>
-                                            <span>{formDataConsulta.fechaNacimiento}</span>
-                                        </Box>
-                                    </Grid> 
-                                    
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Dirección</label>
-                                            <span>{formDataConsulta.direccion}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                    <Box className='frmTexto'>
-                                            <label>Correo</label>
-                                            <span>{formDataConsulta.correo}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Teléfono fijo</label>
-                                            <span>{formDataConsulta.telefonoFijo}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Número de celular</label>
-                                            <span>{formDataConsulta.numeroCelular}</span>
-                                        </Box>
-                                    </Grid>
-
-                                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                                        <Box className='frmTexto'>
-                                            <label>Fecha ingreso como asociado</label>
-                                            <span>{formDataConsulta.fechaIngresoAsociado}</span>
-                                        </Box>
-                                    </Grid>
-
-                                </Grid>
-                            </Grid>
-
-                            <Grid item xl={2} md={2} sm={12} xs={12}>
-                                <Box className='frmTexto'>
-                                    <label>Fotografia</label>
-                                    <Box className='fotografia' style={{marginTop: '0.6em'}}>
-                                        <img src={formDataConsulta.showFotografia} ></img>
-                                    </Box>
-                                </Box>
+                                <ShowAsociado data={formDataConsulta} />
                             </Grid>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
@@ -367,9 +266,9 @@ export default function Search(){
 
                             <Grid item xl={6} md={6} sm={6} xs={12}>
                                 <TextValidator 
-                                    name={'decripcionCredito'}
-                                    value={formData.decripcionCredito}
-                                    label={'Descripción del crédito'}
+                                    name={'destinoCredito'}
+                                    value={formData.destinoCredito}
+                                    label={'Destino del crédito'}
                                     className={'inputGeneral'} 
                                     variant={"standard"} 
                                     inputProps={{autoComplete: 'off', maxLength: 1000}}
@@ -449,7 +348,7 @@ export default function Search(){
                             </Stack>
 
                             <Stack direction="row" spacing={2}>
-                                <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
+                                <Button type={"submit"} className={'modalBtn'}
                                     startIcon={<SaveIcon />}> Registrar
                                 </Button>
                             </Stack>

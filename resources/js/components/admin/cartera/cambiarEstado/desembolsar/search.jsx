@@ -1,11 +1,11 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card} from '@mui/material';
-import showSimpleSnackbar from '../../../layout/snackBar';
-import {LoaderModal} from "../../../layout/loader";
+import showSimpleSnackbar from '../../../../layout/snackBar';
+import {LoaderModal} from "../../../../layout/loader";
+import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
-import instance from '../../../layout/instance';
-import Show from '../../persona/show';
+import Show from '../../../persona/show';
 
 export default function Search(){
 
@@ -61,7 +61,7 @@ export default function Search(){
 
     const desvincularAsociado = () =>{
         setLoader(true);
-        instance.post('/admin/asociado/desvincular/salve', formData).then(res=>{
+        instance.post('/admin/cartera/desembolsar/solicitud/credito', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setDatosEncontrados(false) : null; 
@@ -72,9 +72,8 @@ export default function Search(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/asociado/desvincular').then(res=>{
+        instance.get('/admin/cartera/desembolsar/solicitud/credito/datos').then(res=>{
             setTipoIdentificaciones(res.tipoIdentificaciones);
-            setTipoEstadosAsociados(res.tipoEstadosAsociados);
             setLoader(false);
         })
     }
@@ -88,7 +87,7 @@ export default function Search(){
     return (
         <Fragment>
             <ValidatorForm onSubmit={consultarAsociado}>
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Desvincular asociados</Typography>
+                <Box><Typography  component={'h2'} className={'titleGeneral'}>Desembolsar crédito</Typography>
                 </Box>
                 <Box className={'containerSmall'}>
                     <Card className={'cardContainer'}>
@@ -180,10 +179,7 @@ export default function Search(){
                                     errorMessages={["Debe hacer una selección"]}
                                     onChange={handleChange} 
                                 >
-                                    <MenuItem value={""}>Seleccione</MenuItem>
-                                    {newTipoEstadosAsociados.map(res=>{
-                                        return <MenuItem value={res.tiesasid} key={res.tiesasid} >{res.tiesasnombre}</MenuItem>
-                                    })}
+                                    <MenuItem value={""}>Seleccione</MenuItem>                                 
                                 </SelectValidator>
                             </Grid>
 

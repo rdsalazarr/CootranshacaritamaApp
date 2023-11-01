@@ -3,10 +3,10 @@ import {Grid, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avata
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ModalDefaultAuto  } from '../../layout/modal';
+import Trazabilidad from '../../layout/trazabilidad';
 import {LoaderModal} from "../../layout/loader";
 import ShowAnexo from '../vehiculos/showAnexo';
 import instance from '../../layout/instance';
-import Trazabilidad from './trazabilidad';
 
 export default function Show({id, frm}){
 
