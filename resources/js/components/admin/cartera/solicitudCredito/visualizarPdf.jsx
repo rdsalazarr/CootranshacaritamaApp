@@ -9,7 +9,7 @@ export default function VisualizarPdf({data}){
 
     useEffect(()=>{
         setLoader(true);
-        instancePdf.post('/admin/cartera/simular/solicitud/credito', {data}).then(res=>{
+        instancePdf.post('/admin/cartera/simular/solicitud/credito', data).then(res=>{
             let url = 'data:application/pdf;base64,'+res.data;
             setPdf(url);
             setLoader(false);
@@ -22,7 +22,7 @@ export default function VisualizarPdf({data}){
 
     return (
         <Grid item xl={12} md={12} sm={12} xs={12}>
-            <iframe style={{width: '100%', height: '22em', border: 'none'}} 
+            <iframe style={{width: '100%', height: '28em', border: 'none'}} 
             src={pdf} />
         </Grid>
      );

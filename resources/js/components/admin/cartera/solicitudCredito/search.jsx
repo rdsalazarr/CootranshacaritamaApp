@@ -1,6 +1,6 @@
-import React, {useState, useEffect, Fragment} from 'react';
-import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
+import React, {useState, useEffect} from 'react';
 import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Autocomplete, createFilterOptions} from '@mui/material';
+import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
@@ -191,48 +191,48 @@ export default function Search(){
         return <LoaderModal />
     }
 
-    return (
-        <Fragment>
-            <ValidatorForm onSubmit={registrarSolicitudCredito}>
-                <Box><Typography component={'h2'} className={'titleGeneral'}>Solicitud de crédito</Typography>
-                </Box>
-                <Box className={'containerSmall'}>
-                    <Card className={'cardContainer'}>
-                        <Grid container spacing={2}>
-                            <Grid item xl={11} md={11} sm={10} xs={9}>
-                                <Autocomplete
-                                    id="vehiculo"
-                                    style={{height: "26px", width: "100%"}}
-                                    options={listaAsociados}
-                                    getOptionLabel={(option) => option.nombrePersona} 
-                                    value={listaAsociados.find(v => v.asocid === formData.asociadoId) || null}
-                                    filterOptions={createFilterOptions({ limit:10 })}
-                                    onChange={(event, newInputValue) => {
-                                        if(newInputValue){
-                                            setFormData({...formData, asociadoId: newInputValue.asocid})
-                                        }
-                                    }}
-                                    renderInput={(params) =>
-                                        <TextValidator {...params}
-                                            label="Consultar asociado con el número interno del vehículo"
-                                            className="inputGeneral"
-                                            variant="standard"
-                                            validators={["required"]}
-                                            errorMessages="Campo obligatorio"
-                                            value={formData.asociadoId}
-                                            placeholder="Consulte el asociado con el número interno del vehículo aquí..." />}
-                                />
-                                <br />
-                            </Grid>
-
-                            <Grid item xl={1} md={1} sm={2} xs={3} sx={{position: 'relative'}}>
-                                <Icon className={'iconLupa'} onClick={consultarVehiculo}>search</Icon>
-                                <br />
-                            </Grid>
+    return (      
+        <ValidatorForm onSubmit={registrarSolicitudCredito}>
+            <Box><Typography component={'h2'} className={'titleGeneral'}>Solicitud de crédito</Typography>
+            </Box>
+            <Box className={'containerSmall'}>
+                <Card className={'cardContainer'}>
+                    <Grid container spacing={2}>
+                        <Grid item xl={11} md={11} sm={10} xs={9}>
+                            <Autocomplete
+                                id="vehiculo"
+                                style={{height: "26px", width: "100%"}}
+                                options={listaAsociados}
+                                getOptionLabel={(option) => option.nombrePersona} 
+                                value={listaAsociados.find(v => v.asocid === formData.asociadoId) || null}
+                                filterOptions={createFilterOptions({ limit:10 })}
+                                onChange={(event, newInputValue) => {
+                                    if(newInputValue){
+                                        setFormData({...formData, asociadoId: newInputValue.asocid})
+                                    }
+                                }}
+                                renderInput={(params) =>
+                                    <TextValidator {...params}
+                                        label="Consultar asociado con el número interno del vehículo"
+                                        className="inputGeneral"
+                                        variant="standard"
+                                        validators={["required"]}
+                                        errorMessages="Campo obligatorio"
+                                        value={formData.asociadoId}
+                                        placeholder="Consulte el asociado con el número interno del vehículo aquí..." />}
+                            />
+                            <br />
                         </Grid>
-                    </Card>
-                </Box>
 
+                        <Grid item xl={1} md={1} sm={2} xs={3} sx={{position: 'relative'}}>
+                            <Icon className={'iconLupa'} onClick={consultarVehiculo}>search</Icon>
+                            <br />
+                        </Grid>
+                    </Grid>
+                </Card>
+            </Box>
+
+            {(datosEncontrados) ?
                 <Box style={{marginTop: '0.8em'}}>
                     <Card className={'cardContainer'}>
                         <Grid container spacing={2}>
@@ -457,22 +457,16 @@ export default function Search(){
 
                     </Card>
                 </Box>
+            : null }
 
-                <ModalDefaultAuto
-                    title={'Muestra el PDF de la simulación del crédito'}
-                    content={<VisualizarPdf data={formData} />}
-                    close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
-                    tam    ={'mediumFlot'}
-                    abrir  ={modal.open}
-                />
+            <ModalDefaultAuto
+                title={'Muestra el PDF de la simulación del crédito'}
+                content={<VisualizarPdf data={formData} />}
+                close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
+                tam    ={'mediumFlot'}
+                abrir  ={modal.open}
+            />
 
-            </ValidatorForm>
-
-            {(datosEncontrados) ?
-
-            <div>hola</div>
-        : null }
-
-        </Fragment>
+        </ValidatorForm>
     )
 }

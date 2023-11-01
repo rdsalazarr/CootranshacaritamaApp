@@ -1520,10 +1520,10 @@ EOD;
         }
 
 		$tituloPdf = $titulo.'.pdf';
-		if($metodo = 'S'){
+		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
 		} else{
-			PDF::output($tituloPdf, 'I');
+			PDF::output($tituloPdf, $metodo);
 		}
 	}
 }

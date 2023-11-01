@@ -72,17 +72,17 @@ class SolicitudCreditoController extends Controller
         $fechaHoraActual        = Carbon::now();
         $estadoSolicitudCredito = 'R'; //Registrado
         try {
-            $solicitudcredito                      = new SolicitudCredito();
-            $solicitudcredito->usuaid              = Auth::id();
-            $solicitudcredito->lincreid            = $request->lineaCredito;
-			$solicitudcredito->asocid              = $request->asociadoId;
-			$solicitudcredito->tiesscid            = $estadoSolicitudCredito;
-			$solicitudcredito->solcrefecharegistro = $fechaHoraActual;
-            $solicitudcredito->solcredescripcion   = $request->decripcionCredito;
-            $solicitudcredito->solcremonto         = $request->valorSolicitado;
-			$solicitudcredito->solcretasa          = $request->tasaNominal;
-            $solicitudcredito->solcrenumerocuota   = $request->plazo;
-            $solicitudcredito->solcreobservacion   = $request->observacionGeneral;
+            $solicitudcredito                        = new SolicitudCredito();
+            $solicitudcredito->usuaid                = Auth::id();
+            $solicitudcredito->lincreid              = $request->lineaCredito;
+			$solicitudcredito->asocid                = $request->asociadoId;
+			$solicitudcredito->tiesscid              = $estadoSolicitudCredito;
+			$solicitudcredito->solcrefechasolicitud  = $fechaHoraActual;
+            $solicitudcredito->solcredescripcion     = $request->decripcionCredito;
+            $solicitudcredito->solcrevalorsolicitado = $request->valorSolicitado;
+			$solicitudcredito->solcretasa            = $request->tasaNominal;
+            $solicitudcredito->solcrenumerocuota     = $request->plazo;
+            $solicitudcredito->solcreobservacion     = $request->observacionGeneral;
             $solicitudcredito->save();
 
             $solicitudCreditoMaxConsecutio = SolicitudCredito::latest('solcreid')->first();
@@ -121,7 +121,7 @@ class SolicitudCreditoController extends Controller
             $asociado      = DB::table('persona as p')->select('a.asocid', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                                         p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
                                             ->join('asociado as a', 'a.persid', '=', 'p.persid')
-                                            ->where('a.asocid', $lineasCredito->asociadoId)->first();
+                                            ->where('a.asocid', $request->asociadoId)->first();
 
             $lineaCredito        = $lineasCredito->lincrenombre;
             $asociado            = $asociado->nombrePersona;
