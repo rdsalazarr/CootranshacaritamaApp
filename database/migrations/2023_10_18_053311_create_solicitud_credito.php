@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('solicitudcredito', function (Blueprint $table) {
-            $table->bigIncrements('solcreid')->unsigned()->comment('Identificador de la tabla solicitud crédito');
-            $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea  la solicitud de crédito');
+            $table->increments('solcreid')->unsigned()->comment('Identificador de la tabla solicitud crédito');
+            $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea la solicitud de crédito');
             $table->integer('lincreid')->unsigned()->comment('Identificador de la línea de crédito');
             $table->integer('asocid')->unsigned()->comment('Identificador del asociado');
             $table->string('tiesscid', 2)->comment('Identificador del tipo de estado de la solicitud de crédito');
@@ -23,7 +23,6 @@ return new class extends Migration
             $table->decimal('solcretasa',6,2)->comment('Tasa de interés para solicitud de crédito');
             $table->string('solcrenumerocuota', 3)->comment('Número de cuota de la solicitud de crédito');
             $table->string('solcreobservacion', 1000)->nullable()->comment('Observación general de la  solicitud de crédito');
-
             $table->timestamps();
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuasolcre'); 
             $table->foreign('lincreid')->references('lincreid')->on('lineacredito')->onUpdate('cascade')->index('fk_lincresolcre');

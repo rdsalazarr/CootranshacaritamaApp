@@ -351,14 +351,14 @@ body{
   }  
 }
 
-.btnRojo{
-  margin-top: 1em;
+.btnRojo{ 
   background-color: $rojoOscuro !important; 
   text-shadow: 0px -2px 2px rgba(150, 150, 150, 1);
   transition: all .5s ease-in-out;
   color: #fdfdfd !important;
   margin-left: 10px !important;
   margin-top: 5px !important;
+  z-index: 0 !important;
   &:hover{
     background: $verdeOscuro !important;
     transition: all .5s ease-in-out;

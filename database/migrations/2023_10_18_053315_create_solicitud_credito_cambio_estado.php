@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('solicitudcreditocambioestado', function (Blueprint $table) {
             $table->bigIncrements('socrceid')->unsigned()->comment('Identificador de la tabla solicitud de credito cambio estado');
-            $table->bigInteger('solcreid')->unsigned()->comment('Identificador de la solicitud de crédito');
+            $table->integer('solcreid')->unsigned()->comment('Identificador de la solicitud de crédito');
             $table->string('tiesscid', 2)->comment('Identificador del tipo de estado solicitud de crédito');
             $table->smallInteger('socrceusuaid')->unsigned()->comment('Identificador del usuario que crea el estado de la solicitud de crédito');
             $table->dateTime('socrcefechahora')->comment('Fecha y hora en la cual se crea el cambio estado de la solicitud de crédito');

@@ -96,8 +96,11 @@ php artisan make:migration create_tipo_estado_solicitud_credito
 php artisan make:migration create_linea_credito
 php artisan make:migration create_solicitud_credito
 php artisan make:migration create_solicitud_credito_cambio_estado
-php artisan make:migration create_solicitud_credito_desembolso
 
+php artisan make:migration create_tipo_estado_colocacion
+php artisan make:migration create_colocacion
+php artisan make:migration create_colocacion_liquidacion
+php artisan make:migration create_colocacion_cambio_estado
 
 
 
@@ -181,6 +184,11 @@ php artisan make:model SolicitudCredito
 php artisan make:model SolicitudCreditoCambioEstado
 php artisan make:model SolicitudCreditoDesembolso
 
+php artisan make:model Cartera\Colocacion
+php artisan make:model Cartera\ColocacionLiquidacion
+php artisan make:model Cartera\ColocacionCambioEstado
+
+
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
@@ -217,6 +225,7 @@ php artisan make:seeder TipoCombustibleVehiculoSeeder
 php artisan make:seeder AgenciaSeeder
 php artisan make:seeder TipoCategoriaLicenciaSeeder
 php artisan make:seeder TipoConductorSeeder
+php artisan make:seeder TipoEstadoColocacionSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests

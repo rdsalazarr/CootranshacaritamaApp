@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(TipoIdentificacionSeeder::class);
+        /*$this->call(TipoIdentificacionSeeder::class);
         $this->call(CargoLaboralSeeder::class);
         $this->call(TipoDespedidaSeeder::class);
         $this->call(TipoDestinoSeeder::class);
@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AgenciaSeeder::class);
         $this->call(TipoEstadoConductorSeeder::class);
         $this->call(TipoCategoriaLicenciaSeeder::class);        
-        $this->call(TipoConductorSeeder::class);
+        $this->call(TipoConductorSeeder::class);*/
+        $this->call(TipoEstadoColocacionSeeder::class);        
     }
 }

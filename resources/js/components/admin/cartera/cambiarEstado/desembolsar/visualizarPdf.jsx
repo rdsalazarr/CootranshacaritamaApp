@@ -3,13 +3,13 @@ import {LoaderModal} from "../../../../layout/loader";
 import instancePdf from '../../../../layout/instancePdf';
 import { Grid } from '@mui/material';
 
-export default function VisualizarPdf({data}){
+export default function VisualizarPdf({data, url}){
     const [loader, setLoader] = useState(false); 
-    const [pdf, setPdf] = useState(); 
+    const [pdf, setPdf] = useState();
 
     useEffect(()=>{
         setLoader(true);
-        instancePdf.post('/admin/cartera/imprimir/documento/desembolso', data).then(res=>{
+        instancePdf.post('/admin/cartera/imprimir/documento/desembolso', {personaId: data.personaId, asociadoId: data.asociadoId, solicitudId: data.solicitudId, url:url}).then(res=>{
             let url = 'data:application/pdf;base64,'+res.data;
             setPdf(url);
             setLoader(false);

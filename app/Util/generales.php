@@ -264,4 +264,23 @@ class generales
 		return round($valor/100.0,0)*100;
 	}
 
+	function obtenerFechaPagoCuota($fecha) {
+        $fecha = Carbon::parse($fecha);
+        $fecha = $fecha->addDays(30);
+
+        // Verificar si la fecha resultante es 28 o 29 de febrero para ajustar al 01 de abril
+		if (($fecha->day === 28 || $fecha->day === 29) && $fecha->month === 2) {
+            $fecha->setMonth(4);
+            $fecha->setDay(1);
+        }
+
+        // Verificar si la fecha resultante es el último día del mes para ajustar al 01 sigiente
+        if ($fecha->day == $fecha->daysInMonth) {
+            $fecha->addDay();
+            $fecha->day = 1;
+        }
+
+        return $fecha;
+    }
+
 }

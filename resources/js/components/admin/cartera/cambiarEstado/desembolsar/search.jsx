@@ -13,19 +13,22 @@ import Asociado from '../../show/asociado';
 
 export default function Search(){
 
-    const [formData, setFormData] = useState({tipoIdentificacion:'', documento:'', personaId:'', asociadoId:'',  solicitudId:''})
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'87787878', personaId:'', asociadoId:'',  solicitudId:''})
     const [loader, setLoader] = useState(false); 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
-    const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
+    const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'',                segundoApellido:'', fechaNacimiento:'',
                                                         direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'', 
                                                         tasaNominal:'',  numerosCuota:'', observacionGeneral:''})
 
-    const [modal, setModal] = useState({open: false});
+    const [modal, setModal] = useState({open: false, titulo:'', url: ''});
+
+    const tituloModal = ['Generar PDF de la solicitud crédito','Generar PDF de la carta intrucciones','Generar PDF del formato', 'Generar PDF del pagaré'];
+    const urlModal    = ['SOLICITUDCREDITO','CARTAINSTRUCCIONES','FORMATO', 'PAGARE'];
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-     }
+    }
 
     const consultarAsociado = () =>{
         if(formData.tipoIdentificacion === ''){
@@ -93,8 +96,8 @@ export default function Search(){
         })
     }
 
-    const abrirModal = () =>{
-        setModal({open: true});
+    const abrirModal = (tipo) =>{
+        setModal({open: true, titulo: tituloModal[tipo], url: urlModal[tipo]});
     }
 
     const inicio = () =>{
@@ -198,22 +201,22 @@ export default function Search(){
 
                             <Grid item md={7} xl={7} sm={9} xs={9}>
                                 <Grid container direction="row" justifyContent="right" style={{marginTop: '0.5em'}}>
-                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={abrirModal}>
+                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(0)}}>
                                         <PictureAsPdfIcon sx={{ mr: 1 }}  />
                                         Solicitud crédito
                                     </Fab>
 
-                                    <Fab variant="extended" size="medium" className={'btnRojo'}>
+                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(1)}}>
                                         <PictureAsPdfIcon sx={{ mr: 1 }} />
                                         Carta intrucciones
                                     </Fab>
 
-                                    <Fab variant="extended" size="medium" className={'btnRojo'}>
+                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(2)}}>
                                         <PictureAsPdfIcon sx={{ mr: 1 }} />
                                         Formato 
                                     </Fab>
 
-                                    <Fab variant="extended" size="medium" className={'btnRojo'}>
+                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(3)}}>
                                         <PictureAsPdfIcon sx={{ mr: 1 }} />
                                         Pagaré
                                     </Fab> 
@@ -237,9 +240,9 @@ export default function Search(){
             : null }
 
             <ModalDefaultAuto
-                title={'Muestra el PDF de la simulación del crédito'}
-                content={<VisualizarPdf data={formData} />}
-                close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
+                title={modal.titulo}
+                content={<VisualizarPdf data={formData} url={modal.url}/>}
+                close  ={() =>{setModal({open : false, titulo:'', url: ''})}}
                 tam    ={'mediumFlot'}
                 abrir  ={modal.open}
             />
