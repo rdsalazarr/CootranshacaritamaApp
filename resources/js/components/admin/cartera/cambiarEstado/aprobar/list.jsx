@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
+import {TomarDecisionSolicitudCredito} from '../../../../layout/modalFijas';
 import { ModalDefaultAuto } from '../../../../layout/modal';
 import TablaGeneral from '../../../../layout/tablaGeneral';
-import { Box, Card, Typography} from '@mui/material';
 import {LoaderModal} from "../../../../layout/loader";
-import {TomarDecisionSolicitudCredito} from '../../../../layout/modalFijas';
+import { Box, Card, Typography} from '@mui/material';
 import instance from '../../../../layout/instance';
-import Show from '../../solicitudCredito/show';
+import Show from '../../show/show';
 
 export default function List(){
 

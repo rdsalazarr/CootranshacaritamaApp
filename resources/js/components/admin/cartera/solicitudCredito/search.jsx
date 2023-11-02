@@ -8,7 +8,7 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import VisualizarPdf from './visualizarPdf';
-import ShowAsociado from './showAsociado';
+import Asociado from '../show/asociado';
 
 ValidatorForm.addValidationRule('isTasaNominal', (value) => {
     // Verificar si el valor es un número válido en formato "10.50"
@@ -238,7 +238,7 @@ export default function Search(){
                         <Grid container spacing={2}>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
-                                <ShowAsociado data={formDataConsulta} />
+                                <Asociado data={formDataConsulta} />
                             </Grid>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
@@ -361,7 +361,7 @@ export default function Search(){
             <ModalDefaultAuto
                 title={'Muestra el PDF de la simulación del crédito'}
                 content={<VisualizarPdf data={formData} />}
-                close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
+                close  ={() =>{setModal({open : false})}}
                 tam    ={'mediumFlot'}
                 abrir  ={modal.open}
             />

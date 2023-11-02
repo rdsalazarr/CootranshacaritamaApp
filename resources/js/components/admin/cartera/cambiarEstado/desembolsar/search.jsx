@@ -1,21 +1,27 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card} from '@mui/material';
+import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Fab} from '@mui/material';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../../layout/modal';
+import SolicitudCredito from '../../show/solicitudCredito';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
-import Show from '../../../persona/show';
+import VisualizarPdf from './visualizarPdf';
+import Asociado from '../../show/asociado';
 
 export default function Search(){
 
-    const [formData, setFormData] = useState({tipoIdentificacion:'', documento:'', observacionCambio:'', asociadoId:'', tipoEstado:''})
-    const [loader, setLoader] = useState(false);
-    const [data, setData] = useState([]);
-    const [datosEncontrados, setDatosEncontrados] = useState(false);    
+    const [formData, setFormData] = useState({tipoIdentificacion:'', documento:'', personaId:'', asociadoId:'',  solicitudId:''})
+    const [loader, setLoader] = useState(false); 
+    const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
-    const [tipoEstadosAsociados, setTipoEstadosAsociados] = useState([]);
-    const [newTipoEstadosAsociados, setNewTipoEstadosAsociados] = useState([]);
+    const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
+                                                        direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'', 
+                                                        tasaNominal:'',  numerosCuota:'', observacionGeneral:''})
+
+    const [modal, setModal] = useState({open: false});
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -32,34 +38,51 @@ export default function Search(){
             return;
         }
 
-        let newFormData = {...formData}
+        let newFormData         = {...formData}
+        let newFormDataConsulta = {...formDataConsulta}
         setDatosEncontrados(false);
-        instance.post('/admin/asociado/consultar', formData).then(res=>{
+        instance.post('/admin/cartera/consultar/asociado', formData).then(res=>{
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');
             }else{
-                let tipoEstadoAsociado = [];
-                let idEstadoActual     = res.data.tiesasid;
-                newFormData.asociadoId = res.data.asocid;
 
-                tipoEstadosAsociados.forEach(function(tpEstado){ 
-                    if(tpEstado.tiesasid !== idEstadoActual){
-                        tipoEstadoAsociado.push({
-                            tiesasid: tpEstado.tiesasid,
-                            tiesasnombre: tpEstado.tiesasnombre
-                        });
-                    }
-                });
-                setNewTipoEstadosAsociados(tipoEstadoAsociado);
-                setDatosEncontrados(true);
+                let solicitudCredito                     = res.solicitudCredito;
+
+                newFormData.personaId                    = solicitudCredito.persid;
+                newFormData.asociadoId                   = solicitudCredito.asocid;
+                newFormData.solicitudId                  = solicitudCredito.solcreid;
+                newFormDataConsulta.tipoIdentificacion   = solicitudCredito.nombreTipoIdentificacion;
+                newFormDataConsulta.documento            = solicitudCredito.persdocumento;
+                newFormDataConsulta.primerNombre         = solicitudCredito.persprimernombre;
+                newFormDataConsulta.segundoNombre        = solicitudCredito.perssegundonombre;
+                newFormDataConsulta.primerApellido       = solicitudCredito.persprimerapellido;
+                newFormDataConsulta.segundoApellido      = solicitudCredito.perssegundoapellido;
+                newFormDataConsulta.fechaNacimiento      = solicitudCredito.persfechanacimiento;
+                newFormDataConsulta.direccion            = solicitudCredito.persdireccion;
+                newFormDataConsulta.correo               = solicitudCredito.perscorreoelectronico;
+                newFormDataConsulta.telefonoFijo         = solicitudCredito.persnumerotelefonofijo;
+                newFormDataConsulta.numeroCelular        = solicitudCredito.persnumerocelular;
+                newFormDataConsulta.fechaIngresoAsociado = solicitudCredito.asocfechaingreso;
+                newFormDataConsulta.showFotografia       = solicitudCredito.fotografia;
+
+                newFormDataConsulta.lineaCredito         = solicitudCredito.lineaCredito;
+                newFormDataConsulta.destinoCredito       = solicitudCredito.solcredescripcion;
+                newFormDataConsulta.valorSolicitado      = solicitudCredito.valorSolicitado;
+                newFormDataConsulta.tasaNominal          = solicitudCredito.tasaNominal;
+                newFormDataConsulta.numerosCuota         = solicitudCredito.solcrenumerocuota;
+                newFormDataConsulta.observacionGeneral   = solicitudCredito.solcreobservacion;
+                newFormDataConsulta.fechaSolicitud       = solicitudCredito.solcrefechasolicitud;
+                newFormDataConsulta.estadoActual         = solicitudCredito.estadoActual;
+
                 setFormData(newFormData);
-                setData(res.data);
+                setFormDataConsulta(newFormDataConsulta);
+                setDatosEncontrados(true);
             }
             setLoader(false);
         })
     }
 
-    const desvincularAsociado = () =>{
+    const desembolsarCredito = () =>{
         setLoader(true);
         instance.post('/admin/cartera/desembolsar/solicitud/credito', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -68,7 +91,11 @@ export default function Search(){
             (res.success) ? setFormData({tipoIdentificacion:'', documento:'', observacionCambio:'', asociadoId:'', tipoEstado:''}) : null; 
             setLoader(false);
         })
-     }
+    }
+
+    const abrirModal = () =>{
+        setModal({open: true});
+    }
 
     const inicio = () =>{
         setLoader(true);
@@ -133,27 +160,25 @@ export default function Search(){
             </ValidatorForm>
 
             {(datosEncontrados) ? 
-                <ValidatorForm onSubmit={desvincularAsociado} style={{marginTop: '2em'}}> 
+                <ValidatorForm onSubmit={desembolsarCredito} style={{marginTop: '2em'}}> 
                     <Card className={'cardContainer'}>
                         <Grid container spacing={2}>
 
-                            <Grid item md={12} xl={12} sm={12} xs={12}>
-                                <Box className='frmDivision'>
-                                    Información del asociado
-                                </Box>
+                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                <Asociado data={formDataConsulta} />
                             </Grid>
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <Show id={data.persid} frm={'ASOCIADO'}/>
+                                <SolicitudCredito data={formDataConsulta} />
                             </Grid>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
                                 <Box className='frmDivision'>
-                                    Información del proceso a realizar
+                                    Información del proceso de desembolsar el crédito
                                 </Box>
                             </Grid>
 
-                            <Grid item md={9} xl={9} sm={12} xs={12}>
+                            <Grid item md={12} xl={12} sm={12} xs={12}>
                                 <TextValidator
                                     name={'observacionCambio'}
                                     value={formData.observacionCambio}
@@ -167,34 +192,57 @@ export default function Search(){
                                 />
                             </Grid>
 
-                            <Grid item md={3} xl={3} sm={12} xs={12}>
-                                <SelectValidator
-                                    name={'tipoEstado'}
-                                    value={formData.tipoEstado}
-                                    label={'Estado'}
-                                    className={'inputGeneral'}
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off'}}
-                                    validators={["required"]}
-                                    errorMessages={["Debe hacer una selección"]}
-                                    onChange={handleChange} 
-                                >
-                                    <MenuItem value={""}>Seleccione</MenuItem>                                 
-                                </SelectValidator>
+                            <Grid item md={4} xl={4} sm={3} xs={3}>
+
+                            </Grid>
+
+                            <Grid item md={7} xl={7} sm={9} xs={9}>
+                                <Grid container direction="row" justifyContent="right" style={{marginTop: '0.5em'}}>
+                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={abrirModal}>
+                                        <PictureAsPdfIcon sx={{ mr: 1 }}  />
+                                        Solicitud crédito
+                                    </Fab>
+
+                                    <Fab variant="extended" size="medium" className={'btnRojo'}>
+                                        <PictureAsPdfIcon sx={{ mr: 1 }} />
+                                        Carta intrucciones
+                                    </Fab>
+
+                                    <Fab variant="extended" size="medium" className={'btnRojo'}>
+                                        <PictureAsPdfIcon sx={{ mr: 1 }} />
+                                        Formato 
+                                    </Fab>
+
+                                    <Fab variant="extended" size="medium" className={'btnRojo'}>
+                                        <PictureAsPdfIcon sx={{ mr: 1 }} />
+                                        Pagaré
+                                    </Fab> 
+                                </Grid>
+                            </Grid>
+
+                            <Grid item md={1} xl={1} sm={12} xs={12}>
+                                <Grid container direction="row" justifyContent="right" style={{marginTop: '1em'}}>
+                                    <Stack direction="row" spacing={2}>
+                                        <Button type={"submit"} className={'modalBtn'}
+                                            startIcon={<SaveIcon />}> Guardar
+                                        </Button>
+                                    </Stack>
+                                </Grid>
                             </Grid>
 
                         </Grid>
 
-                        <Grid container direction="row"  justifyContent="right" style={{marginTop: '1em'}}>
-                            <Stack direction="row" spacing={2}>
-                                <Button type={"submit"} className={'modalBtn'}
-                                    startIcon={<SaveIcon />}> Guardar
-                                </Button>
-                            </Stack>
-                        </Grid>
                     </Card>
                 </ValidatorForm>
             : null }
+
+            <ModalDefaultAuto
+                title={'Muestra el PDF de la simulación del crédito'}
+                content={<VisualizarPdf data={formData} />}
+                close  ={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
+                tam    ={'mediumFlot'}
+                abrir  ={modal.open}
+            />
 
         </Fragment>
     )

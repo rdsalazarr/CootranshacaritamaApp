@@ -40,7 +40,7 @@ class AprobarSolicitudCreditoController extends Controller
                                     'observacion'     => 'required|string|min:10|max:500']);
 
         DB::beginTransaction();
-        $fechaHoraActual  = Carbon::now();  
+        $fechaHoraActual  = Carbon::now();
         try {
             $solcreid                   = $request->codigo;
             $solicitudcredito           = SolicitudCredito::findOrFail($solcreid);
@@ -68,7 +68,7 @@ class AprobarSolicitudCreditoController extends Controller
         $this->validate(request(),['codigo' => 'required|numeric']);
 
         try {
-            $url      = URL::to('/');
+            $url              = URL::to('/');
             $solicitudcredito = DB::table('solicitudcredito as sc')->select('sc.solcrefechasolicitud','sc.solcredescripcion',
                                     'sc.solcrenumerocuota','sc.solcreobservacion','p.persdocumento', 'p.persprimernombre',
                                     'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',

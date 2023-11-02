@@ -392,7 +392,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/show/solicitud/credito', [ShowSolicitudCreditoController::class, 'index']);//No debe tener control de ruta
             
             Route::get('/desembolsar/solicitud/credito/datos', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/desembolso');
+            Route::post('/consultar/asociado', [DesembolsarSolicitudCreditoController::class, 'consultar']);
             Route::post('/desembolsar/solicitud/credito', [DesembolsarSolicitudCreditoController::class, 'salve']);
+            Route::post('/imprimir/documento/desembolso', [DesembolsarSolicitudCreditoController::class, 'imprimir']);
 
             Route::get('/historial/solicitud/credito', [HistorialSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/historial');
             Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');

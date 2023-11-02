@@ -1,7 +1,7 @@
 import React from 'react';
 import {Grid, Box} from '@mui/material';
 
-export default function ShowAsociado({data}){
+export default function Asociado({data}){
 
     return (
         <Grid container spacing={2}>

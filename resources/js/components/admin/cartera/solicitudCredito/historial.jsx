@@ -4,7 +4,7 @@ import TablaGeneral from '../../../layout/tablaGeneral';
 import { Box, Card, Typography} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import Show from './show';
+import Show from '../show/show';
 
 export default function List(){
 
