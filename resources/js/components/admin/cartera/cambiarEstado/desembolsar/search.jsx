@@ -5,6 +5,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../../layout/modal';
 import SolicitudCredito from '../../show/solicitudCredito';
+import person from "../../../../../../images/person.png";
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
@@ -13,7 +14,8 @@ import Asociado from '../../show/asociado';
 
 export default function Search(){
 
-    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'87787878', personaId:'', asociadoId:'',  solicitudId:''})
+    //27896321 87787878
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'27896321', personaId:'', asociadoId:'',  solicitudId:''})
     const [loader, setLoader] = useState(false); 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
@@ -66,7 +68,7 @@ export default function Search(){
                 newFormDataConsulta.telefonoFijo         = solicitudCredito.persnumerotelefonofijo;
                 newFormDataConsulta.numeroCelular        = solicitudCredito.persnumerocelular;
                 newFormDataConsulta.fechaIngresoAsociado = solicitudCredito.asocfechaingreso;
-                newFormDataConsulta.showFotografia       = solicitudCredito.fotografia;
+                newFormDataConsulta.showFotografia       = (solicitudCredito.fotografia !== null) ? solicitudCredito.fotografia  : person;
 
                 newFormDataConsulta.lineaCredito         = solicitudCredito.lineaCredito;
                 newFormDataConsulta.destinoCredito       = solicitudCredito.solcredescripcion;
@@ -172,7 +174,7 @@ export default function Search(){
                             </Grid>
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <SolicitudCredito data={formDataConsulta} />
+                                <SolicitudCredito data={formDataConsulta} aprobada={true} />
                             </Grid>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>

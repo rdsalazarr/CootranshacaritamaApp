@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Trazabilidad from '../../../layout/trazabilidad';
+import person from "../../../../../images/person.png";
 import {LoaderModal} from "../../../layout/loader";
 import SolicitudCredito from './solicitudCredito';
 import instance from '../../../layout/instance';
@@ -17,32 +18,33 @@ export default function Show({id}){
     const [cambiosEstadoSolicitudCredito, setCambiosEstadoSolicitudCredito] = useState([]);
 
     const inicio = () =>{
+        console.log("hola");
         setLoader(true);
         let newFormData = {...formData};
         instance.post('/admin/cartera/show/solicitud/credito', {codigo: id}).then(res=>{
-            let solicitudcredito             = res.solicitudcredito;
-            newFormData.tipoIdentificacion   = solicitudcredito.nombreTipoIdentificacion;
-            newFormData.documento            = solicitudcredito.persdocumento;
-            newFormData.primerNombre         = solicitudcredito.persprimernombre;
-            newFormData.segundoNombre        = solicitudcredito.perssegundonombre;
-            newFormData.primerApellido       = solicitudcredito.persprimerapellido;
-            newFormData.segundoApellido      = solicitudcredito.perssegundoapellido;
-            newFormData.fechaNacimiento      = solicitudcredito.persfechanacimiento;
-            newFormData.direccion            = solicitudcredito.persdireccion;
-            newFormData.correo               = solicitudcredito.perscorreoelectronico;
-            newFormData.telefonoFijo         = solicitudcredito.persnumerotelefonofijo;
-            newFormData.numeroCelular        = solicitudcredito.persnumerocelular;
-            newFormData.fechaIngresoAsociado = solicitudcredito.asocfechaingreso;
-            newFormData.showFotografia       = solicitudcredito.fotografia;
+            let solicitudCredito             = res.solicitudCredito;
+            newFormData.tipoIdentificacion   = solicitudCredito.nombreTipoIdentificacion;
+            newFormData.documento            = solicitudCredito.persdocumento;
+            newFormData.primerNombre         = solicitudCredito.persprimernombre;
+            newFormData.segundoNombre        = solicitudCredito.perssegundonombre;
+            newFormData.primerApellido       = solicitudCredito.persprimerapellido;
+            newFormData.segundoApellido      = solicitudCredito.perssegundoapellido;
+            newFormData.fechaNacimiento      = solicitudCredito.persfechanacimiento;
+            newFormData.direccion            = solicitudCredito.persdireccion;
+            newFormData.correo               = solicitudCredito.perscorreoelectronico;
+            newFormData.telefonoFijo         = solicitudCredito.persnumerotelefonofijo;
+            newFormData.numeroCelular        = solicitudCredito.persnumerocelular;
+            newFormData.fechaIngresoAsociado = solicitudCredito.asocfechaingreso;
+            newFormData.showFotografia       = (solicitudCredito.fotografia !== null) ? solicitudCredito.fotografia  : person;
 
-            newFormData.lineaCredito         = solicitudcredito.lineaCredito;
-            newFormData.destinoCredito       = solicitudcredito.solcredescripcion;
-            newFormData.valorSolicitado      = solicitudcredito.valorSolicitado;
-            newFormData.tasaNominal          = solicitudcredito.tasaNominal;
-            newFormData.numerosCuota         = solicitudcredito.solcrenumerocuota;
-            newFormData.observacionGeneral   = solicitudcredito.solcreobservacion;
-            newFormData.fechaSolicitud       = solicitudcredito.solcrefechasolicitud;
-            newFormData.estadoActual         = solicitudcredito.estadoActual;
+            newFormData.lineaCredito         = solicitudCredito.lineaCredito;
+            newFormData.destinoCredito       = solicitudCredito.solcredescripcion;
+            newFormData.valorSolicitado      = solicitudCredito.valorSolicitado;
+            newFormData.tasaNominal          = solicitudCredito.tasaNominal;
+            newFormData.numerosCuota         = solicitudCredito.solcrenumerocuota;
+            newFormData.observacionGeneral   = solicitudCredito.solcreobservacion;
+            newFormData.fechaSolicitud       = solicitudCredito.solcrefechasolicitud;
+            newFormData.estadoActual         = solicitudCredito.estadoActual;
 
             setFormData(newFormData);
             setCambiosEstadoSolicitudCredito(res.cambiosEstadoSolicitudCredito);

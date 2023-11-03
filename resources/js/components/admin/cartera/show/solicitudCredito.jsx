@@ -1,14 +1,14 @@
 import React from 'react';
 import {Grid, Box} from '@mui/material';
 
-export default function SolicitudCredito({data}){
+export default function SolicitudCredito({data, aprobada = false}){
 
     return (
         <Grid container spacing={2}>
 
             <Grid item md={12} xl={12} sm={12} xs={12}>
                 <Box className='frmDivision'>
-                    Información de la solicitud de crédito
+                    Información de la solicitud de crédito {(aprobada) ? 'aprobada' : null}
                 </Box>
             </Grid>
 

@@ -265,22 +265,28 @@ class generales
 	}
 
 	function obtenerFechaPagoCuota($fecha) {
-        $fecha = Carbon::parse($fecha);
-        $fecha = $fecha->addDays(30);
+		$fecha        = Carbon::parse($fecha);
+        $nuevaFecha   = Carbon::parse($fecha);
+        $diaFecha     = $fecha->day;
+        $mesFecha     = $fecha->month;
+        $ultimoDiaMes = $fecha->daysInMonth;
+
+		$totalDiasAdicionar = ($ultimoDiaMes === 30 ) ? 30 :  $ultimoDiaMes;
+		$nuevaFecha = $fecha->addDays($totalDiasAdicionar);
 
         // Verificar si la fecha resultante es 28 o 29 de febrero para ajustar al 01 de abril
-		if (($fecha->day === 28 || $fecha->day === 29) && $fecha->month === 2) {
-            $fecha->setMonth(4);
-            $fecha->setDay(1);
+		if (($diaFecha === 28 || $diaFecha === 29) && $mesFecha === 2) {            
+            $nuevaFecha->setMonth(4);
+            $nuevaFecha->setDay(1);
         }
 
         // Verificar si la fecha resultante es el último día del mes para ajustar al 01 sigiente
-        if ($fecha->day == $fecha->daysInMonth) {
+        /*if ($fecha->day == $fecha->daysInMonth) {
             $fecha->addDay();
             $fecha->day = 1;
-        }
+        }*/
 
-        return $fecha;
+        return $nuevaFecha;
     }
 
 }

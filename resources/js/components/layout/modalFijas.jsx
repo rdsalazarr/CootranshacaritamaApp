@@ -2,13 +2,13 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator} from 'react-material-ui-form-validator';
 import errorTotalizarFirmas from "../../../images/modal/errorTotalizarFirmas.png";
+import suspenderConductor from "../../../images/modal/suspenderConductor.png";
 import recibirDocumento from "../../../images/modal/recibirDocumento.png";
 import sellarDocumento from "../../../images/modal/sellarDocumento.png";
 import anularDocumento from "../../../images/modal/anularDocumento.png";
 import firmarDocumento from "../../../images/modal/firmarDocumento.png";
 import solicitudFirma from "../../../images/modal/solicitudFirma.png";
 import enviarRadicado from "../../../images/modal/enviarRadicado.png";
-import sancionarConductor from "../../../images/modal/enviarRadicado.png";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import {Box, Grid, Button, Avatar, MenuItem} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -724,7 +724,7 @@ export function SuspenderConductor({id, cerrarModal}){
                 <Box style={{width: '20%', margin: 'auto'}}>
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <Box className='animate__animated animate__rotateIn'>
-                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={sancionarConductor} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={suspenderConductor} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
                         </Box>
                     </Grid>
                 </Box>

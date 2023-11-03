@@ -14,7 +14,7 @@ class ShowSolicitudCreditoController extends Controller
 
         try {
             $url      = URL::to('/');
-            $solicitudcredito = DB::table('solicitudcredito as sc')->select('sc.solcrefechasolicitud','sc.solcredescripcion',
+            $solicitudCredito = DB::table('solicitudcredito as sc')->select('sc.solcrefechasolicitud','sc.solcredescripcion',
                                     'sc.solcrenumerocuota','sc.solcreobservacion','p.persdocumento', 'p.persprimernombre',
                                     'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
@@ -30,14 +30,14 @@ class ShowSolicitudCreditoController extends Controller
                                     ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
                                     ->where('sc.solcreid', $request->codigo)->first();
 
-        $cambiosEstadoSolicitudCredito =  DB::table('solicitudcreditocambioestado as cesc')
+            $cambiosEstadoSolicitudCredito =  DB::table('solicitudcreditocambioestado as cesc')
                                             ->select('cesc.socrcefechahora as fecha','cesc.socrceobservacion as observacion','tesc.tiesscnombre as estado',
                                                 DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
                                             ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'cesc.tiesscid')
                                             ->join('usuario as u', 'u.usuaid', '=', 'cesc.socrceusuaid')
                                             ->where('cesc.solcreid', $request->codigo)->get();
 
-			return response()->json(['success' => true, 'solicitudcredito' => $solicitudcredito, 'cambiosEstadoSolicitudCredito' => $cambiosEstadoSolicitudCredito]);
+			return response()->json(['success' => true, 'solicitudCredito' => $solicitudCredito, 'cambiosEstadoSolicitudCredito' => $cambiosEstadoSolicitudCredito]);
 		} catch (Exception $error){		
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
 		}

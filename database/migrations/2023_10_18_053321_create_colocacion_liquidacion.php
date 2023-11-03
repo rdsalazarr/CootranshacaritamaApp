@@ -12,10 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('colocacionliquidacion', function (Blueprint $table) {
-            $table->bigIncrements('socrceid')->unsigned()->comment('Identificador de la tabla colocación liquidación');
+            $table->bigIncrements('colliqid')->unsigned()->comment('Identificador de la tabla colocación liquidación');
             $table->integer('coloid')->unsigned()->comment('Identificador de la solicitud de crédito');
-            $table->string('colliqnumerocuota', 3)->comment('Monto o valor de la solicitud de crédito');
-            $table->string('solcrevalorsolicitado', 10)->comment('Monto o valor de la solicitud de crédito');
+            $table->string('colliqnumerocuota', 3)->comment('Monto o valor de la solicitud de crédito');            
             $table->date('colliqfechavencimiento')->comment('Fecha de vencimiento de la cuota de la colocación');
             $table->string('colliqvalorcuota', 10)->comment('Monto o valor de la cuota de la colocación');
             $table->string('colliqnumerocomprobante', 10)->nullable()->comment('Número de comprobante de pago de la cuota de la colocación');
