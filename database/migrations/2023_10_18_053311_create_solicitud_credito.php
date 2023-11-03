@@ -16,6 +16,7 @@ return new class extends Migration
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea la solicitud de crédito');
             $table->integer('lincreid')->unsigned()->comment('Identificador de la línea de crédito');
             $table->integer('asocid')->unsigned()->comment('Identificador del asociado');
+            $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
             $table->string('tiesscid', 2)->comment('Identificador del tipo de estado de la solicitud de crédito');
             $table->date('solcrefechasolicitud')->comment('Fecha de registro de la solicitud de crédito');
             $table->string('solcredescripcion', 1000)->comment('Descripción de la solicitud de crédito');
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuasolcre'); 
             $table->foreign('lincreid')->references('lincreid')->on('lineacredito')->onUpdate('cascade')->index('fk_lincresolcre');
             $table->foreign('asocid')->references('asocid')->on('asociado')->onUpdate('cascade')->index('fk_asocsolcre');
+            $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehisolcre');
             $table->foreign('tiesscid')->references('tiesscid')->on('tipoestadosolicitudcredito')->onUpdate('cascade')->index('fk_tiesscsolcre');
         });
     }

@@ -11,6 +11,6 @@ class SolicitudCredito extends Model
 
     protected $table      = 'solicitudcredito';
     protected $primaryKey = 'solcreid';
-    protected $fillable   = ['usuaid','lincreid','asocid','tiesscid','solcrefechasolicitud','solcredescripcion',
+    protected $fillable   = ['usuaid','lincreid','asocid','vehiid','tiesscid','solcrefechasolicitud','solcredescripcion',
                             'solcrevalorsolicitado','solcretasa','solcrenumerocuota','solcreobservacion'];
 }

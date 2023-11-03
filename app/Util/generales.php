@@ -111,6 +111,17 @@ class generales
 		return $dia." de ".$mes1." de ".$anyo." a las ".$hora; 
 	}
 
+	public function formatearFechaLargaPagare($fecha){
+		//construyo la fecha en formato largo
+		$separarFecha=explode('-',$fecha);
+		$anyo=$separarFecha[0];
+		$mes=$separarFecha[1];
+		$dia=$separarFecha[2];
+
+		$mes1 = $this->obtenerMes($mes);
+		return $dia." días del mes de ".$mes1." de ".$anyo; 
+	}
+
 	function validarContrasena($contrasena) {
 		$success = false;
 		$message = '';

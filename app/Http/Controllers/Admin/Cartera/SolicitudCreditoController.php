@@ -16,7 +16,7 @@ class SolicitudCreditoController extends Controller
 {
     public function index()
     {
-        $listaAsociados = DB::table('vehiculo as v')->select('a.asocid',
+        $listaAsociados = DB::table('vehiculo as v')->select(DB::raw("CONCAT(a.asocid,'-', v.vehiid) as identificador"),
                         DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno,' ',p.persdocumento,' ', p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
                         ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
@@ -31,7 +31,7 @@ class SolicitudCreditoController extends Controller
 
     public function consultar(Request $request)
     {
-        $this->validate(request(),['asociadoId' => 'required|numeric']);
+        $this->validate(request(),['asociadoId' => 'required|numeric' ]);
 
         try {
             $url      = URL::to('/');
@@ -59,6 +59,7 @@ class SolicitudCreditoController extends Controller
 	{
 	    $this->validate(request(),[
                 'asociadoId'         => 'required|numeric',
+                'vehiculoId'         => 'required|numeric',
                 'lineaCredito'       => 'required|numeric',
 	   	        'destinoCredito'     => 'required|string|min:20|max:1000',
                 'valorSolicitado'    => 'required|numeric|between:1,999999999',
@@ -68,13 +69,15 @@ class SolicitudCreditoController extends Controller
 	        ]);
 
         DB::beginTransaction();
-        $fechaHoraActual        = Carbon::now();
-        $estadoSolicitudCredito = 'R'; //Registrado
         try {
+            $fechaHoraActual        = Carbon::now();
+            $estadoSolicitudCredito = 'R'; //Registrado
+
             $solicitudcredito                        = new SolicitudCredito();
             $solicitudcredito->usuaid                = Auth::id();
             $solicitudcredito->lincreid              = $request->lineaCredito;
 			$solicitudcredito->asocid                = $request->asociadoId;
+            $solicitudcredito->vehiid                = $request->vehiculoId;
 			$solicitudcredito->tiesscid              = $estadoSolicitudCredito;
 			$solicitudcredito->solcrefechasolicitud  = $fechaHoraActual;
             $solicitudcredito->solcredescripcion     = $request->destinoCredito;
@@ -108,11 +111,10 @@ class SolicitudCreditoController extends Controller
 	    $this->validate(request(),[
                 'asociadoId'         => 'required|numeric',
                 'lineaCredito'       => 'required|numeric',
-	   	        'destinoCredito'     => 'required|string|min:20|max:1000',
+	   	        'destinoCredito'     => 'required|string|max:1000',
                 'valorSolicitado'    => 'required|numeric|between:1,999999999',
 				'tasaNominal'        => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
-                'plazo'              => 'required|numeric|between:1,99',
-				'observacionGeneral' => 'nullable|string|min:20|max:1000'
+                'plazo'              => 'required|numeric|between:1,99'
 	        ]);
 
         try {

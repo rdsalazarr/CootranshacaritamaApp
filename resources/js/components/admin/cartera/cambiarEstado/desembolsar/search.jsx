@@ -12,24 +12,44 @@ import SaveIcon from '@mui/icons-material/Save';
 import VisualizarPdf from './visualizarPdf';
 import Asociado from '../../show/asociado';
 
+ValidatorForm.addValidationRule('isTasaNominal', (value) => {
+    // Verificar si el valor es un número válido en formato "10.50"
+    const regex = /^\d+(\.\d{1,2})?$/;
+    if (!regex.test(value)) {
+      return false;
+    }
+  
+    // Verificar si el número está en el rango de 0 a 100 (porcentaje válido)
+    const numValue = parseFloat(value);
+    return numValue >= 0 && numValue <= 100;
+});
+
 export default function Search(){
 
     //27896321 87787878
-    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'27896321', personaId:'', asociadoId:'',  solicitudId:''})
-    const [loader, setLoader] = useState(false); 
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'87787878', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
+                                            valorSolicitado:'', valorAprobado:'',  tasaNominal:'', plazo:'', observacionGeneral:''})
+    const [loader, setLoader] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [habilitado, setHabilitado] = useState(true);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
+    const [lineasCreditos, setLineasCreditos] = useState([]);
+    const [modal, setModal] = useState({open: false, titulo:'', url: ''});
     const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'',                segundoApellido:'', fechaNacimiento:'',
                                                         direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'', 
-                                                        tasaNominal:'',  numerosCuota:'', observacionGeneral:''})
-
-    const [modal, setModal] = useState({open: false, titulo:'', url: ''});
-
+                                                        tasaNominal:'',  numerosCuota:'', observacionGeneral:'', montoSolicitado:''})
+    const [formDataLineaCredito, setFormDataLineaCredito] = useState({ tasaNominalLineaCredito: '', tasaNominal:'', valorMaximoLineaCredito:'',  valorMinimoLineaCredito:'', plazoMaximoLineaCredito:''})
+   
     const tituloModal = ['Generar PDF de la solicitud crédito','Generar PDF de la carta intrucciones','Generar PDF del formato', 'Generar PDF del pagaré'];
     const urlModal    = ['SOLICITUDCREDITO','CARTAINSTRUCCIONES','FORMATO', 'PAGARE'];
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
+
+    const abrirModal = (tipo) =>{
+        setModal({open: true, titulo: tituloModal[tipo], url: urlModal[tipo]});
     }
 
     const consultarAsociado = () =>{
@@ -46,6 +66,7 @@ export default function Search(){
         let newFormData         = {...formData}
         let newFormDataConsulta = {...formDataConsulta}
         setDatosEncontrados(false);
+        setLoader(true);
         instance.post('/admin/cartera/consultar/asociado', formData).then(res=>{
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');
@@ -56,6 +77,12 @@ export default function Search(){
                 newFormData.personaId                    = solicitudCredito.persid;
                 newFormData.asociadoId                   = solicitudCredito.asocid;
                 newFormData.solicitudId                  = solicitudCredito.solcreid;
+                newFormData.lineaCredito                 = solicitudCredito.lincreid;
+                newFormData.valorSolicitado              = solicitudCredito.solcrevalorsolicitado;
+                newFormData.valorAprobado                = solicitudCredito.solcrevalorsolicitado;
+                newFormData.tasaNominal                  = solicitudCredito.solcretasa;
+                newFormData.plazo                        = solicitudCredito.solcrenumerocuota;       
+
                 newFormDataConsulta.tipoIdentificacion   = solicitudCredito.nombreTipoIdentificacion;
                 newFormDataConsulta.documento            = solicitudCredito.persdocumento;
                 newFormDataConsulta.primerNombre         = solicitudCredito.persprimernombre;
@@ -68,38 +95,101 @@ export default function Search(){
                 newFormDataConsulta.telefonoFijo         = solicitudCredito.persnumerotelefonofijo;
                 newFormDataConsulta.numeroCelular        = solicitudCredito.persnumerocelular;
                 newFormDataConsulta.fechaIngresoAsociado = solicitudCredito.asocfechaingreso;
-                newFormDataConsulta.showFotografia       = (solicitudCredito.fotografia !== null) ? solicitudCredito.fotografia  : person;
+                newFormDataConsulta.showFotografia       = (solicitudCredito.fotografia !== null) ? solicitudCredito.fotografia : person;
 
+                newFormDataConsulta.lineaCreditoId       = solicitudCredito.lincreid;
                 newFormDataConsulta.lineaCredito         = solicitudCredito.lineaCredito;
                 newFormDataConsulta.destinoCredito       = solicitudCredito.solcredescripcion;
                 newFormDataConsulta.valorSolicitado      = solicitudCredito.valorSolicitado;
+                newFormDataConsulta.montoSolicitado      = solicitudCredito.solcrevalorsolicitado;
                 newFormDataConsulta.tasaNominal          = solicitudCredito.tasaNominal;
                 newFormDataConsulta.numerosCuota         = solicitudCredito.solcrenumerocuota;
                 newFormDataConsulta.observacionGeneral   = solicitudCredito.solcreobservacion;
                 newFormDataConsulta.fechaSolicitud       = solicitudCredito.solcrefechasolicitud;
                 newFormDataConsulta.estadoActual         = solicitudCredito.estadoActual;
 
-                setFormData(newFormData);
+                setLineasCreditos(res.lineasCreditos);
                 setFormDataConsulta(newFormDataConsulta);
+                setFormData(newFormData);
                 setDatosEncontrados(true);
             }
             setLoader(false);
         })
     }
 
+    const formatearNumero = (numero) =>{
+        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
+        return Number(numero).toLocaleString('es-CO', opciones);
+    }
+
     const desembolsarCredito = () =>{
-        setLoader(true);
+        let validarLineaCredito = (formData.lineaCredito !== formDataConsulta.lineaCreditoId) ? true : false;
+
+        if(formData.valorSolicitado > formDataConsulta.montoSolicitado){
+            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formDataConsulta.montoSolicitado), 'error');
+            return;
+        }
+
+        if(!validarLineaCredito && formData.tasaNominal > formDataConsulta.tasaNominal){
+            showSimpleSnackbar("La tasa máxima permita es "+formDataConsulta.tasaNominal , 'error');
+            return;
+        }
+
+        if(!validarLineaCredito && formData.plazo > formDataConsulta.numerosCuota){
+            showSimpleSnackbar("El plazo máximo permito es "+formDataConsulta.numerosCuota+" meses", 'error');
+            return;
+        }
+
+        if(validarLineaCredito && formData.tasaNominal > formDataLineaCredito.tasaNominalLineaCredito){
+            showSimpleSnackbar("La tasa máxima permita de esta línea de crédito es "+formDataLineaCredito.tasaNominalLineaCredito , 'error');
+            return;
+        }
+
+        if(validarLineaCredito && formData.valorSolicitado < formDataLineaCredito.valorMinimoLineaCredito){
+            showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formDataLineaCredito.valorMinimoLineaCredito), 'error');
+            return;
+        }
+
+        if(validarLineaCredito && formData.valorSolicitado > formDataLineaCredito.valorMaximoLineaCredito){
+            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formDataLineaCredito.valorMaximoLineaCredito), 'error');
+            return;
+        }
+
+        if(validarLineaCredito && formData.plazo > formDataLineaCredito.plazoMaximoLineaCredito){
+            showSimpleSnackbar("El plazo máximo permito es "+formDataLineaCredito.plazoMaximoLineaCredito+" meses", 'error');
+            return;
+        }
+
+       // setLoader(true);
         instance.post('/admin/cartera/desembolsar/solicitud/credito', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? setDatosEncontrados(false) : null; 
-            (res.success) ? setFormData({tipoIdentificacion:'', documento:'', observacionCambio:'', asociadoId:'', tipoEstado:''}) : null; 
+            (res.success) ? setDatosEncontrados(false) : null;
+            (res.success) ? setHabilitado(false) : null; 
+            (res.success) ? setFormData({tipoIdentificacion:'', documento:'', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
+                                        valorSolicitado:'', valorAprobado:'', tasaNominal:'', plazo:'', observacionGeneral:''}) : null; 
+            
+            setSuccess(res.success);
             setLoader(false);
         })
-    }
+    } 
 
-    const abrirModal = (tipo) =>{
-        setModal({open: true, titulo: tituloModal[tipo], url: urlModal[tipo]});
+    const cargarInformacionLinea = (e) =>{
+        let newFormData             = {...formData}
+        let mewFormDataLineaCredito = {...formDataLineaCredito}  
+        if(e.target.value !== ''){
+            const resultadosFiltrados = lineasCreditos.filter((lineaCredito) => lineaCredito.lincreid === e.target.value);
+            mewFormDataLineaCredito.tasaNominalLineaCredito = resultadosFiltrados[0].lincretasanominal;
+            mewFormDataLineaCredito.tasaNominal             = resultadosFiltrados[0].lincretasanominal;
+            mewFormDataLineaCredito.valorMaximoLineaCredito = resultadosFiltrados[0].lincremontomaximo;
+            mewFormDataLineaCredito.valorMinimoLineaCredito = resultadosFiltrados[0].lincremontominimo;
+            mewFormDataLineaCredito.plazoMaximoLineaCredito = resultadosFiltrados[0].lincreplazomaximo;
+            setFormDataLineaCredito(mewFormDataLineaCredito);
+        }else{
+            newFormData.tasaNominal   = '';
+        }
+        newFormData.lineaCredito  = e.target.value;
+        setFormData(newFormData);
     }
 
     const inicio = () =>{
@@ -179,15 +269,77 @@ export default function Search(){
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
                                 <Box className='frmDivision'>
-                                    Información del proceso de desembolsar el crédito
+                                    Información del proceso para desembolsar el crédito
                                 </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <SelectValidator
+                                    name={'lineaCredito'}
+                                    value={formData.lineaCredito}
+                                    label={'Línea de crédito'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    onChange={cargarInformacionLinea} 
+                                >
+                                    <MenuItem value={""}>Seleccione</MenuItem>
+                                    {lineasCreditos.map(res=>{
+                                        return <MenuItem value={res.lincreid} key={res.lincreid} >{res.lincrenombre}</MenuItem>
+                                    })}
+                                </SelectValidator>
+                            </Grid>
+
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'valorSolicitado'}
+                                    value={formData.valorSolicitado}
+                                    label={'Valor solicitado'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required","maxNumber:99999999"]}
+                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99999999"]}
+                                    onChange={handleChange}
+                                    type={"number"}
+                                />
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator
+                                    name={'tasaNominal'}
+                                    value={formData.tasaNominal}
+                                    label={'Tasa nominal'}
+                                    className={'inputGeneral'} 
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required", 'isTasaNominal']}
+                                    errorMessages={["Campo obligatorio", 'Ingrese un tasa nominal válida']}
+                                    onChange={handleChange}
+                                />
+                            </Grid> 
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'plazo'}
+                                    value={formData.plazo}
+                                    label={'Plazo (En meses)'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required","maxNumber:99"]}
+                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99"]}
+                                    onChange={handleChange}
+                                    type={"number"}
+                                />
                             </Grid>
 
                             <Grid item md={12} xl={12} sm={12} xs={12}>
                                 <TextValidator
-                                    name={'observacionCambio'}
-                                    value={formData.observacionCambio}
-                                    label={'Observación del cambio'}
+                                    name={'observacionGeneral'}
+                                    value={formData.observacionGeneral}
+                                    label={'Observación generales'}
                                     className={'inputGeneral'}
                                     variant={"standard"}
                                     inputProps={{autoComplete: 'off', maxLength: 500}}
@@ -202,6 +354,12 @@ export default function Search(){
                             </Grid>
 
                             <Grid item md={7} xl={7} sm={9} xs={9}>
+                                {(success) ? 
+
+                                "hola ok" 
+
+                                : null}
+
                                 <Grid container direction="row" justifyContent="right" style={{marginTop: '0.5em'}}>
                                     <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(0)}}>
                                         <PictureAsPdfIcon sx={{ mr: 1 }}  />
@@ -228,7 +386,7 @@ export default function Search(){
                             <Grid item md={1} xl={1} sm={12} xs={12}>
                                 <Grid container direction="row" justifyContent="right" style={{marginTop: '1em'}}>
                                     <Stack direction="row" spacing={2}>
-                                        <Button type={"submit"} className={'modalBtn'}
+                                        <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
                                             startIcon={<SaveIcon />}> Guardar
                                         </Button>
                                     </Stack>

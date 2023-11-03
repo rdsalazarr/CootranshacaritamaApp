@@ -1378,16 +1378,24 @@ EOD;
 		}
 	}
 
-	public function solicitudCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
+	public function solicitudCredito($arrayDatos, $colocacionLiquidacion){
+		$fechaDesembolso       = $arrayDatos['fechaDesembolso'];
+		$lineaCredito          = $arrayDatos['lineaCredito'];
+		$nombreAsociado        = $arrayDatos['nombreAsociado'];
+		$descripcionCredito    = $arrayDatos['descripcionCredito'];
+		$valorSolicitado       = $arrayDatos['valorSolicitado'];
+		$tasaNominal       	   = $arrayDatos['tasaNominal'];
+		$plazoMensual          = $arrayDatos['plazoMensual'];
+		$numeroColocacion      = $arrayDatos['numeroColocacion'];
+		$metodo                = $arrayDatos['metodo'];
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa,	$siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
 
-		$titulo           = 'Simulación del crédito para el asociado '.$asociado;
+		$titulo           = 'Tabla de liquidación de la colocación número '.$numeroColocacion;
 		$generales        = new generales();
 		$valorCuota       = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
-		$fechaHoraActual  = Carbon::now();
-		$fechaActual      = $generales->formatearFecha($fechaHoraActual->format('Y-m-d'));
+		$fechaActual      = $generales->formatearFecha($fechaDesembolso);
 
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -1407,7 +1415,7 @@ EOD;
 		PDF::SetY(20);
 		PDF::Ln(20);
 		PDF::SetFont('helvetica','B',12);
-        PDF::Cell(180,5,'GENERACIÓN DEL PLAN DE PAGO',0,0,'C');
+        PDF::Cell(180,5,'GENERACIÓN DEL PLAN DE PAGO DE LA COLOCACIÓN NÚMERO '.$numeroColocacion,0,0,'C');
 	    PDF::Ln(12); 
 		PDF::SetFont('helvetica','',11);
 		PDF::Cell(45,4,'Fecha:',0,0,'');
@@ -1415,7 +1423,7 @@ EOD;
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Asociado:',0,0,'');
 		PDF::SetFont('helvetica','B',11);
-		PDF::Cell(45,4,$asociado,0,0,'');
+		PDF::Cell(45,4,$nombreAsociado,0,0,'');
 		PDF::Ln(4);
 		PDF::SetFont('helvetica','',11);
 		PDF::Cell(45,4,'Línea de crédito:',0,0,'');
@@ -1455,8 +1463,12 @@ EOD;
 		PDF::Ln();
 		PDF::SetFont('helvetica','',11);
         $saldoCapital = $valorSolicitado;
-        for ($numeroCuota = 1; $numeroCuota <= $plazoMensual; $numeroCuota++) {
-            $valorInteres = $generales->calcularValorInteresMensula($saldoCapital, $tasaNominal);
+		foreach($colocacionLiquidacion as $dato){
+			$numeroCuota      = $dato->colliqnumerocuota;
+			$fechaVencimiento = $dato->colliqfechavencimiento;
+			$valorCuota       = $dato->colliqvalorcuota;
+
+			$valorInteres = $generales->calcularValorInteresMensula($saldoCapital, $tasaNominal);
             $abonoCapital = round($valorCuota - $valorInteres, 0);
 
             if ($saldoCapital < $valorCuota) {
@@ -1464,21 +1476,21 @@ EOD;
                 $valorCuota   = $saldoCapital + $valorInteres;
             }
 
-            $saldoCapital -= $abonoCapital;
+            $saldoCapital -= $abonoCapital;	
 
-            PDF::Cell(12, 5, $numeroCuota, 1, 0, 'C', false);
-			PDF::Cell(32, 5, 'Fecha', 1, 0, 'R');
+			PDF::Cell(12, 5, $numeroCuota, 1, 0, 'C', false);
+			PDF::Cell(32, 5, $fechaVencimiento, 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($abonoCapital, 0, '.', ','), 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($valorInteres, 0, '.', ','), 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($saldoCapital, 0, '.', ','), 1, 0, 'R');
             PDF::Ln();
-        }
+		}
 
 		PDF::Ln(12);
 		PDF::Cell(130, 4, '', '', 0, 'L');
 		PDF::MultiCell(30, 30, '', 1, 'C', false, 1);
-		PDF::Cell(80, 4, 'DEUDOR ', 'T', 0, 'L');
+		PDF::Cell(80, 4, $nombreAsociado, 'T', 0, 'L');
 		PDF::Cell(50, 4, '', '', 0, 'L');
 		PDF::Cell(30, 4, 'HUELLA', '', 0, 'L');
 		PDF::Ln(4);

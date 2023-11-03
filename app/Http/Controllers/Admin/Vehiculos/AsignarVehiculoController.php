@@ -10,8 +10,8 @@ use App\Models\Vehiculos\VehiculoCrt;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use App\Util\redimencionarImagen;
+use Exception, File, DB, URL;
 use Illuminate\Http\Request;
-use Exception, File, DB;
 use App\Util\generales;
 use Carbon\Carbon;
 
@@ -24,6 +24,33 @@ class AsignarVehiculoController extends Controller
                                                     ->where('v.tiesveid', 'A')
                                                     ->orderBy('v.vehinumerointerno')->get();
         return response()->json(["data" => $data]);
+    }
+
+    public function consultarVehiculo(Request $request)
+	{
+        $this->validate(request(),['vehiculoId' => 'required']);
+        $url      = URL::to('/');
+        $vehiculo = DB::table('vehiculo as v')
+                        ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
+                                'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
+                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia',
+                                'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
+                                'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto',
+                                DB::raw("if(v.vehiesmotorregrabado = 1 ,'Sí', 'No') as motorRegrabado"),
+                                DB::raw("if(v.vehieschasisregrabado = 1 ,'Sí', 'No') as chasisRegrabado"),
+                                DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
+                                DB::raw("CONCAT('$url/archivos/vehiculo/', v.vehiplaca, '/', v.vehirutafoto ) as rutaFotografia"))
+                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                        ->join('tiporeferenciavehiculo as trv', 'trv.tireveid', '=', 'v.tireveid')
+                        ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
+                        ->join('tipocolorvehiculo as tcv', 'tcv.ticoveid', '=', 'v.ticoveid')
+                        ->join('tipomodalidadvehiculo as tmvh', 'tmvh.timoveid', '=', 'v.timoveid')
+                        ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
+                        ->join('tipocombustiblevehiculo as tcvh', 'tcvh.ticovhid', '=', 'v.ticovhid')
+                        ->join('agencia as a', 'a.agenid', '=', 'v.agenid')
+                        ->where('v.vehiid', $request->vehiculoId)->first(); 
+
+        return response()->json([ "vehiculo" => $vehiculo]);
     }
 
     public function listAsociados(Request $request)

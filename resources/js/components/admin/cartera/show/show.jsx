@@ -7,18 +7,16 @@ import instance from '../../../layout/instance';
 import {Grid} from '@mui/material';
 import Asociado from './asociado';
 
-export default function Show({id}){
-
-    const [loader, setLoader] = useState(false);
+export default function Show({id}){    
 
     const [formData, setFormData] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
                                          direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'', 
                                          tasaNominal:'',  numerosCuota:'', observacionGeneral:''})
 
     const [cambiosEstadoSolicitudCredito, setCambiosEstadoSolicitudCredito] = useState([]);
+    const [loader, setLoader] = useState(false);
 
     const inicio = () =>{
-        console.log("hola");
         setLoader(true);
         let newFormData = {...formData};
         instance.post('/admin/cartera/show/solicitud/credito', {codigo: id}).then(res=>{

@@ -4,6 +4,7 @@ import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
+import person from "../../../../../images/person.png";
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
@@ -24,7 +25,7 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 
 export default function Search(){
 
-    const [formData, setFormData] = useState({asociadoId:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
+    const [formData, setFormData] = useState({identificador:'', asociadoId:'', vehiculoId:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
                                             tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:''  })
     const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
                                                                 direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:''})
@@ -40,15 +41,22 @@ export default function Search(){
     }
 
     const consultarVehiculo = () =>{
+        let newFormData        = {...formData};
+        let identificador      = formData.identificador;
+        let array              = identificador.split("-");
+        newFormData.asociadoId = Number(array[0]);
+        newFormData.vehiculoId = Number(array[1]);
+        setFormData(newFormData);
+
         setDatosEncontrados(false);
-        if(formData.asociadoId === ''){
+        if(formData.identificador === ''){
             showSimpleSnackbar("Debe seleccionar un asociado", 'error');
             return;
         }
 
         setLoader(true);
         let newFormDataConsulta = {...formDataConsulta};
-        instance.post('/admin/cartera/consultar/asociado', {asociadoId: formData.asociadoId}).then(res=>{
+        instance.post('/admin/cartera/consultar/datos/asociado', {asociadoId: Number(array[0])}).then(res=>{
             if(res.success) {
                 let asociado                             = res.asociado;
                 newFormDataConsulta.tipoIdentificacion   = asociado.nombreTipoIdentificacion;
@@ -63,7 +71,7 @@ export default function Search(){
                 newFormDataConsulta.telefonoFijo         = asociado.persnumerotelefonofijo;
                 newFormDataConsulta.numeroCelular        = asociado.persnumerocelular;
                 newFormDataConsulta.fechaIngresoAsociado = asociado.asocfechaingreso;
-                newFormDataConsulta.showFotografia       = asociado.fotografia;
+                newFormDataConsulta.showFotografia       = (asociado.fotografia !== null) ? asociado.fotografia : person;
 
                 setLineasCreditos(res.lineasCreditos);
                 setFormDataConsulta(newFormDataConsulta);
@@ -83,24 +91,20 @@ export default function Search(){
     const registrarSolicitudCredito = () =>{
         if(formData.tasaNominal > formData.tasaNominalLineaCredito){
             showSimpleSnackbar("La tasa máxima permita es "+formData.tasaNominalLineaCredito , 'error');
-            return
+            return;
         }
-
         if(formData.valorSolicitado < formData.valorMinimoLineaCredito){
             showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
-            return
+            return;
         }
-
         if(formData.valorSolicitado > formData.valorMaximoLineaCredito){
             showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
-            return
+            return;
         }
-
-        if(formData.plazo > formData.plazoMaximoLineaCredito){
+        if(Number(formData.plazo) > Number(formData.plazoMaximoLineaCredito)){
             showSimpleSnackbar("El plazo máximo permito es "+formData.plazoMaximoLineaCredito+" meses", 'error');
-            return
+            return;
         }
-
         setLoader(true);
         instance.post('/admin/cartera/registrar/solicitud/credito', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -138,38 +142,31 @@ export default function Search(){
             showSimpleSnackbar("Debe ingresar el destino del crédito", 'error');
             return;
         }
-
         if(formData.valorSolicitado === ''){
             showSimpleSnackbar("Debe ingresar el valor solicitado del crédito", 'error');
             return;
         }
-
         if(formData.tasaNominal === ''){
             showSimpleSnackbar("Debe ingresar la tasa nominal del crédito", 'error');
             return;
         }
-
         if(formData.plazo === ''){
             showSimpleSnackbar("Debe ingresar el plazo del crédito", 'error');
             return;
         }
-
         if(formData.tasaNominal > formData.tasaNominalLineaCredito){
             showSimpleSnackbar("La tasa máxima permita es "+formData.tasaNominalLineaCredito , 'error');
             return;
         }
-
         if(formData.valorSolicitado < formData.valorMinimoLineaCredito){
             showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
             return;
         }
-
         if(formData.valorSolicitado > formData.valorMaximoLineaCredito){
             showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
             return;
         }
-
-        if(formData.plazo > formData.plazoMaximoLineaCredito){
+        if(Number(formData.plazo) > Number(formData.plazoMaximoLineaCredito)){
             showSimpleSnackbar("El plazo máximo permito es "+formData.plazoMaximoLineaCredito+" meses", 'error');
             return;
         }
@@ -204,11 +201,11 @@ export default function Search(){
                                 style={{height: "26px", width: "100%"}}
                                 options={listaAsociados}
                                 getOptionLabel={(option) => option.nombrePersona} 
-                                value={listaAsociados.find(v => v.asocid === formData.asociadoId) || null}
+                                value={listaAsociados.find(v => v.identificador === formData.identificador) || null}
                                 filterOptions={createFilterOptions({ limit:10 })}
                                 onChange={(event, newInputValue) => {
                                     if(newInputValue){
-                                        setFormData({...formData, asociadoId: newInputValue.asocid})
+                                        setFormData({...formData, identificador: newInputValue.identificador})
                                     }
                                 }}
                                 renderInput={(params) =>
@@ -218,7 +215,7 @@ export default function Search(){
                                         variant="standard"
                                         validators={["required"]}
                                         errorMessages="Campo obligatorio"
-                                        value={formData.asociadoId}
+                                        value={formData.identificador}
                                         placeholder="Consulte el asociado con el número interno del vehículo aquí..." />}
                             />
                             <br />

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('coloid')->references('coloid')->on('colocacion')->onUpdate('cascade')->index('fk_colococaes');
             $table->foreign('tiesclid')->references('tiesclid')->on('tipoestadocolocacion')->onUpdate('cascade')->index('fk_tiesclcocaes');
-            $table->foreign('cocaesusuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacocaes');
+            $table->foreign('cocaesusuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuaclcaes');
         });
     }
 

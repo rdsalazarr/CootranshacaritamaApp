@@ -362,6 +362,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/conductor/sancionar', [ConductorController::class, 'sancionar']);
 
             Route::get('/listar/vehiculos', [AsignarVehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/asignarVehiculo');
+            Route::post('/consultar/informacion/vehiculo', [AsignarVehiculoController::class, 'consultarVehiculo']);
             Route::post('/listar/asociados', [AsignarVehiculoController::class, 'listAsociados']);
             Route::post('/asociados/salve', [AsignarVehiculoController::class, 'salveAsocido']);
             Route::post('/listar/conductores', [AsignarVehiculoController::class, 'listCondutores']);
@@ -381,7 +382,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/linea/credito/destroy', [LineaCreditoController::class, 'destroy']);
 
             Route::get('/solicitud/credito/datos', [SolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/solicitud');
-            Route::post('/consultar/asociado', [SolicitudCreditoController::class, 'consultar']);
+            Route::post('/consultar/datos/asociado', [SolicitudCreditoController::class, 'consultar']);
             Route::post('/registrar/solicitud/credito', [SolicitudCreditoController::class, 'salve']);
             Route::post('/simular/solicitud/credito', [SolicitudCreditoController::class, 'simular']);
 

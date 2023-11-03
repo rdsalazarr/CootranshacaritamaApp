@@ -7,6 +7,7 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import Conductores from './conductores';
 import Asociados from './asociados';
+import Vehiculo from './vehiculo';
 import Polizas from './polizas';
 import Soat from './soat';
 import Crt from './crt';
@@ -105,30 +106,35 @@ export default function Search(){
                             indicatorColor="secondary"
                             textColor="secondary"
                             variant={variantTab} >
+                            <Tab label="Informacion" />
                             <Tab label="Asociados" />
                             <Tab label="Conductores" />
                             <Tab label="Soat" />
                             <Tab label="CRT" />
                             <Tab label="Polizas" />
                         </Tabs>
-    
+
                         <TabPanel value={value} index={0}>
-                            <Asociados id={formData.vehiculoId}/>
+                            <Vehiculo id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={1}>
-                            <Conductores id={formData.vehiculoId}/>
+                            <Asociados id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={2}>
-                            <Soat id={formData.vehiculoId}/>
+                            <Conductores id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={3}>
-                            <Crt id={formData.vehiculoId} />
+                            <Soat id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={4}>
+                            <Crt id={formData.vehiculoId} />
+                        </TabPanel>
+    
+                        <TabPanel value={value} index={5}>
                             <Polizas id={formData.vehiculoId} />
                         </TabPanel>
     
