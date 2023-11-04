@@ -6,11 +6,13 @@ export default function Trazabilidad({mensaje, data}){
     
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={12} xl={12} >
-                <Box className='divisionFormulario'>
-                    {mensaje}
-                </Box>
-            </Grid>
+            {(mensaje !== '')?
+                <Grid item xs={12} sm={12} md={12} xl={12} >
+                    <Box className='divisionFormulario'>
+                        {mensaje}
+                    </Box>
+                </Grid>
+            :null}  
 
             <Grid item xs={12} sm={12} md={12} xl={12}>
                 <Box sx={{maxHeight: '35em', overflow:'auto'}}>
@@ -33,19 +35,19 @@ export default function Trazabilidad({mensaje, data}){
                                             <TableCell>
                                                 <p>{i}</p>
                                             </TableCell>
-                        
+
                                             <TableCell>
                                                 <p>{cambioEstado['fecha']}</p>
                                             </TableCell>
-                        
+
                                             <TableCell>
                                                 <p>{cambioEstado['estado']}</p>
                                             </TableCell>
-                        
+
                                             <TableCell>
                                                 <p>{cambioEstado['nombreUsuario']}</p>
                                             </TableCell>
-                        
+
                                             <TableCell>
                                                 <p>{cambioEstado['observacion']}</p>
                                             </TableCell>

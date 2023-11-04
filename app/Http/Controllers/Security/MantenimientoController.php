@@ -82,16 +82,36 @@ class MantenimientoController extends Controller
 
        dd($mensajeCorreo);      
     }
+
+    function headerFormato($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
+        PDF::setHeaderCallback(function($pdf) use ($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
+            $logoEmpresa = '890505424_logoHacaritama.png';
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,20,5,20,19);
+            PDF::Ln(4);
+            PDF::MultiCell(21, 21, '', 1, 'C', false, 0);
+            PDF::Cell(92, 7, $titulo, 1, 0, 'C');
+            PDF::Cell(24, 7, 'Versión: '.$version, 1, 0, 'C');
+            PDF::Cell(40, 7, 'Código: '.$numeroFormato, 1, 0, 'C');
+            PDF::Ln(7);
+            PDF::Cell(21, 7, '', 0, 0, 'C');
+            PDF::Cell(92, 7, $sigla, 'LRB', 0, 'C');
+            PDF::Cell(64, 7, '  Fecha: '.$fechaFormato, 'LRB', 0, 'L');
+            PDF::Ln(7);
+            PDF::Cell(21, 7, '', 0, 0, 'L');
+            PDF::Cell(92, 7, $areaFormato, 'LRB', 0, 'C');
+			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'LRB', 0, 'L');
+		});
+    }
     
     public function Pdf()
     {  	
-
-            // Ejemplo de uso
+        
+    // Ejemplo de uso
     $fechaActual = Carbon::now();
     //2024-03-03
     $fechaActual = '2023-10-30';
- $fechaNueva = $this->obtenerFechaPagoCuota('2024-01-30');
-echo $fechaNueva->format('Y-m-d');
+    $fechaNueva = $this->obtenerFechaPagoCuota('2024-01-30');
+    echo $fechaNueva->format('Y-m-d');
 
 
 /*

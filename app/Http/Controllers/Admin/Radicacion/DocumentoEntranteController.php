@@ -486,7 +486,7 @@ class DocumentoEntranteController extends Controller
             }
 
             $generarPdf   = new generarPdf();
-            return response()->json(["data" => $generarPdf->generarStickersRadicado($dataRadicado, $dataCopia)]);
+            return response()->json(["data" => $generarPdf->stickersRadicado($dataRadicado, $dataCopia)]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);
         }

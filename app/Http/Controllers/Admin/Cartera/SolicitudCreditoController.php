@@ -132,7 +132,7 @@ class SolicitudCreditoController extends Controller
             $plazoMensual        = $request->plazo;
 
 			$generarPdf    = new generarPdf();
-			$dataDocumento = $generarPdf->generarSimuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, 'S');
+			$dataDocumento = $generarPdf->simuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, 'S');
 			return response()->json(["data" => $dataDocumento]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

@@ -802,7 +802,7 @@ class generarPdf
 				$url = asset('verificar/documento/'.urlencode($idCifrado));
 				//PDF::write2DBarcode($url, 'QRCODE,H', 20, 264, 30, 30, $style, 'N');
 				PDF::write2DBarcode($url, 'QRCODE,H', 20, $posicionY, 30, 30, $style, 'N');
-			}			
+			}
 
 			if($estadoDocumento === 10){
 				$posicionY  = ($tipoDocumeto === 'LETTER') ? 240 : 270;	
@@ -815,6 +815,25 @@ class generarPdf
 			}
 		});
 	}
+
+	function headerFormato($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
+        PDF::setHeaderCallback(function($pdf) use ($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,20,5,20,19);
+            PDF::Ln(4);
+            PDF::MultiCell(21, 21, '', 1, 'C', false, 0);
+            PDF::Cell(92, 7, $titulo, 'TRB', 0, 'C');
+            PDF::Cell(24, 7, 'Versión: '.$version, 'TRB', 0, 'C');
+            PDF::Cell(40, 7, 'Código: '.$numeroFormato, 'TRB', 0, 'C');
+            PDF::Ln(7);
+            PDF::Cell(21, 7, '', 0, 0, 'C');
+            PDF::Cell(92, 7, $sigla, 'RB', 0, 'C');
+            PDF::Cell(64, 7, '  Fecha: '.$fechaFormato, 'RB', 0, 'L');
+            PDF::Ln(7);
+            PDF::Cell(21, 7, '', 0, 0, 'L');
+            PDF::Cell(92, 7, $areaFormato, 'RB', 0, 'C');
+			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'RB', 0, 'L');
+		});
+    }
 
 	function mensajeFirmarCentro(){
 		PDF::SetFont('helvetica', 'B', 12);
@@ -1136,7 +1155,7 @@ EOD;
         return json_encode($datos);
     }
 
-    public function generarStickersRadicado($data, $dataCopia, $descargarPdf = false){
+    public function stickersRadicado($data, $dataCopia, $descargarPdf = false){
         $consecutivo    = $data->consecutivo;
         $fecha          = $data->fechaRadicado;
         $dependencia    = $data->dependencia;
@@ -1272,7 +1291,7 @@ EOD;
 		return base64_encode($tcpdf->output($nombrePDF, $metodo));
 	}
 
-	public function generarSimuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
+	public function simuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
@@ -1352,7 +1371,7 @@ EOD;
 		PDF::SetFont('helvetica','',11);
         $saldoCapital = $valorSolicitado;
         for ($numeroCuota = 1; $numeroCuota <= $plazoMensual; $numeroCuota++) {
-            $valorInteres = $generales->calcularValorInteresMensula($saldoCapital, $tasaNominal);
+            $valorInteres = $generales->calcularValorInteresMensual($saldoCapital, $tasaNominal);
             $abonoCapital = round($valorCuota - $valorInteres, 0);
 
             if ($saldoCapital < $valorCuota) {
@@ -1379,6 +1398,7 @@ EOD;
 	}
 
 	public function solicitudCredito($arrayDatos, $colocacionLiquidacion){
+
 		$fechaDesembolso       = $arrayDatos['fechaDesembolso'];
 		$lineaCredito          = $arrayDatos['lineaCredito'];
 		$nombreAsociado        = $arrayDatos['nombreAsociado'];
@@ -1468,7 +1488,7 @@ EOD;
 			$fechaVencimiento = $dato->colliqfechavencimiento;
 			$valorCuota       = $dato->colliqvalorcuota;
 
-			$valorInteres = $generales->calcularValorInteresMensula($saldoCapital, $tasaNominal);
+			$valorInteres = $generales->calcularValorInteresMensual($saldoCapital, $tasaNominal);
             $abonoCapital = round($valorCuota - $valorInteres, 0);
 
             if ($saldoCapital < $valorCuota) {
@@ -1504,7 +1524,7 @@ EOD;
 		}
 	}
 
-	public function generarContratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
+	public function contratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
@@ -1547,7 +1567,7 @@ EOD;
 		}
 	}
 
-	public function generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
+	public function pagareColocacion($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
@@ -1593,7 +1613,7 @@ EOD;
 		}
 	}
 
-	public function generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
+	public function cartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 		$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
@@ -1652,5 +1672,141 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
-	
+
+	public function formatoSolicitudCredito($arrayDatos){
+
+		$documentoAsociado = $arrayDatos['documentoAsociado'];
+		$nombreAsociado    = $arrayDatos['nombreAsociado'];
+		$vehiculo          = $arrayDatos['vehiculo'];
+		$numeroVehiculo    = $arrayDatos['numeroVehiculo'];
+		$placaVehiculo     = $arrayDatos['placaVehiculo'];
+		$pagareNumero      = $arrayDatos['pagareNumero'];
+		$tipoCredito       = $arrayDatos['tipoCredito'];
+		$montoCredito      = $arrayDatos['montoCredito'];
+		$valorCuota        = $arrayDatos['valorCuota'];
+		$tiempoCredito     = $arrayDatos['tiempoCredito'];
+		$fechaDesembolso   = $arrayDatos['fechaDesembolso'];
+		$metodo            = $arrayDatos['metodo'];	
+		$tituloFormato     = 'SOLICITUD DE CRÉDITO';
+        $versionFormato    = '01';
+        $numeroFormato     = 'F-GAF-22';
+        $fechaFormato      = '14/10/2016';
+        $areaFormato       = 'GESTIÓN ADMINISTRATIVA Y FINANCIERA';
+		$titulo            = "Formato solicitud crédito del pagaré número ".$pagareNumero;
+
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+
+		PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Colocación, Formato, '.$siglaEmpresa.','.$numeroVehiculo.','.$placaVehiculo.','.$pagareNumero);
+        PDF::SetTitle($titulo);
+
+		$this->headerFormato($tituloFormato, $versionFormato, $numeroFormato, $fechaFormato, $areaFormato, $siglaEmpresa, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
+
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 14);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(16);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica', 'B', 13);
+		PDF::Cell(176, 4, "FORMATO SOLICITUD DE CRÉDITO", 0, 0, 'C');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica', '', 11);
+
+        PDF::Cell(40, 4, "NOMBRE:", 0, 0, 'L');
+        PDF::Cell(76, 4, $nombreAsociado,0, 0, 'L');
+		PDF::Cell(26, 4, "CC:", 0, 0, 'L');
+        PDF::Cell(40, 4, number_format($documentoAsociado,0,',','.'), 0, 0, 'L');
+        PDF::Ln(5);
+
+        PDF::Cell(40, 4, "VEHÍCULO:", 0, 0, 'L');
+        PDF::Cell(76, 4,  $vehiculo,0, 0, 'L');
+        PDF::Cell(26, 4, "NÚMERO:", 0, 0, 'L');
+        PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L');  
+        PDF::Ln(5);  
+
+        PDF::Cell(40, 4, "PLACA:", 0, 0, 'L');
+        PDF::Cell(76, 4, $placaVehiculo,0, 0, 'L');
+        PDF::Cell(26, 4, "PAGARÉ Nº:", 0, 0, 'L');
+        PDF::Cell(40, 4, $pagareNumero, 0, 0, 'L');  
+        PDF::Ln(5);  
+
+        PDF::Cell(40, 4, "TIPO DE CRÉDITO:", 0, 0, 'L');
+        PDF::Cell(76, 4,  $tipoCredito,0, 0, 'L');
+        PDF::Cell(26, 4, "MONTO:", 0, 0, 'L');
+        PDF::Cell(40, 4, '$ '.number_format($montoCredito,0,',','.'), 0, 0, 'L');
+        PDF::Ln(5); 
+        
+        PDF::Cell(40, 4, "VALOR CUOTA:", 0, 0, 'L');
+        PDF::Cell(76, 4, '$ '.number_format($valorCuota,0,',','.') ,0, 0, 'L');
+        PDF::Cell(26, 4, "TIEMPO:", 0, 0, 'L');
+        PDF::Cell(40, 4, $tiempoCredito.' MESES', 0, 0, 'L');  
+        PDF::Ln(12);
+
+        PDF::Cell(40, 4, "CONCEPTO Y/O OBJETO DEL CRÉDITO: ", 0, 0, 'L');
+        PDF::Ln(12); 
+
+        PDF::MultiCell(55, 10, 'ESTADO', 1, 'C', false, 0);
+        PDF::Cell(60, 5, 'AL DÍA', 1, 0, 'C');
+        PDF::Cell(60, 5, 'MORA', 1, 0, 'C');
+        PDF::Ln(5);
+        PDF::Cell(55, 5, '', 0, 0, 'C');
+        PDF::Cell(60, 5, 'X', 'LRB', 0, 'C');
+        PDF::Cell(60, 5, '', 'LRB', 0, 'C');
+        PDF::Ln(12);
+
+        PDF::MultiCell(0, 10, 'NOTA: SE APRUEBA POR  ORDEN DE CONSEJO DE ADMINSITRACION Y GERENCIA.', 0, '', 0);
+        PDF::MultiCell(0, 10, 'SE SUSCRIBE EN LA CIUDAD DE OCAÑA A LOS '.$fechaDesembolso, 0, '', 0);
+
+        PDF::Ln(8);
+		PDF::Cell(130, 4, '', '', 0, 'L');
+		PDF::MultiCell(30, 30, '', 1, 'C', false, 1);
+		PDF::Cell(80, 4, 'DEUDOR ', 'T', 0, 'L');
+		PDF::Cell(50, 4, '', '', 0, 'L');
+		PDF::Cell(30, 4, 'HUELLA', '', 0, 'L');
+		PDF::Ln(4);
+		PDF::Cell(80, 4, 'C.C. ', 0, 0, 'L');
+        PDF::Ln(12);
+
+        PDF::Cell(50, 4, "FECHA DE APROBACIÓN:", 0, 0, 'L');
+        PDF::Cell(50, 4, "",'B', 0, 'L');
+        PDF::Cell(4, 4, "",0, 0, 'L');
+        PDF::Cell(32, 4, "ACTA NÚMERO:", 0, 0, 'L');
+        PDF::Cell(39, 4, "", "B", 0, 'L');  
+        PDF::Ln(12);  
+
+        PDF::Cell(60, 4, "APROBADO POR:", 0, 0, 'L');
+        PDF::Ln(12); 
+        PDF::Cell(60, 4, "GERENTE:", 0, 0, 'L');
+        PDF::Cell(115, 4, "",'B', 0, 'L');
+        PDF::Ln(12); 
+        PDF::Cell(60, 4, "PRESIDENTE DEL COMITÉ:",0, 0, 'L');
+        PDF::Cell(115, 4, "",'B', 0, 'L');
+        PDF::Ln(12); 
+        PDF::Cell(60, 4, "MIEMBRO DEL COMITÉ :", 0, 0, 'L');   
+        PDF::Cell(115, 4, "",'B', 0, 'L');
+        PDF::Ln(16);
+
+        PDF::Cell(32, 4, " Observaciones:", 0, 0, 'L');
+        PDF::Cell(143, 4, "",'B', 0, 'L');
+        PDF::Ln(5);
+        PDF::Cell(175, 4, "",'B', 0, 'L');
+        PDF::Ln(5);
+        PDF::Cell(175, 4, "",'B', 0, 'L');
+        PDF::Ln(4);
+        PDF::Cell(175, 4, "",'B', 0, 'L');
+        PDF::Ln(4);
+
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
 }

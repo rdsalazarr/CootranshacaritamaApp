@@ -93,11 +93,11 @@ export default function Search(){
             showSimpleSnackbar("La tasa máxima permita es "+formData.tasaNominalLineaCredito , 'error');
             return;
         }
-        if(formData.valorSolicitado < formData.valorMinimoLineaCredito){
+        if(Number(formData.valorSolicitado) < Number(formData.valorMinimoLineaCredito)){
             showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
             return;
         }
-        if(formData.valorSolicitado > formData.valorMaximoLineaCredito){
+        if(Number(formData.valorSolicitado) > Number(formData.valorMaximoLineaCredito)){
             showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
             return;
         }
@@ -158,15 +158,15 @@ export default function Search(){
             showSimpleSnackbar("La tasa máxima permita es "+formData.tasaNominalLineaCredito , 'error');
             return;
         }
-        if(formData.valorSolicitado < formData.valorMinimoLineaCredito){
+        if(Number(formData.valorSolicitado) < Number(formData.valorMinimoLineaCredito)) {
             showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
             return;
         }
-        if(formData.valorSolicitado > formData.valorMaximoLineaCredito){
+        if(Number(formData.valorSolicitado) > Number(formData.valorMaximoLineaCredito)) {
             showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
             return;
         }
-        if(Number(formData.plazo) > Number(formData.plazoMaximoLineaCredito)){
+        if(Number(formData.plazo) > Number(formData.plazoMaximoLineaCredito)) {
             showSimpleSnackbar("El plazo máximo permito es "+formData.plazoMaximoLineaCredito+" meses", 'error');
             return;
         }

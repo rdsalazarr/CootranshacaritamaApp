@@ -7,7 +7,6 @@ import { Box} from '@mui/material';
 import Show from '../show';
 
 export default function Recibidos({tipoUrl}){
-    console.log(tipoUrl);
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);

@@ -36,13 +36,15 @@ export default function Asociado({data}){
                         </Box>
                     </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Segundo nombre</label>
-                            <span>{data.segundoNombre}</span>
-                        </Box>
-                    </Grid>
-                    
+                    {(data.segundoNombre !== null) ?
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Segundo nombre</label>
+                                <span>{data.segundoNombre}</span>
+                            </Box>
+                        </Grid>
+                    : null}
+
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='frmTexto'>
                             <label>Primer apellido</label>
@@ -50,12 +52,14 @@ export default function Asociado({data}){
                         </Box>
                     </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Segundo apellido</label>
-                            <span>{data.segundoApellido}</span>
-                        </Box>
-                    </Grid>
+                    {(data.segundoApellido !== null) ?
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Segundo apellido</label>
+                                <span>{data.segundoApellido}</span>
+                            </Box>
+                        </Grid>
+                    : null}
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='frmTexto'>

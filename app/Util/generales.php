@@ -254,7 +254,7 @@ class generales
 		return $this->redonderarMilSiguiente($valorCuota);
 	}
 
-	function calcularValorInteresMensula($valorSolicitado, $tasaNominal){
+	function calcularValorInteresMensual($valorSolicitado, $tasaNominal){
 		return $this->redonderarCienMasCercano($valorSolicitado * ($tasaNominal / 100));
 	}
 

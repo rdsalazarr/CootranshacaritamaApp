@@ -10,12 +10,12 @@ import instance from '../../../layout/instance';
 export default function Expediente(){
 
     const [formData, setFormData] = useState({tipoDocumental:'000', estante: '', caja:'', carpeta: ''});
-    const [mostarDatos, setMostarDatos] = useState(false);
-    const [loader, setLoader] = useState(false);
-    const [tipoDocumentales, setTipoDocumentales ] = useState([]);
-    const [tipoEstanteArchivadores, setTipoEstanteArchivadores] = useState([]);
-    const [tipoCajaUbicaciones, setTipoCajaUbicaciones] = useState([]);
+    const [tipoEstanteArchivadores, setTipoEstanteArchivadores] = useState([]);  
     const [tipoCarpetaUbicaciones, setTipoCarpetaUbicaciones] = useState([]);
+    const [tipoCajaUbicaciones, setTipoCajaUbicaciones] = useState([]);
+    const [tipoDocumentales, setTipoDocumentales ] = useState([]);
+    const [mostarDatos, setMostarDatos] = useState(false); 
+    const [loader, setLoader] = useState(false);
     const [pdf, setPdf] = useState(); 
 
     const handleChange = (e) =>{
@@ -30,10 +30,8 @@ export default function Expediente(){
                 showSimpleSnackbar(res.message, 'error');
                 setLoader(false);
             }else{
-                console.log("consulta con exito");
                 setLoader(true);
                 instancePdf.post('/admin/archivo/historico/consultar/expediente/pdf', formData).then(resPdf=>{
-                    console.log("Generando pdf");
                     let url = 'data:application/pdf;base64,'+resPdf.data;
                     setPdf(url);
                     setMostarDatos(true);

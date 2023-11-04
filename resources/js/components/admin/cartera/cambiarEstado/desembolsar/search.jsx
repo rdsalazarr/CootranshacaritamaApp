@@ -27,7 +27,7 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 export default function Search(){
 
     //27896321 87787878
-    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'87787878', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'27896321', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
                                             valorSolicitado:'', valorAprobado:'',  tasaNominal:'', plazo:'', observacionGeneral:''})
     const [loader, setLoader] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -160,13 +160,12 @@ export default function Search(){
             return;
         }
 
-       // setLoader(true);
+        setLoader(true);
         instance.post('/admin/cartera/desembolsar/solicitud/credito', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.message, icono);
-            (res.success) ? setDatosEncontrados(false) : null;
+            showSimpleSnackbar(res.message, icono);          
             (res.success) ? setHabilitado(false) : null; 
-            (res.success) ? setFormData({tipoIdentificacion:'', documento:'', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
+            (res.success) ? setFormData({tipoIdentificacion:'', documento:'', personaId:'', asociadoId:'',  solicitudId:formData.solicitudId, lineaCredito:'',
                                         valorSolicitado:'', valorAprobado:'', tasaNominal:'', plazo:'', observacionGeneral:''}) : null; 
             
             setSuccess(res.success);
@@ -355,32 +354,28 @@ export default function Search(){
 
                             <Grid item md={7} xl={7} sm={9} xs={9}>
                                 {(success) ? 
+                                    <Grid container direction="row" justifyContent="right" style={{marginTop: '0.5em'}}>
+                                        <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(0)}}>
+                                            <PictureAsPdfIcon sx={{ mr: 1 }}  />
+                                            Solicitud crédito
+                                        </Fab>
 
-                                "hola ok" 
+                                        <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(1)}}>
+                                            <PictureAsPdfIcon sx={{ mr: 1 }} />
+                                            Carta intrucciones
+                                        </Fab>
 
+                                        <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(2)}}>
+                                            <PictureAsPdfIcon sx={{ mr: 1 }} />
+                                            Formato 
+                                        </Fab>
+
+                                        <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(3)}}>
+                                            <PictureAsPdfIcon sx={{ mr: 1 }} />
+                                            Pagaré
+                                        </Fab> 
+                                    </Grid>
                                 : null}
-
-                                <Grid container direction="row" justifyContent="right" style={{marginTop: '0.5em'}}>
-                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(0)}}>
-                                        <PictureAsPdfIcon sx={{ mr: 1 }}  />
-                                        Solicitud crédito
-                                    </Fab>
-
-                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(1)}}>
-                                        <PictureAsPdfIcon sx={{ mr: 1 }} />
-                                        Carta intrucciones
-                                    </Fab>
-
-                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(2)}}>
-                                        <PictureAsPdfIcon sx={{ mr: 1 }} />
-                                        Formato 
-                                    </Fab>
-
-                                    <Fab variant="extended" size="medium" className={'btnRojo'} onClick={() => {abrirModal(3)}}>
-                                        <PictureAsPdfIcon sx={{ mr: 1 }} />
-                                        Pagaré
-                                    </Fab> 
-                                </Grid>
                             </Grid>
 
                             <Grid item md={1} xl={1} sm={12} xs={12}>

@@ -7,11 +7,9 @@ use App\Models\Cartera\ColocacionCambioEstado;
 use App\Models\Cartera\ColocacionLiquidacion;
 use App\Models\Cartera\SolicitudCredito;
 use App\Http\Controllers\Controller;
-use App\Util\convertirNumeroALetras;
 use App\Models\Cartera\Colocacion;
 use Exception, DB, Auth, URL;
 use Illuminate\Http\Request;
-use App\Util\generarPdf;
 use App\Util\generales;
 use Carbon\Carbon;
 
@@ -47,7 +45,7 @@ class DesembolsarSolicitudCreditoController extends Controller
                                     ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
                                     ->where('p.tipideid', $request->tipoIdentificacion)
                                     ->where('p.persdocumento', $request->documento)
-                                    //->where('sc.tiesscid', 'A')
+                                    ->where('sc.tiesscid', 'A')
                                     ->first();
    
         $lineasCreditos = DB::table('lineacredito')
@@ -132,16 +130,29 @@ class DesembolsarSolicitudCreditoController extends Controller
             $colocacioncambioestado->cocaesobservacion = $request->observacionGeneral;
             $colocacioncambioestado->save();
 
+            $valorCuota   = $generales->calculcularValorCuotaMensual($valorPrestamo, $tasaInteres, $numerosCuota);
+            $saldoCapital = $valorPrestamo;
             for ($cuota = 1; $cuota <= $numerosCuota; $cuota++) {
+
+                $valorInteres = $generales->calcularValorInteresMensual($saldoCapital, $tasaInteres);
+                $abonoCapital = round($valorCuota - $valorInteres, 0);
+
+                if ($saldoCapital < $valorCuota) {
+                    $abonoCapital = $saldoCapital;
+                    $valorCuota   = $saldoCapital + $valorInteres;
+                }
+
+                $saldoCapital -= $abonoCapital;
+
                 $fechaVencimiento                              = $generales->obtenerFechaPagoCuota($fechaActual);
                 $colocacionliquidacion 				           = new ColocacionLiquidacion();
                 $colocacionliquidacion->coloid                 = $coloid;
                 $colocacionliquidacion->colliqnumerocuota      = $cuota;
                 $colocacionliquidacion->colliqfechavencimiento = $fechaVencimiento;
-                $colocacionliquidacion->colliqvalorcuota       = $generales->calculcularValorCuotaMensual($valorPrestamo, $tasaInteres, $numerosCuota);
+                $colocacionliquidacion->colliqvalorcuota       = $valorCuota;
                 $fechaActual                                   = $fechaVencimiento;
                 $colocacionliquidacion->save();
-            }
+            }        
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito' ]);
@@ -149,28 +160,6 @@ class DesembolsarSolicitudCreditoController extends Controller
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-    }
-
-    public function imprimir(Request $request)
-    {
-        $this->validate(request(),['personaId'    => 'required|numeric',
-                                    'asociadoId'  => 'required|numeric',
-                                    'solicitudId' => 'required|numeric',
-                                    'url'         => 'required']);
-        try {
-            if($request->url === 'SOLICITUDCREDITO'){
-                $dataDocumento = $this->generarSolicitudCredito($request);
-            }else if($request->url === 'CARTAINSTRUCCIONES'){
-                $dataDocumento = $this->generarCartaInstrucciones($request);
-            }else if($request->url === 'FORMATO'){
-                $dataDocumento = $this->generarPagare($request);
-            }else{//De lo contrario genera el pagaré
-                $dataDocumento = $this->generarPagare($request);
-            }
-			return response()->json(["data" => $dataDocumento]);
-		} catch (Exception $error){
-			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-		}
     }
 
     public function obtenerConsecutivo($anioActual)
@@ -181,134 +170,5 @@ class DesembolsarSolicitudCreditoController extends Controller
         $consecutivo = ($consecutivoPagare === null) ? 1 : $consecutivoPagare->consecutivo + 1;
 
         return str_pad($consecutivo,  4, "0", STR_PAD_LEFT);
-    }
-
-    function generarSolicitudCredito($request){
-
-        $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
-                                'sc.solcredescripcion','c.colofechadesembolso', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                                ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                                ->where('c.solcreid', $request->solicitudId)
-                                ->where('sc.tiesscid', 'D')
-                                ->first();
-
-        $colocacionLiquidacion = DB::table('colocacionliquidacion')
-                                    ->select('colliqnumerocuota','colliqfechavencimiento', 'colliqvalorcuota')
-                                    ->where('coloid', $colocacion->coloid)
-                                    ->get();
-
-        $arrayDatos = [ "fechaDesembolso"       => $colocacion->colofechadesembolso,
-                        "lineaCredito"          => $colocacion->lincrenombre,
-                        "nombreAsociado"        => $colocacion->nombreAsociado,
-                        "descripcionCredito"    => $colocacion->solcredescripcion,
-                        "valorSolicitado"       => $colocacion->colovalordesembolsado,
-                        "tasaNominal"           => $colocacion->colotasa,
-                        "plazoMensual"          => $colocacion->colonumerocuota,
-                        "numeroColocacion"      => $colocacion->numeroColocacion,
-                        "metodo"                => 'S'
-                        ];
-
-        $generarPdf          = new generarPdf();
-        return $generarPdf->solicitudCredito($arrayDatos, $colocacionLiquidacion);
-    }
-
-    function generarCartaInstrucciones($request){
-
-        $colocacion = DB::table('colocacion as c')->select('c.colofechadesembolso','c.coloanio', 'c.colonumerodesembolso','p.persdocumento',DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                                ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                ->where('c.solcreid', $request->solicitudId)
-                                ->where('sc.tiesscid', 'D')
-                                ->first();
-
-        $dataRadicado        = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'cartaInstrucciones')->first();
-
-        $generales           = new generales();
-        $nombreAsociado      = $colocacion->nombreAsociado;
-        $fechaLargaPrestamo  = $generales->formatearFecha($colocacion->colofechadesembolso);
-        $numeroPagare        = $colocacion->numeroColocacion;
-        $documento           = $colocacion->persdocumento;
-
-        $documentoAsociado   = number_format($documento, 0, ',', '.');
-        $buscar              = Array('nombreAsociado', 'numeroPagare', 'fechaLargaPrestamo');
-        $remplazo            = Array( $nombreAsociado, $numeroPagare, $fechaLargaPrestamo); 
-        $titulo              = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
-        $contenido           = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);
-        $generarPdf          = new generarPdf();
-        return $generarPdf->generarCartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, 'S');
-    }
-
-    function generarPagare($request){
-
-        $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
-                                DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
-                                'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento',
-                                'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
-                            DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                            ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                            ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                            ->join('persona as p', 'p.persid', '=', 'a.persid')
-                            ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
-                            ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                            ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
-                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                            ->where('c.solcreid', $request->solicitudId)
-                            ->where('sc.tiesscid', 'D')
-                            ->first();
-
-        $colLiPrimerRegistro = DB::table('colocacionliquidacion') ->select('colliqfechavencimiento', 'colliqvalorcuota')
-                                ->where('coloid', $colocacion->coloid)->orderBy('colliqid')->first();
-
-        $colLiUltimoRegistro = DB::table('colocacionliquidacion')->select('colliqfechavencimiento')
-                                ->where('coloid', $colocacion->coloid) ->orderBy('colliqid', 'desc')->first();
-
-        $generarPdf             = new generarPdf();
-        $generales              = new generales();
-        $convertirNumeroALetras = new convertirNumeroALetras();
-        $dataRadicado           = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'pagareColocacion')->first();  
-        $numeroPagare           = $colocacion->numeroColocacion;
-        $valorTotalCredito      = $colocacion->colovalordesembolsado;
-        $valorCredito           = number_format($valorTotalCredito, 0, ',', '.');
-        $valorCuota             = number_format($colLiPrimerRegistro->colliqvalorcuota, 0, ',', '.');
-        $fechaSolicitud         = $colocacion->solcrefechasolicitud;
-        $fechaDesembolso        = $colocacion->colofechadesembolso;
-        $fechaPrimeraCuota      = $colLiPrimerRegistro->colliqfechavencimiento;
-        $fechaUltimaCuota       = $colLiUltimoRegistro->colliqfechavencimiento;
-        $interesMensual         = $colocacion->colotasa;
-        $numeroCuota            = $colocacion->colonumerocuota;
-        $destinacionCredito     = $colocacion->solcredescripcion;
-        $referenciaCredito      = $colocacion->coloanio;
-        $garantiaCredito        = $colocacion->referenciaVehiculo;
-        $numeroInternoVehiculo  = $colocacion->vehinumerointerno;
-        $placaVehiculo          = $colocacion->vehiplaca;
-        $nombreAsociado         = $colocacion->nombreAsociado;
-        $tpDocumentoAsociado    = $colocacion->tipidesigla;
-        $documento              = $colocacion->persdocumento;
-        $documentoAsociado      = number_format($documento, 0, ',', '.');
-        $interesMoratorio       = '1.02';
-        $valorEnLetras          = trim($convertirNumeroALetras->valorEnLetras($valorTotalCredito));
-        $fechaLargaPrestamo     = $generales->formatearFecha($colocacion->colofechadesembolso);  
-        $fechaLargaDesembolso   = $generales->formatearFechaLargaPagare($colocacion->colofechadesembolso);
-
-        $buscar                  = Array('numeroPagare', 'valorCredito', 'fechaSolicitud', 'fechaDesembolso','fechaPrimeraCuota','fechaUltimaCuota',
-                                            'interesMensual','numeroCuota', 'destinacionCredito', 'referenciaCredito', 'garantiaCredito',
-                                            'numeroInternoVehiculo', 'placaVehiculo', 'nombreAsociado', 'tpDocumentoAsociado', 'documentoAsociado', 'interesMoratorio',
-                                            'valorEnLetras', 'fechaLargaDesembolso', 'valorCuota' ,'fechaLargaPrestamo'
-                                        );
-        $remplazo                = Array($numeroPagare, $valorCredito, $fechaSolicitud, $fechaDesembolso, $fechaPrimeraCuota, $fechaUltimaCuota,
-                                            $interesMensual, $numeroCuota, $destinacionCredito, $referenciaCredito, $garantiaCredito,
-                                            $numeroInternoVehiculo, $placaVehiculo, $nombreAsociado, $tpDocumentoAsociado, $documentoAsociado, $interesMoratorio,
-                                            $valorEnLetras, $fechaLargaDesembolso, $valorCuota, $fechaLargaPrestamo
-                                        );
-        $titulo                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
-        $contenido                = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);
-
-        return $generarPdf->generarPagareColocacion($titulo, $contenido, $numeroPagare, $documento, 'S');
     }
 }

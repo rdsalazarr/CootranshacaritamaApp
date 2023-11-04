@@ -36,7 +36,7 @@ export default function SolicitudCredito({data, aprobada = false}){
             <Grid item xl={3} md={3} sm={6} xs={12}>
                 <Box className='frmTexto'>
                     <label>Valor solicitado</label>
-                    <span style={{color: '#fd1e1d', fontWeight: 'bold', fontSize: '1.5em'}}>{data.valorSolicitado}</span>
+                    <span className='textoRojo'>{data.valorSolicitado}</span>
                 </Box>
             </Grid>
 
