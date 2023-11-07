@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Vehiculos;
 
+use App\Models\Asociado\VehiculoTarjetaOperacion;
 use App\Models\Conductor\ConductorVehiculo;
 use App\Models\Asociado\AsociadoVehiculo;
 use App\Models\Vehiculos\VehiculoPoliza;
@@ -437,6 +438,112 @@ class AsignarVehiculoController extends Controller
                 $vehiculopoliza->vehpolrutaarchivo           = $rutaArchivo;
             }
             $vehiculopoliza->save();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+        } catch (Exception $error){
+            DB::rollback();
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+        }
+	}
+
+    public function listTarjetaOperacion(Request $request)
+    {
+        $this->validate(request(),['vehiculoId' => 'required']);
+
+        $generales             = new generales();
+        $fechaHoraActual       = Carbon::now();
+        $fechaActual           = $fechaHoraActual->format('Y-m-d');
+   
+        $tarjetaOperacionVehiculo = DB::table('vehiculotarjetaoperacion as vto')
+                                    ->select('vto.vetaopaid','vto.vehiid','vto.tiseveid','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
+                                        'vto.vetaopenteadministrativo','vto.vetaopextension','vto.vetaopnombrearchivooriginal', 'vto.vetaopnombrearchivoeditado', 'vto.vetaoprutaarchivo',                                        
+                                        DB::raw("CONCAT('archivos/vehiculo/', v.vehiplaca) as rutaAdjuntoTarjetaOperacion"),
+                                        DB::raw("(SELECT MAX(vetaopfechafinal) FROM vehiculotarjetaoperacion WHERE vehiid = vto.vehiid) AS maxFechaVencimiento"))
+                                    ->join('vehiculo as v', 'v.vehiid', '=', 'vto.vehiid')
+                                    ->whereRaw('vto.vetaopfechafinal = (SELECT MAX(vetaopfechafinal) FROM vehiculotarjetaoperacion WHERE vehiid = vto.vehiid )')
+                                    ->where('vto.vehiid', $request->vehiculoId)->first();
+
+        $tarjetaOperacionVehiculo = ($tarjetaOperacionVehiculo) ? $tarjetaOperacionVehiculo : [];
+        $maxFechaVencimiento      = ($tarjetaOperacionVehiculo) ? $tarjetaOperacionVehiculo->maxFechaVencimiento : '';
+        $debeCrearRegistro        = ($tarjetaOperacionVehiculo) ? $generales->validarFechaVencimiento($fechaActual, $tarjetaOperacionVehiculo->maxFechaVencimiento): false;
+        $comparadorConsulta       = ($debeCrearRegistro) ? '=' : '<';
+
+        $tipoServiciosVehiculos   = DB::table('tiposerviciovehiculo')->select('tiseveid','tisevenombre')->orderBy('tisevenombre')->get();
+
+        $historialTarjetaOperacion = DB::table('vehiculotarjetaoperacion as vto')
+                                    ->select('vto.vetaopaid','vto.vehiid','vto.tisevenombre','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
+                                    'vto.vetaopenteadministrativo','vto.vetaopextension', 'vto.vetaopnombrearchivooriginal', 'vto.vetaopnombrearchivoeditado', 'vto.vetaoprutaarchivo',
+                                    DB::raw("if(vto.vetaopradioaccion = 'M' ,'Municipal', 'Nacional') as radioAccion"),
+                                    DB::raw("if(vto.vetaopenteadministrativo = 'M' ,'Ministerio', 'Tránsito') as enteAdministrativo"),
+                                    DB::raw("CONCAT('archivos/vehiculo/', v.vehiplaca) as rutaAdjuntoTarjetaOperacion"))
+                                    ->join('vehiculo as v', 'v.vehiid', '=', 'vto.vehiid')
+                                    ->join('tiposerviciovehiculo as tsv', 'tsv.tiseveid', '=', 'vto.tiseveid')
+                                    ->where('vto.vetaopfechafinal', $comparadorConsulta , $maxFechaVencimiento)
+                                    ->where('vto.vehiid', $request->vehiculoId)->get();
+
+        return response()->json(["debeCrearRegistro"        => $debeCrearRegistro,       "maxFechaVencimiento"        => $maxFechaVencimiento, 
+                                 "tarjetaOperacionVehiculo" => $tarjetaOperacionVehiculo, "historialTarjetaOperacion" => $historialTarjetaOperacion,
+                                 "tipoServiciosVehiculos"   => $tipoServiciosVehiculos]);
+    }
+
+    public function salveTarjetaOperacion(Request $request)
+	{
+        $this->validate(request(),[
+            'vehiculoId'             => 'required',
+            'codigo'                 => 'required',
+            'tipoServicio'           => 'required|string|min:1|max:2',
+            'numeroTarjetaOperacion' => 'required|string|min:4|max:30',
+            'fechaInicio' 	         => 'nullable|date|date_format:Y-m-d',
+            'fechaVencimiento'       => 'nullable|date|date_format:Y-m-d',
+            'enteAdministrativo'     => 'required|string|min:1|max:2',
+            'radioAccion'            => 'required|string|min:1|max:2',
+            'imagenTarjetaOperacion' => 'nullable|mimes:jpg,png,jpeg,pdf|max:1000'
+        ]);
+
+        DB::beginTransaction();
+        try {
+
+            //Consulto la placa del vehiculo
+            $vehiculo      = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+
+            $redimencionarImagen  = new redimencionarImagen();
+            $funcion 		      = new generales();
+            $documentoPersona     = $request->documento;
+            $rutaCarpeta          = public_path().'/archivos/vehiculo/'.$vehiculo->vehiplaca;
+            $carpetaServe         = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
+            $debeActualizarImagen = false;
+            if($request->hasFile('imagenTarjetaOperacion')){
+                $debeActualizarImagen       = true;
+                $numeroAleatorio            = rand(100, 1000);
+                $file                       = $request->file('imagenTarjetaOperacion');
+                $nombreOriginalTarjetaOpe   = $file->getclientOriginalName();
+                $filename                   = pathinfo($nombreOriginalTarjetaOpe, PATHINFO_FILENAME);
+                $extension                  = pathinfo($nombreOriginalTarjetaOpe, PATHINFO_EXTENSION);
+                $rutaImagenTarjetaOperacion = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+                $file->move($rutaCarpeta, $rutaImagenTarjetaOperacion);
+                $rutaArchivo                = Crypt::encrypt($rutaImagenTarjetaOperacion);
+                $extension                  = mb_strtoupper($extension,'UTF-8');
+                if($extension !== 'PDF')
+                    $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaImagenTarjetaOperacion, 480, 340);//Se redimenciona a un solo tipo (ancho * alto)
+            }
+
+            $id                                                 = $request->codigo;
+            $vehiculotarjetaoperacion                           = ($id != 000) ? VehiculoTarjetaOperacion::findOrFail($id) : new VehiculoTarjetaOperacion();
+            $vehiculotarjetaoperacion->vehiid                   = $request->vehiculoId;
+            $vehiculotarjetaoperacion->tiseveid                 = $request->tipoServicio;
+            $vehiculotarjetaoperacion->vetaopnumero             = $request->numeroTarjetaOperacion;
+            $vehiculotarjetaoperacion->vetaopfechainicial       = $request->fechaInicio;
+            $vehiculotarjetaoperacion->vetaopfechafinal         = $request->fechaVencimiento;
+            $vehiculotarjetaoperacion->vetaopenteadministrativo = $request->enteAdministrativo;
+            $vehiculotarjetaoperacion->vetaopradioaccion        = $request->radioAccion;
+            if($debeActualizarImagen){
+                $vehiculotarjetaoperacion->vetaopextension             = $extension;
+                $vehiculotarjetaoperacion->vetaopnombrearchivooriginal = $nombreOriginalTarjetaOpe;
+                $vehiculotarjetaoperacion->vetaopnombrearchivoeditado  = $rutaImagenTarjetaOperacion;
+                $vehiculotarjetaoperacion->vetaoprutaarchivo           = $rutaArchivo;
+            }
+            $vehiculotarjetaoperacion->save();
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

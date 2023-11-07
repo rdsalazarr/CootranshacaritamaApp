@@ -74,10 +74,12 @@ php artisan make:migration create_tipo_carroceria_vehiculo
 php artisan make:migration create_tipo_combustible_vehiculo
 php artisan make:migration create_vehiculo
 php artisan make:migration create_vehiculo_cambio_estado
+php artisan make:migration create_tipo_servicio_vehiculo
 
 php artisan make:migration create_vehiculo_crt
 php artisan make:migration create_vehiculo_poliza
 php artisan make:migration create_vehiculo_soat
+php artisan make:migration create_vehiculo_tarjeta_operacion
 
 php artisan make:migration create_tipo_estado_conductor
 php artisan make:migration create_tipo_estado_asociado
@@ -170,6 +172,8 @@ php artisan make:model Vehiculos\VehiculoCrt
 php artisan make:model Vehiculos\VehiculoSoat
 php artisan make:model Vehiculos\VehiculoPoliza
 php artisan make:model Vehiculos\VehiculoCambioEstado
+php artisan make:model Vehiculos\VehiculoTarjetaOperacion
+
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
 php artisan make:model AsociadoCambioEstado
@@ -178,12 +182,9 @@ php artisan make:model Conductor\Conductor
 php artisan make:model Conductor\ConductorLicencia
 php artisan make:model Conductor\ConductorVehiculo
 php artisan make:model Conductor\ConductorCambioEstado
-
-
 php artisan make:model SolicitudCredito
 php artisan make:model SolicitudCreditoCambioEstado
 php artisan make:model SolicitudCreditoDesembolso
-
 php artisan make:model Cartera\Colocacion
 php artisan make:model Cartera\ColocacionLiquidacion
 php artisan make:model Cartera\ColocacionCambioEstado
@@ -226,6 +227,8 @@ php artisan make:seeder AgenciaSeeder
 php artisan make:seeder TipoCategoriaLicenciaSeeder
 php artisan make:seeder TipoConductorSeeder
 php artisan make:seeder TipoEstadoColocacionSeeder
+php artisan make:seeder TipoServicioVehiculoSeeder
+
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests

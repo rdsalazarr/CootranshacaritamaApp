@@ -4,6 +4,7 @@ import {Grid, Icon, Box, Typography, Card, Autocomplete, createFilterOptions, Ta
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { TabPanel } from '../../../layout/general';
 import {LoaderModal} from "../../../layout/loader";
+import TarjetaOperacion from './tarjetaOperacion';
 import instance from '../../../layout/instance';
 import Conductores from './conductores';
 import Asociados from './asociados';
@@ -11,6 +12,8 @@ import Vehiculo from './vehiculo';
 import Polizas from './polizas';
 import Soat from './soat';
 import Crt from './crt';
+
+
 
 export default function Search(){
 
@@ -112,6 +115,7 @@ export default function Search(){
                             <Tab label="Soat" />
                             <Tab label="CRT" />
                             <Tab label="Polizas" />
+                            <Tab label="Tarjeta de operación" />
                         </Tabs>
 
                         <TabPanel value={value} index={0}>
@@ -136,6 +140,10 @@ export default function Search(){
     
                         <TabPanel value={value} index={5}>
                             <Polizas id={formData.vehiculoId} />
+                        </TabPanel>
+
+                        <TabPanel value={value} index={6}>
+                            <TarjetaOperacion id={formData.vehiculoId} />
                         </TabPanel>
     
                     </Grid>

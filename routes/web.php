@@ -366,13 +366,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/asociados/salve', [AsignarVehiculoController::class, 'salveAsocido']);
             Route::post('/listar/conductores', [AsignarVehiculoController::class, 'listCondutores']);
             Route::post('/conductores/salve', [AsignarVehiculoController::class, 'salveConductor']);
-
             Route::post('/listar/soat', [AsignarVehiculoController::class, 'listSoat']);
             Route::post('/soat/salve', [AsignarVehiculoController::class, 'salveSoat']);
             Route::post('/listar/crt', [AsignarVehiculoController::class, 'listCrt']);
             Route::post('/crt/salve', [AsignarVehiculoController::class, 'salveCrt']);
             Route::post('/listar/poliza', [AsignarVehiculoController::class, 'listPoliza']);
             Route::post('/poliza/salve', [AsignarVehiculoController::class, 'salvePoliza']);
+            Route::post('/listar/tarjeta/operacion', [AsignarVehiculoController::class, 'listTarjetaOperacion']);
+            Route::post('/tarjeta/operacion/salve', [AsignarVehiculoController::class, 'salveTarjetaOperacion']);
         });
 
         Route::prefix('/cartera')->group(function(){

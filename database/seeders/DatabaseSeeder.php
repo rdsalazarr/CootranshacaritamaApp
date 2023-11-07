@@ -45,8 +45,9 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoEstadoSolicitudCreditoSeeder::class);
         $this->call(AgenciaSeeder::class);
         $this->call(TipoEstadoConductorSeeder::class);
-        $this->call(TipoCategoriaLicenciaSeeder::class);        
-        $this->call(TipoConductorSeeder::class);*/
-        $this->call(TipoEstadoColocacionSeeder::class);        
+        $this->call(TipoCategoriaLicenciaSeeder::class);
+        $this->call(TipoConductorSeeder::class);
+        $this->call(TipoEstadoColocacionSeeder::class); */
+        $this->call(TipoServicioVehiculoSeeder::class);
     }
 }
