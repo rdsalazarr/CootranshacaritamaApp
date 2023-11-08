@@ -33,3 +33,5 @@ UPDATE `funcionalidad` SET `funcnombre` = 'Historial S.C.', `functitulo` = 'Geti
 
 INSERT INTO `tipoestadosolicitudcredito` (`tiesscid`, `tiesscnombre`) VALUES ('D', 'Desembolsado');
 */
+
+/*ALTER TABLE `vehiculo` ADD `vehiobservacion` VARCHAR(500) NULL COMMENT 'Observación general del vehículo' AFTER `vehiesserieregrabado`;*/

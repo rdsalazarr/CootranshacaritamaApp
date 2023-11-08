@@ -10,7 +10,7 @@ export default function Vehiculo({id}){
                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',          fechaIngreso: '', 
                                                 numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',       numeroMotor: '', 
                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                                serieRegrabado: '0', fotografia: ''
+                                                serieRegrabado: '0', observacion: '',    fotografia: ''
                                         });
     const [loader, setLoader] = useState(false);
  
@@ -39,6 +39,7 @@ export default function Vehiculo({id}){
             newFormData.motorRegrabado  = vehiculo.motorRegrabado;
             newFormData.chasisRegrabado = vehiculo.chasisRegrabado;
             newFormData.serieRegrabado  = vehiculo.serieRegrabado;
+            newFormData.observacion     = vehiculo.vehiobservacion;
             newFormData.showFotografia  = (vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : imagenVehiculo;
 
             setFormData(newFormData);
@@ -197,6 +198,15 @@ export default function Vehiculo({id}){
                             <span>{formData.serieRegrabado}</span>
                         </Box>
                     </Grid>
+
+                    {(formData.observacion !== null) ?
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Observación general</label>
+                                <span>{formData.observacion}</span>
+                            </Box>
+                        </Grid>
+                    : null }
 
                 </Grid>
             </Grid>

@@ -14,7 +14,7 @@ export default function New({data, tipo}){
                                              tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',          fechaIngreso: '', 
                                              numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',       numeroMotor: '', 
                                              numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                             serieRegrabado: '0', fotografia: '',     tipo:tipo
+                                             serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo
                                             });
 
     const [loader, setLoader] = useState(false); 
@@ -63,7 +63,7 @@ export default function New({data, tipo}){
                                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',         fechaIngreso: '', 
                                                                 numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',      numeroMotor: '', 
                                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                                                serieRegrabado: '0', fotografia: '',     tipo:tipo}) : null;
+                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo}) : null;
 
             setLoader(false);
         })
@@ -105,6 +105,7 @@ export default function New({data, tipo}){
                 newFormData.motorRegrabado  = vehiculo.vehiesmotorregrabado;
                 newFormData.chasisRegrabado = vehiculo.vehieschasisregrabado;
                 newFormData.serieRegrabado  = vehiculo.vehiesserieregrabado;
+                newFormData.observacion     = (vehiculo.vehiobservacion !== null) ? vehiculo.vehiobservacion : '';
                 newFormData.fotografia      = (vehiculo.vehirutafoto !== null) ? vehiculo.vehirutafoto : '';
                 newFormData.rutaFotoOld     = (vehiculo.vehirutafoto !== null) ? vehiculo.vehirutafoto : '';
                 setFotoVehiculo((vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : '');
@@ -456,6 +457,18 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <TextValidator 
+                        name={'observacion'}
+                        value={formData.observacion}
+                        label={'Observación'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 500}}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
                 <Grid item md={6} xl={6} sm={12} xs={12}>
                     <Files
                         className='files-dropzone'
@@ -480,7 +493,7 @@ export default function New({data, tipo}){
                     </Box>
                 </Grid>
 
-                {(tipo === 'U' && formData.fotografia !== null) ?
+                {(tipo === 'U' && formData.fotografia !== '') ?
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='fotografiaVehiculo'>
                             <img src={fotoVehiculo} style={{width: '100%'}} ></img>

@@ -65,10 +65,11 @@ export default function Polizas({id}){
         setLoader(true);
         let newFormData  = {...formData}
         instance.post('/admin/direccion/transporte/listar/poliza', {vehiculoId: id}).then(res=>{ 
-            let polizaVehiculo          = res.polizaVehiculo;
-            let debeCrearRegistro       = res.debeCrearRegistro;
+            let polizaVehiculo      = res.polizaVehiculo;
+            let debeCrearRegistro   = res.debeCrearRegistro;
+            let maxFechaVencimiento = res.maxFechaVencimiento;
 
-            if(!debeCrearRegistro && polizaVehiculo.length > 0){
+            if(!debeCrearRegistro && maxFechaVencimiento !== ''){
                 newFormData.codigo                       = polizaVehiculo.vehpolid;
                 newFormData.numeroPolizaContractual      = polizaVehiculo.vehpolnumeropolizacontractual;
                 newFormData.numeroPolizaExtraContractual = polizaVehiculo.vehpolnumeropolizaextcontrac;
@@ -78,7 +79,7 @@ export default function Polizas({id}){
                 newFormData.rutaAdjuntoPoliza            = polizaVehiculo.rutaAdjuntoPoliza;
                 newFormData.rutaArchivoPoliza            = polizaVehiculo.vehpolrutaarchivo;
             }
-            newFormData.maxFechaVencimiento = res.maxFechaVencimiento;
+            newFormData.maxFechaVencimiento = maxFechaVencimiento;
             newFormData.crearHistorial      = debeCrearRegistro;
             setFormData(newFormData);
             setHistorialPolizasVehiculo(res.historialPolizasVehiculo);

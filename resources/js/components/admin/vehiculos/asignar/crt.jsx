@@ -65,10 +65,11 @@ export default function Crt({id}){
         setLoader(true);
         let newFormData  = {...formData}
         instance.post('/admin/direccion/transporte/listar/crt', {vehiculoId: id}).then(res=>{ 
-            let crtVehiculo             = res.crtVehiculo;
-            let debeCrearRegistro       = res.debeCrearRegistro;
+            let crtVehiculo         = res.crtVehiculo;
+            let debeCrearRegistro   = res.debeCrearRegistro;
+            let maxFechaVencimiento = res.maxFechaVencimiento;
 
-            if(!debeCrearRegistro && crtVehiculo.length > 0){
+            if(!debeCrearRegistro && maxFechaVencimiento !== ''){
                 newFormData.codigo           = crtVehiculo.vehcrtid;
                 newFormData.numeroCrt        = crtVehiculo.vehcrtnumero;
                 newFormData.fechaInicio      = crtVehiculo.vehcrtfechainicial;
@@ -77,7 +78,7 @@ export default function Crt({id}){
                 newFormData.rutaAdjuntoCrt   = crtVehiculo.rutaAdjuntoCrt;
                 newFormData.rutaArchivoCrt   = crtVehiculo.vehcrtrutaarchivo;
             }
-            newFormData.maxFechaVencimiento = res.maxFechaVencimiento;
+            newFormData.maxFechaVencimiento = maxFechaVencimiento;
             newFormData.crearHistorial      = debeCrearRegistro;
             setFormData(newFormData);
             setHistorialCrtVehiculo(res.historialCrtVehiculo);

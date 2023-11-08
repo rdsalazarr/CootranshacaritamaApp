@@ -27,6 +27,10 @@ export default function TarjetaOperacion({id}){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
+    const handleChangeUpperCase = (e) => {
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}));
+    }
+
     const onFilesChange = (files , nombre) =>  {
         setFormDataFile(prev => ({...prev, [nombre]: files}));
     }
@@ -70,20 +74,21 @@ export default function TarjetaOperacion({id}){
         instance.post('/admin/direccion/transporte/listar/tarjeta/operacion', {vehiculoId: id}).then(res=>{ 
             let tarjetaOperacionVehiculo = res.tarjetaOperacionVehiculo;
             let debeCrearRegistro        = res.debeCrearRegistro;
+            let maxFechaVencimiento      = res.maxFechaVencimiento;
 
-            if(!debeCrearRegistro && polizaVehiculo.length > 0){
-                newFormData.codigo                 = tarjetaOperacionVehiculo.vetaopid;
-                newFormData.tipoServicio           = tarjetaOperacionVehiculo.tiseveid;
-                newFormData.numeroTarjetaOperacion = tarjetaOperacionVehiculo.vetaopnumero;
-                newFormData.fechaInicio            = tarjetaOperacionVehiculo.vetaopfechainicial;
-                newFormData.fechaVencimiento       = tarjetaOperacionVehiculo.vetaopfechafinal;
-                newFormData.enteAdministrativo     = tarjetaOperacionVehiculo.vetaopenteadministrativo;
-                newFormData.radioAccion            = tarjetaOperacionVehiculo.vetaopradioaccion;
-                newFormData.extension              = (tarjetaOperacionVehiculo.vetaopextension !== null) ? tarjetaOperacionVehiculo.vetaopextension : '';
-                newFormData.rutaAdjuntoPoliza      = tarjetaOperacionVehiculo.rutaAdjuntoPoliza;
-                newFormData.rutaArchivoPoliza      = tarjetaOperacionVehiculo.vetaoprutaarchivo;
+            if(!debeCrearRegistro && maxFechaVencimiento !== ''){
+                newFormData.codigo                      = tarjetaOperacionVehiculo.vetaopid;
+                newFormData.tipoServicio                = tarjetaOperacionVehiculo.tiseveid;
+                newFormData.numeroTarjetaOperacion      = tarjetaOperacionVehiculo.vetaopnumero;
+                newFormData.fechaInicio                 = tarjetaOperacionVehiculo.vetaopfechainicial;
+                newFormData.fechaVencimiento            = tarjetaOperacionVehiculo.vetaopfechafinal;
+                newFormData.enteAdministrativo          = tarjetaOperacionVehiculo.vetaopenteadministrativo;
+                newFormData.radioAccion                 = tarjetaOperacionVehiculo.vetaopradioaccion;
+                newFormData.extension                   = (tarjetaOperacionVehiculo.vetaopextension !== null) ? tarjetaOperacionVehiculo.vetaopextension : '';
+                newFormData.rutaAdjuntoTarjetaOperacion = tarjetaOperacionVehiculo.rutaAdjuntoTarjetaOperacion;
+                newFormData.rutaArchivoTarjetaOperacion = tarjetaOperacionVehiculo.vetaoprutaarchivo;
             }
-            newFormData.maxFechaVencimiento = res.maxFechaVencimiento;
+            newFormData.maxFechaVencimiento = maxFechaVencimiento;
             newFormData.crearHistorial      = debeCrearRegistro;
             setFormData(newFormData);
             setHistorialTarjetaOperacion(res.historialTarjetaOperacion);
@@ -118,7 +123,7 @@ export default function TarjetaOperacion({id}){
                             inputProps={{autoComplete: 'off', maxLength: 30}}
                             validators={["required"]}
                             errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange}
+                            onChange={handleChangeUpperCase}
                         />
                     </Grid>
 
@@ -162,7 +167,7 @@ export default function TarjetaOperacion({id}){
                         <SelectValidator
                             name={'tipoServicio'}
                             value={formData.tipoServicio}
-                            label={'Tipo se servicio'}
+                            label={'Tipo de servicio'}
                             className={'inputGeneral'} 
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}
@@ -240,10 +245,10 @@ export default function TarjetaOperacion({id}){
                     {(formData.extension !== '') ?
                         <Grid item md={3} xl={3} sm={12} xs={12} style={{marginTop:'1em'}}>
                             <Box className='frmTexto'>
-                                <label>Visualizar adjunto del la tarjeta de operación </label> 
+                                <label>Visualizar adjunto del la tarjeta de operación </label>
                             </Box>
                             <Avatar style={{backgroundColor: '#43ab33', cursor: 'pointer'}}>
-                                <VisibilityIcon onClick={() => {setModal({open: true, extencion: formData.extension, ruta:formData.rutaAdjuntoPoliza,  rutaEnfuscada: formData.rutaArchivoPoliza })}} />
+                                <VisibilityIcon onClick={() => {setModal({open: true, extencion: formData.extension, ruta:formData.rutaAdjuntoTarjetaOperacion,  rutaEnfuscada: formData.rutaArchivoTarjetaOperacion })}} />
                             </Avatar>
                         </Grid>
                     : null }
@@ -272,7 +277,7 @@ export default function TarjetaOperacion({id}){
                 <Grid container spacing={2}>
                     <Grid item md={12} xl={12} sm={12} xs={12}>
                         <Box className='frmDivision'>
-                            Historial de tarjeta de operación asignadas al vehículo
+                            Historial de tarjetas de operación asignadas al vehículo
                         </Box>
                     </Grid>
 
@@ -284,7 +289,7 @@ export default function TarjetaOperacion({id}){
                                         <TableCell>Número de tarjeta de operación</TableCell>
                                         <TableCell>Fecha inicial</TableCell>
                                         <TableCell>Fecha final</TableCell>
-                                        <TableCell>Tipo se servicio</TableCell>
+                                        <TableCell>Tipo de servicio</TableCell>
                                         <TableCell>Ente administrativo</TableCell>
                                         <TableCell>Radio de acción</TableCell>
                                         <TableCell>Adjunto</TableCell>

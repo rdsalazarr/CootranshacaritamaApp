@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Vehiculos;
 
-use App\Models\Asociado\VehiculoTarjetaOperacion;
+use App\Models\Vehiculos\VehiculoTarjetaOperacion;
 use App\Models\Conductor\ConductorVehiculo;
 use App\Models\Asociado\AsociadoVehiculo;
 use App\Models\Vehiculos\VehiculoPoliza;
@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Util\redimencionarImagen;
 use Exception, File, DB, URL;
 use Illuminate\Http\Request;
+use App\Util\generarPdf;
 use App\Util\generales;
 use Carbon\Carbon;
 
@@ -34,7 +35,7 @@ class AsignarVehiculoController extends Controller
         $vehiculo = DB::table('vehiculo as v')
                         ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
                                 'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
-                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia',
+                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion',
                                 'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
                                 'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto',
                                 DB::raw("if(v.vehiesmotorregrabado = 1 ,'Sí', 'No') as motorRegrabado"),
@@ -107,6 +108,58 @@ class AsignarVehiculoController extends Controller
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
 	}
+
+    public function showPdf(Request $request)
+	{
+	    $this->validate(request(),['vehiculoId' => 'required', 'asociadoId' => 'required']);
+
+        try {
+
+            $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoVehiculo')->first();       
+            $numeroContrato             = 'A02765';
+            $fechaContrato              = '2023-10-19';
+            $nombreGerente              = 'LUIS MANUEL ASCANIO CLARO';
+            $tpDocumentoGerente         = 'CC';
+            $documentoGerente           = number_format('5036123', 0, ',', '.');
+            $ciudadExpDocumentoGerente  = 'OCAÑA';
+            $nombreAsociado             = 'DIONISIO DE JESUS ANGARITA ANGARITA ';
+            $tpDocumentoAsociado        = 'CC';
+            $documentoAsociado          = number_format('88143913', 0, ',', '.');
+            $ciudadExpDocumentoAsociado = 'OCAÑA';
+            $direccionAsociado          = 'CALLE 18 N 22-85 LAS COLINAS';
+            $telefonoAsociado           = '3152190167';
+            $placaVehiculo              = 'TFT187';
+            $numeroInternoVehiculo      = '208';
+            $claseVehiculo              = 'AUTOMÓVIL';
+            $cilindrajeVehiculo         = '1598';
+            $carroceriaVehiculo         = 'Sedán';
+            $modeloVehiculo             = '2020';
+            $marcaVehiculo              = 'RENAULT';
+            $colorVehiculo              = 'BLANCO GLACIAL (V)';
+            $capacidadVehiculo          = '04';  
+            $documentosAdionales        = '1 Fotografía, Fotocopia Cédula, Fotocopia Tarjeta de Propiedad a su nombre y Reseña del DAS.';
+            $observacionGeneral         = 'VEHICULO EL DE PLACAS TFT187 INGRESA EN REPOSICION DEl UUA585';
+
+            $buscar                     = Array('numeroContrato', 'fechaContrato', 'nombreGerente', 'tpDocumentoGerente','documentoGerente','ciudadExpDocumentoGerente',
+                                                'nombreAsociado','tpDocumentoAsociado', 'documentoAsociado', 'ciudadExpDocumentoAsociado', 'direccionAsociado',
+                                                'telefonoAsociado', 'placaVehiculo', 'numeroInternoVehiculo', 'claseVehiculo', 'cilindrajeVehiculo', 'carroceriaVehiculo',
+                                                'modeloVehiculo', 'marcaVehiculo', 'colorVehiculo', 'capacidadVehiculo', 'documentosAdionales', 'observacionGeneral'
+                                            );
+            $remplazo                   = Array($numeroContrato, $fechaContrato, $nombreGerente, $tpDocumentoGerente, $documentoGerente, $ciudadExpDocumentoGerente,
+                                                $nombreAsociado, $tpDocumentoAsociado, $documentoAsociado, $ciudadExpDocumentoAsociado, $direccionAsociado,
+                                                $telefonoAsociado, $placaVehiculo, $numeroInternoVehiculo, $claseVehiculo, $cilindrajeVehiculo, $carroceriaVehiculo,
+                                                $modeloVehiculo, $marcaVehiculo, $colorVehiculo, $capacidadVehiculo, $documentosAdionales, $observacionGeneral
+                                            ); 
+            $titulo                      = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
+            $contenido                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido); 
+            $generarPdf                  = new generarPdf();
+            $data                        = $generarPdf->contratoVehiculo($titulo, $contenido, $numeroContrato, $placaVehiculo, 'S' );
+        
+		    return response()->json(["data" => $data]);
+		} catch (Exception $error){
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+    }
 
     public function listCondutores(Request $request)
 	{
@@ -182,7 +235,7 @@ class AsignarVehiculoController extends Controller
         $soatVehiculo        = ($soatVehiculo) ? $soatVehiculo : [];
         $maxFechaVencimiento = ($soatVehiculo) ? $soatVehiculo->maxFechaVencimiento : '';
         $debeCrearRegistro   = ($soatVehiculo) ? $generales->validarFechaVencimiento($fechaActual, $soatVehiculo->maxFechaVencimiento): false;
-        $comparadorConsulta  = ($debeCrearRegistro) ? '=' : '<';       
+        $comparadorConsulta  = ($debeCrearRegistro) ? '=' : '<';
 
         $historialSoatVehiculo = DB::table('vehiculosoat as vs')
                                 ->select('vs.vehsoaid','vs.vehiid','vs.vehsoanumero','vs.vehsoafechainicial','vs.vehsoafechafinal','vs.vehsoaextension', 
@@ -472,7 +525,7 @@ class AsignarVehiculoController extends Controller
         $tipoServiciosVehiculos   = DB::table('tiposerviciovehiculo')->select('tiseveid','tisevenombre')->orderBy('tisevenombre')->get();
 
         $historialTarjetaOperacion = DB::table('vehiculotarjetaoperacion as vto')
-                                    ->select('vto.vetaopaid','vto.vehiid','vto.tisevenombre','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
+                                    ->select('vto.vetaopaid','vto.vehiid','tsv.tisevenombre','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
                                     'vto.vetaopenteadministrativo','vto.vetaopextension', 'vto.vetaopnombrearchivooriginal', 'vto.vetaopnombrearchivoeditado', 'vto.vetaoprutaarchivo',
                                     DB::raw("if(vto.vetaopradioaccion = 'M' ,'Municipal', 'Nacional') as radioAccion"),
                                     DB::raw("if(vto.vetaopenteadministrativo = 'M' ,'Ministerio', 'Tránsito') as enteAdministrativo"),
@@ -505,8 +558,7 @@ class AsignarVehiculoController extends Controller
         try {
 
             //Consulto la placa del vehiculo
-            $vehiculo      = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
-
+            $vehiculo             = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
             $redimencionarImagen  = new redimencionarImagen();
             $funcion 		      = new generales();
             $documentoPersona     = $request->documento;

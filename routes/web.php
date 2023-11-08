@@ -364,6 +364,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/informacion/vehiculo', [AsignarVehiculoController::class, 'consultarVehiculo']);
             Route::post('/listar/asociados', [AsignarVehiculoController::class, 'listAsociados']);
             Route::post('/asociados/salve', [AsignarVehiculoController::class, 'salveAsocido']);
+            Route::post('/asociados/imprimir/contrato', [AsignarVehiculoController::class, 'showPdf']);
             Route::post('/listar/conductores', [AsignarVehiculoController::class, 'listCondutores']);
             Route::post('/conductores/salve', [AsignarVehiculoController::class, 'salveConductor']);
             Route::post('/listar/soat', [AsignarVehiculoController::class, 'listSoat']);

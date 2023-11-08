@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import {Button, Grid, Icon, Box, Stack, Table, TableHead, TableBody, TableRow, TableCell, Card, Autocomplete, createFilterOptions} from '@mui/material';
 import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
@@ -9,6 +10,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import AddIcon from '@mui/icons-material/Add';
 import ShowPersona from '../../persona/show';
+import VisualizarPdf from './visualizarPdf';
 
 export default function Asociados({id}){
 
@@ -17,7 +19,17 @@ export default function Asociados({id}){
     const [listaAsocidados, setListaAsocidados] = useState([]); 
     const [asociados, setAsociados] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
-    const [modal, setModal] = useState({open: false, idPersona:''});
+    const [modal, setModal] = useState({open: false, vista:2, idPersona:'', titulo: '', tamano:'mediumFlot'});
+
+    const tituloModal = ['Visualizar información del asociado','Generar PDF del contrato'];
+    const modales     = [
+                            <ShowPersona id={modal.idPersona} frm={'ASOCIADO'} />,
+                            <VisualizarPdf idPersona={modal.idPersona} vehiculoId={id} />
+                        ];
+
+    const edit = (tipo, id) =>{
+       setModal({open: true, vista: tipo, idPersona:id, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' :  'mediumFlot'});
+    }
 
     const adicionarFilaAsociado = () =>{
         if(formData.asociadoId === ''){
@@ -135,6 +147,7 @@ export default function Asociados({id}){
                                     <TableRow>
                                         <TableCell>Nombre completo del asociado asignado al vehículo</TableCell>
                                         <TableCell style={{width: '5%'}} className='cellCenter'>Visualizar </TableCell>
+                                        <TableCell style={{width: '20%'}} className='cellCenter'>Ver contrato </TableCell>
                                         <TableCell style={{width: '5%'}} className='cellCenter'>Eliminar </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -148,8 +161,14 @@ export default function Asociados({id}){
 
                                             <TableCell className='cellCenter'>
                                                 <VisibilityIcon key={'iconDelete'+a} className={'icon top green'}
-                                                        onClick={() => {setModal({open: true, idPersona: asoc['personaId']});}}
+                                                        onClick={() => {edit(0, asoc['personaId'])}}
                                                 ></VisibilityIcon>
+                                            </TableCell>
+
+                                            <TableCell className='cellCenter'>
+                                                <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top green'}
+                                                         onClick={() => {edit(1, asoc['personaId'])}}
+                                                ></PictureAsPdfIcon>
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>
@@ -177,11 +196,11 @@ export default function Asociados({id}){
             : null}
 
             <ModalDefaultAuto
-                title={'Visualizar información del asociado'}
-                content={<ShowPersona id={modal.idPersona} frm={'ASOCIADO'} />}
-                close={() =>{setModal({open : false})}}
-                tam = {'bigFlot'}
-                abrir ={modal.open}
+                title   ={modal.titulo}
+                content ={modales[modal.vista]}
+                close   ={() =>{setModal({open : false})}}
+                tam     ={modal.tamano}
+                abrir   ={modal.open}
             />
 
         </Fragment>

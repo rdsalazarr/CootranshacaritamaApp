@@ -34,7 +34,8 @@ return new class extends Migration
             $table->boolean('vehiesmotorregrabado')->default(false)->comment('Determina si el vehículo tiene motor regrabado');
             $table->boolean('vehieschasisregrabado')->default(false)->comment('Determina si el vehículo tiene chasis regrabado');
             $table->boolean('vehiesserieregrabado')->default(false)->comment('Determina si el vehículo tiene serie regrabado'); 
-            $table->string('vehirutafoto', 100)->nullable()->comment('Ruta de la foto del vehículo'); 
+            $table->string('vehiobservacion', 500)->nullable()->comment('Observación general del vehículo');
+            $table->string('vehirutafoto', 100)->nullable()->comment('Ruta de la foto del vehículo');
 
             $table->timestamps();
             $table->foreign('tipvehid')->references('tipvehid')->on('tipovehiculo')->onUpdate('cascade')->index('fk_tipvehvehi');

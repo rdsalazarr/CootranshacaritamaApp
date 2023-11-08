@@ -65,10 +65,11 @@ export default function Soat({id}){
         setLoader(true);
         let newFormData  = {...formData}
         instance.post('/admin/direccion/transporte/listar/soat', {vehiculoId: id}).then(res=>{ 
-            let soatVehiculo             = res.soatVehiculo;
-            let debeCrearRegistro        = res.debeCrearRegistro;
+            let soatVehiculo        = res.soatVehiculo;
+            let debeCrearRegistro   = res.debeCrearRegistro;
+            let maxFechaVencimiento = res.maxFechaVencimiento;
 
-            if(!debeCrearRegistro && soatVehiculo.length > 0){
+            if(!debeCrearRegistro && maxFechaVencimiento !== ''){
                 newFormData.codigo           = soatVehiculo.vehsoaid;
                 newFormData.numeroSoat       = soatVehiculo.vehsoanumero;
                 newFormData.fechaInicio      = soatVehiculo.vehsoafechainicial;
@@ -78,7 +79,7 @@ export default function Soat({id}){
                 newFormData.rutaArchivoSoat  = soatVehiculo.vehsoarutaarchivo;
             } 
 
-            newFormData.maxFechaVencimiento = res.maxFechaVencimiento;
+            newFormData.maxFechaVencimiento = maxFechaVencimiento;
             newFormData.crearHistorial      = debeCrearRegistro;
             setFormData(newFormData);
             setHistorialSoatVehiculo(res.historialSoatVehiculo);

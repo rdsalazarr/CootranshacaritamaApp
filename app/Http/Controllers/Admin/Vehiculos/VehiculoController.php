@@ -66,7 +66,7 @@ class VehiculoController extends Controller
                                     ->select('vehiid','tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
                                             'tiesveid','vehifechaingreso','vehinumerointerno','vehiplaca','vehimodelo','vehicilindraje',
                                             'vehinumeromotor','vehinumerochasis','vehinumeroserie','vehinumeroejes','vehiesmotorregrabado',
-                                            'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto',
+                                            'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto','vehiobservacion',
                                             DB::raw("CONCAT('$url/archivos/vehiculo/', vehiplaca, '/', vehirutafoto ) as rutaFotografia"))
 									->where('vehiid', $request->codigo)->first();
 		}
@@ -98,13 +98,14 @@ class VehiculoController extends Controller
                 'placa'           => 'required|string|min:4|max:8|unique:vehiculo,vehiplaca,'.$vehiculo->vehiid.',vehiid',
                 'modelo'          => 'required|numeric|min:1|max:9999',
                 'cilindraje'      => 'nullable|string|min:1|max:6',
-                'numeroMotor'     => 'nullable|string|max:30', 
+                'numeroMotor'     => 'nullable|string|max:30',
                 'numeroChasis'    => 'nullable|string|max:30',
-                'numeroSerie'     => 'nullable|string|max:30', 
+                'numeroSerie'     => 'nullable|string|max:30',
                 'numeroEjes'      => 'nullable|numeric|min:1|max:9999',
                 'motorRegrabado'  => 'required|numeric',
                 'chasisRegrabado' => 'required|numeric',
                 'serieRegrabado'  => 'required|numeric',
+                'observacion'     => 'nullable|string|max:500',
                 'fotografia'      => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
 	        ]);
 
@@ -148,7 +149,8 @@ class VehiculoController extends Controller
             $vehiculo->vehiesmotorregrabado  = $request->motorRegrabado;
             $vehiculo->vehieschasisregrabado = $request->chasisRegrabado;
             $vehiculo->vehiesserieregrabado  = $request->serieRegrabado;
-            $vehiculo->vehirutafoto          = $rutaFotografia;
+            $vehiculo->vehiobservacion       = $request->observacion;
+            $vehiculo->vehirutafoto          = $rutaFotografia;            
             $vehiculo->save();
 
         	DB::commit();
