@@ -64,11 +64,11 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                             return(
                                     <TableRow key={'rowAne-' + a + anexos['id']}>
                                         <TableCell>
-                                            <p>{i}</p>
+                                            <span>{i}</span>
                                         </TableCell>
 
                                         <TableCell>
-                                            <p>{anexos['nombreOriginal']}</p> 
+                                            <span>{anexos['nombreOriginal']}</span> 
                                         </TableCell>
                              
                                         <TableCell className='cellCenter'> 
