@@ -3,7 +3,7 @@ import React from 'react';
 import {Table, TableHead, TableBody, TableRow, TableCell, Grid, Box} from "@mui/material";
 
 export default function Trazabilidad({mensaje, data}){
-    
+
     return (
         <Grid container spacing={2}>
             {(mensaje !== '')?
@@ -51,7 +51,7 @@ export default function Trazabilidad({mensaje, data}){
                                             <TableCell>
                                                 <span>{cambioEstado['observacion']}</span>
                                             </TableCell>
-                                        
+  
                                         </TableRow> 
                                     );
                                 })
