@@ -85,7 +85,8 @@ Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index
 Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);
 Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
 
-Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);  
+Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class, 'exportarCarteraVencida']);
+Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);
 
 // verifySource
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -399,7 +400,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/imprimir/documento/desembolso', [ShowSolicitudCreditoController::class, 'imprimir']);
 
             Route::get('/historial/solicitud/credito', [HistorialSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/historial');
+    
             Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');
+            Route::post('/show/colocacion', [GestionCobroCarteraController::class, 'showColocacion']);
+            Route::post('/hacer/seguimiento/colocacion', [GestionCobroCarteraController::class, 'salveSeguimiento']);
 
         });
         

@@ -19,7 +19,7 @@ export default function Trazabilidad({mensaje, data}){
                     <Table key={'tableCambioEstado'} className={'tableAdicional'} style={{width: '90%', margin: 'auto'}}>
                         <TableHead>
                             <TableRow>
-                                <TableCell style={{width: '5%'}}>Ítem</TableCell>
+                                <TableCell style={{width: '5%'}} className='cellCenter'>Ítem</TableCell>
                                 <TableCell style={{width: '15%'}}>Fecha y hora</TableCell>
                                 <TableCell style={{width: '15%'}}>Estado</TableCell>
                                 <TableCell style={{width: '20%'}}>Usuario</TableCell>
@@ -32,24 +32,24 @@ export default function Trazabilidad({mensaje, data}){
                                     let i = a + 1;
                                     return(
                                         <TableRow key={'rowCE-' +a}>
-                                            <TableCell>
-                                                <p>{i}</p>
+                                            <TableCell className='cellCenter'>
+                                                <span>{i}</span>
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['fecha']}</p>
+                                                <span>{cambioEstado['fecha']}</span>
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['estado']}</p>
+                                                <span>{cambioEstado['estado']}</span>
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['nombreUsuario']}</p>
+                                                <span>{cambioEstado['nombreUsuario']}</span>
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['observacion']}</p>
+                                                <span>{cambioEstado['observacion']}</span>
                                             </TableCell>
                                         
                                         </TableRow> 

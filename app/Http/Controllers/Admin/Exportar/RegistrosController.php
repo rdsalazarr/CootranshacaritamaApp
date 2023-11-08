@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Exportar;
 
+use App\Exports\CarteraVencidaExport;
 use App\Exports\ArchivoHistoricoExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
@@ -25,4 +26,14 @@ class RegistrosController extends Controller
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
         }
 	}
+
+    public function exportarCarteraVencida(Request $request){
+        try {
+            $nombreReporte        = 'Reporte_cartera_vencida_'.Carbon::now().'.xls';
+            $carteraVencidaExport = new CarteraVencidaExport($request);
+            return Excel::download($carteraVencidaExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+    }
 }

@@ -161,13 +161,13 @@ export default function Asociados({id}){
 
                                             <TableCell className='cellCenter'>
                                                 <VisibilityIcon key={'iconDelete'+a} className={'icon top green'}
-                                                        onClick={() => {edit(0, asoc['personaId'])}}
+                                                    onClick={() => {edit(0, asoc['personaId'])}}
                                                 ></VisibilityIcon>
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>
-                                                <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top green'}
-                                                         onClick={() => {edit(1, asoc['personaId'])}}
+                                                <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top orange'}
+                                                    onClick={() => {edit(1, asoc['personaId'])}}
                                                 ></PictureAsPdfIcon>
                                             </TableCell>
 

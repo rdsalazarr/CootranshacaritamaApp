@@ -5,12 +5,21 @@ $verdeOscuro: var(--verdeOscuro);
 $grisClaro  : var(--grisClaro);
 $grisOscuro : var(--grisOscuro);
 
+table {
+  border-radius: 10px!important;
+  overflow: hidden!important;
+}
+
+table tbody {
+  border: 2px solid #e0e0e0;
+}
+
 .tableGeneral {
   width: 100%;
   display: table;
   font-family: "Myriad Pro","Myriad Pro Bold","Myriad Pro Cond","Myriad Pro Bold Cond";
   border-spacing: 0;
-  border-collapse: collapse;  
+  border-collapse: collapse;
   thead tr td , thead tr th  {
     color: $colorBlanco;
     font-size: 1em;
@@ -23,12 +32,12 @@ $grisOscuro : var(--grisOscuro);
   }
   tbody tr {
     color: inherit;
-    height: 48px;
+    height: 28px;
     display: table-row;
     outline: none;
-    vertical-align: middle;      
+    vertical-align: middle;
     td{
-      padding: 1em;
+      padding: 0.8em;
       position: relative;
     }
   }
@@ -53,13 +62,13 @@ $grisOscuro : var(--grisOscuro);
   }
   tbody tr {
     color: inherit;
-    height: 48px;
+    height: 10px;
     display: table-row;
     outline: none;
-    vertical-align: middle;      
+    vertical-align: middle;
     td{
-      padding: 1em;
-      position: relative;      
+      padding: 0.6em;
+      position: relative;
     }
   }
 }  

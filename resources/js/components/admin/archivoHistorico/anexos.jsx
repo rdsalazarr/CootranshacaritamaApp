@@ -51,7 +51,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                         <TableHead>
                             <TableRow>
                                 <TableCell style={{width: '5%'}}>Ítem</TableCell>
-                                <TableCell>Nombre</TableCell>                               
+                                <TableCell>Nombre</TableCell>
                                 <TableCell className='cellCenter'>Descargar</TableCell>
                                 {(eliminar) ?  <TableCell className='cellCenter'>Eliminar</TableCell> : null}
                             </TableRow>

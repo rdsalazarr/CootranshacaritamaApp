@@ -9,7 +9,7 @@ export default function VisualizarPdf({idPersona, vehiculoId}){
 
     useEffect(()=>{
         setLoader(true);
-        instancePdf.post('/admin/direccion/transporte/asociados/imprimir/contrato', {asociadoId: idPersona, vehiculoId:vehiculoId}).then(res=>{
+        instancePdf.post('/admin/direccion/transporte/asociados/imprimir/contrato', {idPersona: idPersona, vehiculoId:vehiculoId}).then(res=>{
             let url = 'data:application/pdf;base64,'+res.data;
             setPdf(url);
             setLoader(false);

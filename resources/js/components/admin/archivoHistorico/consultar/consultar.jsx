@@ -5,8 +5,8 @@ import { Button, Grid, Card, Box, MenuItem, Stack } from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
-import {LoaderModal} from "../../../layout/loader";
 import instanceFile from '../../../layout/instanceFile';
+import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import Show from '../show';
 

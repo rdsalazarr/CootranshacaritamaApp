@@ -111,34 +111,73 @@ class AsignarVehiculoController extends Controller
 
     public function showPdf(Request $request)
 	{
-	    $this->validate(request(),['vehiculoId' => 'required', 'asociadoId' => 'required']);
+	    $this->validate(request(),['vehiculoId' => 'required', 'idPersona' => 'required']);
 
         try {
 
-            $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoVehiculo')->first();       
-            $numeroContrato             = 'A02765';
-            $fechaContrato              = '2023-10-19';
-            $nombreGerente              = 'LUIS MANUEL ASCANIO CLARO';
-            $tpDocumentoGerente         = 'CC';
-            $documentoGerente           = number_format('5036123', 0, ',', '.');
-            $ciudadExpDocumentoGerente  = 'OCAÑA';
-            $nombreAsociado             = 'DIONISIO DE JESUS ANGARITA ANGARITA ';
-            $tpDocumentoAsociado        = 'CC';
-            $documentoAsociado          = number_format('88143913', 0, ',', '.');
-            $ciudadExpDocumentoAsociado = 'OCAÑA';
-            $direccionAsociado          = 'CALLE 18 N 22-85 LAS COLINAS';
-            $telefonoAsociado           = '3152190167';
-            $placaVehiculo              = 'TFT187';
-            $numeroInternoVehiculo      = '208';
-            $claseVehiculo              = 'AUTOMÓVIL';
-            $cilindrajeVehiculo         = '1598';
-            $carroceriaVehiculo         = 'Sedán';
-            $modeloVehiculo             = '2020';
-            $marcaVehiculo              = 'RENAULT';
-            $colorVehiculo              = 'BLANCO GLACIAL (V)';
-            $capacidadVehiculo          = '04';  
+            $dataRadicado   = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoVehiculo')->first();       
+            $numeroContrato = 'A027650000000';//Falta
+            $fechaContrato  = '2025-10-19';
+
+            $asociadoVehiculo  = DB::table('asociadovehiculo as av')
+                                        ->select('av.asovehid','p.persid','a.asocid', 'p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+                                            'ti.tipidesigla','me.muninombre as nombreMunicipioExpedicion','p.persdireccion','p.persnumerocelular',
+                                            'v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehimodelo','v.vehicilindraje','v.vehiobservacion','tmv.timavenombre',
+                                            'tcv.ticovenombre','tcrh.ticavenombre','tv.tipvecapacidad',
+                                            DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"))
+                                        ->join('vehiculo as v', 'v.vehiid', '=', 'av.vehiid')
+                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                        ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
+                                        ->join('tipocolorvehiculo as tcv', 'tcv.ticoveid', '=', 'v.ticoveid')
+                                        ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
+                                        ->join('asociado as a', 'a.asocid', '=', 'av.asocid')
+                                        ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                        ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
+                                        ->join('municipio as me', function($join)
+                                        {
+                                            $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
+                                            $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
+                                        })
+                                        ->where('av.vehiid', $request->vehiculoId)
+                                        ->where('p.persid', $request->idPersona)->first();
+
+            $empresa    = DB::table('empresa as e')->select('p.persdocumento',  DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+                                             'me.muninombre as nombreMunicipioExpedicion','ti.tipidesigla')
+                                            ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                                            ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
+                                            ->join('municipio as me', function($join)
+                                            {
+                                                $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
+                                                $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
+                                            })
+                                            ->where('e.emprid', 1)->first();
+
+            $nombreGerente              = $empresa->nombrePersona;
+            $tpDocumentoGerente         = $empresa->tipidesigla;
+            $documentoGerente           = number_format($empresa->persdocumento, 0, ',', '.');
+            $ciudadExpDocumentoGerente  = $empresa->nombreMunicipioExpedicion;;
+
+            $nombreAsociado             = $asociadoVehiculo->nombrePersona;
+            $tpDocumentoAsociado        = $asociadoVehiculo->tipidesigla;
+            $documentoAsociado          = number_format($asociadoVehiculo->persdocumento, 0, ',', '.');
+            $ciudadExpDocumentoAsociado = $asociadoVehiculo->nombreMunicipioExpedicion;
+            $direccionAsociado          = $asociadoVehiculo->persdireccion;
+            $telefonoAsociado           = $asociadoVehiculo->persnumerocelular;
+            $placaVehiculo              = $asociadoVehiculo->vehiplaca;
+            $numeroInternoVehiculo      = $asociadoVehiculo->vehinumerointerno;
+
+            $claseVehiculo              = $asociadoVehiculo->referenciaVehiculo;
+            $cilindrajeVehiculo         = $asociadoVehiculo->vehicilindraje;
+            $carroceriaVehiculo         = $asociadoVehiculo->ticavenombre;
+            $modeloVehiculo             = $asociadoVehiculo->vehimodelo;
+            $marcaVehiculo              = $asociadoVehiculo->timavenombre;
+            $colorVehiculo              = $asociadoVehiculo->ticovenombre;
+
+            $capacidadVehiculo          = str_pad($asociadoVehiculo->tipvecapacidad, 2, "0", STR_PAD_LEFT) ;
             $documentosAdionales        = '1 Fotografía, Fotocopia Cédula, Fotocopia Tarjeta de Propiedad a su nombre y Reseña del DAS.';
-            $observacionGeneral         = 'VEHICULO EL DE PLACAS TFT187 INGRESA EN REPOSICION DEl UUA585';
+            $observacionGeneral         = $asociadoVehiculo->vehiobservacion;
 
             $buscar                     = Array('numeroContrato', 'fechaContrato', 'nombreGerente', 'tpDocumentoGerente','documentoGerente','ciudadExpDocumentoGerente',
                                                 'nombreAsociado','tpDocumentoAsociado', 'documentoAsociado', 'ciudadExpDocumentoAsociado', 'direccionAsociado',
