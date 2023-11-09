@@ -11,7 +11,7 @@ export default function App(){
     return(
         <Box>
             <Header />
-            <Box className='container'>
+            <Box>
                 <IniciarSesion />
             </Box>
             <Footer />

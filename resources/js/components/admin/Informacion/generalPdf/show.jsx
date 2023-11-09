@@ -13,7 +13,7 @@ export default function Show({data}){
                 </Box>
             </Grid>
 
-            <Grid item xl={4} md={4} sm={12} xs={12}>
+            <Grid item xl={8} md={8} sm={12} xs={12}>
                 <Box className='frmTexto'>
                     <label>Título</label>
                     <span>{data.ingpdftitulo}</span>
