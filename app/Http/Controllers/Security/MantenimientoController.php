@@ -102,19 +102,341 @@ class MantenimientoController extends Controller
 			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'LRB', 0, 'L');
 		});
     }
+
+    
+
     
     public function Pdf()
-    {  	
+    {        
+
+        PDF::setHeaderCallback(function($pdf){
+            $idCifrado = '123';
+            $logoEmpresa = '890505424_logoHacaritama.png';
+
+            $style = array(
+				'border'        => 0,
+				'vpadding'      => 'auto',
+				'hpadding'      => 'auto',
+				'fgcolor'       => array(0,0,0),
+				'bgcolor'       => false,
+				'module_width'  => 1,
+				'module_height' => 1
+			);
+
+            $url = asset('verificar/documento/'.urlencode($idCifrado));
+            PDF::write2DBarcode($url, 'QRCODE,H', 10, 6, 30, 30, $style, 'N');
+            PDF::Image('images/logoColombiaPotenciaVida.jpg',50,12,70,14);
+            PDF::Image('images/logoSuperTransporte.png',140,12,26,14);
+            PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,170,9,26,26);
+
+			/*PDF::SetY(8);
+            PDF::SetX(46);
+			PDF::SetFont('helvetica','',13);
+		    PDF::Cell(144,5,"hola",0,0,'C');
+			PDF::SetFont('helvetica','B',14);		   
+			PDF::Cell(4, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');*/
+		});
+
+
+        PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator('Hacatitama');
+		PDF::SetSubject("Formato único de extracto del contrato del servicio público de transporte terrestre automotor especial Nº ");
+		PDF::SetKeywords('Formato, contrato, servicio público ');
+        PDF::SetTitle("Formato contrato del servicio público de transporte terrestre ");
+        PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+        PDF::SetMargins(10, 30 , 10);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(32); 
+		PDF::SetFont('helvetica','B',12);
+		PDF::Ln(4);
+        PDF::Cell(26, 4,"", 0, 0,'C'); 
+        PDF::MultiCell(140, 4, "FORMATO ÚNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PÚBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL Nº 454008302202306930781", 0, 'C', 0);
+        PDF::Ln(4);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(130,5,'RAZON SOCIAL DE LA EMPRESA DE TRANSPORTE ESPECIAL','LTR',0,'L'); 
+        PDF::Cell(60,5,'NIT','LTR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(130,5,'COOPERATIVA DE TRANSPORTADORES HACARITAMA','LBR',0,'L'); 
+        PDF::Cell(60,5,'890505424-7','LBR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(130,5,'CONTRATO:  0693','LBR',0,'L'); 
+        PDF::Cell(60,5,'EXTRACTO:  0781','LBR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(130,5,'CONTRATANTE','LTR',0,'L'); 
+        PDF::Cell(60,5,'NIT/CC','LTR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(130,5,'COLEGIO CRISTIANO LUZ Y VIDA','LBR',0,'L'); 
+        PDF::Cell(60,5,'37313214_8','LBR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(190,5,'OBJETO DEL CONTRATO','LTR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::MultiCell(190, 5, "La prestación del servicio de transporte de los estudiantes entre el lugar de residencia y el establecimiento educativo u otros destinos que se requieran en razón de las actividades programadas por el plantel educativo, según el decreto 0348 del 245 de febrero de 2015.", 'LTR', 'J', 0);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(30,5,'ORIGEN','LTR',0,'L');
+        PDF::SetFont('helvetica','',9); 
+        PDF::Cell(160,5,'OCAÑA ( N DE S)','LTR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(30,5,'DESTINO','LTR',0,'L');
+        PDF::SetFont('helvetica','',9); 
+        PDF::Cell(160,5,'CASCO URBANO DE OCAÑA','LTR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','B',9);
+		PDF::Cell(190,5,'DESCRIPCION DEL RECORRIDO','LTR',0,'L'); 
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::MultiCell(190, 5, "CASCO URBANO DE OCAÑA", 'LTR', 'L', 0);
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(30,5,'CONVENIO:','LTR',0,'L');
+        PDF::Cell(8,5,'X','LTR',0,'C');
+        PDF::Cell(30,5,'CONSORCIO:','LTR',0,'L');
+        PDF::Cell(8,5,' ','LTR',0,'C');
+        PDF::Cell(34,5,'UNION TEMPORAL:','LTR',0,'L');
+        PDF::Cell(8,5,' ','LTR',0,'C');
+        PDF::Cell(72,5,'CON:','LTR',0,'L');
+        PDF::Ln(5);
+        PDF::Cell(190,5,'VIGENCIA DEL CONTRATO','LTR',0,'C');
+        PDF::Ln(5);
+
+        PDF::Cell(47.5,5,'FECHA INICIAL','LTR',0,'C');
+        PDF::Cell(47.5,5,'DIA','LTR',0,'C');
+        PDF::Cell(47.5,5,'MES','LTR',0,'C');
+        PDF::Cell(47.5,5,'AÑO','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(47.5,5,'','LTR',0,'C');
+        PDF::Cell(47.5,5,'01','LTR',0,'C');
+        PDF::Cell(47.5,5,'11','LTR',0,'C');
+        PDF::Cell(47.5,5,'2023','LTR',0,'C');
+        PDF::Ln(5);
+
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(47.5,5,'FECHA INICIAL','LTR',0,'C');
+        PDF::Cell(47.5,5,'DIA','LTR',0,'C');
+        PDF::Cell(47.5,5,'MES','LTR',0,'C');
+        PDF::Cell(47.5,5,'AÑO','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(47.5,5,'','LTR',0,'C');
+        PDF::Cell(47.5,5,'30','LTR',0,'C');
+        PDF::Cell(47.5,5,'11','LTR',0,'C');
+        PDF::Cell(47.5,5,'2023','LTR',0,'C');
+        PDF::Ln(5);
+
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(190,5,'CARACTERISTICAS DEL VEHICULO','LTR',0,'C');
+        PDF::Ln(5);        
         
-    // Ejemplo de uso
+        PDF::Cell(47.5,5,'PLACA','LTR',0,'C');
+        PDF::Cell(47.5,5,'MODELO','LTR',0,'C');
+        PDF::Cell(47.5,5,'MARCA','LTR',0,'C');
+        PDF::Cell(47.5,5,'CLASE','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(47.5,5,'TTR122','LTR',0,'C');
+        PDF::Cell(47.5,5,'2013','LTR',0,'C');
+        PDF::Cell(47.5,5,'NISSAN','LTR',0,'C');
+        PDF::Cell(47.5,5,'MICROBUS','LTR',0,'C');
+        PDF::Ln(5);
+
+        PDF::Cell(95,5,'NÚMERO INTERNO','LTR',0,'C');
+        PDF::Cell(95,5,'TARJETA DE OPERACIÓN','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(95,5,'486','LTR',0,'C');
+        PDF::Cell(95,5,'282487','LTR',0,'C');
+        PDF::Ln(5);
+
+        //Conductor 1
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(30, 5,'DATOS DEL','LTR',0,'L');
+        PDF::Cell(65,5,' NOMBRE Y APELLIDO','LTR',0,'C');
+        PDF::Cell(26,5,'CEDULA ','LTR',0,'C');
+        PDF::Cell(40,5,'Nº DE LICENCIA','LTR',0,'C');
+        PDF::Cell(29,5,'VIGENCIA','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::Cell(30, 5,'CONDUCTOR 1','LTR',0,'L');
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(65,5,'ELAIN MACHADO DOMINGUEZ','LTR',0,'L');
+        PDF::Cell(26,5,'88284528 ','LTR',0,'C');
+        PDF::Cell(40,5,'88284528','LTR',0,'C');
+        PDF::Cell(29,5,'2025-10-04','LTR',0,'C');
+        PDF::Ln(5);
+
+        //Conductor 2
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(30, 5,'DATOS DEL','LTR',0,'L');
+        PDF::Cell(65,5,' NOMBRE Y APELLIDO','LTR',0,'C');
+        PDF::Cell(26,5,'CEDULA ','LTR',0,'C');
+        PDF::Cell(40,5,'Nº DE LICENCIA','LTR',0,'C');
+        PDF::Cell(29,5,'VIGENCIA','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::Cell(30, 5,'CONDUCTOR 1','LTR',0,'L');
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(65,5,'HUBERNEY SALAZAR AMAYA','LTR',0,'L');
+        PDF::Cell(26,5,'1064841938 ','LTR',0,'C');
+        PDF::Cell(40,5,'1064841938','LTR',0,'C');
+        PDF::Cell(29,5,'2025-09-26','LTR',0,'C');
+        PDF::Ln(5);
+
+        //Conductor 3
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(30, 5,'DATOS DEL','LTR',0,'L');
+        PDF::Cell(65,5,' NOMBRE Y APELLIDO','LTR',0,'C');
+        PDF::Cell(26,5,'CEDULA ','LTR',0,'C');
+        PDF::Cell(40,5,'Nº DE LICENCIA','LTR',0,'C');
+        PDF::Cell(29,5,'VIGENCIA','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::Cell(30, 5,'CONDUCTOR 1','LTR',0,'L');
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(65,5,'DEIVER MORA GARCIA','LTR',0,'L');
+        PDF::Cell(26,5,'1977858 ','LTR',0,'C');
+        PDF::Cell(40,5,'1977858','LTR',0,'C');
+        PDF::Cell(29,5,'2025-02-08','LTR',0,'C');
+        PDF::Ln(5);
+
+        PDF::Cell(190,5,'','T',0,'C');
+        PDF::Ln(5);
+
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(30, 5,'RESPONSABLE','LTR',0,'L');
+        PDF::Cell(65,5,'NOMBRE Y APELLIDO','LTR',0,'C');
+        PDF::Cell(26,5,'CÉDULA ','LTR',0,'C');
+        PDF::Cell(40,5,'DIRECCIÓN','LTR',0,'C');
+        PDF::Cell(29,5,'TELÉFONO','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::Cell(30, 5,'CONTRATANTE','LTR',0,'L');
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(65,5,'ELIZABETH LOPEZ BARBOSA','LTR',0,'L');
+        PDF::Cell(26,5,'37313214 ','LTR',0,'C');
+        PDF::Cell(40,5,'BARRIO EL CENTRO','LTR',0,'C');
+        PDF::Cell(29,5,'3103006860','LTR',0,'C');
+        PDF::Ln(5);
+        PDF::Cell(95, 7,'','LTR',0,'L');
+        PDF::Cell(95, 7,'','LTR',0,'L');
+        PDF::Ln(7);
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(95, 6,'La Ondina via a Rio de Oro - Ocaña N. de S.','LR',0,'C');
+        PDF::Cell(95, 6,'','R',0,'L');
+        PDF::Ln(6);
+        PDF::Cell(95, 6,'Tel. 607-5611012 - Cel: 314 2197149 - 317 6686929','LR',0,'C');
+        PDF::Cell(95, 6,'','R',0,'L');
+        PDF::Ln(6);
+        PDF::SetFont('helvetica','',9);
+        PDF::Cell(95, 6,'cootranshacaritama@hotmail.com.','LR',0,'C');
+        PDF::Cell(95, 6,'(Ley 527 de 1999, Decreto 2364 de 2012)','R',0,'C');
+        PDF::Ln(6);
+        PDF::Cell(95, 6,'','LRB',0,'C');
+        PDF::SetFont('helvetica','B',9);
+        PDF::Cell(95, 6,'FIRMA Y SELLO GERENTE DEL CONTRATO.','RB',0,'C');
+        
+       
+        //Inicia proceso de la hoja dos
+        $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'fichaTecnica')->first();
+        $numeroContratoServicioEspecial = '454008302202306930782';  
+        $buscar       = Array('numeroContratoServicioEspecial');
+        $remplazo     = Array($numeroContratoServicioEspecial);
+        $contenido                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);  
+        PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+        PDF::AddPage('P', 'Letter');
+        PDF::SetMargins(20, 30 , 20);
+		PDF::Ln(4);
+        PDF::SetFont('helvetica', '', 10);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+
+        //Inicia proceso de la hoja 5
+        $dataRadicado = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoTransporteEspecial')->first();    
+        $buscar       = Array('numeroContratoServicioEspecial');
+        $remplazo     = Array($numeroContratoServicioEspecial);
+        $numeroContratoServicioEspecial = '454008302202306930782';  
+        $contenido                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);  
+        PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+        PDF::AddPage('P', 'Letter');
+        PDF::SetMargins(20, 30 , 20);
+  
+		PDF::Ln(4);
+        PDF::SetFont('helvetica', 'B', 12);
+        PDF::Cell(190, 6,'CONTRATO DE TRANSPORTE ESPECIAL 45400830220230693',0,0,'C');
+        
+        PDF::Ln(12);
+        PDF::SetFont('helvetica', '', 10);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+
+        PDF::Ln(32);
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(90, 6,'COLEGIO CRISTIANO LUZ Y VIDA',0,0,'C');
+        PDF::Cell(10, 6,'',0,0,'C');
+        PDF::Cell(90, 6,'LUIS MANUEL ASCANIO CLARO',0,0,'C');
+        PDF::Ln(6);
+
+        PDF::Cell(90, 6,'NIT/C.C: 37313214_8',0,0,'C');
+        PDF::Cell(10, 6,'',0,0,'C');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(90, 6,'EL CONTRATISTA',0,0,'C');
+        PDF::Ln(6);
+        PDF::Cell(90, 6,'EL CONTRATANTE',0,0,'C');
+
+
+        //Inicia proceso de la hoja 6	
+
+
+
+        
+    
+
+
+        //Inicia proceso de la hoja tres
+        PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+        PDF::AddPage('P', 'Letter');
+
+        PDF::SetFont('helvetica','B',14);
+		PDF::Ln(24);
+		PDF::Cell(175,5,"hola 3",0,0,'C'); 
+
+        // Salida del PDF
+        PDF::Output();
+
+
+
+        /*
+        PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+		PDF::SetMargins(24, 36 , 20);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(32); 
+		PDF::SetFont('helvetica','B',14);
+		PDF::Ln(24);
+		PDF::Cell(175,5,"hola",0,0,'C'); 
+        PDF::Ln(24);
+
+        PDF::Cell(15,5,"hola",0,0,'C'); 
+
+        PDF::MultiCell(145, 4, "FORMATO ÚNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PÚBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL Nº 454008302202306930781", 1, 'C', 0);
+
+        PDF::output("formato.pdf", 'I');*/
+
+
+    /*// Ejemplo de uso
     $fechaActual = Carbon::now();
     //2024-03-03
     $fechaActual = '2023-10-30';
-    $fechaNueva = $this->obtenerFechaPagoCuota('2024-01-30');
+    $fechaNueva = $this->obtenerFechaPagoCuota('2023-10-30');
     echo $fechaNueva->format('Y-m-d');
 
 
-/*
+
   $tabla = "<table border='1'>
             <tr>
                 <th>Cuota</th>
@@ -153,8 +475,10 @@ class MantenimientoController extends Controller
 
 
         $totalDiasAdicionar = ($ultimoDiaMes === 30 ) ? 30 :  $ultimoDiaMes;
+
+        //$totalDiasAdicionar = ($totalDiasAdicionar === 31) ? 30 : $totalDiasAdicionar;
         
-dd($totalDiasAdicionar);
+
 
         //dd($fecha->format('Y-m-d'));
         
