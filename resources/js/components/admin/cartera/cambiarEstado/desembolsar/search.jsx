@@ -26,8 +26,7 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 
 export default function Search(){
 
-    //27896321 87787878
-    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'27896321', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'', personaId:'', asociadoId:'',  solicitudId:'', lineaCredito:'',
                                             valorSolicitado:'', valorAprobado:'',  tasaNominal:'', plazo:'', observacionGeneral:''})
     const [loader, setLoader] = useState(false);
     const [success, setSuccess] = useState(false);
