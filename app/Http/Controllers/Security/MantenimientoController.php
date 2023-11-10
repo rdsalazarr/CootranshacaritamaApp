@@ -82,62 +82,47 @@ class MantenimientoController extends Controller
 
        dd($mensajeCorreo);      
     }
-
-    function headerFormato($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
-        PDF::setHeaderCallback(function($pdf) use ($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
-            $logoEmpresa = '890505424_logoHacaritama.png';
-			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,20,5,20,19);
-            PDF::Ln(4);
-            PDF::MultiCell(21, 21, '', 1, 'C', false, 0);
-            PDF::Cell(92, 7, $titulo, 1, 0, 'C');
-            PDF::Cell(24, 7, 'Versión: '.$version, 1, 0, 'C');
-            PDF::Cell(40, 7, 'Código: '.$numeroFormato, 1, 0, 'C');
-            PDF::Ln(7);
-            PDF::Cell(21, 7, '', 0, 0, 'C');
-            PDF::Cell(92, 7, $sigla, 'LRB', 0, 'C');
-            PDF::Cell(64, 7, '  Fecha: '.$fechaFormato, 'LRB', 0, 'L');
-            PDF::Ln(7);
-            PDF::Cell(21, 7, '', 0, 0, 'L');
-            PDF::Cell(92, 7, $areaFormato, 'LRB', 0, 'C');
-			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'LRB', 0, 'L');
-		});
-    }  
     
     public function Pdf()
-    {        
-
+    {
+        $generales  = new generales();  
         $generarPdf = new generarPdf();
-
-        // "nombreContratante"      => 'COLEGIO CRISTIANO LUZ Y VIDA',
         $arrayDatos = [ 
-                        "numeroContratoCompleto"   => '454008302202306930781',
-                        "numeroContrato"           => '0693',
-                        "numeroExtracto"           => '0781', 
-                        "nombreContratante"        => 'COLEGIO CRISTIANO LUZ Y VIDA', 
-                        "documentoContratante"     => '37313214_8',
-                        "objetoContrato"           => 'La prestación del servicio de transporte de los estudiantes entre el lugar de residencia y el establecimiento educativo u otros destinos que se requieran en razón de las actividades programadas por el plantel educativo, según el decreto 0348 del 245 de febrero de 2015.',
-                        "origenContrato"           => 'OCAÑA ( N DE S)',
-                        "destinoContrato"          => 'CASCO URBANO DE OCAÑA', 
-                        "descripcionRecorrido"     => 'CASCO URBANO DE OCAÑA',
-                        "convenioContrato"         => 'X',
-                        "consorcioContrato"        => '',
-                        "unionTemporal"            => '',
-                        "nombreUnionTemporal"      => '',
-                        "placaVehiculo"            => 'TTR122',
-                        "modeloVehiculo"           => '2013',
-                        "marcaVehiculo"            => 'NISSAN',
-                        "claseVehiculo"            => 'MICROBUS',
-                        "numeroInternoVehiculo"    => '486',
-                        "tarjetaOperacionVehiculo" => '282487',
-                        "nombreContratante"        => 'ELIZABETH LOPEZ BARBOSA ELIZABETH LOPEZ BARBOSA',
-                        "documentoContratante"     => '37313214',
-                        "direccionContratante"     => 'BARRIO EL CENTRO BARRIO EL CENTRO',
-                        "telefonoContratante"      => '3103006860',
-                        "firmaGerente"             => 'archivos/persona/5036123/firma_5036123.png',
-                        "idCifrado"                => '123',
-                        "metodo"                   => 'I'
+                        "numeroContratoEspecial"       => '45400830220230693',
+                        "numeroContratoCompletoUno"    => '454008302202306930781',
+                        "numeroContratoCompletoDos"    => '454008302202306930782',
+                        "numeroContrato"               => '0693',
+                        "numeroExtracto"               => '0781', 
+                        "nombreContratante"            => 'COLEGIO CRISTIANO LUZ Y VIDA', 
+                        "documentoContratante"         => '37313214_8',
+                        "objetoContrato"               => 'La prestación del servicio de transporte de los estudiantes entre el lugar de residencia y el establecimiento educativo u otros destinos que se requieran en razón de las actividades programadas por el plantel educativo, según el decreto 0348 del 245 de febrero de 2015',
+                        "origenContrato"               => 'OCAÑA ( N DE S)',
+                        "destinoContrato"              => 'CASCO URBANO DE OCAÑA', 
+                        "descripcionRecorrido"         => 'CASCO URBANO DE OCAÑA',
+                        "convenioContrato"             => 'X',
+                        "consorcioContrato"            => '',
+                        "unionTemporal"                => '',
+                        "nombreUnionTemporal"          => '',
+                        "placaVehiculo"                => 'TTR122',
+                        "modeloVehiculo"               => '2013',
+                        "marcaVehiculo"                => 'NISSAN',
+                        "claseVehiculo"                => 'MICROBUS',
+                        "numeroInternoVehiculo"        => '486',
+                        "tarjetaOperacionVehiculo"     => '282487',
+                        "nombreContratante"            => 'ELIZABETH LOPEZ BARBOSA',
+                        "documentoContratante"         => '37313214',
+                        "direccionContratante"         => 'BARRIO EL CENTRO',
+                        "telefonoContratante"          => '3103006860',
+                        "firmaGerente"                 => 'archivos/persona/5036123/firma_5036123.png',
+                        "nombreGerente"                => 'LUIS MANUEL ASCANIO CLARO',
+                        "documentoGerente"             => '37.336.963',
+                        "valorContrato"                => '1,500,000',
+                        "fechaInicialContrato"         => $generales->formatearFechaContratoServicioEspecial('2023-11-01'),
+                        "fechaFinalContrato"           => $generales->formatearFechaContratoServicioEspecial('2023-11-30'),
+                        "descripcionServicoContratado" => 'DOS (2) vehículo(s) con número(s) interno(s) 473, 486 con 16, 16 puestos',
+                        "idCifrado"                    => '123',
+                        "metodo"                       => 'I'
                     ];
-                       
 
         $arrayVigenciaContrato = [];
         $fechaInicio = [
@@ -151,7 +136,6 @@ class MantenimientoController extends Controller
                     "anio" => '2023',
                 ];        
         array_push($arrayVigenciaContrato, $fechaInicio, $fechaFin);
-
 
         $arrayConductores  = [];
         $conductor = [
@@ -171,12 +155,12 @@ class MantenimientoController extends Controller
         array_push($arrayConductores, $conductor);
 
         $conductor = [
-                            "nombreCompleto" => 'DEIVER MORA GARCIA',
-                            "documento"      => '1977858',
-                            "numeroLicencia" => '1977858',
-                            "vigencia"       => '2025-02-08',
-                            ]; 
-       array_push($arrayConductores, $conductor);/**/
+                        "nombreCompleto" => 'DEIVER MORA GARCIA',
+                        "documento"      => '1977858',
+                        "numeroLicencia" => '1977858',
+                        "vigencia"       => '2025-02-08',
+                        ]; 
+       array_push($arrayConductores, $conductor);
 
         $generarPdf->contratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores);
 

@@ -1727,20 +1727,20 @@ EOD;
         PDF::Cell(40, 4, "VEHÍCULO:", 0, 0, 'L');
         PDF::Cell(76, 4,  $vehiculo,0, 0, 'L');
         PDF::Cell(26, 4, "NÚMERO:", 0, 0, 'L');
-        PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L');  
-        PDF::Ln(5);  
+        PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L'); 
+        PDF::Ln(5);
 
         PDF::Cell(40, 4, "PLACA:", 0, 0, 'L');
         PDF::Cell(76, 4, $placaVehiculo,0, 0, 'L');
         PDF::Cell(26, 4, "PAGARÉ Nº:", 0, 0, 'L');
-        PDF::Cell(40, 4, $pagareNumero, 0, 0, 'L');  
-        PDF::Ln(5);  
+        PDF::Cell(40, 4, $pagareNumero, 0, 0, 'L');
+        PDF::Ln(5);
 
         PDF::Cell(40, 4, "TIPO DE CRÉDITO:", 0, 0, 'L');
         PDF::Cell(76, 4,  $tipoCredito,0, 0, 'L');
         PDF::Cell(26, 4, "MONTO:", 0, 0, 'L');
         PDF::Cell(40, 4, '$ '.number_format($montoCredito,0,',','.'), 0, 0, 'L');
-        PDF::Ln(5); 
+        PDF::Ln(5);
         
         PDF::Cell(40, 4, "VALOR CUOTA:", 0, 0, 'L');
         PDF::Cell(76, 4, '$ '.number_format($valorCuota,0,',','.') ,0, 0, 'L');
@@ -1749,7 +1749,7 @@ EOD;
         PDF::Ln(12);
 
         PDF::Cell(40, 4, "CONCEPTO Y/O OBJETO DEL CRÉDITO: ", 0, 0, 'L');
-        PDF::Ln(12); 
+        PDF::Ln(12);
 
         PDF::MultiCell(55, 10, 'ESTADO', 1, 'C', false, 0);
         PDF::Cell(60, 5, 'AL DÍA', 1, 0, 'C');
@@ -1778,16 +1778,16 @@ EOD;
         PDF::Cell(4, 4, "",0, 0, 'L');
         PDF::Cell(32, 4, "ACTA NÚMERO:", 0, 0, 'L');
         PDF::Cell(39, 4, "", "B", 0, 'L');  
-        PDF::Ln(12);  
+        PDF::Ln(12);
 
         PDF::Cell(60, 4, "APROBADO POR:", 0, 0, 'L');
         PDF::Ln(12); 
         PDF::Cell(60, 4, "GERENTE:", 0, 0, 'L');
         PDF::Cell(115, 4, "",'B', 0, 'L');
-        PDF::Ln(12); 
+        PDF::Ln(12);
         PDF::Cell(60, 4, "PRESIDENTE DEL COMITÉ:",0, 0, 'L');
         PDF::Cell(115, 4, "",'B', 0, 'L');
-        PDF::Ln(12); 
+        PDF::Ln(12);
         PDF::Cell(60, 4, "MIEMBRO DEL COMITÉ :", 0, 0, 'L');   
         PDF::Cell(115, 4, "",'B', 0, 'L');
         PDF::Ln(16);
@@ -1810,31 +1810,15 @@ EOD;
 		}
 	}
 
-	function headerContratoServicioEspecial($idCifrado, $logoEmpresa){
-		PDF::setHeaderCallback(function($pdf) use ($idCifrado, $logoEmpresa) {
-            $style = array(
-				'border'        => 0,
-				'vpadding'      => 'auto',
-				'hpadding'      => 'auto',
-				'fgcolor'       => array(0,0,0),
-				'bgcolor'       => false,
-				'module_width'  => 1,
-				'module_height' => 1
-			);
-
-            $url = asset('verificar/contrato/servicio/especial/'.urlencode($idCifrado));
-            PDF::write2DBarcode($url, 'QRCODE,H', 10, 6, 30, 30, $style, 'N');
-            PDF::Image('images/logoColombiaPotenciaVida.jpg',50,12,70,14);
-            PDF::Image('images/logoSuperTransporte.png',140,12,26,14);
-            PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,170,9,26,26);
-		});
-	}
-
 	function contratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores){
-		
-		$idCifrado         = $arrayDatos['idCifrado'];
-		$metodo            = $arrayDatos['metodo'];
-		$titulo            = "Formato único de extracto del contrato del servicio público de transporte terrestre";
+		$numeroContratoEspecial    = $arrayDatos['numeroContratoEspecial'];
+		$numeroContratoCompletoUno = $arrayDatos['numeroContratoCompletoUno'];
+		$numeroContratoCompletoDos = $arrayDatos['numeroContratoCompletoDos'];
+		$idCifrado                 = $arrayDatos['idCifrado'];
+		$metodo                    = $arrayDatos['metodo'];
+		$titulo                    = "Formato único de extracto del contrato del servicio público de transporte terrestre";
+		$dataInfoPdfFichaTecnica   = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'fichaTecnica')->first();
+		$dataInfoPdfContrato       = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoTransporteEspecial')->first();
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
 			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
@@ -1843,16 +1827,20 @@ EOD;
 		PDF::SetCreator('Hacatitama');
 		PDF::SetSubject("Formato único de extracto del contrato del servicio público de transporte terrestre automotor especial Nº ");
 		PDF::SetKeywords('Formato, contrato, servicio público ');
-        PDF::SetTitle("Formato contrato del servicio público de transporte terrestre ");
-		$this->headerContratoServicioEspecial($idCifrado, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);      
-		PDF::SetPrintFooter(true);
+        PDF::SetTitle("Formato contrato del servicio público de transporte terrestre");
 
-		//hoja uno y dos
-		$this->hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato,$arrayConductores, $nombreEmpresa, $nit);
-
-		//hoja tres y cuatro
-		$this->hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato,$arrayConductores, $nombreEmpresa, $nit);
+		//hoja uno
+		$this->hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores, $nombreEmpresa, $nit, $direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $logoEmpresa, true);
+		//Hoja dos
+		$this->hojaFichaGeneral($dataInfoPdfFichaTecnica, $numeroContratoCompletoUno);
+		//hoja tres
+		$this->hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores, $nombreEmpresa, $nit, $direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $logoEmpresa, false);
+		//Hoja cuatro
+		$this->hojaFichaGeneral($dataInfoPdfFichaTecnica, $numeroContratoCompletoDos);
+		//Hoja cinco
+		$this->contratoTransporteEspecial($arrayDatos, $dataInfoPdfContrato, $numeroContratoEspecial, $nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		//Hoja seis
+		$this->listaPasajeros($arrayDatos, $idCifrado, $logoEmpresa);
 
 		$tituloPdf = $titulo.'.pdf';
 		if($metodo === 'S'){
@@ -1862,64 +1850,87 @@ EOD;
 		}
 	}
 
-	function hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores, $nombreEmpresa, $nit){
-		$numeroContratoCompleto   = $arrayDatos['numeroContratoCompleto'];
-		$numeroContrato           = $arrayDatos['numeroContrato'];
-		$numeroExtracto           = $arrayDatos['numeroExtracto'];
-		$nombreContratante        = $arrayDatos['nombreContratante'];
-		$documentoContratante     = $arrayDatos['documentoContratante'];
-		$objetoContrato           = $arrayDatos['objetoContrato'];
-		$origenContrato           = $arrayDatos['origenContrato'];
-		$destinoContrato          = $arrayDatos['destinoContrato'];
-		$descripcionRecorrido     = $arrayDatos['descripcionRecorrido'];
-		$convenioContrato         = $arrayDatos['convenioContrato'];
-		$consorcioContrato        = $arrayDatos['consorcioContrato'];
-		$unionTemporal            = $arrayDatos['unionTemporal'];
-		$nombreUnionTemporal      = $arrayDatos['nombreUnionTemporal'];
-		$placaVehiculo            = $arrayDatos['placaVehiculo'];
-		$modeloVehiculo           = $arrayDatos['modeloVehiculo'];
-		$marcaVehiculo            = $arrayDatos['marcaVehiculo'];
-		$claseVehiculo            = $arrayDatos['claseVehiculo'];
-		$numeroInternoVehiculo    = $arrayDatos['numeroInternoVehiculo'];
-		$tarjetaOperacionVehiculo = $arrayDatos['tarjetaOperacionVehiculo'];
-		$nombreContratante        = $arrayDatos['nombreContratante'];
-		$documentoContratante     = $arrayDatos['documentoContratante'];
-		$direccionContratante     = $arrayDatos['direccionContratante'];
-		$telefonoContratante      = $arrayDatos['telefonoContratante'];
-		$firmaGerente             = $arrayDatos['firmaGerente'];		
+	function headerContratoServicioEspecial($idCifrado, $logoEmpresa){
+		$style = array(
+			'border'        => 0,
+			'vpadding'      => 'auto',
+			'hpadding'      => 'auto',
+			'fgcolor'       => array(0,0,0),
+			'bgcolor'       => false,
+			'module_width'  => 1,
+			'module_height' => 1
+		);
 
-		PDF::SetPrintHeader(true);		
-        PDF::SetMargins(10, 30 , 10);
+		$url = asset('verificar/contrato/servicio/especial/'.urlencode($idCifrado));
+		PDF::write2DBarcode($url, 'QRCODE,H', 10, 6, 30, 30, $style, 'N');
+		PDF::Image('images/logoColombiaPotenciaVida.jpg',50,12,70,14);
+		PDF::Image('images/logoSuperTransporte.png',140,12,26,14);
+		PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,170,9,26,26);
+	}
+
+	function hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores, $nombreEmpresa, $nit, $direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $logoEmpresa, $esPrimeraHoja){
+		$numeroContratoEspecial    = $arrayDatos['numeroContratoEspecial'];
+		$numeroContratoCompletoUno = $arrayDatos['numeroContratoCompletoUno'];
+		$numeroContratoCompletoDos = $arrayDatos['numeroContratoCompletoDos'];
+		$numeroContrato            = $arrayDatos['numeroContrato'];
+		$numeroExtracto            = $arrayDatos['numeroExtracto'];
+		$nombreContratante         = $arrayDatos['nombreContratante'];
+		$documentoContratante      = $arrayDatos['documentoContratante'];
+		$objetoContrato            = $arrayDatos['objetoContrato'];
+		$origenContrato            = $arrayDatos['origenContrato'];
+		$destinoContrato           = $arrayDatos['destinoContrato'];
+		$descripcionRecorrido      = $arrayDatos['descripcionRecorrido'];
+		$convenioContrato          = $arrayDatos['convenioContrato'];
+		$consorcioContrato         = $arrayDatos['consorcioContrato'];
+		$unionTemporal             = $arrayDatos['unionTemporal'];
+		$nombreUnionTemporal       = $arrayDatos['nombreUnionTemporal'];
+		$placaVehiculo             = $arrayDatos['placaVehiculo'];
+		$modeloVehiculo            = $arrayDatos['modeloVehiculo'];
+		$marcaVehiculo             = $arrayDatos['marcaVehiculo'];
+		$claseVehiculo             = $arrayDatos['claseVehiculo'];
+		$numeroInternoVehiculo     = $arrayDatos['numeroInternoVehiculo'];
+		$tarjetaOperacionVehiculo  = $arrayDatos['tarjetaOperacionVehiculo'];
+		$nombreContratante         = $arrayDatos['nombreContratante'];
+		$documentoContratante      = $arrayDatos['documentoContratante'];
+		$direccionContratante      = $arrayDatos['direccionContratante'];
+		$telefonoContratante       = $arrayDatos['telefonoContratante'];
+		$firmaGerente              = $arrayDatos['firmaGerente'];
+		$idCifrado                 = $arrayDatos['idCifrado'];
+		$metodo                    = $arrayDatos['metodo'];
+		$numeroContratoPorHoja     = ($esPrimeraHoja) ? $numeroContratoCompletoUno: $numeroContratoCompletoDos;
+
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
 		PDF::AddPage('P', 'Letter');
+		PDF::SetMargins(10, 30 , 10);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(true);
 		PDF::SetAutoPageBreak(true, 30);
-		PDF::SetY(32);
-		//Coloco las imagenes al final del documento
-		PDF::Image('images/selloCooperativa.png',140,220,26,16);
-		PDF::Image($firmaGerente,130,232,46,10);
+		PDF::SetY(22);
+		$this->headerContratoServicioEspecial($idCifrado, $logoEmpresa);
 		PDF::SetFont('helvetica','B',12);
 		PDF::Ln(4);
         PDF::Cell(26, 4,"", 0, 0,'C'); 
-        PDF::MultiCell(140, 4, "FORMATO ÚNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PÚBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL Nº ".$numeroContratoCompleto, 0, 'C', 0);
+        PDF::MultiCell(140, 4, "FORMATO ÚNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO PÚBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL Nº ".$numeroContratoPorHoja, 0, 'C', 0);
         PDF::Ln(4);
         PDF::SetFont('helvetica','B',9);
 		PDF::Cell(130,5,'RAZON SOCIAL DE LA EMPRESA DE TRANSPORTE ESPECIAL','LTR',0,'L'); 
         PDF::Cell(60,5,'NIT','LTR',0,'L'); 
         PDF::Ln(5);
         PDF::SetFont('helvetica','',9);
-        PDF::Cell(130,5, $nombreEmpresa,'LBR',0,'L'); 
-        PDF::Cell(60,5, $nit,'LBR',0,'L'); 
+        PDF::Cell(130,5, $nombreEmpresa,'LBR',0,'L');
+        PDF::Cell(60,5, $nit,'LBR',0,'L');
         PDF::Ln(5);
         PDF::SetFont('helvetica','B',9);
-		PDF::Cell(130,5,'CONTRATO: '.$numeroContrato,'LBR',0,'L'); 
-        PDF::Cell(60,5,'EXTRACTO: '.$numeroExtracto,'LBR',0,'L'); 
+		PDF::Cell(130,5,'CONTRATO: '.$numeroContrato,'LBR',0,'L');
+        PDF::Cell(60,5,'EXTRACTO: '.$numeroExtracto,'LBR',0,'L');
         PDF::Ln(5);
         PDF::SetFont('helvetica','B',9);
-		PDF::Cell(130,5,'CONTRATANTE','LTR',0,'L'); 
+		PDF::Cell(130,5,'CONTRATANTE','LTR',0,'L');
         PDF::Cell(60,5,'NIT/CC','LTR',0,'L'); 
         PDF::Ln(5);
         PDF::SetFont('helvetica','',9);
-        PDF::Cell(130,5,$nombreContratante,'LBR',0,'L'); 
-        PDF::Cell(60,5,$documentoContratante,'LBR',0,'L'); 
+        PDF::Cell(130,5,$nombreContratante,'LBR',0,'L');
+        PDF::Cell(60,5,$documentoContratante,'LBR',0,'L');
         PDF::Ln(5);
         PDF::SetFont('helvetica','B',9);
 		PDF::Cell(190,5,'OBJETO DEL CONTRATO','LTR',0,'L'); 
@@ -1929,12 +1940,12 @@ EOD;
         PDF::SetFont('helvetica','B',9);
 		PDF::Cell(30,5,'ORIGEN','LTR',0,'L');
         PDF::SetFont('helvetica','',9); 
-        PDF::Cell(160,5,$origenContrato,'LTR',0,'L'); 
+        PDF::Cell(160,5,$origenContrato,'LTR',0,'L');
         PDF::Ln(5);
         PDF::SetFont('helvetica','B',9);
 		PDF::Cell(30,5,'DESTINO','LTR',0,'L');
         PDF::SetFont('helvetica','',9); 
-        PDF::Cell(160,5,$destinoContrato,'LTR',0,'L'); 
+        PDF::Cell(160,5,$destinoContrato,'LTR',0,'L');
         PDF::Ln(5);
         PDF::SetFont('helvetica','B',9);
 		PDF::Cell(190,5,'DESCRIPCION DEL RECORRIDO','LTR',0,'L'); 
@@ -1966,12 +1977,12 @@ EOD;
 			PDF::Cell(47.5,5,$vigenciaContrato['mes'],'LTR',0,'C');
 			PDF::Cell(47.5,5,$vigenciaContrato['anio'],'LTR',0,'C');
 			PDF::Ln(5);
-		}       
+		}
 
         PDF::SetFont('helvetica','B',9);
         PDF::Cell(190,5,'CARACTERISTICAS DEL VEHICULO','LTR',0,'C');
-        PDF::Ln(5);        
-        
+        PDF::Ln(5);
+
         PDF::Cell(47.5,5,'PLACA','LTR',0,'C');
         PDF::Cell(47.5,5,'MODELO','LTR',0,'C');
         PDF::Cell(47.5,5,'MARCA','LTR',0,'C');
@@ -2001,7 +2012,7 @@ EOD;
 			PDF::Cell(50,5,'Nº DE LICENCIA','LTR',0,'C');
 			PDF::Cell(22,5,'VIGENCIA','LTR',0,'C');
 			PDF::Ln(5);
-			PDF::Cell(30, 5,'CONDUCTOR '.$numeroConductor,'LTR',0,'L');
+			PDF::Cell(30, 5,'CONDUCTOR '.$numeroConductor,'LR',0,'L');
 			PDF::SetFont('helvetica','',9);
 			PDF::Cell(65,5,substr($conductor['nombreCompleto'], 0, 32),'LTR',0,'L');
 			PDF::Cell(23,5,$conductor['documento'],'LTR',0,'C');
@@ -2009,7 +2020,7 @@ EOD;
 			PDF::Cell(22,5,$conductor['vigencia'],'LTR',0,'C');
 			PDF::Ln(5);
 			$numeroConductor ++;
-		}       
+		}
 
         PDF::Cell(190,5,'','T',0,'C');
         PDF::Ln(5);
@@ -2021,16 +2032,22 @@ EOD;
         PDF::Cell(50,5,'DIRECCIÓN','LTR',0,'C');
         PDF::Cell(22,5,'TELÉFONO','LTR',0,'C');
         PDF::Ln(5);
-        PDF::Cell(30, 5,'CONTRATANTE','LTR',0,'L');
+        PDF::Cell(30, 5,'CONTRATANTE','LR',0,'L');
         PDF::SetFont('helvetica','',9);
         PDF::Cell(65,5,substr($nombreContratante, 0, 32),'LTR',0,'L');
         PDF::Cell(23,5,$documentoContratante,'LTR',0,'C');
         PDF::Cell(50,5,substr($direccionContratante, 0, 25),'LTR',0,'C');
         PDF::Cell(22,5,$telefonoContratante,'LTR',0,'C');
+
+		$posicionY = PDF::GetY() + 7;
+		//Coloco las imagenes al final del documento
+		PDF::Image('images/selloCooperativa.png',140,$posicionY, 30, 18);
+		PDF::Image($firmaGerente,130,$posicionY + 13, 46, 10);
+
         PDF::Ln(5);
-        PDF::Cell(95, 12,'','LTR',0,'L');
-        PDF::Cell(95, 12,'','LTR',0,'L');
-        PDF::Ln(12);
+        PDF::Cell(95, 14,'','LTR',0,'L');
+        PDF::Cell(95, 14,'','LTR',0,'L');
+        PDF::Ln(14);
         PDF::SetFont('helvetica','B',9);
         PDF::Cell(95, 6,'La Ondina via a Rio de Oro - Ocaña N. de S.','LR',0,'C');
         PDF::Cell(95, 6,'','R',0,'L');
@@ -2045,19 +2062,155 @@ EOD;
         PDF::Cell(95, 6,'','LRB',0,'C');
         PDF::SetFont('helvetica','B',9);
         PDF::Cell(95, 6,'FIRMA Y SELLO GERENTE DEL CONTRATO.','RB',0,'C');
+	}
 
-		//Inicia proceso de siguiente hoja
-		$dataRadicado           = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'fichaTecnica')->first();
-		$numeroContratoCompleto = '454008302202306930782';  
-		$buscar                 = Array('numeroContratoServicioEspecial');
-		$remplazo               = Array($numeroContratoCompleto);
-		$contenido              = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);  
-		PDF::SetPrintHeader(false);
-		PDF::SetPrintFooter(false);
+	function hojaFichaGeneral($dataInfoPdfFichaTecnica, $numeroContratoPorHoja){
+	    $buscar    = Array('numeroContratoServicioEspecial');
+		$remplazo  = Array($numeroContratoPorHoja);
+		$contenido = str_replace($buscar,$remplazo,$dataInfoPdfFichaTecnica->ingpdfcontenido);
 		PDF::AddPage('P', 'Letter');
 		PDF::SetMargins(20, 30 , 20);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
 		PDF::Ln(4);
 		PDF::SetFont('helvetica', '', 10);
 		PDF::writeHTML($contenido, true, false, true, false, '');
+	}
+
+	function contratoTransporteEspecial($arrayDatos, $dataInfoPdfContrato, $numeroContratoServicioEspecial, $nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa){
+		$firmaGerente                 = $arrayDatos['firmaGerente'];
+		$nombreGerente                = $arrayDatos['nombreGerente'];
+		$documentoGerente             = $arrayDatos['documentoGerente'];
+		$nombreContratante            = $arrayDatos['nombreContratante'];
+		$documentoContratante         = $arrayDatos['documentoContratante'];
+		$valorContrato                = $arrayDatos['valorContrato'];
+		$objetoContrato               = $arrayDatos['objetoContrato'];
+		$origenContrato               = $arrayDatos['origenContrato'];
+		$destinoContrato              = $arrayDatos['destinoContrato'];
+		$fechaInicialContrato         = $arrayDatos['fechaInicialContrato'];
+		$fechaFinalContrato           = $arrayDatos['fechaFinalContrato'];
+		$descripcionServicoContratado = $arrayDatos['descripcionServicoContratado'];
+
+		$buscar    = Array('numeroContratoServicioEspecial', 'nombreGerente', 'documentoGerente','nombreContratante', 'documentoContratante', 'valorContrato', 'objetoContrato', 'origenContrato', 'destinoContrato', 'fechaInicialContrato', 'fechaFinalContrato');
+		$remplazo  = Array($numeroContratoServicioEspecial, $nombreGerente, $documentoGerente, $nombreContratante, $documentoContratante, $valorContrato, $objetoContrato, $origenContrato, $destinoContrato, $fechaInicialContrato, $fechaFinalContrato);
+		$titulo    = str_replace($buscar,$remplazo,$dataInfoPdfContrato->ingpdftitulo);
+		$contenido = str_replace($buscar,$remplazo,$dataInfoPdfContrato->ingpdfcontenido);
+
+		PDF::AddPage('P', 'Letter');
+		PDF::SetMargins(20, 30 , 20);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(true);
+		PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,26,24);
+		PDF::SetY(8);
+		PDF::SetX(46);
+		PDF::SetFont('helvetica','',13);
+		PDF::Cell(144,5,$nombreEmpresa,0,0,'C');
+		PDF::SetFont('helvetica','B',14);
+		PDF::Ln(6);
+		PDF::SetX(46);
+		PDF::Cell(144,4,$siglaEmpresa,0,0,'C');
+		PDF::SetFont('helvetica','I',9);
+		PDF::Ln(6);
+		PDF::SetX(46);
+		PDF::Cell(144,4,$personeriaJuridica,0,0,'C');
+		PDF::Ln(4);
+		PDF::SetX(46);
+		PDF::Cell(144,4,$nit,0,0,'C');
+		PDF::SetFont('helvetica','I',12);
+		PDF::Ln(1);
+		PDF::SetX(24);
+		PDF::Cell(170,4,str_pad('',  71, "_", STR_PAD_LEFT),'0',0,'C');	
+		PDF::Ln(16);
+		PDF::SetFont('helvetica', 'B', 12);
+		PDF::Cell(176, 4, $titulo, 0, 0, 'C');
+		PDF::Ln(16);
+		PDF::SetFont('helvetica', '', 10);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+		$posicionY =  PDF::GetY();
+		PDF::Ln(32);
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(90, 6,'COLEGIO CRISTIANO LUZ Y VIDA',0,0,'L');
+        PDF::Cell(10, 6,'',0,0,'L');
+        PDF::Cell(90, 6,'LUIS MANUEL ASCANIO CLARO',0,0,'L');
+        PDF::Ln(6);
+		PDF::Image('images/selloCooperativa.png', 130, $posicionY + 8, 30, 18);
+		PDF::Image($firmaGerente, 120, $posicionY + 22, 46, 10);
+
+        PDF::Cell(90, 6,'NIT/C.C: 37313214_8',0,0,'L');
+        PDF::Cell(10, 6,'',0,0,'L');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(90, 6,'EL CONTRATISTA',0,0,'L');
+        PDF::Ln(6);
+        PDF::Cell(90, 6,'EL CONTRATANTE',0,0,'L');
+	}
+
+	function listaPasajeros($arrayDatos, $idCifrado, $logoEmpresa){
+		$firmaGerente  = $arrayDatos['firmaGerente'];
+		PDF::AddPage('P', 'Letter');
+		PDF::SetMargins(10, 30 , 10);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(true);
+		PDF::SetAutoPageBreak(true, 30);
+		$this->headerContratoServicioEspecial($idCifrado, $logoEmpresa);
+		PDF::SetY(30);
+		PDF::SetFont('helvetica','B',11);
+		PDF::Ln(4);
+        PDF::Cell(26, 4,"", 0, 0,'C'); 
+        PDF::MultiCell(140, 4, "FORMATO UNICO DE EXTRACTO DEL CONTRATO DEL SERVICIO", 0, 'C', 0);
+		PDF::Cell(26, 4,"", 0, 0,'C'); 
+		PDF::MultiCell(140, 4, "PUBLICO DE TRANSPORTE TERRESTRE AUTOMOTOR ESPECIAL", 0, 'C', 0);
+        PDF::Ln(8);
+		PDF::Cell(26, 4,"", 0, 0,'C'); 
+		PDF::MultiCell(140, 4, "ANEXO LISTA DE PASAJEROS", 0, 'C', 0);
+        PDF::Ln(8);
+
+		PDF::SetFont('helvetica','B',8);
+		PDF::Cell(60, 4,"NOMBRE", 'B', 0,'L');
+		PDF::Cell(1, 4,"",0, 0,'C');
+		PDF::Cell(1, 4,"",'L', 0,'C');
+		PDF::Cell(1, 4,"",0, 0,'C');
+		PDF::Cell(30, 4,"C.C", 'B', 0,'C'); 
+		PDF::Cell(1, 4,"",0, 0,'C');
+		PDF::Cell(1, 4,"",'L', 0,'C');
+		PDF::Cell(1, 4,"",0, 0,'C');
+		PDF::Cell(60, 4,"NOMBRE", 'B', 0,'L');
+		PDF::Cell(1, 4,"",0, 0,'C');
+		PDF::Cell(1, 4,"",'L', 0,'C');
+		PDF::Cell(1, 4,"",0, 0,'C');
+		PDF::Cell(30, 4,"C.C",'B', 0,'C');
+		PDF::Ln(4);
+
+		for($i = 0; $i <= 20; $i++){
+			PDF::SetFont('helvetica','B',8);
+			PDF::Cell(60, 7,"", 'B', 0,'L');
+			PDF::Cell(1, 7,"",0, 0,'C');
+			PDF::Cell(1, 7,"",'L', 0,'C');
+			PDF::Cell(1, 7,"",0, 0,'C');
+			PDF::Cell(30, 7,"", 'B', 0,'C');
+			PDF::Cell(1, 7,"",0, 0,'C');
+			PDF::Cell(1, 7,"",'L', 0,'C');
+			PDF::Cell(1, 7,"",0, 0,'C');
+			PDF::Cell(60, 7,"", 'B', 0,'L');
+			PDF::Cell(1, 7,"",0, 0,'C');
+			PDF::Cell(1, 7,"",'L', 0,'C');
+			PDF::Cell(1, 7,"",0, 0,'C');
+			PDF::Cell(30, 7,"",'B', 0,'C');
+			PDF::Ln(7);
+		}
+
+		$posicionY =  PDF::GetY();
+		PDF::Ln(32);
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(90, 6,'',0,0,'L');
+        PDF::Cell(10, 6,'',0,0,'L');
+        PDF::Cell(90, 6,'LUIS MANUEL ASCANIO CLARO',0,0,'L');
+        PDF::Ln(6);
+		PDF::Image('images/selloCooperativa.png', 120, $posicionY + 8, 30, 18);
+		PDF::Image($firmaGerente, 110, $posicionY + 22, 46, 10);
+
+        PDF::Cell(90, 6,'',0,0,'L');
+        PDF::Cell(10, 6,'',0,0,'L');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(90, 6,'EL CONTRATISTA',0,0,'L');
 	}
 }

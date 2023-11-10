@@ -61,65 +61,72 @@ class generales
 
   	//Funcion para crear la fecha en formato largo
 	public function formatearFecha($fecha){
-		//construyo la fecha en formato largo
-		$separarFecha=explode('-',$fecha);
-		$anyo=$separarFecha[0];
-		$mes=$separarFecha[1];
-		$dia=$separarFecha[2];
-
-		$mes1 = $this->obtenerMes($mes);
-		return $dia." de ".$mes1." de ".$anyo; 
+		$separarFecha = explode('-',$fecha);
+		$anyo         = $separarFecha[0];
+		$mes          = $separarFecha[1];
+		$dia          = $separarFecha[2];
+		$mesEnLetra   = $this->obtenerMes($mes);
+		return $dia." de ".$mesEnLetra." de ".$anyo; 
 	}
 
 	//Obtiene el mes de la fecha
-	function obtenerMes($mes){	
-		if($mes=='01'){$mes1="enero";} 
-		else if($mes=='02'){$mes1="febrero";} 
-		else if($mes=='03'){$mes1="marzo";}
-		else if($mes=='04'){$mes1="abril";}
-		else if($mes=='05'){$mes1="mayo";}
-		else if($mes=='06'){$mes1="junio";}
-		else if($mes=='07'){$mes1="julio";}
-		else if($mes=='08'){$mes1="agosto";}
-		else if($mes=='09'){$mes1="septiembre";}
-		else if($mes=='10'){$mes1="octubre";}
-		else if($mes=='11'){$mes1="noviembre";}
-		else if($mes=='12'){$mes1="diciembre";}
-		return $mes1;
+	function obtenerMes($mes){
+		$meses = [
+			'01' => 'enero',
+			'02' => 'febrero',
+			'03' => 'marzo',
+			'04' => 'abril',
+			'05' => 'mayo',
+			'06' => 'junio',
+			'07' => 'julio',
+			'08' => 'agosto',
+			'09' => 'septiembre',
+			'10' => 'octubre',
+			'11' => 'noviembre',
+			'12' => 'diciembre',
+		];
+		return $meses[$mes] ?? '';
 	}
 
-	///2015-08-09 09:45:08
+	//2015-08-09 09:45:08
 	function formatearFechaHora($fechaFor){
-	  $separarfech=explode('-',$fechaFor);
-	  $anyo=$separarfech[0];
-	  $mes=$separarfech[1];
-	  $dia=$separarfech[2];
-	  $dia= substr($separarfech[2], 0, 2);
-	  $hora= substr($separarfech[2], 3, 5);//no trae los segundos
-		 if($mes=='01'){$mes1="enero ";} 
-	     if($mes=='02'){$mes1="febrero ";} 
-	     if($mes=='03'){$mes1="marzo ";}
-		 if($mes=='04'){$mes1="abril ";}
-		 if($mes=='05'){$mes1="mayo ";}
-		 if($mes=='06'){$mes1="junio ";}
-		 if($mes=='07'){$mes1="julio ";}
-		 if($mes=='08'){$mes1="agosto ";}
-		 if($mes=='09'){$mes1="septiembre ";}
-		 if($mes=='10'){$mes1="octubre ";}
-		 if($mes=='11'){$mes1="noviembre ";}
-		 if($mes=='12'){$mes1="diciembre ";}
-		return $dia." de ".$mes1." de ".$anyo." a las ".$hora; 
+		$separarfech = explode('-',$fechaFor);
+		$anyo        = $separarfech[0];
+		$mes         = $separarfech[1];
+		$dia         = $separarfech[2];
+		$dia         = substr($separarfech[2], 0, 2);
+		$hora        = substr($separarfech[2], 3, 5);//no trae los segundos
+		$mesEnLetra   = $this->obtenerMes($mes);
+		return $dia." de ".$mesEnLetra." de ".$anyo." a las ".$hora; 
 	}
 
 	public function formatearFechaLargaPagare($fecha){
-		//construyo la fecha en formato largo
-		$separarFecha=explode('-',$fecha);
-		$anyo=$separarFecha[0];
-		$mes=$separarFecha[1];
-		$dia=$separarFecha[2];
+		$separarFecha = explode('-',$fecha);
+		$anyo         = $separarFecha[0];
+		$mes          = $separarFecha[1];
+		$dia          = $separarFecha[2];
+		$mesEnLetra   = $this->obtenerMes($mes);
+		return $dia." días del mes de ".$mesEnLetra." de ".$anyo; 
+	}
 
-		$mes1 = $this->obtenerMes($mes);
-		return $dia." días del mes de ".$mes1." de ".$anyo; 
+	public function formatearFechaContratoServicioEspecial($fecha){
+		$diasSemana = [
+						1 => 'Lunes',
+						2 => 'Martes',
+						3 => 'Miércoles',
+						4 => 'Jueves',
+						5 => 'Viernes',
+						6 => 'Sábado',
+						7 => 'Domingo',
+					];
+		$separarFecha = explode('-',$fecha);
+		$anyo         = $separarFecha[0];
+		$mes          = $separarFecha[1];
+		$dia          = $separarFecha[2];
+		$numeroDia    = date('N', strtotime($fecha));
+		$nombreDia    = $diasSemana[$numeroDia];
+		$mesEnLetra   = $this->obtenerMes($mes);
+		return $nombreDia.', '.$dia." de ".$mesEnLetra." de ".$anyo; 
 	}
 
 	function validarContrasena($contrasena) {
@@ -195,7 +202,6 @@ class generales
 		return $fecha_procesar;
     }
 
-	//Funcion para validar la fecha 
 	function validarFecha($fecha, $festivos) {
 	    $dias = array('', 'Lunes','Martes','Miercoles','Jueves','Viernes','Sabado', 'Domingo');
 	    $diaActual = $dias[date('N', strtotime($fecha))];
@@ -246,7 +252,6 @@ class generales
         return false; // No debe actualizar
     }
 
-	//Funcion para calcular el Valor de al cuota
 	function calculcularValorCuotaMensual($montoPrestamo, $tasaInteresMensual, $plazo) {
         $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
         $denominador        = 1 - pow(1 + $tasaInteresMensual, - $plazo);
@@ -265,12 +270,10 @@ class generales
 		return $tea;
 	}
 
-	//funcion para redondear al mil siguiente
 	function redonderarMilSiguiente($valor){
 		return ceil($valor/1000)*1000;
 	}
 
-	//funcion para redondear al cien mas cercano
 	function redonderarCienMasCercano($valor){
 		return round($valor/100.0,0)*100;
 	}
@@ -299,5 +302,4 @@ class generales
 
         return $nuevaFecha;
     }
-
 }
