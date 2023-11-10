@@ -101,15 +101,86 @@ class MantenimientoController extends Controller
             PDF::Cell(92, 7, $areaFormato, 'LRB', 0, 'C');
 			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'LRB', 0, 'L');
 		});
-    }
-
-    
-
+    }  
     
     public function Pdf()
     {        
 
-        PDF::setHeaderCallback(function($pdf){
+        $generarPdf = new generarPdf();
+
+        // "nombreContratante"      => 'COLEGIO CRISTIANO LUZ Y VIDA',
+        $arrayDatos = [ 
+                        "numeroContratoCompleto"   => '454008302202306930781',
+                        "numeroContrato"           => '0693',
+                        "numeroExtracto"           => '0781', 
+                        "nombreContratante"        => 'COLEGIO CRISTIANO LUZ Y VIDA', 
+                        "documentoContratante"     => '37313214_8',
+                        "objetoContrato"           => 'La prestación del servicio de transporte de los estudiantes entre el lugar de residencia y el establecimiento educativo u otros destinos que se requieran en razón de las actividades programadas por el plantel educativo, según el decreto 0348 del 245 de febrero de 2015.',
+                        "origenContrato"           => 'OCAÑA ( N DE S)',
+                        "destinoContrato"          => 'CASCO URBANO DE OCAÑA', 
+                        "descripcionRecorrido"     => 'CASCO URBANO DE OCAÑA',
+                        "convenioContrato"         => 'X',
+                        "consorcioContrato"        => '',
+                        "unionTemporal"            => '',
+                        "nombreUnionTemporal"      => '',
+                        "placaVehiculo"            => 'TTR122',
+                        "modeloVehiculo"           => '2013',
+                        "marcaVehiculo"            => 'NISSAN',
+                        "claseVehiculo"            => 'MICROBUS',
+                        "numeroInternoVehiculo"    => '486',
+                        "tarjetaOperacionVehiculo" => '282487',
+                        "nombreContratante"        => 'ELIZABETH LOPEZ BARBOSA ELIZABETH LOPEZ BARBOSA',
+                        "documentoContratante"     => '37313214',
+                        "direccionContratante"     => 'BARRIO EL CENTRO BARRIO EL CENTRO',
+                        "telefonoContratante"      => '3103006860',
+                        "firmaGerente"             => 'archivos/persona/5036123/firma_5036123.png',
+                        "idCifrado"                => '123',
+                        "metodo"                   => 'I'
+                    ];
+                       
+
+        $arrayVigenciaContrato = [];
+        $fechaInicio = [
+                        "dia"  => '01',
+                        "mes"  => '11',
+                        "anio" => '2023',
+                    ];        
+        $fechaFin = [
+                    "dia"  => '30',
+                    "mes"  => '11',
+                    "anio" => '2023',
+                ];        
+        array_push($arrayVigenciaContrato, $fechaInicio, $fechaFin);
+
+
+        $arrayConductores  = [];
+        $conductor = [
+                    "nombreCompleto" => 'ELAIN MACHADO DOMINGUEZ ELAIN MACHADO DOMINGUEZ',
+                    "documento"      => '88284528',
+                    "numeroLicencia" => '88284528',
+                    "vigencia"       => '2025-10-04',
+                    ]; 
+        array_push($arrayConductores, $conductor);
+
+        $conductor = [
+                        "nombreCompleto" => 'HUBERNEY SALAZAR AMAYA',
+                        "documento"      => '10648419387',
+                        "numeroLicencia" => '10648419387',
+                        "vigencia"       => '2025-09-26',
+                        ]; 
+        array_push($arrayConductores, $conductor);
+
+        $conductor = [
+                            "nombreCompleto" => 'DEIVER MORA GARCIA',
+                            "documento"      => '1977858',
+                            "numeroLicencia" => '1977858',
+                            "vigencia"       => '2025-02-08',
+                            ]; 
+       array_push($arrayConductores, $conductor);/**/
+
+        $generarPdf->contratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores);
+
+        /*PDF::setHeaderCallback(function($pdf) use ($idCifrado, $logoEmpresa) {
             $idCifrado = '123';
             $logoEmpresa = '890505424_logoHacaritama.png';
 
@@ -123,22 +194,15 @@ class MantenimientoController extends Controller
 				'module_height' => 1
 			);
 
-            $url = asset('verificar/documento/'.urlencode($idCifrado));
+            $url = asset('verificar/contrato/servicio/especial/'.urlencode($idCifrado));
             PDF::write2DBarcode($url, 'QRCODE,H', 10, 6, 30, 30, $style, 'N');
             PDF::Image('images/logoColombiaPotenciaVida.jpg',50,12,70,14);
             PDF::Image('images/logoSuperTransporte.png',140,12,26,14);
             PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,170,9,26,26);
-
-			/*PDF::SetY(8);
-            PDF::SetX(46);
-			PDF::SetFont('helvetica','',13);
-		    PDF::Cell(144,5,"hola",0,0,'C');
-			PDF::SetFont('helvetica','B',14);		   
-			PDF::Cell(4, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');*/
-		});
+		});*/
 
 
-        PDF::SetAuthor('IMPLESOFT');
+        /*PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('Hacatitama');
 		PDF::SetSubject("Formato único de extracto del contrato del servicio público de transporte terrestre automotor especial Nº ");
 		PDF::SetKeywords('Formato, contrato, servicio público ');
@@ -387,11 +451,7 @@ class MantenimientoController extends Controller
         PDF::Cell(90, 6,'EL CONTRATANTE',0,0,'C');
 
 
-        //Inicia proceso de la hoja 6	
-
-
-
-        
+        //Inicia proceso de la hoja 6	       
     
 
 
