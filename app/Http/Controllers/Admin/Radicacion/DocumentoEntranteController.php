@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin\Radicacion;
 
 use App\Models\Radicacion\DocumentoEntranteCambioEstado;
 use App\Models\Radicacion\DocumentoEntranteDependencia;
+use App\Models\Radicacion\PersonaRadicaDocumento;
 use App\Models\Radicacion\DocumentoEntranteAnexo;
 use App\Models\Radicacion\DocumentoEntrante;
-use App\Models\Radicacion\PersonaRadicaDocumento;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
 use Exception, Auth, DB, File;
@@ -26,7 +26,7 @@ class DocumentoEntranteController extends Controller
                     ->select('rde.radoenid as id', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
                         DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
                         DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"))
-                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')                    
+                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                     ->join('radicaciondocentdependencia as rded', function($join)
                         {
                             $join->on('rded.radoenid', '=', 'rde.radoenid');
@@ -146,7 +146,7 @@ class DocumentoEntranteController extends Controller
             $funcion 		     = new generales();
             $generarPdf          = new generarPdf();
             $radoenid            = $request->codigo; 
-           
+
             $nombreOriginalPdf    = '';
             $nombreArchivoPdf     = '';
             $debeRadicarDocumento = false;
@@ -194,7 +194,7 @@ class DocumentoEntranteController extends Controller
                 $perRadDocumentoMaxConsecutio  = PersonaRadicaDocumento::latest('peradoid')->first();
                 $peradoid                      = $perRadDocumentoMaxConsecutio->peradoid;
             }
-      
+
             $radicaciondocumentoentrante       = ($request->tipo === 'U') ? DocumentoEntrante::findOrFail($radoenid) : new DocumentoEntrante();
             if($request->tipo === 'I'){
                 $radicaciondocumentoentrante->tierdeid                   = $estado;
@@ -220,7 +220,7 @@ class DocumentoEntranteController extends Controller
             $radicaciondocumentoentrante->save();
 
             if($request->tipo === 'I'){
-                //Consulto el ultimo identificador de la persona 
+                //Consulto el ultimo identificador de la persona
                 $radDocumentoMaxConsecutio      = DocumentoEntrante::latest('radoenid')->first();
                 $radoenid                       = $radDocumentoMaxConsecutio->radoenid;
 
@@ -259,9 +259,9 @@ class DocumentoEntranteController extends Controller
 					$extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
 					$nombreArchivo  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
 					$file->move($rutaCarpeta, $nombreArchivo);
-					$rutaArchivo = Crypt::encrypt($nombreArchivo);
+					$rutaArchivo    = Crypt::encrypt($nombreArchivo);
 
-					$radicaciondocentanexo                            = new RadicacionDocumentoEntranteAnexo();
+					$radicaciondocentanexo                            = new DocumentoEntranteAnexo();
 					$radicaciondocentanexo->radoenid                  = $radoenid;
 					$radicaciondocentanexo->radoeanombreanexooriginal = $nombreOriginal;
 					$radicaciondocentanexo->radoeanombreanexoeditado  = $nombreArchivo;
@@ -275,14 +275,14 @@ class DocumentoEntranteController extends Controller
 				//Elimino las dependencia que esten en el documento
 				$radicaciondocentdependenciaConsultas = DB::table('radicaciondocentdependencia')->select('radoedid')->where('radoenid', $radoenid)->where('radoedescopia', true)->get();
 				foreach($radicaciondocentdependenciaConsultas as $radicaciondocentdepen){
-					$radicaciondocentdependenciaDelete = RadicacionDocumentoEntranteDependencia::findOrFail($radicaciondocentdepen->radoedid);
+					$radicaciondocentdependenciaDelete = DocumentoEntranteDependencia::findOrFail($radicaciondocentdepen->radoedid);
 					$radicaciondocentdependenciaDelete->delete();
 				}
 			}
 
 			if($request->copiasDependencia !== null){
 				foreach($request->copiasDependencia as $copiaDependencia){                  
-					$radicaciondocentdependencia                = new RadicacionDocumentoEntranteDependencia();
+					$radicaciondocentdependencia                = new DocumentoEntranteDependencia();
 					$radicaciondocentdependencia->radoenid      = $radoenid;
 					$radicaciondocentdependencia->depeid        = $copiaDependencia;
                     $radicaciondocentdependencia->radoedescopia = true;
@@ -292,7 +292,7 @@ class DocumentoEntranteController extends Controller
 
             if($request->tipo === 'I'){
                 //Almaceno la trazabilidad del radicado
-                $radicaciondocentcambioestado 					 = new RadicacionDocumentoEntranteCambioEstado();
+                $radicaciondocentcambioestado 					 = new DocumentoEntranteCambioEstado();
                 $radicaciondocentcambioestado->radoenid          = $radoenid;
                 $radicaciondocentcambioestado->tierdeid          = $estado;
                 $radicaciondocentcambioestado->radeceusuaid      = Auth::id();
@@ -319,7 +319,7 @@ class DocumentoEntranteController extends Controller
                                     ->where('rde.radoenid', $radoenid)->first();
 
                 if($dataRadicado->totalCopias > 0){
-                    $dataCopias    =  DB::table('radicaciondocentdependencia as rded')
+                    $dataCopias =  DB::table('radicaciondocentdependencia as rded')
                                         ->select('d.depenombre as dependencia','d.depecorreo')
                                         ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                         ->where('rded.radoenid', $radoenid)
@@ -364,7 +364,7 @@ class DocumentoEntranteController extends Controller
         DB::beginTransaction();
         try {
 
-            $dataRadicado   =   DB::table('radicaciondocumentoentrante as rde')
+            $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
                                 ->select('rde.radoenfechahoraradicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
                                         'd.depenombre', 'd.depecorreo','u.usuaalias', 'prd.peradocorreo',
                                         DB::raw("(SELECT emprnombre FROM empresa WHERE emprid = 1) as empresa"),
@@ -379,9 +379,9 @@ class DocumentoEntranteController extends Controller
                                 ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                 ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
                                 ->where('rde.radoenid', $codigo)->first();
-            
+
             if($dataRadicado->totalCopias > 0){
-                $dataCopias    =  DB::table('radicaciondocentdependencia as rded')
+                $dataCopias = DB::table('radicaciondocentdependencia as rded')
                                         ->select('d.depenombre','d.depecorreo')
                                         ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                         ->where('rded.radoenid', $codigo)
@@ -389,7 +389,7 @@ class DocumentoEntranteController extends Controller
             }
 
             $arrayfiles = [];
-            $anexos     =  DB::table('radicaciondocentanexo as rdea')
+            $anexos     = DB::table('radicaciondocentanexo as rdea')
                                     ->select('rdea.radoeaid as id','rdea.radoeanombreanexooriginal','rdea.radoeanombreanexoeditado',
                                     'rdea.radoearutaanexo', 'rde.radoenanio as anio',
                                     DB::raw("CONCAT('/archivos/radicacion/documentoEntrante/',rde.radoenanio) as rutaDescargar"))
@@ -413,7 +413,7 @@ class DocumentoEntranteController extends Controller
             $radicaciondocumentoentrante->tierdeid = $estado;
             $radicaciondocumentoentrante->save();
 
-            $radicaciondocentcambioestado 					 = new RadicacionDocumentoEntranteCambioEstado();
+            $radicaciondocentcambioestado 					 = new DocumentoEntranteCambioEstado();
             $radicaciondocentcambioestado->radoenid          = $codigo;
             $radicaciondocentcambioestado->tierdeid          = $estado;
             $radicaciondocentcambioestado->radeceusuaid      = Auth::id();
@@ -462,7 +462,7 @@ class DocumentoEntranteController extends Controller
 
         try{
             $dataCopia      = [];
-            $dataRadicado   =   DB::table('radicaciondocumentoentrante as rde')
+            $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
                                 ->select('rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
                                         DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia',
                                         'prd.peradocorreo as correo', 'u.usuaalias as usuario',
@@ -478,7 +478,7 @@ class DocumentoEntranteController extends Controller
                                 ->where('rde.radoenid', $request->codigo)->first();
 
             if($dataRadicado->totalCopias > 0){
-                $dataCopia    =  DB::table('radicaciondocentdependencia as rded')
+                $dataCopia  = DB::table('radicaciondocentdependencia as rded')
                                         ->select('d.depenombre as dependencia')
                                         ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                         ->where('rded.radoenid', $request->codigo)

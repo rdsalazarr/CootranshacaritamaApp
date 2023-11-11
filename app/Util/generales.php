@@ -253,9 +253,13 @@ class generales
     }
 
 	function calculcularValorCuotaMensual($montoPrestamo, $tasaInteresMensual, $plazo) {
-        $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
-        $denominador        = 1 - pow(1 + $tasaInteresMensual, - $plazo);
-        $valorCuota         = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+		if ($tasaInteresMensual == 0.0) {
+			$valorCuota = $montoPrestamo / $plazo;
+		} else {
+			$tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+			$denominador        = 1 - pow(1 + $tasaInteresMensual, - $plazo);	
+			$valorCuota         = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+		}
 		return $this->redonderarMilSiguiente($valorCuota);
 	}
 

@@ -105,6 +105,12 @@ php artisan make:migration create_colocacion_liquidacion
 php artisan make:migration create_colocacion_cambio_estado
 
 
+php artisan make:migration create_tipo_convenio_servicio_especial
+php artisan make:migration create_tipo_contrato_servicio_especial
+php artisan make:migration create_persona_contrato_servicio_esp
+php artisan make:migration create_contrato_servicio_especial
+php artisan make:migration create_contrato_servicio_especial_vehi
+php artisan make:migration create_contrato_servicio_especial_cond
 
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
@@ -189,6 +195,11 @@ php artisan make:model Cartera\Colocacion
 php artisan make:model Cartera\ColocacionLiquidacion
 php artisan make:model Cartera\ColocacionCambioEstado
 
+php artisan make:model Despacho\PersonaContratoServicioEspecial
+php artisan make:model Despacho\ContratoServicioEspecial
+php artisan make:model Despacho\ContratoServicioEspecialVehiculo
+php artisan make:model Despacho\ContratoServicioEspecialConductor
+
 
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
@@ -228,7 +239,8 @@ php artisan make:seeder TipoCategoriaLicenciaSeeder
 php artisan make:seeder TipoConductorSeeder
 php artisan make:seeder TipoEstadoColocacionSeeder
 php artisan make:seeder TipoServicioVehiculoSeeder
-
+php artisan make:seeder TipoConvenioServicioEspecialSeeder
+php artisan make:seeder TipoContratoServicioEspecialSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -286,7 +298,11 @@ php artisan make:controller Admin\Cartera\LineaCreditoController
 php artisan make:controller Admin\Cartera\SolicitudCreditoController
 php artisan make:controller Admin\Cartera\AprobarSolicitudCreditoController
 php artisan make:controller Admin\Cartera\DesembolsarSolicitudCreditoController
-php artisan make:controller Admin\Cartera\GestionCobroCarteraController
+php artisan make:controller Admin\Despacho\ContratoServicioEspecialController
+
+
+php artisan make:controller Admin\DependenciaController
+
 
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
