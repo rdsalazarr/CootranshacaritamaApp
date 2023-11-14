@@ -51,3 +51,6 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (39, 1, 39);
+
+ALTER TABLE `contratoservicioespecial` ADD `coseesvalorcontrato` VARCHAR(10) NOT NULL AFTER `coseesfechafinal`;
+ALTER TABLE `contratoservicioespecial` ADD `coseesnombreuniontemporal` VARCHAR(100) NULL AFTER `coseesdescripcionrecorrido`;

@@ -49,9 +49,9 @@ export default function Planilla(){
                     titulo={["Responsable", "Número de contrato", "Fecha inicial", "Fecha final", "Origen", "Destino","Editar", "PDF"]}
                     ver={["nombreResponsable", "numeroContrato", "coseesfechaincial", "coseesfechafinal", "coseesorigen", "coseesdestino"]}
                     accion={[
-                        {tipo: 'T', icono : 'add',                   color: 'green',  funcion : (data)=>{edit(data, 0)} },
-                        {tipo: 'B', icono : 'content_paste_go_icon', color: 'red',    funcion : (data)=>{edit(data, 1)} },
-                        {tipo: 'B', icono : 'picture_as_pdf',        color: 'orange', funcion : (data)=>{edit(data, 2)} },
+                        {tipo: 'T', icono : 'add',            color: 'green',  funcion : (data)=>{edit(data, 0)} },
+                        {tipo: 'B', icono : 'edit',           color: 'orange', funcion : (data)=>{edit(data, 1)} },
+                        {tipo: 'B', icono : 'picture_as_pdf', color: 'red',    funcion : (data)=>{edit(data, 2)} },
                     ]}
                     funciones={{orderBy: true, search: true, pagination:true}}
                 />

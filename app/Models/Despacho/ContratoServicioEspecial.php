@@ -11,6 +11,6 @@ class ContratoServicioEspecial extends Model
 
     protected $table      = 'contratoservicioespecial';
     protected $primaryKey = 'coseesid';
-    protected $fillable   = ['persidgerente','ticoseid','ticossid','coseesfechahora','coseesanio','coseesconsecutivo','coseesfechaincial',
-                            'coseesorigen','coseesdestino','coseesdescripcionrecorrido','coseesobservacion'];
+    protected $fillable   = ['pecoseid','persidgerente','ticoseid','ticossid','coseesfechahora','coseesanio','coseesconsecutivo','coseesfechaincial','coseesfechafinal',
+                            'coseesvalorcontrato','coseesorigen','coseesdestino','coseesdescripcionrecorrido','coseesnombreuniontemporal','coseesobservacion'];
 }

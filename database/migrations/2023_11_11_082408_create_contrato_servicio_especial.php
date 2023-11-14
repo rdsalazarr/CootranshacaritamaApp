@@ -22,13 +22,15 @@ return new class extends Migration
             $table->string('coseesconsecutivo', 4)->comment('Consecutivo del contrato de servicio especial dado por cada año');
             $table->date('coseesfechaincial')->comment('Fecha de inicio del contrato de servicio especial');
             $table->date('coseesfechafinal')->comment('Fecha final del contrato de servicio especial');
+            $table->string('coseesvalorcontrato', 20)->comment('Valor del contrato de servicio especial');
             $table->string('coseesorigen', 100)->comment('Origen del contrato de servicio especial');
             $table->string('coseesdestino', 100)->comment('Destino del contrato de servicio especial');
             $table->string('coseesdescripcionrecorrido', 1000)->comment('Descripción del recorrido para el contrato de servicio especial');
+            $table->string('coseesnombreuniontemporal', 100)->nullable()->comment('Nombre de la unión temporal para el contrato de servicio especial');
             $table->string('coseesobservacion', 1000)->nullable()->comment('Observación del contrato de servicio especial');
             $table->timestamps();
             $table->unique(['coseesanio','coseesconsecutivo'],'uk_contratoservicioespecial');
-            $table->foreign('pecoseid')->references('pecoseid')->on('pecoseonacontratoservicioesp')->onUpdate('cascade')->index('fk_pecosecosees');
+            $table->foreign('pecoseid')->references('pecoseid')->on('personacontratoservicioesp')->onUpdate('cascade')->index('fk_pecosecosees');
             $table->foreign('persidgerente')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_perscosees');
             $table->foreign('ticoseid')->references('ticoseid')->on('tipocontratoservicioespecial')->onUpdate('cascade')->index('fk_ticosecosees');
             $table->foreign('ticossid')->references('ticossid')->on('tipoconvenioservicioespecial')->onUpdate('cascade')->index('fk_ticosscosees');

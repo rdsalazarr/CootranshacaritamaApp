@@ -414,6 +414,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::prefix('/despacho')->group(function(){
             Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index']); //->middleware('security:admin/despacho/servicioEspecial');
             Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);
+            Route::post('/servicio/especial/consultar/persona', [ContratoServicioEspecialController::class, 'consultarPersona']);
             Route::post('/servicio/especial/salve', [ContratoServicioEspecialController::class, 'salve']);
             Route::post('/servicio/especial/visualizar/PDF', [ContratoServicioEspecialController::class, 'verPlanilla']);
 

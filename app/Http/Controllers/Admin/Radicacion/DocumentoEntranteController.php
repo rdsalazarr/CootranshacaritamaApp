@@ -432,7 +432,7 @@ class DocumentoEntranteController extends Controller
                 $enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
                 $asunto            = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg               = str_replace($buscar, $remplazo, $innococontenido);
-                $prueba = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoDependencia, $enviarcopia, $enviarpiepagina);
+                $notificar->correo([$correoPersona], $asunto, $msg, [], $correoDependencia, $enviarcopia, $enviarpiepagina);
                 $correoPersona     = $correoDependencia;
             }
 

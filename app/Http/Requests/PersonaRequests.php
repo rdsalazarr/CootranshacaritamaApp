@@ -22,7 +22,7 @@ class PersonaRequests extends FormRequest
     public function rules(): array
     {
         return [
-            'documento'              => 'required|string|max:15|unique:persona,persdocumento,'. $this->input('codigo').',persid,tipideid,'.$this->input('tipoIdentificacion'), 
+            'documento'              => 'required|string|max:15|unique:persona,persdocumento,'. $this->input('codigo').',persid,tipideid,'.$this->input('tipoIdentificacion'),
             'cargo'                  => 'required|numeric',
             'tipoIdentificacion'     => 'required|numeric',
             'tipoPersona'            => 'required|string',
@@ -30,8 +30,8 @@ class PersonaRequests extends FormRequest
             'municipioNacimiento'    => 'required|numeric',
             'departamentoExpedicion' => 'required|numeric',
             'municipioExpedicion'    => 'required|numeric',
-            'primerNombre'           => 'required|string|min:4|max:40',
-            'segundoNombre'          => 'nullable|string|min:4|max:40',
+            'primerNombre'           => 'required|string|min:3|max:40',
+            'segundoNombre'          => 'nullable|string|min:3|max:40',
             'primerApellido'         => 'required|string|min:4|max:40',
             'segundoApellido'        => 'nullable|string|min:4|max:40',
             'fechaNacimiento' 	     => 'nullable|date|date_format:Y-m-d',

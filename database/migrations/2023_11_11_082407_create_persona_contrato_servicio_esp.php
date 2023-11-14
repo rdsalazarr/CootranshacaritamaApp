@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pecoseonacontratoservicioesp', function (Blueprint $table) {
+        Schema::create('personacontratoservicioesp', function (Blueprint $table) {
             $table->increments('pecoseid')->unsigned()->comment('Identificador de la tabla persona contrato servicio especial');
             $table->tinyInteger('tipideid')->unsigned()->comment('Identificador del tipo de identificación');
             $table->string('pecosedocumento', 15)->comment('Número de documento de la persona que contrata el servicio especial');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('pecosedireccion',100)->comment('Determina el genero de la persona que contrata el servicio especial');
             $table->string('pecosecorreoelectronico', 80)->nullable()->comment('Correo electrónico de la persona que contrata el servicio especial');
             $table->string('pecosenumerocelular', 20)->nullable()->comment('Número de teléfono fijo de la persona que contrata el servicio especial');
-            $table->unique(['tipideid','pecosedocumento'],'uk_pecoseonacontratoservicioesp');
+            $table->unique(['tipideid','pecosedocumento'],'uk_personacontratoservicioesp');
             $table->timestamps();
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipidepecose');
         });
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pecoseonacontratoservicioesp');
+        Schema::dropIfExists('personacontratoservicioesp');
     }
 };
