@@ -1186,7 +1186,8 @@ INSERT INTO `modulo` (`moduid`, `modunombre`, `moduicono`, `moduorden`, `moduact
 (5, 'Archivo histórico', 'insert_page_break_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (6, 'Asociados', 'person_search_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (7, 'Dirección transporte', 'drive_eta_icon', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(8, 'Cartera', 'work_icon', 8, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(8, 'Cartera', 'work_icon', 8, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(9, 'Despachos', 'send_time_extension_icon', 9, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Menú', 'Gestionar menú', 'admin/configurar/menu', 'add_chart', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -1206,7 +1207,7 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (15, 3, 'Certificado', 'Gestionar certificados', 'admin/produccion/documental/certificado', 'note_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (16, 3, 'Circular', 'Gestionar circulares', 'admin/produccion/documental/circular', 'menu_book_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (17, 3, 'Citación', 'Gestionar citaciones', 'admin/produccion/documental/citacion', 'collections_bookmark_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(18, 3, 'Constancia', 'Gestionar constancias', 'admin/produccion/documental/constancia', 'import_contacts_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(18, 3, 'Constancia', 'Gestionar constancias', 'admin/produccion/documental/constancia', 'auto_stories_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (19, 3, 'Oficio', 'Gestionar oficios', 'admin/produccion/documental/oficio', 'library_books_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (20, 3, 'Firmar', 'Firmar documentos', 'admin/produccion/documental/firmar', 'import_contacts_icon', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (21, 4, 'Documento entrante', 'Gestionar documento entrante', 'admin/radicacion/documento/entrante', 'post_add_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

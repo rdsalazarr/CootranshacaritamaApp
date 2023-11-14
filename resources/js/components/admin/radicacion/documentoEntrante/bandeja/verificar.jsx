@@ -49,8 +49,8 @@ export default function Producir(){
                     titulo={["Radicado", "Fecha radicado", "Usuario", "Asunto", "Dependencia", "Estado","Recibir", "Ver"]}
                     ver={["consecutivo", "fechaRadicado", "nombrePersonaRadica", "asunto", "dependencia", "estado"]}
                     accion={[
-                        {tipo: 'B', icono : 'content_paste_go_icon', color: 'red',  funcion : (data)=>{edit(data, 0)} },
-                        {tipo: 'B', icono : 'visibility',            color: 'green',  funcion : (data)=>{edit(data, 1)} },
+                        {tipo: 'B', icono : 'content_paste_go_icon', color: 'red',   funcion : (data)=>{edit(data, 0)} },
+                        {tipo: 'B', icono : 'visibility',            color: 'green', funcion : (data)=>{edit(data, 1)} },
                     ]}
                     funciones={{orderBy: true, search: true, pagination:true}}
                 />

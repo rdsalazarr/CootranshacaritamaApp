@@ -26,7 +26,7 @@ class DatosPersonaController extends Controller
         $historialLicencias    = [];
         $maxFechaVencimiento   = '';
         $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabid', '>', 3)->where('carlabactivo', true)->orderBy('carlabnombre')->get();
-		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
+		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
         $departamentos         = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
         $municipios            = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
 

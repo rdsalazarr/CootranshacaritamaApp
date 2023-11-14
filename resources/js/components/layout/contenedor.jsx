@@ -60,6 +60,8 @@ import DesembolsarCredito from "../admin/cartera/cambiarEstado/desembolsar/searc
 import CobroCartera from "../admin/cartera/gestionCobro/list";
 import HistorialSolicitudCredito from "../admin/cartera/solicitudCredito/historial";
 
+import ServicoEspecial from "../admin/despacho/servicioEspecial/list";
+
 
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
@@ -220,6 +222,16 @@ const componenteMenu = [
             {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <EnConstruccion /> },
         ]
     },*/
+    {   nombre: 'Despacho',
+        icono : 'send_time_extension_icon',
+        itemMenu: [
+            {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <EnConstruccion /> },
+            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <ServicoEspecial /> },
+            {ruta : 'admin/despacho/cartera',           menu: 'Planillas',        icono : 'no_crash_icon',       componente : <EnConstruccion />}, 
+            {ruta : 'admin/despacho/encomienda',        menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/encomienda',        menu: 'Otros',            icono : 'traffic_icon', componente : <EnConstruccion />},
+        ]
+    }, 
      
 ];
 
@@ -262,7 +274,8 @@ const menuComponente = [
     {id:36,componente : <DesembolsarCredito />},
     {id:37,componente : <HistorialSolicitudCredito />},
     {id:38,componente : <CobroCartera />},
-    {id:39,componente : <EnConstruccion />},
+    
+    {id:39,componente : <ServicoEspecial />},
     {id:40,componente : <EnConstruccion />},
     {id:41,componente : <EnConstruccion />},
     {id:42,componente : <EnConstruccion />},

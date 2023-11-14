@@ -68,6 +68,8 @@ use App\Http\Controllers\Admin\Cartera\HistorialSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\ShowSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\GestionCobroCarteraController;
 
+use App\Http\Controllers\Admin\Despacho\ContratoServicioEspecialController;
+
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
@@ -99,6 +101,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
         Route::get('/admin/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/despacho/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
@@ -405,6 +408,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');
             Route::post('/show/colocacion', [GestionCobroCarteraController::class, 'showColocacion']);
             Route::post('/hacer/seguimiento/colocacion', [GestionCobroCarteraController::class, 'salveSeguimiento']);
+
+        });
+
+        Route::prefix('/despacho')->group(function(){
+            Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index']); //->middleware('security:admin/despacho/servicioEspecial');
+            Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);
+            Route::post('/servicio/especial/salve', [ContratoServicioEspecialController::class, 'salve']);
+            Route::post('/servicio/especial/visualizar/PDF', [ContratoServicioEspecialController::class, 'verPlanilla']);
 
         });
         
