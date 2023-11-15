@@ -148,7 +148,7 @@ class ShowSolicitudCreditoController extends Controller
                                 ->where('sc.tiesscid', 'D')
                                 ->first();
 
-        $dataRadicado        = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'cartaInstrucciones')->first();
+        $dataInfoPdf         = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'cartaInstrucciones')->first();
 
         $generales           = new generales();
         $nombreAsociado      = $colocacion->nombreAsociado;
@@ -159,8 +159,8 @@ class ShowSolicitudCreditoController extends Controller
         $documentoAsociado   = number_format($documento, 0, ',', '.');
         $buscar              = Array('nombreAsociado', 'numeroPagare', 'fechaLargaPrestamo');
         $remplazo            = Array( $nombreAsociado, $numeroPagare, $fechaLargaPrestamo); 
-        $titulo              = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
-        $contenido           = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido);
+        $titulo              = str_replace($buscar,$remplazo,$dataInfoPdf->ingpdftitulo);
+        $contenido           = str_replace($buscar,$remplazo,$dataInfoPdf->ingpdfcontenido);
         $generarPdf          = new generarPdf();
         return $generarPdf->cartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, 'S');
     }

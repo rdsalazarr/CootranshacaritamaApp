@@ -9,7 +9,7 @@ class PersonaContratoServicioEspecial extends Model
 {
     use HasFactory;
 
-    protected $table      = 'pecoseonacontratoservicioesp';
+    protected $table      = 'personacontratoservicioesp';
     protected $primaryKey = 'pecoseid';
     protected $fillable   = ['tipideid','pecosedocumento','pecoseprimernombre','pecosesegundonombre','pecoseprimerapellido',
                             'pecosesegundoapellido','pecosedireccion', 'pecosecorreoelectronico','pecosenumerocelular'];

@@ -77,13 +77,14 @@ Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])-
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
 Route::get('/verificar/contrato/servicio/especial/{id}', [VerificarDocumentosController::class, 'servicioEspecial']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
+Route::post('/consultar/contrato/servicio/especial', [VerificarDocumentosController::class, 'consultarServicioEspecial']);
 Route::get('/download/certificado/{documento}/{ruta}', [DownloadFileController::class, 'certificado']);
 Route::get('/download/digitalizados/{anyo}/{ruta}', [DownloadFileController::class, 'digitalizados']);
 Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
 Route::get('/download/adjunto/documental/{sigla}/{anyo}/{ruta}', [DownloadFileController::class, 'download']);
 Route::get('/download/documentos/{sigla}/{anyo}/{ruta}', [VerificarDocumentosController::class, 'downloadDocumento']);//Decarga el documento con el QR
+Route::get('/download/planilla/servicio/especial/{id}', [VerificarDocumentosController::class, 'downloadPlanillaSE']);//Decarga la planilla SE con el QR
 Route::post('/admin/show/adjunto', [DownloadFileController::class, 'showAdjunto']);
-
 Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index']);
 Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);
 Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);

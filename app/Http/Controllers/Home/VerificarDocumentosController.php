@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Home;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
+use App\Util\generarPlanilla;
 use Illuminate\Http\Request;
 use App\Util\encrypt;
 use App\Models\User;
@@ -12,10 +13,10 @@ use DB, URL;
 
 class VerificarDocumentosController extends Controller
 {
-    public function documental($id) { 
-        $encrypt  = new encrypt(); 
+    public function documental($id) {
+        $encrypt  = new encrypt();
         $codoprid = $encrypt->decrypted(urldecode($id));
-        if($codoprid === ''){ return redirect('/error/url'); }  
+        if($codoprid === ''){ return redirect('/error/url'); }
 
         return view('home.verificar', ['id' => $codoprid] );
     }
@@ -126,6 +127,47 @@ class VerificarDocumentosController extends Controller
             $file = public_path().'/archivos/produccionDocumental/digitalizados/'.$sigla.'/'.$anyo.'/'.$ruta;
             if (file_exists($file)) {
                 return response()->download($file, $ruta);
+            } else {
+                return redirect('/archivoNoEncontrado'.$ruta);
+            }
+        } catch (DecryptException $e) {
+            return redirect('/error/url');
+        }
+    }
+
+    public function servicioEspecial($id) {
+
+        return view('home.servicioEspecial', ['id' => $id] );
+    }
+
+    public function consultarServicioEspecial(Request $request)
+	{
+		$this->validate(request(),['id'=> 'required']);
+
+        $encrypt  = new encrypt();
+        $coseesid = $encrypt->decrypted(urldecode($request->id));
+        if($coseesid === ''){ 
+            return redirect('/error/url');
+        }
+
+        $data = DB::table('contratoservicioespecial as cse')
+                        ->select('cse.coseesfechaincial','cse.coseesfechafinal','cse.coseesorigen','cse.coseesdestino',
+                                DB::raw("CONCAT(pcse.pecoseprimernombre,' ',if(pcse.pecosesegundonombre is null ,'', pcse.pecosesegundonombre),' ',
+                                pcse.pecoseprimerapellido,' ',if(pcse.pecosesegundoapellido is null ,' ', pcse.pecosesegundoapellido)) as nombreContratante"))
+                        ->join('personacontratoservicioesp as pcse', 'pcse.pecoseid', '=', 'cse.pecoseid')
+                        ->where('cse.coseesid', $coseesid)->first();
+
+        return response()->json(['success' => true,'data' => $data]);
+    }
+
+    public function downloadPlanillaSE($id){
+        try {
+            $encrypt         = new encrypt();
+            $generarPlanilla = new generarPlanilla();
+            $ruta = $encrypt->decrypted(urldecode($id));
+            $file = $generarPlanilla->servicioEspecial($ruta, 'F');
+            if (file_exists($file)) {
+                return response()->download($file, 'planilla_servicio_especial.pdf');
             } else {
                 return redirect('/archivoNoEncontrado'.$ruta);
             }

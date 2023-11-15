@@ -7,13 +7,11 @@ use App\Models\Despacho\ContratoServicioEspecialVehiculo;
 use App\Models\Despacho\PersonaContratoServicioEspecial;
 use App\Models\Despacho\ContratoServicioEspecial;
 use App\Http\Controllers\Controller;
-use App\Util\convertirNumeroALetras;
-use Exception, Auth, DB, URL;
+use App\Util\generarPlanilla;
 use Illuminate\Http\Request;
-use App\Util\generarPdf;
-use App\Util\generales;
 use App\Util\notificar;
 use Carbon\Carbon;
+use Exception, DB;
 
 class ContratoServicioEspecialController extends Controller
 {
@@ -27,7 +25,7 @@ class ContratoServicioEspecialController extends Controller
                                     DB::raw("CONCAT(cse.coseesanio, cse.coseesconsecutivo) as numeroContrato"),
                                     DB::raw("CONCAT(pcse.pecoseprimernombre,' ',if(pcse.pecosesegundonombre is null ,'', pcse.pecosesegundonombre),' ',
                                             pcse.pecoseprimerapellido,' ',if(pcse.pecosesegundoapellido is null ,' ', pcse.pecosesegundoapellido)) as nombreResponsable"))
-                                    ->join('pecoseonacontratoservicioesp as pcse', 'pcse.pecoseid', '=', 'cse.pecoseid');
+                                    ->join('personacontratoservicioesp as pcse', 'pcse.pecoseid', '=', 'cse.pecoseid');
 
 									if($request->tipo === 'ACTIVOS')
 										$consulta = $consulta->whereDate('cse.coseesfechaincial', '>=', $fechaActual);
@@ -71,7 +69,7 @@ class ContratoServicioEspecialController extends Controller
 													'cse.coseesfechafinal','cse.coseesorigen','cse.coseesdestino','cse.coseesdescripcionrecorrido','cse.coseesobservacion',
 													'pcse.tipideid','pcse.pecosedocumento','pcse.pecoseprimernombre','pcse.pecosesegundonombre','pcse.pecoseprimerapellido',
 													'pcse.pecosesegundoapellido','pcse.pecosedireccion', 'pcse.pecosecorreoelectronico','pcse.pecosenumerocelular')
-											->join('pecoseonacontratoservicioesp as pcse', 'pcse.pecoseid', '=', 'cse.pecoseid')
+											->join('personacontratoservicioesp as pcse', 'pcse.pecoseid', '=', 'cse.pecoseid')
 											->where('cse.coseesid', $request->codigo)->first();
 
 			$contratoVehiculos   = DB::table('contratoservicioespecialvehi')->select('coseevid', 'vehiid')->where('coseesid', $request->codigo)->get();
@@ -79,16 +77,16 @@ class ContratoServicioEspecialController extends Controller
 		}
 
         return response()->json(["tipoContratosServicioEspecial" => $tipoContratosServicioEspecial, "tipoConveniosServicioEspecial" => $tipoConveniosServicioEspecial,
-                                "contratoServicioEspecial"       => $contratoServicioEspecial,      "contratoVehiculos"              => $contratoVehiculos,            
-								"contratoConductores"            => $contratoConductores,           "tipoIdentificaciones"          => $tipoIdentificaciones,          
+                                "contratoServicioEspecial"       => $contratoServicioEspecial,      "contratoVehiculos"              => $contratoVehiculos,
+								"contratoConductores"            => $contratoConductores,           "tipoIdentificaciones"          => $tipoIdentificaciones,
 								"conductores"                    => $conductores,                   "vehiculos"                     => $vehiculos]);
     }
 
 	public function consultarPersona(Request $request)
 	{
         $this->validate(request(),['tipoIdentificacion' => 'required|numeric', 'documento' => 'required|string|max:15']);
-//personacontratoservicioesp
-        $data     = DB::table('pecoseonacontratoservicioesp')
+
+        $data     = DB::table('personacontratoservicioesp')
                             ->select('pecoseid','tipideid','pecosedocumento','pecoseprimernombre','pecosesegundonombre','pecoseprimerapellido',
                             			'pecosesegundoapellido','pecosedireccion', 'pecosecorreoelectronico','pecosenumerocelular')
                             ->where('tipideid', $request->tipoIdentificacion)
@@ -106,7 +104,7 @@ class ContratoServicioEspecialController extends Controller
 
 	    $this->validate(request(),[
 			    'tipoIdentificacion'   => 'required|numeric',
-				'documento'            => 'required|string|min:6|max:15|unique:pecoseonacontratoservicioesp,pecosedocumento,'.$personaContratoServicioEspecial->pecoseid.',pecoseid',
+				'documento'            => 'required|string|min:6|max:15|unique:personacontratoservicioesp,pecosedocumento,'.$personaContratoServicioEspecial->pecoseid.',pecoseid',
 				'primerNombre'         => 'required|string|min:3|max:140',
 				'segundoNombre'        => 'nullable|string|min:3|max:40',
 				'primerApellido'       => 'required|string|min:4|max:40',
@@ -124,13 +122,14 @@ class ContratoServicioEspecialController extends Controller
 				'destino'              => 'required|string|max:100',
 				'descripcionRecorrido' => 'required|string|max:1000',
 				'observaciones'        => 'nullable|string|max:1000',
-				'nombreUnionTemporal' => 'nullable|string|max:100|required_if:tipoConvenio,UT',				 
+				'nombreUnionTemporal' => 'nullable|string|max:100|required_if:tipoConvenio,UT',
                 'vehiculos'            => 'required|array|min:1',
                 'conductores'          => 'required|array|min:1'
 	        ]);
 
         DB::beginTransaction();
         try {
+			$generarPlanilla     = new generarPlanilla();
 			$fechaHoraActual     = Carbon::now();
             $anioActual          = Carbon::now()->year;
 			$nombreResponsable   = mb_strtoupper($request->primerNombre.' '.$request->segundoNombre.' '.$request->primerApellido.' '.$request->segundoApellido,'UTF-8');
@@ -180,7 +179,7 @@ class ContratoServicioEspecialController extends Controller
 				$contratoConsecutivo = ContratoServicioEspecial::latest('coseesid')->first();
 				$coseesid            = $contratoConsecutivo->coseesid;
 			}
-			
+
             foreach($request->vehiculos as $vehiculo){
 				$identificador  = $vehiculo['identificador'];
 				$vehiculoId     = $vehiculo['vehiculoId'];
@@ -216,24 +215,14 @@ class ContratoServicioEspecialController extends Controller
 			}
 
 			$mensajeNotificar = '';
-
-			$numeroPlanilla = '0001';
-			$correoDependencia = '';
-
-			//if($request->tipo === 'I' and $request->correo !== ''){
+			if($request->tipo === 'I' and $request->correo !== ''){
 				//Registramos la notificacion
 				$correoPersona = $request->correo;
-
-				$rutaPdf = $this->visualizarPlanilla($coseesid, 'F');
-
-dd($rutaPdf);
-				//$rutaPdf = [];
-				//array_push($rutaPdf, $this->visualizarPlanilla($coseesid, 'F'));
-
-			
+				$arrayPdf     = [];
+				array_push($arrayPdf, $generarPlanilla->servicioEspecial($coseesid, 'F'));
 
 				$notificar         = new notificar();
-				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarRegistroServicioEspecial')->first();				
+				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarRegistroServicioEspecial')->first();
 				$buscar            = Array('numeroPlanilla', 'nombreResponsable');
 				$remplazo          = Array($numeroPlanilla, $nombreResponsable); 
 				$innocoasunto      = $informacioncorreo->innocoasunto;
@@ -242,8 +231,8 @@ dd($rutaPdf);
 				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
 				$asunto            = str_replace($buscar, $remplazo, $innocoasunto);
 				$msg               = str_replace($buscar, $remplazo, $innococontenido);
-				$mensajeNotificar = ', se ha enviado notificación a '.$notificar->correo([$correoPersona], $asunto, $msg, [$rutaPdf], $correoDependencia, $enviarcopia, $enviarpiepagina);
-			//}
+				$mensajeNotificar = ', se ha enviado notificación a '.$notificar->correo([$correoPersona], $asunto, $msg, [$arrayPdf], $correoDependencia, $enviarcopia, $enviarpiepagina);
+			}
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeNotificar, 'planillaId' => $coseesid]);
 		} catch (Exception $error){
@@ -256,7 +245,8 @@ dd($rutaPdf);
     {
 		$this->validate(request(),['codigo'   => 'required']);
 		try{
-			$data = $this->visualizarPlanilla($request->codigo, 'S');			
+			$generarPlanilla = new generarPlanilla();
+			$data            = $generarPlanilla->servicioEspecial($request->codigo, 'S');
   			return response()->json(["data" => $data ]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);
@@ -265,108 +255,7 @@ dd($rutaPdf);
 
 	public function visualizarPlanilla($coseesid, $metodo)
 	{
-		$convertirNumeroALetras = new convertirNumeroALetras();
-		$generales  			= new generales();  
-		$generarPdf 			= new generarPdf();
-		$url        			= URL::to('/');
-
-		$contratoServicioEspecial = DB::table('contratoservicioespecial as cse')
-										->select('cse.coseesid','cse.pecoseid','cse.ticossid','cse.coseesanio','cse.coseesconsecutivo','cse.coseesfechaincial','cse.coseesvalorcontrato',
-												'cse.coseesfechafinal','cse.coseesorigen','cse.coseesdestino','cse.coseesdescripcionrecorrido','cse.coseesobservacion', 'cse.coseesnombreuniontemporal',
-												'pcse.pecosedocumento',	'pcse.tipideid','pcse.pecosedireccion', 'pcse.pecosenumerocelular','p.persdocumento',
-												DB::raw("CONCAT(pcse.pecoseprimernombre,' ',if(pcse.pecosesegundonombre is null ,'', pcse.pecosesegundonombre),' ',
-												pcse.pecoseprimerapellido,' ',if(pcse.pecosesegundoapellido is null ,' ', pcse.pecosesegundoapellido)) as nombreContratante"),
-												DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-												p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"),
-												DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafirma ) as firmaGerente"),
-												)
-										->join('pecoseonacontratoservicioesp as pcse', 'pcse.pecoseid', '=', 'cse.pecoseid')
-										->join('persona as p', 'p.persid', '=', 'cse.persidgerente')
-										->where('cse.coseesid', $coseesid)->first();
-		$anioContrato   = $contratoServicioEspecial->coseesanio;
-		$numeroContrato = $contratoServicioEspecial->coseesconsecutivo;
-
-		$contratoVehiculos   = DB::table('contratoservicioespecialvehi as csev')
-								->select('csev.coseevid','csev.coseevextractoanio', 'csev.coseevextractoconsecutivo','v.vehiplaca','v.vehimodelo','v.vehinumerointerno', 'tmv.timavenombre', 'tv.tipvehnombre', 'tv.tipvecapacidad','vto.vetaopnumero')
-								->join('vehiculo as v', 'v.vehiid', '=', 'csev.vehiid')
-								->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
-								->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-								->leftJoin('vehiculotarjetaoperacion as vto', function ($join) {
-									$join->on('vto.vehiid', '=', 'v.vehiid')
-										->where('vto.vetaopfechafinal', '=', DB::raw('(SELECT MAX(vetaopfechafinal) FROM vehiculotarjetaoperacion WHERE vehiid = v.vehiid)'));
-								})
-								->where('csev.coseesid', $coseesid)->get();
-		$contador          = 0;
-		$numerosInternos   = '';
-		$capacidadVehiculo = '';
-		foreach($contratoVehiculos as $contratoVehiculo){
-			$numerosInternos .= $contratoVehiculo->vehinumerointerno.', ';
-			$capacidadVehiculo .= $contratoVehiculo->tipvecapacidad.', ';
-			$contador ++;
-		}
-
-		$servicoContratado = ($contador > 1 ) ? $convertirNumeroALetras->valorEnLetras($contador).'('.$contador.') vehículo(s) con número(s) interno(s) '.substr($numerosInternos, 0, -2).' con '.substr($capacidadVehiculo, 0, -2).' puestos' : 'Un vehículo con número interno '. substr($numerosInternos, 0, -2).' de '.substr($capacidadVehiculo, 0, -2).' puestos';
-		$objetoContrato    = 'La realización de un servicio de transporte expreso para trasladar a todas las personas que hacen parte del grupo desde un origen ';
-		$objetoContrato    .= 'determinado en el presente contrato hasta el destino determinado en el presente contrato, según el decreto 0348 del 245 de febrero de 2015.';
-
-		$arrayDatos = [ 
-						"numeroContratoEspecial"       => '454008302'.$anioContrato.''.$numeroContrato,
-						"numeroContrato"               => $numeroContrato,
-						"nombreContratante"            => $contratoServicioEspecial->nombreContratante,
-						"documentoContratante"         => number_format($contratoServicioEspecial->pecosedocumento,0,',','.'),
-						"direccionContratante"         => $contratoServicioEspecial->pecosedireccion,
-						"telefonoContratante"          => $contratoServicioEspecial->pecosenumerocelular,
-						"objetoContrato"               => $objetoContrato,
-						"origenContrato"               => $contratoServicioEspecial->coseesorigen,
-						"destinoContrato"              => $contratoServicioEspecial->coseesdestino,
-						"descripcionRecorrido"         => $contratoServicioEspecial->coseesdescripcionrecorrido,
-						"valorContrato"                => number_format($contratoServicioEspecial->coseesvalorcontrato,0,',','.'),
-						"fechaInicialContrato"         => $generales->formatearFechaContratoServicioEspecial($contratoServicioEspecial->coseesfechaincial),
-						"fechaFinalContrato"           => $generales->formatearFechaContratoServicioEspecial($contratoServicioEspecial->coseesfechafinal),
-						"descripcionServicoContratado" => $servicoContratado,
-						"firmaGerente"                 => $contratoServicioEspecial->firmaGerente,
-						"nombreGerente"                => $contratoServicioEspecial->nombreGerente,
-						"documentoGerente"             => number_format($contratoServicioEspecial->persdocumento,0,',','.'),
-						"idCifrado"                    => $contratoServicioEspecial->coseesid,
-						"convenioContrato"             => ($contratoServicioEspecial->ticossid === 'CV') ? 'X' : '',
-						"consorcioContrato"            => ($contratoServicioEspecial->ticossid === 'CS') ? 'X' : '',
-						"unionTemporal"                => ($contratoServicioEspecial->ticossid === 'UT') ? 'X' : '',
-						"nombreUnionTemporal"          => ($contratoServicioEspecial->ticossid === 'UT') ? $contratoServicioEspecial->coseesnombreuniontemporal : '',
-						"observaciones"                => $contratoServicioEspecial->coseesobservacion,
-						"metodo"                       => $metodo
-					];
-
-		$arrayVigenciaContrato = [];
-		$fechaIncial           = explode('-',$contratoServicioEspecial->coseesfechaincial);
-		$fechaFinal            = explode('-',$contratoServicioEspecial->coseesfechafinal);
-		$fechaInicio 		   = [
-									"dia"  => $fechaIncial[2],
-									"mes"  => $fechaIncial[1],
-									"anio" => $fechaIncial[0]
-								];
-
-		$fechaFin 				= [
-									"dia"  => $fechaFinal[2],
-									"mes"  => $fechaFinal[1],
-									"anio" => $fechaFinal[0]
-								];
-		array_push($arrayVigenciaContrato, $fechaInicio, $fechaFin);
-
-		$arrayConductores = DB::table('contratoservicioespecialcond as csec')
-									->select('p.persdocumento as documento','cl.conlicnumero as numeroLicencia', 'cl.conlicfechavencimiento as vigencia',
-										DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-										p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreCompleto")
-									)
-									->join('conductor as c', 'c.condid', '=', 'csec.condid')
-									->join('persona as p', 'p.persid', '=', 'c.persid')
-									->join('conductorlicencia as cl', function ($join) {
-										$join->on('cl.condid', '=', 'c.condid')
-											->where('cl.conlicfechavencimiento', '=', DB::raw('(SELECT MAX(conlicfechavencimiento) FROM conductorlicencia WHERE condid = c.condid)'));
-									})
-									->where('coseesid', $coseesid)
-									->get();
 		
-		return $generarPdf->contratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $contratoVehiculos, $arrayConductores);
 	}
 
 	public function obtenerConsecutivoContrato($anioActual)

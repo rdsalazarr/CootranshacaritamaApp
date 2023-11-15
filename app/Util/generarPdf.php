@@ -1848,7 +1848,7 @@ EOD;
 		$this->contratoTransporteEspecial($arrayDatos, $dataInfoPdfContrato, $numeroContratoEspecial, $nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
 	    $this->listaPasajeros($arrayDatos, $idCifrado, $logoEmpresa);
 
-		$tituloPdf = 'Planilla_servicio_especial-No_'.$numeroContratoEspecial.'.pdf';
+		$tituloPdf = 'Planilla_servicio_especial_No_'.$numeroContratoEspecial.'.pdf';
 		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
 		}else if($metodo === 'F'){//Descargamos la copia en temporal
@@ -1872,6 +1872,8 @@ EOD;
 			'module_height' => 1
 		);
 
+		$encrypt   = new encrypt();
+		$idCifrado = $encrypt->encrypted($idCifrado);
 		$url = asset('verificar/contrato/servicio/especial/'.urlencode($idCifrado));
 		PDF::write2DBarcode($url, 'QRCODE,H', 10, 6, 30, 30, $style, 'N');
 		PDF::Image('images/logoColombiaPotenciaVida.jpg',50,12,70,14);
