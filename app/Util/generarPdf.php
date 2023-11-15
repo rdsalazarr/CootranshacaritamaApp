@@ -1832,7 +1832,7 @@ EOD;
 			$numeroContratoCompleto = '454008302'.$contratoVehiculo->coseevextractoanio.''.$numeroContrato.''.$contratoVehiculo->coseevextractoconsecutivo;
 			$arrayDatosVehiculo = [
 								"numeroContratoVehiculo"       => $numeroContratoCompleto,
-								"numeroExtracto"               => $contratoVehiculo->coseevextractoconsecutivo, 
+								"numeroExtracto"               => $contratoVehiculo->coseevextractoconsecutivo,
 								"placaVehiculo"                => $contratoVehiculo->vehiplaca,
 								"numeroInternoVehiculo"        => $contratoVehiculo->vehinumerointerno,
 								"modeloVehiculo"               => $contratoVehiculo->vehimodelo,
@@ -1848,18 +1848,14 @@ EOD;
 		$this->contratoTransporteEspecial($arrayDatos, $dataInfoPdfContrato, $numeroContratoEspecial, $nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
 	    $this->listaPasajeros($arrayDatos, $idCifrado, $logoEmpresa);
 
-		$tituloPdf = $titulo.'.pdf';
+		$tituloPdf = 'Planilla_servicio_especial-No_'.$numeroContratoEspecial.'.pdf';
 		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
 		}else if($metodo === 'F'){//Descargamos la copia en temporal
-			$contenidoPDF = PDF::Output('S');
 			$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
-			file_put_contents($rutaCarpeta, $contenidoPDF);
-			return $rutaCarpeta;
-			/*$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
-			fopen($rutaCarpeta, "w+"); 
+			fopen($rutaCarpeta, "w+");
 			PDF::output($rutaCarpeta, 'F');
-			return $rutaCarpeta;*/
+			return $rutaCarpeta;
 		}else{
 			PDF::output($tituloPdf, $metodo);
 		}

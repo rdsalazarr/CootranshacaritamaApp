@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin\Persona;
 
+use App\Models\Conductor\ConductorLicencia;
 use App\Http\Requests\PersonaRequests;
 use App\Http\Controllers\Controller;
 use App\Models\Conductor\Conductor;
 use App\Models\Asociado\Asociado;
+use App\Util\redimencionarImagen;
 use App\Models\Persona\Persona;
 use Illuminate\Http\Request;
 use App\Util\personaManager;
-use Exception, DB;
+use Exception, File, DB, URL;
+use App\Util\generales;
 
 class PersonaController extends Controller
 {
@@ -53,11 +56,54 @@ class PersonaController extends Controller
 			}
 
 			if($request->tipo === 'CONDUCTOR' ){
-                $conductor                   = new Conductor();
-                $conductor->persid           = $codigo;
-                $conductor->tiesasid         = 'A';
-                $conductor->asocfechaingreso = $request->fechaIngresoConductor;
-                $conductor->save();
+
+				$redimencionarImagen = new redimencionarImagen();
+            	$funcion 		     = new generales();
+				
+				$documentoPersona    = $request->documento;
+				$rutaCarpeta         = public_path().'/archivos/persona/'.$documentoPersona;
+				$carpetaServe        = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
+
+				$debeActualizarImagen = false;
+                if($request->hasFile('imagenLicencia')){
+                    $debeActualizarImagen = true;
+                    $numeroAleatorio      = rand(100, 1000);
+                    $file                 = $request->file('imagenLicencia');
+                    $nombreOriginalLic    = $file->getclientOriginalName();
+                    $filename             = pathinfo($nombreOriginalLic, PATHINFO_FILENAME);
+                    $extension            = pathinfo($nombreOriginalLic, PATHINFO_EXTENSION);
+                    $rutaImagenLicencia   = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+                    $file->move($rutaCarpeta, $rutaImagenLicencia);
+                    $rutaArchivo          = Crypt::encrypt($rutaImagenLicencia);
+                    $extension            = mb_strtoupper($extension,'UTF-8');
+                    if($extension !== 'PDF')
+                        $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaImagenLicencia, 480, 340);//Se redimenciona a un solo tipo (ancho * alto)
+                }
+
+				$conductor                   = new Conductor();
+				$conductor->persid           = $codigo;
+				$conductor->tiescoid         = 'A';
+				$conductor->tipconid         = $request->tipoConductor;
+				$conductor->agenid           = $request->agencia;
+				$conductor->condfechaingreso = $request->fechaIngresoConductor;
+				$conductor->save();
+
+				$personaMaxConductor        = Conductor::latest('condid')->first();
+				$condid                     = $personaMaxConductor->condid;
+
+				$conductorlicencia                              = new ConductorLicencia();
+				$conductorlicencia->condid                      = $condid;
+				$conductorlicencia->ticaliid                    = $request->tipoCategoria;
+				$conductorlicencia->conlicnumero                = $request->numeroLicencia;
+				$conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicion;
+				$conductorlicencia->conlicfechavencimiento      = $request->fechaVencimiento;
+				if($debeActualizarImagen){
+					$conductorlicencia->conlicextension             = $extension;
+					$conductorlicencia->conlicnombrearchivooriginal = $nombreOriginalLic;
+					$conductorlicencia->conlicnombrearchivoeditado  = $rutaImagenLicencia;
+					$conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
+				}
+				$conductorlicencia->save();
             }
 
 			DB::commit();

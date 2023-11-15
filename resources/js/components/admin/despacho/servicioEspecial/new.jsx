@@ -93,7 +93,7 @@ export default function New({data, tipo}){
                     newFormData.correo          = (personaContrato.pecosecorreoelectronico !== undefined) ? personaContrato.pecosecorreoelectronico : '';
                     newFormData.telefonoCelular = (personaContrato.pecosenumerocelular !== undefined) ? personaContrato.pecosenumerocelular : '';
                 }else{
-                    newFormData.personaId       = '';
+                    newFormData.personaId       = '000';
                     newFormData.primerNombre    = '';
                     newFormData.segundoNombre   = '';
                     newFormData.primerApellido  = '';
@@ -391,7 +391,7 @@ export default function New({data, tipo}){
                         <TextValidator
                             name={'telefonoCelular'}
                             value={formData.telefonoCelular}
-                            label={'Teléfono fijo'}
+                            label={'Teléfono celular'}
                             className={'inputGeneral'}
                             variant={"standard"}
                             inputProps={{autoComplete: 'off', maxLength: 20}}

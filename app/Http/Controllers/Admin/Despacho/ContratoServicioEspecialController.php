@@ -100,7 +100,7 @@ class ContratoServicioEspecialController extends Controller
     public function salve(Request $request)
 	{
         $coseesid                        = $request->codigo;
-		$pecoseid                        = $request->personaId;		
+		$pecoseid                        = $request->personaId;
         $contratoServicioEspecial        = ($coseesid != 000) ? ContratoServicioEspecial::findOrFail($coseesid) : new ContratoServicioEspecial();
 		$personaContratoServicioEspecial = ($pecoseid != 000) ? PersonaContratoServicioEspecial::findOrFail($pecoseid) : new PersonaContratoServicioEspecial();
 
@@ -133,6 +133,7 @@ class ContratoServicioEspecialController extends Controller
         try {
 			$fechaHoraActual     = Carbon::now();
             $anioActual          = Carbon::now()->year;
+			$nombreResponsable   = mb_strtoupper($request->primerNombre.' '.$request->segundoNombre.' '.$request->primerApellido.' '.$request->segundoApellido,'UTF-8');
 
 			$personaContratoServicioEspecial->tipideid                = $request->tipoIdentificacion;
 			$personaContratoServicioEspecial->pecosedocumento         = $request->documento;
@@ -152,12 +153,14 @@ class ContratoServicioEspecialController extends Controller
 			}
 
 			if($request->tipo === 'I'){
-				$empresa                                     = DB::table('empresa')->select('persidrepresentantelegal')->where('emprid', '1')->first();
+				$empresa                                     = DB::table('empresa')->select('persidrepresentantelegal', 'emprcorreo')->where('emprid', '1')->first();
+				$correoDependencia						     = $empresa->emprcorreo;
+				$numeroPlanilla                              = $this->obtenerConsecutivoContrato($anioActual);
 				$contratoServicioEspecial->persidgerente     = $empresa->persidrepresentantelegal;
 				$contratoServicioEspecial->pecoseid          = $pecoseid;
 				$contratoServicioEspecial->coseesfechahora   = $fechaHoraActual;
 				$contratoServicioEspecial->coseesanio        = $anioActual;
-				$contratoServicioEspecial->coseesconsecutivo = $this->obtenerConsecutivoContrato($anioActual);;
+				$contratoServicioEspecial->coseesconsecutivo = $numeroPlanilla;
 			}
 
 			$contratoServicioEspecial->ticoseid                   = $request->tipoContrato;
@@ -213,25 +216,36 @@ class ContratoServicioEspecialController extends Controller
 			}
 
 			$mensajeNotificar = '';
-			if($request->tipo === 'I' and $request->correo !== ''){
+
+			$numeroPlanilla = '0001';
+			$correoDependencia = '';
+
+			//if($request->tipo === 'I' and $request->correo !== ''){
 				//Registramos la notificacion
 				$correoPersona = $request->correo;
 
-				$notificar          = new notificar();
-				/*$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarRegistroServicioEspecial')->first();				
-				$buscar            = Array('numeroRadicado', 'nombreUsuario', 'nombreEmpresa', 'fechaRadicado','nombreDependencia','nombreFuncionario','nombreDependencia');
-				$remplazo          = Array($numeroRadicado, $nombreUsuario, $nombreEmpresa,  $fechaRadicado, $nombreDependencia, $nombreFuncionario, $nombreDependencia); 
+				$rutaPdf = $this->visualizarPlanilla($coseesid, 'F');
+
+dd($rutaPdf);
+				//$rutaPdf = [];
+				//array_push($rutaPdf, $this->visualizarPlanilla($coseesid, 'F'));
+
+			
+
+				$notificar         = new notificar();
+				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarRegistroServicioEspecial')->first();				
+				$buscar            = Array('numeroPlanilla', 'nombreResponsable');
+				$remplazo          = Array($numeroPlanilla, $nombreResponsable); 
 				$innocoasunto      = $informacioncorreo->innocoasunto;
 				$innococontenido   = $informacioncorreo->innococontenido;
 				$enviarcopia       = $informacioncorreo->innocoenviarcopia;
 				$enviarpiepagina   = $informacioncorreo->innocoenviarpiepagina;
 				$asunto            = str_replace($buscar, $remplazo, $innocoasunto);
 				$msg               = str_replace($buscar, $remplazo, $innococontenido);
-				$mensajeNotificar = ', se ha enviado notificacion a '.$notificar->correo([$correoPersona], $asunto, $msg, [], $correoDependencia, $enviarcopia, $enviarpiepagina);
-				*/
-			}
+				$mensajeNotificar = ', se ha enviado notificación a '.$notificar->correo([$correoPersona], $asunto, $msg, [$rutaPdf], $correoDependencia, $enviarcopia, $enviarpiepagina);
+			//}
             DB::commit();
-        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito '.$mensajeNotificar, 'planillaId' => $coseesid]);
+        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeNotificar, 'planillaId' => $coseesid]);
 		} catch (Exception $error){
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
