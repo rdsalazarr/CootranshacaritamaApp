@@ -18,13 +18,11 @@ export default function ServicioEspecial(){
     const [loader, setLoader] = useState(false); 
     const [data, setData] = useState([]);
     const [rutaDescarga, setRutaDescarga] = useState('');
-    const [rutaDocumento, setRutaDocumento] = useState('');
 
     useEffect(() => {
        instance.post('/consultar/contrato/servicio/especial', {id: window.id}).then(res=>{
-            let data = res.data;
             setRutaDescarga('/download/planilla/servicio/especial/'+window.id);
-            setData(data);
+            setData(res.data);
             setLoader(false)
         })
     }, []);
