@@ -12,53 +12,35 @@ class TipoModalidadVehiculoSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
+    { 
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '1',
-            'timovenombre'        => 'TODAS',
+            'timoveid'            => 'E',
+            'timovenombre'        => 'ESPECIAL',
             'timovetienedespacho' => '0'
         ]);
-
+        
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '2',
-            'timovenombre'        => 'COLECTIVO',
-            'timovetienedespacho' => '0'
-        ]);
-
-        DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '3',
-            'timovenombre'        => 'URBANO',
-            'timovetienedespacho' => '0'
-        ]);
-
-        DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '4',
+            'timoveid'            => 'I',
             'timovenombre'        => 'INTERMUNICIPAL',
             'timovetienedespacho' => '1'
         ]);
 
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '5',
+            'timoveid'            => 'C',
+            'timovenombre'        => 'COLECTIVO',
+            'timovetienedespacho' => '0'
+        ]);
+
+        DB::table('tipomodalidadvehiculo')->insert([
+            'timoveid'            => 'M',
             'timovenombre'        => 'MIXTO',
             'timovetienedespacho' => '1'
         ]);
 
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '6',
+            'timoveid'            => 'P',
             'timovenombre'        => 'PRIVADO',
             'timovetienedespacho' => '0'
-        ]);
-
-        DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '7',
-            'timovenombre'        => 'ESPECIAL',
-            'timovetienedespacho' => '0'
-        ]);
-
-        DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => '8',
-            'timovenombre'        => 'ESCOLAR',
-            'timovetienedespacho' => '0'
-        ]);
+        ]);       
     }
 }

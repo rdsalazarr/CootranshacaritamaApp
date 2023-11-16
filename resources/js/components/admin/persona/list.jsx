@@ -5,6 +5,7 @@ import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
 import Eliminar from '../../layout/modalFijas';
 import instance from '../../layout/instance';
+import Procesar from './procesar';
 import NewEdit from './new';
 import Show from './show';
 
@@ -13,7 +14,7 @@ export default function List(){
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
     const [tipo, setTipo] = useState(0);
-    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{
         setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
@@ -23,7 +24,8 @@ export default function List(){
                         <NewEdit tipo={'I'} frm={'PERSONA'} url={'/admin/persona/salve'} tpRelacion={'E'} />,
                         <NewEdit data={modal.data} tipo={'U'} frm={'PERSONA'} url={'/admin/persona/salve'} tpRelacion={'E'} /> ,
                         <Eliminar id={(tipo === 2) ? modal.data.persid : null} ruta={'/admin/persona/destroy'} cerrarModal={cerrarModal} />,
-                        <Show id={(tipo === 3) ? modal.data.persid : null} frm={'PERSONA'}/>
+                        <Show id={(tipo === 3) ? modal.data.persid : null} frm={'PERSONA'}/>,
+                        <Procesar data={modal.data}/>
                     ];
 
     const tituloModal = ['Nueva persona','Editar persona','','Visualizar la información de la persona'];
@@ -55,13 +57,14 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Tipo de persona', 'Activo','Actualizar','Eliminar','Ver']}
+                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Tipo de persona', 'Activo','Actualizar','Eliminar','Ver','Procesar']}
                         ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico", "tipoPersona","estado"]}
                         accion={[
-                            {tipo: 'T', icono : 'add',        color: 'green',  funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
+                            {tipo: 'T', icono : 'add',           color: 'green',  funcion : (data)=>{edit(data,0)} },
+                            {tipo: 'B', icono : 'edit',          color: 'orange', funcion : (data)=>{edit(data,1)} },
+                            {tipo: 'B', icono : 'delete',        color: 'red',    funcion : (data)=>{edit(data,2)} },
+                            {tipo: 'B', icono : 'visibility',    color: 'green',  funcion : (data)=>{edit(data,3)} },
+                            {tipo: 'B', icono : 'add_task_Icon', color: 'red',    funcion : (data)=>{edit(data,4)} },
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />
@@ -71,7 +74,7 @@ export default function List(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
+                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista < 3) ? inicio() : null;}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

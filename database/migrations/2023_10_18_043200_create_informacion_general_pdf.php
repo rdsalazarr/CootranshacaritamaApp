@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('informaciongeneralpdf', function (Blueprint $table) {
             $table->smallIncrements('ingpdfid')->unsigned()->comment('Identificador de la tabla información general PDF');
-            $table->string('ingpdfnombre', 30)->unique('uk_informaciongeneralpdf')->comment('Nombre general para utilizar la consulta de la información en PDF');
+            $table->string('ingpdfnombre', 50)->unique('uk_informaciongeneralpdf')->comment('Nombre general para utilizar la consulta de la información en PDF');
             $table->string('ingpdftitulo', 100)->comment('Título de la información general del PDF');
             $table->longText('ingpdfcontenido')->comment('Contenido de la información que lleva PDF');
             $table->timestamps();

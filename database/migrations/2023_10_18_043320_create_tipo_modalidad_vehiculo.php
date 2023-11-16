@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tipomodalidadvehiculo', function (Blueprint $table) {
-            $table->tinyInteger('timoveid')->unsigned()->comment('Identificador del la tabla tipo modalidad vehículo');
+            $table->string('timoveid', 2)->comment('Identificador del la tabla tipo modalidad vehículo');
             $table->string('timovenombre', 30)->comment('Nombre del tipo de modalidad del vehículo');
             $table->boolean('timovetienedespacho')->default(false)->comment('Determina si el tipo modalidad del vehículo tiene despacho');
             $table->primary('timoveid')->index('pk_timove');

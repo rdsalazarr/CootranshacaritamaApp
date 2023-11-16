@@ -132,6 +132,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         
         Route::get('/informacionGeneralPdf/list', [GeneralPdfController::class, 'index'])->middleware('security:admin/configurar/GeneralPdf');
         Route::post('/informacionGeneralPdf/salve', [GeneralPdfController::class, 'salve']);
+        Route::post('/informacionGeneralPdf/show/pdf', [GeneralPdfController::class, 'showPdf']);
         Route::post('/informacionGeneralPdf/destroy', [GeneralPdfController::class, 'destroy']);
 
         Route::get('/informacionCorreo/list', [NotificacionCorreoController::class, 'index'])->middleware('security:admin/configurar/notificarCorreo');
@@ -175,6 +176,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
+        Route::post('/personaDocumental/procesar', [PersonaDocumentalController::class, 'procesar']);
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
         Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');  

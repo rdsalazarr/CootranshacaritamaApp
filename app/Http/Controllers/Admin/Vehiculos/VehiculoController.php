@@ -29,7 +29,7 @@ class VehiculoController extends Controller
         $consultaTipoVehiculo       = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia');
                                         if($tipoPeticion)
                                             $consultaTipoVehiculo = $consultaTipoVehiculo->where('tipvehactivo', true);
-        $tipovehiculos              = $consultaTipoVehiculo->orderBy('tipvehnombre')->get();
+        $tipovehiculos              = $consultaTipoVehiculo->orderBy('tipvehnombre')->orderBy('tipvehreferencia')->get();
 
         $consultaTipoReferencia     = DB::table('tiporeferenciavehiculo')->select('tireveid','tirevenombre');
                                         if($tipoPeticion)

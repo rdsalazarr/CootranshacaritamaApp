@@ -7,6 +7,7 @@ use App\Models\Cartera\SolicitudCredito;
 use App\Http\Controllers\Controller;
 use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
+use App\Util\notificar;
 use Carbon\Carbon;
 
 class AprobarSolicitudCreditoController extends Controller
@@ -35,14 +36,36 @@ class AprobarSolicitudCreditoController extends Controller
 
     public function salve(Request $request)
     {
-        $this->validate(request(),['codigo'           => 'required|numeric', 
+        $this->validate(request(),['codigo'           => 'required|numeric',
                                     'estadoSolicitud' => 'required|string',
                                     'observacion'     => 'required|string|min:10|max:500']);
 
         DB::beginTransaction();
-        $fechaHoraActual  = Carbon::now();
         try {
+
+            $fechaHoraActual            = Carbon::now();
             $solcreid                   = $request->codigo;
+            $idNotificacionCorreo       = ($request->estadoSolicitud === 'A') ? "notificarAprobacionSolicitudCredito" : "notificarNegacionSolicitudCredito";
+
+            $solicitudcredito           = DB::table('solicitudcredito as sc')
+                                            ->select('sc.solcrenumerocuota','sc.solcretasa','p.perscorreoelectronico',
+                                            DB::raw("CONCAT(FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
+                                            DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                            ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
+                                            ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                            ->where('sc.solcreid', $solcreid )->first();
+
+            $nombreSolicitante          = $solicitudcredito->nombreAsociado;
+            $valorCredito               = $solicitudcredito->valorSolicitado;
+            $montoAprobado              = $solicitudcredito->valorSolicitado;
+            $nombreGerente              = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
+            $tasaInteres                = $solicitudcredito->solcretasa;
+            $plazoCredito               = $solicitudcredito->solcrenumerocuota;
+            $correoPersona              = $solicitudcredito->perscorreoelectronico;
+            $correoPersonaSesion        = auth()->user()->usuaemail;
+            $mensajeNotificar           = '';
+
             $solicitudcredito           = SolicitudCredito::findOrFail($solcreid);
             $solicitudcredito->tiesscid = $request->estadoSolicitud;
             $solicitudcredito->save();
@@ -55,12 +78,26 @@ class AprobarSolicitudCreditoController extends Controller
             $solicitudcreditocambioestado->socrceobservacion = $request->observacion;
             $solicitudcreditocambioestado->save();
 
+            if ($correoPersona !== ''){
+                $notificar            = new notificar();
+                $informacionCorreo    = DB::table('informacionnotificacioncorreo')->where('innoconombre', $idNotificacionCorreo )->orderBy('innocoid')->first();        
+                $buscar               = Array('nombreSolicitante', 'valorCredito', 'montoAprobado','nombreGerente', 'tasaInteres', 'plazoCredito', 'observacionesGenerales');
+                $remplazo             = Array($nombreSolicitante, $valorCredito, $montoAprobado, $nombreGerente, $tasaInteres, $plazoCredito, $request->observacion); 
+                $innocoasunto         = $informacionCorreo->innocoasunto;
+                $innococontenido      = $informacionCorreo->innococontenido;
+                $enviarcopia          = $informacionCorreo->innocoenviarcopia;
+                $enviarpiepagina      = $informacionCorreo->innocoenviarpiepagina;
+                $asunto               = str_replace($buscar, $remplazo, $innocoasunto);
+                $msg                  = str_replace($buscar, $remplazo, $innococontenido);
+                $mensajeNotificar     = ', se ha enviado notificación a '.$notificar->correo([$correoPersona], $asunto, $msg, [], $correoPersonaSesion, $enviarcopia, $enviarpiepagina);
+            }
+
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito' ]);
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeNotificar ]);
         } catch (Exception $error){
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-        }         
+        }
     }
 
     public function show(Request $request)
@@ -93,7 +130,7 @@ class AprobarSolicitudCreditoController extends Controller
                                             ->where('cesc.solcreid', $request->codigo)->get();
         
 			return response()->json(['success' => true, 'solicitudcredito' => $solicitudcredito, 'cambiosEstadoSolicitudCredito' => $cambiosEstadoSolicitudCredito]);
-		} catch (Exception $error){		
+		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
 		}
     }

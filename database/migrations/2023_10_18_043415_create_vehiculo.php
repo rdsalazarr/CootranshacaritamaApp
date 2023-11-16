@@ -17,7 +17,7 @@ return new class extends Migration
             $table->smallInteger('tireveid')->unsigned()->comment('Identificador del tipo de referencia del vehículo');
             $table->smallInteger('timaveid')->unsigned()->comment('Identificador del tipo marca vehículo');
             $table->smallInteger('ticoveid')->unsigned()->comment('Identificador del tipo color vehículo');
-            $table->tinyInteger('timoveid')->unsigned()->comment('Identificador del tipo modalidad vehículo');
+            $table->string('timoveid', 2)->comment('Identificador del tipo modalidad vehículo');
             $table->smallInteger('ticaveid')->unsigned()->comment('Identificador del tipo carroceria vehículo');
             $table->tinyInteger('ticovhid')->unsigned()->comment('Identificador del tipo combustible vehículo');
             $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia a la que esta asignado el vehículo');

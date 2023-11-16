@@ -1291,6 +1291,44 @@ EOD;
 		return base64_encode($tcpdf->output($nombrePDF, $metodo));
 	}
 
+	function generarContenidoBDPdf($data, $metodo = 'S'){
+		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
+			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+
+		$titulo    = $data->ingpdftitulo;
+		$contenido = $data->ingpdfcontenido;
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Documento, Vehículo, '.$siglaEmpresa);
+        PDF::SetTitle($titulo);	
+
+		//Encabezado y pie de pagina del pdf
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 14);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(16);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica', 'B', 13);
+		PDF::Cell(176, 4, $titulo, 0, 0, 'C');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica', '', 9);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));	
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
+
 	function simuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
 
 		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,

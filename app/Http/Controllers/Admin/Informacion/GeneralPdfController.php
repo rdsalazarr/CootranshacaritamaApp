@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Informacion;
 use App\Models\Informacion\GeneralPdf;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Util\generarPdf;
 use Exception, DB;
 
 class GeneralPdfController extends Controller
@@ -37,8 +38,23 @@ class GeneralPdfController extends Controller
 		}
 	}
 
+	public function showPdf(Request $request)
+	{
+		$this->validate(request(),['codigo' => 'required']);
+		try {
+			$informacionGeneralPdf = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfid', $request->codigo)->first(); 
+			$generarPdf            = new generarPdf();
+			$data                  = $generarPdf->generarContenidoBDPdf($informacionGeneralPdf, "S");
+			return response()->json(["data" => $data]);
+		} catch (Exception $error){
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la generación del documento => '.$error->getMessage()]);
+		}
+	}
+
     public function destroy(Request $request)
-	{	
+	{
+		$this->validate(request(),['codigo' => 'required']);
+
 		try {
 			$informaciongeneralpdf = GeneralPdf::findOrFail($request->codigo);
 			$informaciongeneralpdf->delete();

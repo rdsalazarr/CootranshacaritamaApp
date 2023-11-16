@@ -66,7 +66,7 @@ export default function Search(){
                 newFormDataConsulta.segundoApellido      = asociado.perssegundoapellido;
                 newFormDataConsulta.fechaNacimiento      = asociado.persfechanacimiento;
                 newFormDataConsulta.direccion            = asociado.persdireccion;
-                newFormDataConsulta.correo               = asociado.perscorreoelectronico;
+                newFormDataConsulta.correo               = (asociado.perscorreoelectronico !== null) ? asociado.perscorreoelectronico : 'No reportó como asociado';
                 newFormDataConsulta.telefonoFijo         = asociado.persnumerotelefonofijo;
                 newFormDataConsulta.numeroCelular        = asociado.persnumerocelular;
                 newFormDataConsulta.fechaIngresoAsociado = asociado.asocfechaingreso;

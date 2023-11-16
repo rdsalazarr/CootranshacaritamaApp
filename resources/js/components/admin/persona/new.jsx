@@ -26,25 +26,25 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                         tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:''
                                 }); 
 
-    const [modal, setModal] = useState({open : false, extencion:'', ruta:''});
-    const [loader, setLoader] = useState(false); 
-    const [habilitado, setHabilitado] = useState(true);
-    const [showFotografia, setShowFotografia] = useState('');
-    const [showFirmaPersona, setFirmaPersona] = useState('');
-    const [rutaArchivoEnfuscada, setRutaArchivoEnfuscada] = useState('');
-    const [rutaLicenciaAdjunta, setRutaLicenciaAdjunta] = useState('');
+    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]});
     const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState(null);
-    const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
+    const [modal, setModal] = useState({open : false, extencion:'', ruta:''}); 
+    const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
-    const [departamentos, setDepartamentos] = useState([]);
-    const [municipios, setMunicipios] = useState([]);
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
     const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
-    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]});
-    const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
+    const [rutaArchivoEnfuscada, setRutaArchivoEnfuscada] = useState('');
+    const [rutaLicenciaAdjunta, setRutaLicenciaAdjunta] = useState(''); 
+    const [historialLicencias, setHistorialLicencias] = useState([]);
+    const [tipoCargoLaborales, setTipoCargoLaborales] = useState([]);
     const [tipoConductores, setTipoConductores] = useState([]);
-    const [historialLicencias, setHistorialLicencias] = useState([]); 
+    const [showFotografia, setShowFotografia] = useState('');
+    const [showFirmaPersona, setFirmaPersona] = useState('');
+    const [departamentos, setDepartamentos] = useState([]);
+    const [habilitado, setHabilitado] = useState(true); 
+    const [municipios, setMunicipios] = useState([]);
     const [agencias, setAgencias] = useState([]);
+    const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
