@@ -39,6 +39,8 @@ class SolicitudCreditoController extends Controller
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     'p.persgenero','p.persrutafoto','a.asocfechaingreso',
+                                    DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"))
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
@@ -70,9 +72,19 @@ class SolicitudCreditoController extends Controller
 
         DB::beginTransaction();
         try {
+
             $fechaHoraActual        = Carbon::now();
             $estadoSolicitudCredito = 'R'; //Registrado
-
+            $nombrePersonaCartera   = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
+            $correoPersonaCartera   = auth()->user()->usuaemail;
+            $valorCredito           = number_format($request->valorSolicitado,0,',','.');
+            $correoPersona          = $request->correo;
+            $nombreSolicitante      = $request->nombreAsociado;
+            $lineaCredito           = '';
+            $nombreGerente          = '';
+            $correoGerente          = '';
+            $correoEmpresa          = '';
+ 
             $solicitudcredito                        = new SolicitudCredito();
             $solicitudcredito->usuaid                = Auth::id();
             $solicitudcredito->lincreid              = $request->lineaCredito;
@@ -87,19 +99,37 @@ class SolicitudCreditoController extends Controller
             $solicitudcredito->solcreobservacion     = $request->observacionGeneral;
             $solicitudcredito->save();
 
-            $solicitudCreditoMaxConsecutio = SolicitudCredito::latest('solcreid')->first();
-            $solcreid                      = $solicitudCreditoMaxConsecutio->solcreid;
-
+            $solicitudCreditoMaxConsecutio                   = SolicitudCredito::latest('solcreid')->first();
+            $solcreid                                        = $solicitudCreditoMaxConsecutio->solcreid;
             $solicitudcreditocambioestado 					 = new SolicitudCreditoCambioEstado();
             $solicitudcreditocambioestado->solcreid          = $solcreid;
             $solicitudcreditocambioestado->tiesscid          = $estadoSolicitudCredito;
             $solicitudcreditocambioestado->socrceusuaid      = Auth::id();
             $solicitudcreditocambioestado->socrcefechahora   = $fechaHoraActual;
-            $solicitudcreditocambioestado->socrceobservacion = 'Registro de la solicitud de credido. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+            $solicitudcreditocambioestado->socrceobservacion = 'Registro de la solicitud de crédito. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
             $solicitudcreditocambioestado->save();
 
+            $mensajeNotificar = '';
+			if($correoPersona !== ''){
+				$notificar          = new notificar();
+                $informacionCorreos = DB::table('informacionnotificacioncorreo')->wherein('innoconombre', ['notificarRegistroSolicitudCredito','notificarDecisionSolicitudCredito'])->orderBy('innocoid')->get();
+                foreach($informacionCorreos as  $informacionCorreo){
+                    $buscar               = Array('nombreSolicitante', 'valorCredito', 'nombrePersonaCartera','nombreGerente', 'lineaCredito');
+                    $remplazo             = Array($nombreSolicitante, $valorCredito, $nombrePersonaCartera, $nombreGerente, $lineaCredito); 
+                    $innocoasunto         = $informacionCorreo->innocoasunto;
+                    $innococontenido      = $informacionCorreo->innococontenido;
+                    $enviarcopia          = $informacionCorreo->innocoenviarcopia;
+                    $enviarpiepagina      = $informacionCorreo->innocoenviarpiepagina;
+                    $asunto               = str_replace($buscar, $remplazo, $innocoasunto);
+                    $msg                  = str_replace($buscar, $remplazo, $innococontenido);
+                    $mensajeNotificar     = ', se ha enviado notificación a '.$notificar->correo([$correoPersona], $asunto, $msg, [], $correoPersonaCartera, $enviarcopia, $enviarpiepagina);
+                    $correoPersona        =  $correoGerente;
+                    $correoPersonaCartera = $correoEmpresa;
+                }
+			}
+
             DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito' ]);
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeNotificar ]);
 		} catch (Exception $error){
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

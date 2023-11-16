@@ -26,7 +26,7 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 export default function Search(){
 
     const [formData, setFormData] = useState({identificador:'', asociadoId:'', vehiculoId:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
-                                            tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:''  })
+                                            tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:'', correo:'', nombreAsociado:'' })
     const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
                                                                 direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:''})
     const [loader, setLoader] = useState(false);
@@ -45,8 +45,7 @@ export default function Search(){
         let identificador      = formData.identificador;
         let array              = identificador.split("-");
         newFormData.asociadoId = Number(array[0]);
-        newFormData.vehiculoId = Number(array[1]);
-        setFormData(newFormData);
+        newFormData.vehiculoId = Number(array[1]);       
 
         setDatosEncontrados(false);
         if(formData.identificador === ''){
@@ -73,6 +72,9 @@ export default function Search(){
                 newFormDataConsulta.fechaIngresoAsociado = asociado.asocfechaingreso;
                 newFormDataConsulta.showFotografia       = (asociado.fotografia !== null) ? asociado.fotografia : person;
 
+                newFormData.correo                       = asociado.perscorreoelectronico;
+                newFormData.nombreAsociado               = asociado.nombrePersona;
+
                 setLineasCreditos(res.lineasCreditos);
                 setFormDataConsulta(newFormDataConsulta);
                 setDatosEncontrados(true);
@@ -81,6 +83,8 @@ export default function Search(){
             }
             setLoader(false);
         })
+
+        setFormData(newFormData);
     }
 
     const formatearNumero = (numero) =>{
