@@ -16,13 +16,14 @@ class UsuarioController extends Controller
 	{
         $data = DB::table('usuario as u')
                     ->select('u.usuaid','u.persid','p.tipideid','p.persdocumento','u.usuanombre','u.usuaapellidos','u.usuaalias',
-                            'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword',
+                            'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword', 'u.agenid',
                             DB::raw("CONCAT(ti.tipidesigla,'-', p.persdocumento ) as tipoDocumento"),
                             DB::raw("if(u.usuaactivo = 1,'Sí', 'No') as estado"),
                             DB::raw("if(u.usuabloqueado = 1,'Sí', 'No') as bloqueado"),
                             DB::raw("if(u.usuacambiarpassword = 1,'Sí', 'No') as cambiarpassword"))
                     ->join('persona as p', 'p.persid', '=', 'u.persid')
 					->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
+					//->where('u.usuaid', '>', 1)
                     ->orderBy('u.usuanombre')->orderBy('u.usuaapellidos')->get();
 
 		return response()->json(['success' => true, "data" => $data]);
@@ -34,6 +35,7 @@ class UsuarioController extends Controller
 
 		$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
 		$roles                = DB::table('rol')->select('rolid','rolnombre')->orderBy('rolnombre')->get();
+		$agencias             = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
 		$usuariosRoles        = [];
 		if($request->tipo === 'U'){
 			$usuariosRoles = DB::table('usuariorol as ur')->select('r.rolid','r.rolnombre', 'ur.usurolid')
@@ -41,7 +43,8 @@ class UsuarioController extends Controller
 									->where('ur.usurolusuaid', $request->codigo)->get();
 		}
 
-        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles' => $roles, 'usuariosRoles' => $usuariosRoles]);
+        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles'    => $roles, 
+													'usuariosRoles'       => $usuariosRoles,        'agencias' => $agencias ]);
 	}
 
 	public function consultar(Request $request)
@@ -69,6 +72,7 @@ class UsuarioController extends Controller
 	    $this->validate(request(),[
             'tipoIdentificacion'=> 'required',
             'documento'         => 'required|string|min:6|max:15',
+			'agencia'           => 'required',
 			'persona'           => 'required|numeric',
             'nombre'            => 'required|string|min:5|max:50',
             'apellido'          => 'required|string|min:5|max:50',
@@ -87,6 +91,7 @@ class UsuarioController extends Controller
             $apellido                     = mb_strtoupper($request->apellido,'UTF-8');
             $nickUsuario                  = mb_strtoupper($request->usuario,'UTF-8');
             $usuario->persid              = $request->persona;
+			$usuario->agenid              = $request->agencia;
 			$usuario->usuanombre          = $nombre;
 			$usuario->usuaapellidos       = $apellido;
             $usuario->usuanick            = $nickUsuario;

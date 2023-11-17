@@ -227,12 +227,11 @@ const componenteMenu = [
         itemMenu: [
             {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <EnConstruccion /> },
             {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <ServicoEspecial /> },
-            {ruta : 'admin/despacho/cartera',           menu: 'Planillas',        icono : 'no_crash_icon',       componente : <EnConstruccion />}, 
+            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <EnConstruccion />}, 
             {ruta : 'admin/despacho/encomienda',        menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <EnConstruccion />},
-            {ruta : 'admin/despacho/encomienda',        menu: 'Otros',            icono : 'traffic_icon', componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
         ]
-    }, 
-     
+    },
 ];
 
 const menuComponente = [
@@ -245,10 +244,10 @@ const menuComponente = [
     {id:7,componente : <SeriesDocumentales />},
     {id:8,componente : <Dependencia />},
     {id:9,componente : <Persona />},
-    {id:10,componente : <Usuario />},
+    {id:10,componente : <Agencia />},
 
-    {id:12,componente : <Festivos />},
-    {id:13,componente : <Agencia />},
+    {id:12,componente : <Usuario />},
+    {id:13,componente : <Festivos />},
     {id:14,componente : <Acta />},
     {id:15,componente : <Certificado />},
     {id:16,componente : <Circular />},
@@ -273,9 +272,9 @@ const menuComponente = [
     {id:35,componente : <AprobacionCredito />},
     {id:36,componente : <DesembolsarCredito />},
     {id:37,componente : <HistorialSolicitudCredito />},
-    {id:38,componente : <CobroCartera />},
-    
+    {id:38,componente : <CobroCartera />},    
     {id:39,componente : <ServicoEspecial />},
+    
     {id:40,componente : <EnConstruccion />},
     {id:41,componente : <EnConstruccion />},
     {id:42,componente : <EnConstruccion />},

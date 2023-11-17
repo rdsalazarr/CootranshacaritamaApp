@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('usuario', function (Blueprint $table) {
             $table->smallIncrements('usuaid')->comment('Identificador de la tabla usuario');
             $table->integer('persid')->unsigned()->comment('Identificador de la persona');
+            $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia a la que esta asignado el usuario');
             $table->string('usuanombre', 50)->comment('Nombre del usuario');
             $table->string('usuaapellidos', 50)->comment('Apellidos del usuario');
             $table->string('usuaemail', 80)->unique('uk_usuario')->comment('Correo del usuario');
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->foreign('persid')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persusua');
+            $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenusua');
         });
     }
 

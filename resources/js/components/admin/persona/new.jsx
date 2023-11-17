@@ -29,7 +29,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
     const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]});
     const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState(null);
     const [modal, setModal] = useState({open : false, extencion:'', ruta:''}); 
-    const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
+    const [tipoCategoriaLicencias, setTipoCategoriaLicencias] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [municipiosNacimiento, setMunicipiosNacimiento] = useState([]);
     const [municipiosExpedicion, setMunicipiosExpedicion] = useState([]);
@@ -120,7 +120,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
             setMunicipios(res.municipios);
             setTipoConductores(res.tipoConductores);
             setAgencias(res.agencias);
-            settipoCategoriaLicencias(res.tpCateLicencias);
+            setTipoCategoriaLicencias(res.tpCateLicencias);
 
             if(tipo !== 'I'){
                 let persona                        = res.persona;
@@ -583,6 +583,178 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     </Fragment>
                 : null}
 
+                <Grid item md={12} xl={12} sm={12} xs={12}>
+                    <Box className='frmDivision'>
+                        Anexe la foto
+                    </Box>
+                </Grid>
+
+                <Grid item md={5} xl={5} sm={12} xs={12}>
+                    <Files
+                        className='files-dropzone'
+                        onChange={(file ) =>{onFilesChange(file, 'fotografia') }}
+                        onError={onFilesError}
+                        accepts={['.jpg', '.png', '.jpeg']} 
+                        multiple
+                        maxFiles={1}
+                        maxFileSize={1000000}
+                        clickable
+                        dropActiveClassName={"files-dropzone-active"}
+                    >
+                    <ButtonFileImg title={"Adicionar fotografia"} />
+                    </Files>
+                </Grid>
+
+                <Grid item md={4} xl={4} sm={12} xs={12}>
+                    <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                        {formDataFile.fotografia.map((file, a) =>{
+                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                        })}
+                    </Box>
+                </Grid>
+
+                {(showFotografia !== '' && tipo === 'U') ?
+                    <Grid item md={3} xl={3} sm={12} xs={12}>
+                        <Box className='fotografia'>
+                            <img src={showFotografia} ></img>
+                        </Box>
+                    </Grid>
+                : null }
+
+                {(frm === 'PERSONA') ?
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Anexe firma escaneada de la persona 
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={5} xl={5} sm={12} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'firma') }}
+                                onError={onFilesError}
+                                accepts={['.jpg', '.png', '.jpeg']} 
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar firma"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={4} xl={4} sm={12} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.firma.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid>
+                    </Fragment>
+                : null}
+
+                {(showFirmaPersona !== '' && tipo === 'U') ?
+                    <Grid item md={3} xl={3} sm={12} xs={12}>
+                        <Box className='firmaPersona'>
+                            <img src={showFirmaPersona}></img>
+                        </Box>
+                    </Grid>
+                : null }
+
+                {(parseInt(formData.firmaDigital) === 1) ?  
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Anexe la clave de la firma y los certificado digitales de la persona
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={3} xs={12}>
+                            <TextValidator
+                                name={'claveCertificado'}
+                                value={formData.claveCertificado}
+                                label={'Contraseña'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 20}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                                type={'password'}
+                            />
+                        </Grid>
+
+                        <Grid item md={3} xl={3} sm={6} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'rutaCrt') }}
+                                onError={onFilesError}
+                                accepts={['.crt']} 
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar certificado digital con extensión crt"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={3} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.rutaCrt.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={3} xl={3} sm={6} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'rutaPem') }}
+                                onError={onFilesError}
+                                accepts={['.pem']} 
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar certificado digital con extensión pem"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.rutaPem.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid>
+
+                        {(tipo === 'U' && formData.claveCertificado !== null) ?
+                            <Fragment>
+                                <Grid item md={2} xl={2} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                        <label>Descargar certificado crt</label>
+                                        <Link href={formData.rutaDescargaCrt} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                                    </Box>
+                                </Grid>
+
+                                <Grid item md={2} xl={2} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                        <label>Descargar certificado pem</label>
+                                        <Link href={formData.rutaDescargaPem} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                                    </Box>
+                                </Grid>
+                            </Fragment>
+                        : null}  
+
+                    </Fragment>
+                : null}
+
                 {(frm === 'ASOCIADO') ?
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
@@ -852,178 +1024,6 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 </Grid>
                             </Fragment>
                         :null}
-
-                    </Fragment>
-                : null}
-
-                <Grid item md={12} xl={12} sm={12} xs={12}>
-                    <Box className='frmDivision'>
-                        Anexe la foto
-                    </Box>
-                </Grid>
-
-                <Grid item md={5} xl={5} sm={12} xs={12}>
-                    <Files
-                        className='files-dropzone'
-                        onChange={(file ) =>{onFilesChange(file, 'fotografia') }}
-                        onError={onFilesError}
-                        accepts={['.jpg', '.png', '.jpeg']} 
-                        multiple
-                        maxFiles={1}
-                        maxFileSize={1000000}
-                        clickable
-                        dropActiveClassName={"files-dropzone-active"}
-                    >
-                    <ButtonFileImg title={"Adicionar fotografia"} />
-                    </Files>
-                </Grid>
-
-                <Grid item md={4} xl={4} sm={12} xs={12}>
-                    <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                        {formDataFile.fotografia.map((file, a) =>{
-                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                        })}
-                    </Box>
-                </Grid>
-
-                {(showFotografia !== '' && tipo === 'U') ?
-                    <Grid item md={3} xl={3} sm={12} xs={12}>
-                        <Box className='fotografia'>
-                            <img src={showFotografia} ></img>
-                        </Box>
-                    </Grid>
-                : null }
-
-                {(frm === 'PERSONA') ?
-                    <Fragment>
-                        <Grid item md={12} xl={12} sm={12} xs={12}>
-                            <Box className='frmDivision'>
-                                Anexe firma escaneada de la persona 
-                            </Box>
-                        </Grid>
-                        
-                        <Grid item md={5} xl={5} sm={12} xs={12}>
-                            <Files
-                                className='files-dropzone'
-                                onChange={(file ) =>{onFilesChange(file, 'firma') }}
-                                onError={onFilesError}
-                                accepts={['.jpg', '.png', '.jpeg']} 
-                                multiple
-                                maxFiles={1}
-                                maxFileSize={1000000}
-                                clickable
-                                dropActiveClassName={"files-dropzone-active"}
-                            >
-                            <ButtonFileImg title={"Adicionar firma"} />
-                            </Files>
-                        </Grid>
-
-                        <Grid item md={4} xl={4} sm={12} xs={12}>
-                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                {formDataFile.firma.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                })}
-                            </Box>
-                        </Grid>
-                    </Fragment>
-                : null}
-
-                {(showFirmaPersona !== '' && tipo === 'U') ?
-                    <Grid item md={3} xl={3} sm={12} xs={12}>
-                        <Box className='firmaPersona'>
-                            <img src={showFirmaPersona}></img>
-                        </Box>
-                    </Grid>
-                : null }
-
-                {(parseInt(formData.firmaDigital) === 1) ?  
-                    <Fragment>
-                        <Grid item md={12} xl={12} sm={12} xs={12}>
-                            <Box className='frmDivision'>
-                                Anexe la clave de la firma y los certificado digitales de la persona
-                            </Box>
-                        </Grid>
-
-                        <Grid item md={2} xl={2} sm={3} xs={12}>
-                            <TextValidator
-                                name={'claveCertificado'}
-                                value={formData.claveCertificado}
-                                label={'Contraseña'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 20}}
-                                validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
-                                type={'password'}
-                            />
-                        </Grid>
-
-                        <Grid item md={3} xl={3} sm={6} xs={12}>
-                            <Files
-                                className='files-dropzone'
-                                onChange={(file ) =>{onFilesChange(file, 'rutaCrt') }}
-                                onError={onFilesError}
-                                accepts={['.crt']} 
-                                multiple
-                                maxFiles={1}
-                                maxFileSize={1000000}
-                                clickable
-                                dropActiveClassName={"files-dropzone-active"}
-                            >
-                            <ButtonFileImg title={"Adicionar certificado digital con extensión crt"} />
-                            </Files>
-                        </Grid>
-
-                        <Grid item md={2} xl={2} sm={3} xs={12}>
-                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                {formDataFile.rutaCrt.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                })}
-                            </Box>
-                        </Grid> 
-
-                        <Grid item md={3} xl={3} sm={6} xs={12}>
-                            <Files
-                                className='files-dropzone'
-                                onChange={(file ) =>{onFilesChange(file, 'rutaPem') }}
-                                onError={onFilesError}
-                                accepts={['.pem']} 
-                                multiple
-                                maxFiles={1}
-                                maxFileSize={1000000}
-                                clickable
-                                dropActiveClassName={"files-dropzone-active"}
-                            >
-                            <ButtonFileImg title={"Adicionar certificado digital con extensión pem"} />
-                            </Files>
-                        </Grid>
-
-                        <Grid item md={2} xl={2} sm={6} xs={12}>
-                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                {formDataFile.rutaPem.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                })}
-                            </Box>
-                        </Grid>
-
-                        {(tipo === 'U' && formData.claveCertificado !== null) ?
-                            <Fragment>
-                                <Grid item md={2} xl={2} sm={6} xs={12}>
-                                <Box className='frmTexto'>
-                                        <label>Descargar certificado crt</label>
-                                        <Link href={formData.rutaDescargaCrt} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
-                                    </Box>
-                                </Grid>
-
-                                <Grid item md={2} xl={2} sm={6} xs={12}>
-                                <Box className='frmTexto'>
-                                        <label>Descargar certificado pem</label>
-                                        <Link href={formData.rutaDescargaPem} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
-                                    </Box>
-                                </Grid>
-                            </Fragment>
-                        : null}  
 
                     </Fragment>
                 : null}

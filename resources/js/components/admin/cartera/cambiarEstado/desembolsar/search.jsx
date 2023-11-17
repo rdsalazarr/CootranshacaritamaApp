@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Fab} from '@mui/material';
+import NumberValidator from '../../../../layout/numberValidator';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../../layout/modal';
@@ -288,19 +289,16 @@ export default function Search(){
                                 </SelectValidator>
                             </Grid>
 
-
                             <Grid item xl={3} md={3} sm={6} xs={12}>
-                                <TextValidator 
-                                    name={'valorSolicitado'}
+                                <NumberValidator fullWidth
+                                    id={"valorSolicitado"}
+                                    name={"valorSolicitado"}
+                                    label={"Valor solicitado"}
                                     value={formData.valorSolicitado}
-                                    label={'Valor solicitado'}
-                                    className={'inputGeneral'}
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off'}}
-                                    validators={["required","maxNumber:99999999"]}
-                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99999999"]}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:8']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 99999999']}
                                     onChange={handleChange}
-                                    type={"number"}
                                 />
                             </Grid>
 

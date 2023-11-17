@@ -22,7 +22,7 @@ table tbody {
   border-collapse: collapse;
   thead tr td , thead tr th  {
     color: $colorBlanco;
-    font-size: 1em;
+    font-size: 0.9em;
     text-align: center;
     background: $verdeOscuro;
     font-weight: bold;
@@ -37,7 +37,7 @@ table tbody {
     outline: none;
     vertical-align: middle;
     td{
-      padding: 0.8em;
+      padding: 0.6em;
       position: relative;
     }
   }
@@ -52,7 +52,7 @@ table tbody {
   margin-top: -1em;    
   thead tr td , thead tr th  {
     color: $colorBlanco;
-    font-size: 1em;     
+    font-size: 0.9em;     
     background: #b7b4b4;
     font-weight: bold;
     border-bottom: 2px solid #b7b7b7;   

@@ -25,6 +25,7 @@ class PersonaController extends Controller
                                     DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"), 'tp.tippernombre as tipoPersona')
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
 									->join('tipopersona as tp', 'tp.tipperid', '=', 'p.tipperid')
+									->where('p.persid', '>', 2)
                                     ->orderBy('p.persprimernombre')->orderBy('p.perssegundonombre')
                                     ->orderBy('p.persprimerapellido')->orderBy('p.perssegundoapellido')->get();
 
@@ -45,7 +46,7 @@ class PersonaController extends Controller
 			$persona = DB::table('persona as p')->select('p.persid',
 								DB::raw("(SELECT COUNT(condid) FROM conductor WHERE persid = p.persid) as totalConductor"),
 								DB::raw("(SELECT COUNT(asocid) FROM asociado WHERE persid = p.persid) as totalAsociado"))
-								->orderBy('p.persid', $request->codigo)->first();
+								->where('p.persid', $request->codigo)->first();
 								
 			$tipoConductores   = DB::table('tipoconductor')->select('tipconid','tipconnombre')->orderBy('tipconnombre')->get();
 			$agencias          = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
@@ -54,16 +55,23 @@ class PersonaController extends Controller
 			return response()->json(['success' => true, 'persona'   => $persona,  "tipoConductores" => $tipoConductores,
 														"agencias"  => $agencias, "tpCateLicencias" => $tpCateLicencias]);
 		} catch (Exception $error){			
-			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
 		}
 	}
 	
 	public function procesar(Request $request)
 	{
-		$this->validate(request(),['tipo' 					 => 'required', 
+		$this->validate(request(),['tipo' 					 => 'required',
 									'codigo' 				 => 'required',
 									'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:tipo,ASOCIADO',
-									'fechaIngresoConductor'  => 'nullable|date_format:Y-m-d|required_if:tipo,CONDUCTOR' ]);
+
+									'fechaIngresoConductor'   => 'nullable|date_format:Y-m-d|required_if:tipo,CONDUCTOR',
+									'tipoConductor'           => 'nullable|string|required_if:tipo,CONDUCTOR',
+									'agencia'                 => 'nullable|numeric|required_if:tipo,CONDUCTOR',
+									'tipoCategoria'           => 'nullable|string|required_if:tipo,CONDUCTOR',
+									'numeroLicencia'          => 'nullable|string|min:4|max:30|required_if:tipo,CONDUCTOR',
+									'fechaExpedicionLicencia' => 'nullable|date_format:Y-m-d|required_if:tipo,CONDUCTOR',
+									'fechaVencimiento'        => 'nullable|date_format:Y-m-d|required_if:tipo,CONDUCTOR' ]);
 
 		DB::beginTransaction();
 		try {
@@ -92,7 +100,7 @@ class PersonaController extends Controller
 				$conductorlicencia->condid                      = $condid;
 				$conductorlicencia->ticaliid                    = $request->tipoCategoria;
 				$conductorlicencia->conlicnumero                = $request->numeroLicencia;
-				$conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicion;
+				$conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicionLicencia;
 				$conductorlicencia->conlicfechavencimiento      = $request->fechaVencimiento;
 				$conductorlicencia->save();
             }

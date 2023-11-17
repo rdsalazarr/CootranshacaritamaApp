@@ -244,6 +244,24 @@ body{
   }
 }
 
+.mensajeProcesarPersona{
+  display: flex;
+  align-items: center;
+  background: #efefef;
+  border-color: #efefef;
+  border-radius: 10px;
+  border-style: outset;
+  border-width: 1px;
+  padding-left: 10px;
+  color: $verdeOscuro;
+  font-weight: 600;
+  p{
+    text-align: justify;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
 .iconAdd{
   text-align: right;
   width: 98%;

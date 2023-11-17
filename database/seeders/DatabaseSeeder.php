@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        /*$this->call(TipoIdentificacionSeeder::class);
+        $this->call(TipoIdentificacionSeeder::class);
         $this->call(CargoLaboralSeeder::class);
         $this->call(TipoDespedidaSeeder::class);
         $this->call(TipoDestinoSeeder::class);
@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoPersonaDocumentalSeeder::class);
         $this->call(TipoTramiteSeeder::class);
         $this->call(PersonaSeeder::class);
+        $this->call(AgenciaSeeder::class);
         $this->call(UsuarioSeeder::class);
         $this->call(TipoEstadoDocumentoEntranteSeeder::class);
         $this->call(TipoEstanteArchivadorSeeder::class);
@@ -42,14 +43,12 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoCombustibleVehiculoSeeder::class);
         $this->call(TipoEstadoVehiculoSeeder::class);
         $this->call(TipoEstadoAsociadoSeeder::class);
-        $this->call(TipoEstadoSolicitudCreditoSeeder::class);
-        $this->call(AgenciaSeeder::class);
+        $this->call(TipoEstadoSolicitudCreditoSeeder::class);     
         $this->call(TipoEstadoConductorSeeder::class);
         $this->call(TipoCategoriaLicenciaSeeder::class);
         $this->call(TipoConductorSeeder::class);
         $this->call(TipoEstadoColocacionSeeder::class);
-        $this->call(TipoServicioVehiculoSeeder::class);*/
-
+        $this->call(TipoServicioVehiculoSeeder::class);
         $this->call(TipoContratoServicioEspecialSeeder::class);
         $this->call(TipoConvenioServicioEspecialSeeder::class);        
     }

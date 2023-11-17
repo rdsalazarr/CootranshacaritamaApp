@@ -182,7 +182,7 @@ export default function New({data, tipo}){
                     <SelectValidator
                         name={'departamento'}
                         value={formData.departamento}
-                        label={'Departamento de nacimiento'}
+                        label={'Departamento'}
                         className={'inputGeneral'}
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}
@@ -201,7 +201,7 @@ export default function New({data, tipo}){
                     <SelectValidator
                         name={'municipio'}
                         value={formData.municipio}
-                        label={'Municipio de nacimiento'}
+                        label={'Municipio'}
                         className={'inputGeneral'}
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off'}}

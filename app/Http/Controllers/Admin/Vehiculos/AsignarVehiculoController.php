@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Vehiculos;
 
+use App\Models\Vehiculos\VehiculoContratoAsocidado;
 use App\Models\Vehiculos\VehiculoTarjetaOperacion;
 use App\Models\Conductor\ConductorVehiculo;
 use App\Models\Asociado\AsociadoVehiculo;
@@ -84,19 +85,47 @@ class AsignarVehiculoController extends Controller
         DB::beginTransaction();
         try {
 
+            $vehiculoId       = $request->vehiculo;
+            $vehiculocontrato = DB::table('vehiculocontrato')
+                                    ->select('vehconid', 'vehconfechafinal')
+                                    ->where('vehiid', $vehiculoId)
+                                    ->where('vehconfechafinal', function ($query) use ($vehiculoId) {
+                                        $query->selectRaw('MAX(vehconfechafinal)')
+                                            ->from('vehiculocontrato')
+                                            ->where('vehiid', $vehiculoId);
+                                    })
+                                    ->first();
+
+            $vehconid = $vehiculocontrato->vehconid;
+
             foreach($request->asociados as $dataAsociado){
                 $identificador  = $dataAsociado['identificador'];
                 $asociadoId     = $dataAsociado['asociadoId'];
                 $estadoAsociado = $dataAsociado['estado']; 
 
                 if($estadoAsociado === 'I'){
-					$asociadovehiculo = new AsociadoVehiculo();
+					$asociadovehiculo         = new AsociadoVehiculo();
 					$asociadovehiculo->asocid = $asociadoId;
-					$asociadovehiculo->vehiid = $request->vehiculo;
+					$asociadovehiculo->vehiid = $vehiculoId;
 					$asociadovehiculo->save();
+
+                    $vehiculocontratoasociado           = new VehiculoContratoAsocidado();
+                    $vehiculocontratoasociado->asocid   = $asociadoId;
+                    $vehiculocontratoasociado->vehconid = $vehconid;
+					$vehiculocontratoasociado->save();
 				}
 
                 if($estadoAsociado === 'D'){
+
+                    $vehiculocontratoasociado = DB::table('vehiculocontratoasociado')
+                                                    ->select('vecoasid')
+                                                    ->where('vehconid', $vehconid)
+                                                    ->where('asocid', $asociadoId)
+                                                    ->first();
+
+                    $vehiculocontratoasociado = VehiculoContratoAsocidado::findOrFail($vehiculocontratoasociado->vecoasid);
+                    $vehiculocontratoasociado->delete();
+
 					$asociadovehiculo = AsociadoVehiculo::findOrFail($identificador);
 					$asociadovehiculo->delete();
 				}
@@ -114,10 +143,20 @@ class AsignarVehiculoController extends Controller
 	    $this->validate(request(),['vehiculoId' => 'required', 'idPersona' => 'required']);
 
         try {
+            $vehiculoId       = $request->vehiculoId;
+            $vehiculocontrato = DB::table('vehiculocontrato')
+                                ->select('vehconid', 'vehconfechainicial', DB::raw("CONCAT(vehconanio, vehconnumero) as numeroContrato"))
+                                ->where('vehiid', $vehiculoId)
+                                ->where('vehconfechafinal', function ($query) use ($vehiculoId) {
+                                    $query->selectRaw('MAX(vehconfechafinal)')
+                                        ->from('vehiculocontrato')
+                                        ->where('vehiid', $vehiculoId);
+                                })
+                                ->first();
 
             $dataRadicado   = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoVehiculo')->first();       
-            $numeroContrato = 'A027650000000';//Falta
-            $fechaContrato  = '2025-10-19';
+            $numeroContrato = $vehiculocontrato->numeroContrato;
+            $fechaContrato  = $vehiculocontrato->vehconfechainicial;
 
             $asociadoVehiculo  = DB::table('asociadovehiculo as av')
                                         ->select('av.asovehid','p.persid','a.asocid', 'p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
@@ -125,7 +164,7 @@ class AsignarVehiculoController extends Controller
                                             'ti.tipidesigla','me.muninombre as nombreMunicipioExpedicion','p.persdireccion','p.persnumerocelular',
                                             'v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehimodelo','v.vehicilindraje','v.vehiobservacion','tmv.timavenombre',
                                             'tcv.ticovenombre','tcrh.ticavenombre','tv.tipvecapacidad',
-                                            DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"))
+                                            DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia)) as referenciaVehiculo"))
                                         ->join('vehiculo as v', 'v.vehiid', '=', 'av.vehiid')
                                         ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                                         ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Autocomplete, createFilterOptions} from '@mui/material';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import person from "../../../../../images/person.png";
@@ -281,18 +282,15 @@ export default function Search(){
                             </Grid>
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
-                                <TextValidator 
-                                    name={'valorSolicitado'}
+                                <NumberValidator fullWidth
+                                    id={"valorSolicitado"}
+                                    name={"valorSolicitado"}
+                                    label={"Valor solicitado"}
                                     value={formData.valorSolicitado}
-                                    label={'Valor solicitado'}
-                                    className={'inputGeneral'}
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off'}}
-                                    validators={["required","maxNumber:99999999"]}
-                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99999999"]}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:8']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 99999999']}
                                     onChange={handleChange}
-                                    type={"number"}
-                                    disabled={deshabilitado}
                                 />
                             </Grid>
 

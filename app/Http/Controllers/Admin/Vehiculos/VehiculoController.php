@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Admin\Vehiculos;
 
+use App\Models\Vehiculos\VehiculoContrato;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
-use App\Util\redimencionarImagen;
+use Exception, Auth, File, DB, URL;
 use App\Models\Vehiculos\Vehiculo;
-use Exception, File, DB, URL;
+use App\Util\redimencionarImagen;
 use Illuminate\Http\Request;
 use App\Util\generales;
+use Carbon\Carbon;
 
 class VehiculoController extends Controller
 {
@@ -81,36 +83,37 @@ class VehiculoController extends Controller
     public function salve(Request $request)
 	{
         $id       = $request->codigo;
-
         $vehiculo = ($id != 000) ? Vehiculo::findOrFail($id) : new Vehiculo();
 
 	    $this->validate(request(),[
-                'tipoVehiculo'    => 'required|numeric',
-                'tipoReferencia'  => 'required|numeric',
-                'tipoMarca'       => 'required|numeric',
-                'tipoCombustible' => 'required|numeric',
-                'tipoModalidad'   => 'required|numeric',
-                'tipoCarroceria'  => 'required|numeric',
-                'tipoColor'       => 'required|numeric',
-                'agencia'         => 'required|numeric',
-                'fechaIngreso' 	  => 'required|date|date_format:Y-m-d',
-                'numeroInterno'   => 'required|numeric|min:1|max:9999',
-                'placa'           => 'required|string|min:4|max:8|unique:vehiculo,vehiplaca,'.$vehiculo->vehiid.',vehiid',
-                'modelo'          => 'required|numeric|min:1|max:9999',
-                'cilindraje'      => 'nullable|string|min:1|max:6',
-                'numeroMotor'     => 'nullable|string|max:30',
-                'numeroChasis'    => 'nullable|string|max:30',
-                'numeroSerie'     => 'nullable|string|max:30',
-                'numeroEjes'      => 'nullable|numeric|min:1|max:9999',
-                'motorRegrabado'  => 'required|numeric',
-                'chasisRegrabado' => 'required|numeric',
-                'serieRegrabado'  => 'required|numeric',
-                'observacion'     => 'nullable|string|max:500',
-                'fotografia'      => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
+                'tipoVehiculo'          => 'required|numeric',
+                'tipoReferencia'        => 'required|numeric',
+                'tipoMarca'             => 'required|numeric',
+                'tipoCombustible'       => 'required|numeric',
+                'tipoModalidad'         => 'required|numeric',
+                'tipoCarroceria'        => 'required|numeric',
+                'tipoColor'             => 'required|numeric',
+                'agencia'               => 'required|numeric',
+                'fechaIngreso' 	        => 'required|date|date_format:Y-m-d',
+                'numeroInterno'         => 'required|numeric|min:1|max:9999',
+                'placa'                 => 'required|string|min:4|max:8|unique:vehiculo,vehiplaca,'.$vehiculo->vehiid.',vehiid',
+                'modelo'                => 'required|numeric|min:1|max:9999',
+                'cilindraje'            => 'nullable|string|min:1|max:6',
+                'numeroMotor'           => 'nullable|string|max:30',
+                'numeroChasis'          => 'nullable|string|max:30',
+                'numeroSerie'           => 'nullable|string|max:30',
+                'numeroEjes'            => 'nullable|numeric|min:1|max:9999',
+                'motorRegrabado'        => 'required|numeric',
+                'chasisRegrabado'       => 'required|numeric',
+                'serieRegrabado'        => 'required|numeric',
+                'observacion'           => 'nullable|string|max:500',
+                'fotografia'            => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
+                'fechaInicialContrato'  => 'nullable|date_format:Y-m-d|required_if:tipo,I',
 	        ]);
 
         DB::beginTransaction();
         try {
+               
             $estado              = 'A';
             $redimencionarImagen = new redimencionarImagen();
             $funcion 		     = new generales();
@@ -150,8 +153,29 @@ class VehiculoController extends Controller
             $vehiculo->vehieschasisregrabado = $request->chasisRegrabado;
             $vehiculo->vehiesserieregrabado  = $request->serieRegrabado;
             $vehiculo->vehiobservacion       = $request->observacion;
-            $vehiculo->vehirutafoto          = $rutaFotografia;            
+            $vehiculo->vehirutafoto          = $rutaFotografia;
             $vehiculo->save();
+
+            if($request->tipo === 'I'){
+                $fechaHoraActual              = Carbon::now();
+                $anioActual                   = $fechaHoraActual->year;
+                $fechaInicialContrato         = Carbon::parse($request->fechaInicialContrato);
+                $fechaInicialContratoAdiciona = $fechaInicialContrato->addYear();
+                $fechaFinalContrato           = $fechaInicialContratoAdiciona->toDateString();
+				$empresa                      = DB::table('empresa')->select('persidrepresentantelegal')->where('emprid', '1')->first();
+                $vehiculoMaxConsecutio        = Vehiculo::latest('vehiid')->first();
+                $vehiid                       = $vehiculoMaxConsecutio->vehiid;
+
+                $vehiculocontrato                     = new VehiculoContrato();
+                $vehiculocontrato->vehiid             = $vehiid;
+                $vehiculocontrato->persidgerente      = $empresa->persidrepresentantelegal;;
+                $vehiculocontrato->vehconanio         = $anioActual;
+                $vehiculocontrato->vehconnumero       = $this->obtenerConsecutivoContrato($anioActual);
+                $vehiculocontrato->vehconfechainicial = $request->fechaInicialContrato;
+                $vehiculocontrato->vehconfechafinal   = $fechaFinalContrato;
+                $vehiculocontrato->vehconobservacion  = 'Se ha generado el contrato del vehículo por primera vez. Este procedimiento fue llevado a cabo por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+                $vehiculocontrato->save();
+            }
 
         	DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
@@ -176,4 +200,14 @@ class VehiculoController extends Controller
 			}
 		}
 	}
+
+    public function obtenerConsecutivoContrato($anioActual)
+	{
+        $consecutivoContrato = DB::table('vehiculocontrato')->select('vehconnumero as consecutivo')
+								->where('vehconanio', $anioActual)->orderBy('vehconid', 'desc')->first();
+
+        $consecutivo = ($consecutivoContrato === null) ? 1 : $consecutivoContrato->consecutivo + 1;
+
+        return str_pad($consecutivo,  4, "0", STR_PAD_LEFT);
+    }
 }

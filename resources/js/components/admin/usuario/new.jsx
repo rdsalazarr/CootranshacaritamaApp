@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Icon,Table, TableHead, TableBody, TableRow, TableCell, Box } from '@mui/material';
 import showSimpleSnackbar from '../../layout/snackBar';
@@ -12,17 +12,18 @@ export default function New({data, tipo}){
     const [formData, setFormData] = useState( 
                     (tipo !== 'I') ? {codigo:data.usuaid, tipoIdentificacion: data.tipideid, persona:data.persid, documento: data.persdocumento, nombre: data.usuanombre, 
                                      alias:data.usuaalias, apellido: data.usuaapellidos, correo: data.usuaemail,usuario: data.usuanick, cambiarPassword: data.usuacambiarpassword,
-                                      bloqueado: data.usuabloqueado, estado: data.usuaactivo, tipo:tipo 
+                                      bloqueado: data.usuabloqueado, agencia: data.agenid, estado: data.usuaactivo, tipo:tipo 
                                     } : {codigo:'000', tipoIdentificacion:'',documento:'', persona:'', nombre: '', apellido: '', correo: '', usuario:'', alias:'',
-                                        cambiarPassword:'1',bloqueado:'0',estado: '1', tipo:tipo
+                                        cambiarPassword:'1',bloqueado:'0', agencia: '', estado: '1', tipo:tipo
                                 });
 
-    const [loader, setLoader] = useState(false); 
-    const [habilitado, setHabilitado] = useState(true);
-    const [tipoIdentificacion, setTipoIdentificacion] = useState([]);
     const [formDataAdicionar, setFormDataAdicionar] = useState({rol: ''});
-    const [roles, setRoles] = useState([]);
+    const [tipoIdentificacion, setTipoIdentificacion] = useState([]);
     const [rolesUsuario, setRolesUsuario] = useState([]);
+    const [habilitado, setHabilitado] = useState(true);
+    const [agencias, setAgencias] = useState([]);
+    const [loader, setLoader] = useState(false);
+    const [roles, setRoles] = useState([]);
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -141,6 +142,7 @@ export default function New({data, tipo}){
         setLoader(true);
         instance.post('/admin/usuario/list/datos', {codigo:formData.codigo, tipo:tipo}).then(res=>{
             setTipoIdentificacion(res.tipoIdentificaciones);
+            setAgencias(res.agencias);
             setRoles(res.roles);
 
             if(tipo === 'U'){
@@ -235,8 +237,8 @@ export default function New({data, tipo}){
                         name={'correo'}
                         value={formData.correo}
                         label={'Correo'}
-                        className={'inputGeneral'} 
-                        variant={"standard"} 
+                        className={'inputGeneral'}
+                        variant={"standard"}
                         inputProps={{autoComplete: 'off', maxLength: 80}}
                         validators={['required', 'isEmail']}
                         errorMessages={['Campo requerido', 'Correo no válido']}
@@ -271,45 +273,64 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                { (formData.tipo === 'U') ?
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'cambiarPassword'}
-                            value={formData.cambiarPassword}
-                            label={'Cambiar clave'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            <MenuItem value={"1"} >Sí</MenuItem>
-                            <MenuItem value={"0"}>No</MenuItem>
-                        </SelectValidator>
-                    </Grid>
-                : null }  
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <SelectValidator
+                        name={'agencia'}
+                        value={formData.agencia}
+                        label={'Agencia'}
+                        className={'inputGeneral'}
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Debe hacer una selección"]}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        {agencias.map(res=>{
+                            return <MenuItem value={res.agenid} key={res.agenid}>{res.agennombre}</MenuItem>
+                        })}
+                    </SelectValidator>
+                </Grid>
 
                 { (formData.tipo === 'U') ?
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'bloqueado'}
-                            value={formData.bloqueado}
-                            label={'¡Usuario bloqueado?'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            <MenuItem value={"1"} >Sí</MenuItem>
-                            <MenuItem value={"0"}>No</MenuItem>
-                        </SelectValidator>
-                    </Grid>
-                : null }  
+                    <Fragment>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'cambiarPassword'}
+                                value={formData.cambiarPassword}
+                                label={'Cambiar clave'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"} >Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'bloqueado'}
+                                value={formData.bloqueado}
+                                label={'¡Usuario bloqueado?'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"} >Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+                    </Fragment>
+                : null }
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator
@@ -345,8 +366,8 @@ export default function New({data, tipo}){
                         label={'Rol'}
                         className={'inputGeneral'}
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}} 
-                        onChange={handleChangeRoles} 
+                        inputProps={{autoComplete: 'off'}}
+                        onChange={handleChangeRoles}
                     >
                         <MenuItem value={""}>Seleccione</MenuItem>
                         {roles.map(res=>{

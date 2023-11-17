@@ -28,11 +28,11 @@ export default function List(){
                         <Procesar data={modal.data}/>
                     ];
 
-    const tituloModal = ['Nueva persona','Editar persona','','Visualizar la información de la persona'];
+    const tituloModal = ['Nueva persona','Editar persona','','Visualizar la información de la persona', 'Procesar persona como asociado o como conductor'];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'bigFlot'});
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' : 'bigFlot'});
     }
 
     const inicio = () =>{

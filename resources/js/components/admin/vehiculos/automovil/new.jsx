@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {ButtonFileImg, ContentFile} from "../../../layout/files";
 import { Button, Grid, MenuItem, Stack, Box}  from '@mui/material';
@@ -14,7 +14,7 @@ export default function New({data, tipo}){
                                              tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',          fechaIngreso: '', 
                                              numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',       numeroMotor: '', 
                                              numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                             serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo
+                                             serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: ''
                                             });
 
     const [loader, setLoader] = useState(false); 
@@ -63,7 +63,7 @@ export default function New({data, tipo}){
                                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',         fechaIngreso: '', 
                                                                 numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',      numeroMotor: '', 
                                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo}) : null;
+                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '' }) : null;
 
             setLoader(false);
         })
@@ -500,7 +500,36 @@ export default function New({data, tipo}){
                         </Box>
                     </Grid>
                 : null }
-                
+
+                {(tipo === 'I')? 
+                    <Fragment>
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmDivision'>
+                                Información de del contrato para el vehículo
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator
+                                name={'fechaInicialContrato'}
+                                value={formData.fechaInicialContrato}
+                                label={'Fecha inicial del contrato'}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                                type={"date"}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        </Grid>
+
+                    </Fragment>
+                : null}
+
             </Grid>
 
             <Grid container direction="row"  justifyContent="right">

@@ -21,6 +21,20 @@ class PersonaSeeder extends Seeder
             'carlabid'  => '1',
             'tipideid'  => '1',
             'tipperid'  => 'E',
+            'persdocumento'    => '1',
+            'persprimernombre' => 'SISTEMA',
+            'persdireccion'    => 'SISTEMA',
+            'persgenero'       => 'M',
+            'persactiva'       => '0',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]); 
+
+        DB::table('persona')->insert([
+            'persid'    => '2',
+            'carlabid'  => '1',
+            'tipideid'  => '1',
+            'tipperid'  => 'E',
             'persdepaidnacimiento' => 18, 
             'persmuniidnacimiento' => 789,
             'persdepaidexpedicion' => 18, 
@@ -49,7 +63,7 @@ class PersonaSeeder extends Seeder
         ]); 
 
         DB::table('persona')->insert([
-            'persid'    => '2',
+            'persid'    => '3',
             'carlabid'  => '4',
             'tipideid'  => '1',
             'tipperid'  => 'E',

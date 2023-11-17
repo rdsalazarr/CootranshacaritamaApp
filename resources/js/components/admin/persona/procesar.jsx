@@ -11,8 +11,10 @@ export default function Procesar({data}){
     const [formData, setFormData] = useState({codigo:data.persid,  fechaIngresoAsociado:'', fechaIngresoConductor:'', tipoConductor:'',
                              agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', tipo:''}); 
 
-    const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
+    const [tipoCategoriaLicencias, setTipoCategoriaLicencias] = useState([]);
+    const [mostrarMensaje, setMostrarMensaje] = useState(false);
     const [tipoConductores, setTipoConductores] = useState([]);
+    const [mostrarSelect, setMostrarSelect] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [conductor, setConductor] = useState(false);
     const [asociado, setAsociado] = useState(false);
@@ -35,18 +37,31 @@ export default function Procesar({data}){
         })
     }
 
+    const seleccionarFormulario = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
+        setConductor((e.target.value === 'CONDUCTOR') ? true : false);
+        setAsociado((e.target.value === 'ASOCIADO') ? true : false);
+    }
+
     useEffect(()=>{
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/persona/consultar/asignacion', {codigo:data.persid}).then(res=>{
-            let persona = res.persona;
-            setConductor(persona.totalConductor);
-            setAsociado(persona.totalAsociado);  
-            setAgencias(res.agencias);
+            let persona          = res.persona;
+            let mostrarSelect    = (persona.totalConductor === 0 && persona.totalAsociado === 0) ? true : false;
+            let mostrarConductor = (!mostrarSelect && persona.totalConductor === 0) ? true : false;
+            let mostrarAsociado  = (!mostrarSelect && persona.totalAsociado === 0) ? true : false;
+            let mostrarMensaje   = (!mostrarSelect && !mostrarConductor && !mostrarAsociado) ? true : false;
+            setTipoCategoriaLicencias(res.tpCateLicencias);
             setTipoConductores(res.tipoConductores);
-            settipoCategoriaLicencias(res.tpCateLicencias);
-            setLoader(false);
+            setMostrarMensaje(mostrarMensaje);
+            setMostrarSelect(mostrarSelect);
+            setConductor(mostrarConductor);
+            setAsociado(mostrarAsociado);
+            setAgencias(res.agencias);
+            newFormData.tipo = (!mostrarSelect && mostrarAsociado) ? 'ASOCIADO' : ((!mostrarSelect && mostrarConductor) ? 'CONDUCTOR' : '');
             setFormData(newFormData);
+            setLoader(false);
         })
     }, []);
 
@@ -59,28 +74,31 @@ export default function Procesar({data}){
 
             <Grid container spacing={2}>
 
-                    <Grid item md={12} xl={12} sm={12} xs={12}>
-                        <Grid item xl={4} md={4} sm={6} xs={12}></Grid>
+                {(mostrarSelect) ?
+                    <Fragment>
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                        </Grid>
                         <Grid item xl={4} md={4} sm={6} xs={12}>
                             <SelectValidator
                                 name={'tipo'}
                                 value={formData.tipo}
-                                label={'Activo'}
+                                label={'Seleccione el proceso que desea realizar'}
                                 className={'inputGeneral'} 
-                                variant={"standard"} 
+                                variant={"standard"}
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
                                 errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange} 
+                                onChange={seleccionarFormulario} 
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
                                 <MenuItem value={"ASOCIADO"}>ASOCIADO</MenuItem>
                                 <MenuItem value={"CONDUCTOR"}>CONDUCTOR</MenuItem>
                             </SelectValidator>
                         </Grid>
-                    </Grid>
+                    </Fragment>
+                : null}
 
-
+                {(asociado) ?
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
@@ -106,7 +124,9 @@ export default function Procesar({data}){
                             />
                         </Grid>
                     </Fragment>
+                : null}
 
+                {(conductor) ?
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
@@ -245,18 +265,29 @@ export default function Procesar({data}){
                             />
                         </Grid>
                     </Fragment>
+                : null}
 
             </Grid>
 
-            <Grid container direction="row"  justifyContent="right">
-                <Stack direction="row" spacing={2}>
-                    <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
-                        startIcon={<SaveIcon />}> {"Guardar" }
-                    </Button>
-                </Stack>
-            </Grid>
+            {(mostrarMensaje) ? 
+                <Grid container spacing={2}>
+                    <Grid item xl={12} md={12} sm={12} xs={12} style={{marginTop:'1em'}}>
+                        <Box className='mensajeProcesarPersona'>
+                           <p>La persona seleccionada no puede ser procesada, ya que existe un registro tanto como asociado como conductor. 
+                            Se recomienda acceder a su sección correspondiente y realizar el trámite correspondiente.</p> 
+                        </Box>
+                    </Grid>
+                </Grid>
+            : 
+                <Grid container direction="row"  justifyContent="right">
+                    <Stack direction="row" spacing={2}>
+                        <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
+                            startIcon={<SaveIcon />}> {"Guardar" }
+                        </Button>
+                    </Stack>
+                </Grid>
+            }
 
         </ValidatorForm>
     )
-
 }

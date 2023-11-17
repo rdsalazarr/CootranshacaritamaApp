@@ -87,7 +87,7 @@ export default function Show({id, frm}){
         return <LoaderModal />
     }
 
-    return ( 
+    return (
         <Box>
             <Grid container spacing={2}>
 
@@ -242,6 +242,46 @@ export default function Show({id, frm}){
                     </Fragment>
                     : null}
 
+                {(formData.foto !== null) ?
+                    <Grid item md={3} xl={3} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Fotografia</label>
+                            <Box className='fotografia' style={{marginTop: '0.6em'}}>
+                                <img src={formData.showFotografia} ></img>
+                            </Box>
+                        </Box>
+                    </Grid>
+                : null }
+
+                {(formData.firma !== null) ?
+                    <Grid item md={3} xl={3} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Firma</label>
+                            <Box className='firmaPersona' style={{marginTop: '0.6em'}}>
+                                <img src={formData.showFirmaPersona} ></img>
+                            </Box>
+                        </Box>
+                    </Grid>
+                : null }
+
+                {(formData.firmaDigital === 1) ?
+                    <Fragment>
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                           <Box className='frmTexto'>
+                                <label>Descargar certificado crt</label>
+                                <Link href={formData.rutaDescargaCrt} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                            </Box>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                           <Box className='frmTexto'>
+                                <label>Descargar certificado pem</label>
+                                <Link href={formData.rutaDescargaPem} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                            </Box>
+                        </Grid>
+                </Fragment>
+                : null}
+
                 {(frm === 'ASOCIADO') ?
                     <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
@@ -344,46 +384,6 @@ export default function Show({id, frm}){
                         </Grid>
 
                     </Fragment>
-                : null}
-
-                {(formData.foto !== null) ?
-                    <Grid item md={3} xl={3} sm={12} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Fotografia</label>
-                            <Box className='fotografia' style={{marginTop: '0.6em'}}>
-                                <img src={formData.showFotografia} ></img>
-                            </Box>
-                        </Box>
-                    </Grid>
-                : null }
-
-                {(formData.firma !== null) ?
-                    <Grid item md={3} xl={3} sm={12} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Firma</label>
-                            <Box className='firmaPersona' style={{marginTop: '0.6em'}}>
-                                <img src={formData.showFirmaPersona} ></img>
-                            </Box>
-                        </Box>
-                    </Grid>
-                : null }
-
-                {(formData.firmaDigital === 1) ?
-                    <Fragment>
-                        <Grid item md={2} xl={2} sm={6} xs={12}>
-                           <Box className='frmTexto'>
-                                <label>Descargar certificado crt</label>
-                                <Link href={formData.rutaDescargaCrt} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
-                            </Box>
-                        </Grid>
-
-                        <Grid item md={2} xl={2} sm={6} xs={12}>
-                           <Box className='frmTexto'>
-                                <label>Descargar certificado pem</label>
-                                <Link href={formData.rutaDescargaPem} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
-                            </Box>
-                        </Grid>
-                </Fragment>
                 : null}
 
                 {(formData.totalCambioEstadoAsociado > 0) ? 

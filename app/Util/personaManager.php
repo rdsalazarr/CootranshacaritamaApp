@@ -156,7 +156,7 @@ class personaManager {
                     $conductorlicencia->condid                      = $condid;
                     $conductorlicencia->ticaliid                    = $request->tipoCategoria;
                     $conductorlicencia->conlicnumero                = $request->numeroLicencia;
-                    $conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicion;
+                    $conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicionLicencia;
                     $conductorlicencia->conlicfechavencimiento      = $request->fechaVencimiento;
                     if($debeActualizarImagen){
                         $conductorlicencia->conlicextension             = $extension;

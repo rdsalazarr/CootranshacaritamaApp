@@ -16,7 +16,6 @@ INSERT INTO `informacionnotificacioncorreo` (`innocoid`, `innoconombre`, `innoco
 (14, 'notificarNegacionSolicitudCredito', 'Decisión tomada sobre la solicitud de crédito por un valor de $ valorCredito', '<p dir=\"ltr\" style=\"text-align: justify;\">Estimado <strong>nombreSolicitante</strong>,</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Es un placer saludarte. Queremos informarte que hemos completado la revisi&oacute;n de tu solicitud de cr&eacute;dito por un monto de $ <strong>valorCredito</strong>. Nos complace comunicarte que tu solicitud ha sido <strong>negada</strong>.&nbsp;</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Lamentamos informarte que <strong>observacionesGenerales</strong>. Entendemos que esto puede ser decepcionante, pero estamos aqu&iacute; para ayudarte en cualquier otra consulta o proceso futuro.<strong><br></strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Agradecemos tu confianza en la <strong>COOPERATIVA DE TRANSPORTADORES HACARITAMA</strong>.</p>\r\n<p style=\"text-align: justify;\"><strong>&nbsp;<br></strong>Cordialmente,</p>\r\n<p style=\"text-align: justify;\"><strong>&nbsp;</strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\"><strong>nombreGerente</strong><br><strong>COOPERATIVA DE TRANSPORTADORES HACARITAMA</strong></p>\r\n<p style=\"text-align: justify;\">&nbsp;</p>', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
-
 INSERT INTO departamento (depaid, depacodigo, depanombre,created_at,updated_at) VALUES
 (1, '05', 'Antioquia', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (2, '08', 'Atlántico', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -1181,7 +1180,7 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 INSERT INTO empresa (emprid, persidrepresentantelegal,emprdepaid,emprmuniid,emprnit,emprdigitoverificacion,
 emprnombre,emprsigla,emprlema,emprdireccion,emprbarrio, emprcorreo, emprtelefonofijo,emprtelefonocelular,
 emprhorarioatencion,emprurl,emprcodigopostal, emprpersoneriajuridica, emprlogo, created_at, updated_at) VALUES
-(1, 2, 18, 804, '890.505.424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'La empresa que integra la region', 
+(1, 3, 18, 804, '890.505.424', '7', 'COOPERATIVA DE TRANSPORTADORES HACARITAMA', 'COOTRANSHACARITAMA', 'La empresa que integra la region', 
 'Calle 7 a 56 211 la ondina vía a rio de oro','Santa Clara','cootranshacaritama@hotmail.com', '5611012', '3146034311', 
  'Lunes a Viernes De 8:00 a.m a 12:00  y de 2:00 p.m a 6:00 p.m', 'www.cootranshacaritama.com', '546552', 'Personería Jurídica No. 73 enero 28 de 1976', '890505424_logoHacaritama.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
@@ -1206,10 +1205,10 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (7, 2, 'Series', 'Gestionar series documentales', 'admin/gestionar/seriesDocumentales', 'insert_chart_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (8, 2, 'Dependencia', 'Gestionar dependencia', 'admin/gestionar/dependencia', 'maps_home_work_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (9, 2, 'Persona', 'Gestionar persona', 'admin/gestionar/persona', 'person_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(10, 2, 'Usuario', 'Gestionar usuario', 'admin/gestionar/usuario', 'person', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(10, 2, 'Agencia', 'Gestionar agencia', 'admin/gestionar/agencia', 'holiday_village_con', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 
-(12, 2, 'Festivos', 'Gestionar festivos', 'admin/gestionar/festivos', 'calendar_month_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(13, 2, 'Agencia', 'Gestionar agencia', 'admin/gestionar/agencia', 'holiday_village_con', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(12, 2, 'Usuario', 'Gestionar usuario', 'admin/gestionar/usuario', 'person', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(13, 2, 'Festivos', 'Gestionar festivos', 'admin/gestionar/festivos', 'calendar_month_icon', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (14, 3, 'Acta', 'Gestionar actas', 'admin/produccion/documental/acta', 'local_library_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (15, 3, 'Certificado', 'Gestionar certificados', 'admin/produccion/documental/certificado', 'note_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (16, 3, 'Circular', 'Gestionar circulares', 'admin/produccion/documental/circular', 'menu_book_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
