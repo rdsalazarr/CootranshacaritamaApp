@@ -36,9 +36,30 @@ class PersonaController extends Controller
         $personaManager = new personaManager();
 		return $personaManager->registrar($request);
 	}
+
+	public function datos(Request $request)
+	{ 
+		$this->validate(request(),[	'codigo' => 'required']);
+		try {
+
+			$persona = DB::table('persona as p')->select('p.persid',
+								DB::raw("(SELECT COUNT(condid) FROM conductor WHERE persid = p.persid) as totalConductor"),
+								DB::raw("(SELECT COUNT(asocid) FROM asociado WHERE persid = p.persid) as totalAsociado"))
+								->orderBy('p.persid', $request->codigo)->first();
+								
+			$tipoConductores   = DB::table('tipoconductor')->select('tipconid','tipconnombre')->orderBy('tipconnombre')->get();
+			$agencias          = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
+			$tpCateLicencias   = DB::table('tipocategorialicencia')->select('ticaliid','ticalinombre')->orderBy('ticalinombre')->get();	
+
+			return response()->json(['success' => true, 'persona'   => $persona,  "tipoConductores" => $tipoConductores,
+														"agencias"  => $agencias, "tpCateLicencias" => $tpCateLicencias]);
+		} catch (Exception $error){			
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+	}
 	
 	public function procesar(Request $request)
-	{ 
+	{
 		$this->validate(request(),['tipo' 					 => 'required', 
 									'codigo' 				 => 'required',
 									'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:tipo,ASOCIADO',
@@ -56,30 +77,6 @@ class PersonaController extends Controller
 			}
 
 			if($request->tipo === 'CONDUCTOR' ){
-
-				$redimencionarImagen = new redimencionarImagen();
-            	$funcion 		     = new generales();
-				
-				$documentoPersona    = $request->documento;
-				$rutaCarpeta         = public_path().'/archivos/persona/'.$documentoPersona;
-				$carpetaServe        = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true); 
-
-				$debeActualizarImagen = false;
-                if($request->hasFile('imagenLicencia')){
-                    $debeActualizarImagen = true;
-                    $numeroAleatorio      = rand(100, 1000);
-                    $file                 = $request->file('imagenLicencia');
-                    $nombreOriginalLic    = $file->getclientOriginalName();
-                    $filename             = pathinfo($nombreOriginalLic, PATHINFO_FILENAME);
-                    $extension            = pathinfo($nombreOriginalLic, PATHINFO_EXTENSION);
-                    $rutaImagenLicencia   = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-                    $file->move($rutaCarpeta, $rutaImagenLicencia);
-                    $rutaArchivo          = Crypt::encrypt($rutaImagenLicencia);
-                    $extension            = mb_strtoupper($extension,'UTF-8');
-                    if($extension !== 'PDF')
-                        $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaImagenLicencia, 480, 340);//Se redimenciona a un solo tipo (ancho * alto)
-                }
-
 				$conductor                   = new Conductor();
 				$conductor->persid           = $codigo;
 				$conductor->tiescoid         = 'A';
@@ -97,12 +94,6 @@ class PersonaController extends Controller
 				$conductorlicencia->conlicnumero                = $request->numeroLicencia;
 				$conductorlicencia->conlicfechaexpedicion       = $request->fechaExpedicion;
 				$conductorlicencia->conlicfechavencimiento      = $request->fechaVencimiento;
-				if($debeActualizarImagen){
-					$conductorlicencia->conlicextension             = $extension;
-					$conductorlicencia->conlicnombrearchivooriginal = $nombreOriginalLic;
-					$conductorlicencia->conlicnombrearchivoeditado  = $rutaImagenLicencia;
-					$conductorlicencia->conlicrutaarchivo           = $rutaArchivo;
-				}
 				$conductorlicencia->save();
             }
 

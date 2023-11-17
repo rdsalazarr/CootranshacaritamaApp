@@ -1,52 +1,57 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar} from '@mui/material';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import {ButtonFileImg, ContentFile} from "../../layout/files";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { ModalDefaultAuto  } from '../../layout/modal';
+import { Button, Grid, MenuItem, Stack, Box} from '@mui/material';
 import showSimpleSnackbar from '../../layout/snackBar';
-import ErrorIcon from '@mui/icons-material/Error';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
-import ShowAnexo from '../vehiculos/showAnexo';
 import instance from '../../layout/instance';
-import Files from "react-files";
 
 export default function Procesar({data}){
 
-    const [formData, setFormData] = useState({codigo:data.persid,  fechaIngresoAsociado:'', fechaIngresoConductor:'',
-                            tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:''}); 
+    const [formData, setFormData] = useState({codigo:data.persid,  fechaIngresoAsociado:'', fechaIngresoConductor:'', tipoConductor:'',
+                             agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', tipo:''}); 
 
-    const [tipoConductores, setTipoConductores] = useState([]);
-    const [loader, setLoader] = useState(false); 
-    const [habilitado, setHabilitado] = useState(true);
-    const [agencias, setAgencias] = useState([]);
     const [tipoCategoriaLicencias, settipoCategoriaLicencias] = useState([]);
-    const [formDataFile, setFormDataFile] = useState({imagenLicencia:[]});
+    const [tipoConductores, setTipoConductores] = useState([]);
+    const [habilitado, setHabilitado] = useState(true);
+    const [conductor, setConductor] = useState(false);
+    const [asociado, setAsociado] = useState(false);
+    const [agencias, setAgencias] = useState([]);
+    const [loader, setLoader] = useState(false);     
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
- 
-     const handleChangeUpperCase = (e) => {
-         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
-    }
-
-     const onFilesChange = (files , nombre) =>  {
-        setFormDataFile(prev => ({...prev, [nombre]: files}));
-    }
-
-    const removeFIle = (nombre)=>{
-        setFormDataFile(prev => ({...prev, archivos: prev.archivos.filter(item => item.name !== nombre)}));
-    }
-
-    const onFilesError = (error, file) => {
-        let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
-        showSimpleSnackbar(msj, 'error');
-    }
 
     const handleSubmit = () =>{
+        setLoader(true);
+        instance.post('/admin/persona/procesar', formData).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null; 
+            (res.success) ? setFormData({codigo:data.persid,  fechaIngresoAsociado:'', fechaIngresoConductor:'', tipoConductor:'',
+                                        agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', tipo:''}) : null;
+            setLoader(false);
+        })
+    }
+
+    useEffect(()=>{
+        setLoader(true);
+        let newFormData = {...formData}
+        instance.post('/admin/persona/consultar/asignacion', {codigo:data.persid}).then(res=>{
+            let persona = res.persona;
+            setConductor(persona.totalConductor);
+            setAsociado(persona.totalAsociado);  
+            setAgencias(res.agencias);
+            setTipoConductores(res.tipoConductores);
+            settipoCategoriaLicencias(res.tpCateLicencias);
+            setLoader(false);
+            setFormData(newFormData);
+        })
+    }, []);
+
+    if(loader){
+        return <LoaderModal />
     }
 
     return (
@@ -54,7 +59,29 @@ export default function Procesar({data}){
 
             <Grid container spacing={2}>
 
-            <Fragment>
+                    <Grid item md={12} xl={12} sm={12} xs={12}>
+                        <Grid item xl={4} md={4} sm={6} xs={12}></Grid>
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tipo'}
+                                value={formData.tipo}
+                                label={'Activo'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"ASOCIADO"}>ASOCIADO</MenuItem>
+                                <MenuItem value={"CONDUCTOR"}>CONDUCTOR</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+                    </Grid>
+
+
+                    <Fragment>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
                             <Box className='frmDivision'>
                                 Información de asociado
@@ -217,32 +244,6 @@ export default function Procesar({data}){
                                 }}
                             />
                         </Grid>
-
-                        <Grid item md={5} xl={5} sm={12} xs={12}>
-                            <Files
-                                className='files-dropzone'
-                                onChange={(file ) =>{onFilesChange(file, 'imagenLicencia') }}
-                                onError={onFilesError}
-                                accepts={['.jpg', '.png', '.jpeg', '.pdf', '.PDF']} 
-                                multiple
-                                maxFiles={1}
-                                maxFileSize={1000000}
-                                clickable
-                                dropActiveClassName={"files-dropzone-active"}
-                            >
-                            <ButtonFileImg title={"Adicionar imagen de la licencia en formato jpg, png o pdf"} />
-                            </Files>
-                        </Grid>
-
-                        <Grid item md={4} xl={4} sm={12} xs={12}>
-                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                {formDataFile.imagenLicencia.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                })}
-                            </Box>
-                        </Grid>
-
-
                     </Fragment>
 
             </Grid>

@@ -253,11 +253,6 @@ class ContratoServicioEspecialController extends Controller
         }
 	}
 
-	public function visualizarPlanilla($coseesid, $metodo)
-	{
-		
-	}
-
 	public function obtenerConsecutivoContrato($anioActual)
 	{
 		$consecutivoContrato = DB::table('contratoservicioespecial')->select('coseesconsecutivo as consecutivo')

@@ -175,8 +175,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/tipoDocumental/destroy', [DocumentalController::class, 'destroy']);
 
         Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
-        Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
-        Route::post('/personaDocumental/procesar', [PersonaDocumentalController::class, 'procesar']);
+        Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);   
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
         Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');  
@@ -195,6 +194,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/gestionar/persona');       
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
+        Route::post('/persona/consultar/asignacion', [PersonaController::class, 'datos']);
+        Route::post('/persona/procesar', [PersonaController::class, 'procesar']);
         Route::post('/persona/destroy', [PersonaController::class, 'destroy']);
 
         Route::post('/persona/listar/datos', [DatosPersonaController::class, 'index']); //No debe tener control de ruta
