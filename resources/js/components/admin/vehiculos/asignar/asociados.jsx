@@ -166,9 +166,11 @@ export default function Asociados({id}){
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>
-                                                <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top orange'}
-                                                    onClick={() => {edit(1, asoc['personaId'])}}
-                                                ></PictureAsPdfIcon>
+                                                {(asoc['estado'] !== 'I')?
+                                                    <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top orange'}
+                                                        onClick={() => {edit(1, asoc['personaId'])}}
+                                                    ></PictureAsPdfIcon>
+                                                : null}
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>

@@ -25,7 +25,7 @@ class PersonaController extends Controller
                                     DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"), 'tp.tippernombre as tipoPersona')
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
 									->join('tipopersona as tp', 'tp.tipperid', '=', 'p.tipperid')
-									->where('p.persid', '>', 2)
+									->where('p.persid', '>', 1)
                                     ->orderBy('p.persprimernombre')->orderBy('p.perssegundonombre')
                                     ->orderBy('p.persprimerapellido')->orderBy('p.perssegundoapellido')->get();
 

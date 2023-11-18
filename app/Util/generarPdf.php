@@ -16,14 +16,25 @@ class generarPdf
 {
 	function acta($id, $metodo = 'I')
 	{
-        $funcion          = new generales();
-		$encrypt          = new encrypt();
-        $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
-	    $visualizar       = new showTipoDocumental();
-		list($infodocumento, $firmasDocumento) =  $visualizar->acta($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+        $funcion              = new generales();
+		$encrypt              = new encrypt();
+        $fechaHoraActual      = Carbon::now();
+		$fechaActual          = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+	    $visualizar           = new showTipoDocumental();
+		list($infodocumento, $firmasDocumento) = $visualizar->acta($id);
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -53,7 +64,7 @@ class generarPdf
 		$convocatoriahora     = $infodocumento->codopaconvocatoriahora;
 		$totalFirmaDocumento  = $infodocumento->totalFirmaDocumento;
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
-		$convocatoriaDescripcion = ($convocatoria == 1) ? $this->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';
+		$convocatoriaDescripcion = ($convocatoria == 1) ? $funcion->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -157,14 +168,25 @@ class generarPdf
 
 	function certificado($id, $metodo = 'I')
 	{
-        $funcion          = new generales();
-		$encrypt          = new encrypt();
-        $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
-	    $visualizar       = new showTipoDocumental();
+        $funcion          	  = new generales();
+		$encrypt          	  = new encrypt();
+        $fechaHoraActual  	  = Carbon::now();
+		$fechaActual      	  = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+	    $visualizar       	  = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->certificado($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -247,14 +269,25 @@ class generarPdf
 
 	function circular($id, $metodo = 'I')
 	{
-        $funcion          = new generales();
-		$encrypt          = new encrypt();
-        $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
-	    $visualizar       = new showTipoDocumental();
+        $funcion              = new generales();
+		$encrypt              = new encrypt();
+        $fechaHoraActual      = Carbon::now();
+		$fechaActual          = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));   
+	    $visualizar           = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->circular($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -355,14 +388,25 @@ class generarPdf
 
 	function citacion($id, $metodo = 'I')
 	{
-        $funcion          = new generales();
-		$encrypt          = new encrypt();
-        $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
-	    $visualizar       = new showTipoDocumental();
+        $funcion              = new generales();
+		$encrypt              = new encrypt();
+        $fechaHoraActual      = Carbon::now();
+		$fechaActual          = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
+	    $visualizar           = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $firmaInvitados) = $visualizar->citacion($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -475,14 +519,25 @@ class generarPdf
 
 	function constancia($id, $metodo = 'I')
 	{
-        $funcion          = new generales();
-		$encrypt          = new encrypt();
-        $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
-	    $visualizar       = new showTipoDocumental();
+        $funcion              = new generales();
+		$encrypt              = new encrypt();
+        $fechaHoraActual      = Carbon::now();
+		$fechaActual          = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
+	    $visualizar           = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento) =  $visualizar->constancia($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -565,14 +620,25 @@ class generarPdf
 
     function oficio($id, $metodo = 'I')
 	{
-        $funcion          = new generales();
-		$encrypt          = new encrypt();
-        $fechaHoraActual  = Carbon::now();
-		$fechaActual      = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
-	    $visualizar       = new showTipoDocumental();
+        $funcion              = new generales();
+		$encrypt              = new encrypt();
+        $fechaHoraActual      = Carbon::now();
+		$fechaActual          = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
+	    $visualizar           = new showTipoDocumental();
 		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
 		$idCifrado            = $encrypt->encrypted($infodocumento->codoprid);
 		$fechaActualDocumento = $infodocumento->codoprfecha;
@@ -706,28 +772,13 @@ class generarPdf
     }
 
 	function consultarEmpresa(){
-		$empresa          = DB::table('empresa as e')
+		return DB::table('empresa as e')
 									->select('e.emprdireccion','e.emprnombre','e.emprurl','e.emprsigla','e.emprtelefonofijo', 'e.emprpersoneriajuridica',
 											'e.emprtelefonocelular', 'e.emprcorreo','e.emprlema','e.emprlogo', 'm.muninombre','e.emprbarrio',
 											DB::raw("CONCAT('NIT: ', e.emprnit,' - ', e.emprdigitoverificacion) as nit"))
 									->join('municipio as m', 'm.muniid', '=', 'e.emprmuniid')
 									->where('e.emprid', 1)
 									->first();
-
-		$direccionEmpresa 	= $empresa->emprdireccion;
-		$ciudadEmpresa    	= $empresa->muninombre;
-		$barrioEmpresa    	= $empresa->emprbarrio; 
-		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
-		$celularEmpresa   	= $empresa->emprtelefonocelular;
-		$urlEmpresa       	= $empresa->emprurl;
-		$nombreEmpresa      = $empresa->emprnombre; 
-		$lemaEmpresa        = $empresa->emprlema;
-		$siglaEmpresa       = $empresa->emprsigla;	
-		$nit                = $empresa->nit;
-		$personeriaJuridica = $empresa->emprpersoneriajuridica;
-		$logoEmpresa        = $empresa->emprlogo;
-
-		return array ($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa);
 	}
 
 	function headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa, $codigoInstitucional = '', $codigoDocumental = ''){
@@ -840,12 +891,6 @@ class generarPdf
 		PDF::SetTextColor(255, 0, 0);
 		PDF::Cell(165,4,'Documento pendiente por firmar',0,0,'C');
 		PDF::SetTextColor(0, 0, 0);
-	}
-
-	function obtenerConvocatoriaActa($lugar, $fecha, $hora){
-		$funcion       = new generales();
-		$fechaGenerada = $funcion->formatearFecha($fecha);
-		return " La proxima reunión se realizará en ".$lugar." el día ".$fechaGenerada ." a partir de ".$hora." horas. ";
 	}
 
 	function imprimirFirmasDocumento($firmasDocumento, $estadoDocumento){
@@ -1032,8 +1077,9 @@ EOD;
 		$correo         = $data->correo;
 		$funcionario    = $data->usuario;
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa        = $this->consultarEmpresa();
+		$urlEmpresa     = $empresa->emprurl;
+		$nombreEmpresa  = $empresa->emprnombre;
 
 		$documentoRadicado = true;
         $mensajeRadicar    = '';     
@@ -1163,8 +1209,9 @@ EOD;
         $correo         = $data->correo;
         $funcionario    = $data->usuario;
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa        = $this->consultarEmpresa();
+		$urlEmpresa     = $empresa->emprurl;
+		$nombreEmpresa  = $empresa->emprnombre;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -1257,9 +1304,9 @@ EOD;
 
 	function expedienteArchivoHistorico($digitalizados, $metodo = 'S'){
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
-
+		$empresa           = $this->consultarEmpresa();
+		$nombreEmpresa     = $empresa->emprnombre;
+		$siglaEmpresa      = $empresa->emprsigla;
         $mensajeRadicar    = '';
 		$tcpdf = new FpdiProtection();
         $tcpdf->SetAuthor('IMPLESOFT');
@@ -1292,8 +1339,19 @@ EOD;
 	}
 
 	function generarContenidoBDPdf($data, $metodo = 'S'){
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;
+		$ciudadEmpresa    	= $empresa->muninombre;
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$lemaEmpresa        = $empresa->emprlema;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
 
 		$titulo    = $data->ingpdftitulo;
 		$contenido = $data->ingpdfcontenido;
@@ -1331,8 +1389,19 @@ EOD;
 
 	function simuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;
+		$ciudadEmpresa    	= $empresa->muninombre;
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$lemaEmpresa        = $empresa->emprlema;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
 
 		$titulo           = 'Simulación del crédito para el asociado '.$asociado;
 		$generales        = new generales();
@@ -1437,23 +1506,34 @@ EOD;
 
 	function solicitudCredito($arrayDatos, $colocacionLiquidacion){
 
-		$fechaDesembolso       = $arrayDatos['fechaDesembolso'];
-		$lineaCredito          = $arrayDatos['lineaCredito'];
-		$nombreAsociado        = $arrayDatos['nombreAsociado'];
-		$descripcionCredito    = $arrayDatos['descripcionCredito'];
-		$valorSolicitado       = $arrayDatos['valorSolicitado'];
-		$tasaNominal       	   = $arrayDatos['tasaNominal'];
-		$plazoMensual          = $arrayDatos['plazoMensual'];
-		$numeroColocacion      = $arrayDatos['numeroColocacion'];
-		$metodo                = $arrayDatos['metodo'];
+		$fechaDesembolso     = $arrayDatos['fechaDesembolso'];
+		$lineaCredito        = $arrayDatos['lineaCredito'];
+		$nombreAsociado      = $arrayDatos['nombreAsociado'];
+		$descripcionCredito  = $arrayDatos['descripcionCredito'];
+		$valorSolicitado     = $arrayDatos['valorSolicitado'];
+		$tasaNominal       	 = $arrayDatos['tasaNominal'];
+		$plazoMensual        = $arrayDatos['plazoMensual'];
+		$numeroColocacion    = $arrayDatos['numeroColocacion'];
+		$metodo              = $arrayDatos['metodo'];
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;
+		$ciudadEmpresa    	= $empresa->muninombre;
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$lemaEmpresa        = $empresa->emprlema;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
 
-		$titulo           = 'Tabla de liquidación de la colocación número '.$numeroColocacion;
-		$generales        = new generales();
-		$valorCuota       = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
-		$fechaActual      = $generales->formatearFecha($fechaDesembolso);
+		$titulo             = 'Tabla de liquidación de la colocación número '.$numeroColocacion;
+		$generales          = new generales();
+		$valorCuota         = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
+		$fechaActual        = $generales->formatearFecha($fechaDesembolso);
 
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -1564,8 +1644,17 @@ EOD;
 
 	function contratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;		
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
 
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -1605,10 +1694,271 @@ EOD;
 		}
 	}
 
+	function contratoVehiculoEspecial($arrayDatos, $contenido, $arrayFirmas){
+
+		$titulo            = $arrayDatos['titulo'];
+		$numeroContrato    = $arrayDatos['numeroContrato'];
+		$placaVehiculo     = $arrayDatos['placaVehiculo'];
+		$numeroInterno     = $arrayDatos['numeroInterno'];
+		$propietarios      = $arrayDatos['propietarios'];
+		$identificaciones  = $arrayDatos['identificaciones'];
+		$direcciones       = $arrayDatos['direcciones'];
+		$telefonos         = $arrayDatos['telefonos'];
+		$correos           = $arrayDatos['correos'];
+		$metodo            = $arrayDatos['metodo'];
+
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;
+		$ciudadEmpresa    	= $empresa->muninombre;
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$lemaEmpresa        = $empresa->emprlema;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
+
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Contrato, Vehículo, Especial, '.$siglaEmpresa.', '.$numeroContrato );
+        PDF::SetTitle($titulo);	
+
+		//Encabezado y pie de pagina del pdf
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 15);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 26);
+		PDF::SetY(16);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica', 'B', 12);
+		PDF::Cell(176, 4, 'CONTRATO DE ADMINISTRACIÓN Y/O VINCULACION POR AFILIACIÓN:', 0, 0, 'C');
+		PDF::Ln(4);
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(176, 4, 'Decreto Único Reglamentario del Sector Transporte', 0, 0, 'C');
+		PDF::Ln(4);
+		PDF::Cell(176, 4, 'Servicio Público de Pasajeros en la Modalidad de Transporte Especial', 0, 0, 'C');
+		PDF::Ln(12);
+
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'No. Contrato:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $numeroContrato, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Placa:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $placaVehiculo, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'No móvil:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $numeroInterno, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Propietarios:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $propietarios, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Identificación:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $identificaciones, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Dirección:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $direcciones, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Teléfono:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $telefonos, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Correo Electrónico:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $correos, 0, 0, 'L');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica', '', 9);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+		PDF::Ln(4);
+		PDF::SetFont('helvetica', 'B', 10);
+		PDF::Cell(80, 4, 'La EMPRESA', 0, 0, 'L');
+		PDF::Cell(16, 4, '', 0, 0, 'L');
+		PDF::Cell(80, 4, 'El PROPIETARIO', 0, 0, 'L');
+		PDF::Ln(20);
+
+		$contador = 0;
+		foreach($arrayFirmas as $arrayFirma){
+			$top = ($contador === 0) ? 'T': '';		
+			PDF::Cell(78, 4, $arrayFirma['nombreGerente'], $top, 0, 'L');
+			PDF::Cell(20, 4, '', 0, 0, 'L');
+			PDF::Cell(78, 4, $arrayFirma['nombreAsociado'], 'T', 0, 'L');
+			PDF::Ln(5);
+			PDF::Cell(78, 4, $arrayFirma['documentoGerente'], 0, 0, 'L');
+			PDF::Cell(20, 4, '', 0, 0, 'L');	
+			PDF::Cell(78, 4, $arrayFirma['documentoAsociado'], 0, 0, 'L');
+			PDF::Ln(16);
+			$contador ++;
+		}	
+
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placa;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $rutaCarpeta.'/'.$numeroContrato.'.pdf';
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
+
+	function contratoVehiculoIntermunicipal($arrayDatos, $contenido, $arrayFirmas){
+
+		$titulo            = $arrayDatos['titulo'];
+		$numeroContrato    = $arrayDatos['numeroContrato'];
+		$placaVehiculo     = $arrayDatos['placaVehiculo'];
+		$numeroInterno     = $arrayDatos['numeroInterno'];
+		$propietarios      = $arrayDatos['propietarios'];
+		$identificaciones  = $arrayDatos['identificaciones'];
+		$direcciones       = $arrayDatos['direcciones'];
+		$telefonos         = $arrayDatos['telefonos'];
+		$correos           = $arrayDatos['correos'];	
+		$metodo            = $arrayDatos['metodo'];
+
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;
+		$ciudadEmpresa    	= $empresa->muninombre;
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$lemaEmpresa        = $empresa->emprlema;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
+
+        PDF::SetAuthor('IMPLESOFT'); 
+		PDF::SetCreator($nombreEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Contrato, Vehículo, Especial, '.$siglaEmpresa.', '.$numeroContrato );
+        PDF::SetTitle($titulo);	
+
+		//Encabezado y pie de pagina del pdf
+		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 36, 15);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 26);
+		PDF::SetY(16);
+		PDF::Ln(20);
+		PDF::SetFont('helvetica', 'B', 12);
+		PDF::Cell(176, 4, 'CONTRATO DE VINCULACIÓN POR AFILIACIÓN ', 0, 0, 'C');
+		PDF::Ln(4);
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(176, 4, 'MODALIDAD TRANSPORTE INTERMUNICIPAL ', 0, 0, 'C');
+		PDF::Ln(12);
+
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'No. Contrato:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $numeroContrato, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Placa:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $placaVehiculo, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'No móvil:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $numeroInterno, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Propietarios:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $propietarios, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Identificación:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $identificaciones, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Dirección:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $direcciones, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Teléfono:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $telefonos, 0, 0, 'L');
+		PDF::Ln(5);
+		PDF::SetFont('helvetica', '', 11);
+		PDF::Cell(40, 4, 'Correo Electrónico:', 0, 0, 'L');
+		PDF::SetFont('helvetica', 'B', 11);
+		PDF::Cell(136, 4, $correos, 0, 0, 'L');
+		PDF::Ln(12);
+		PDF::SetFont('helvetica', '', 9);
+		PDF::writeHTML($contenido, true, false, true, false, '');
+		PDF::Ln(4);
+		PDF::SetFont('helvetica', 'B', 10);
+		PDF::Cell(80, 4, 'La EMPRESA', 0, 0, 'L');
+		PDF::Cell(16, 4, '', 0, 0, 'L');
+		PDF::Cell(80, 4, 'El PROPIETARIO', 0, 0, 'L');
+		PDF::Ln(20);
+
+		$contador = 0;
+		foreach($arrayFirmas as $arrayFirma){
+			$top = ($contador === 0) ? 'T': '';		
+			PDF::Cell(78, 4, $arrayFirma['nombreGerente'], $top, 0, 'L');
+			PDF::Cell(20, 4, '', 0, 0, 'L');
+			PDF::Cell(78, 4, $arrayFirma['nombreAsociado'], 'T', 0, 'L');
+			PDF::Ln(5);
+			PDF::Cell(78, 4, $arrayFirma['documentoGerente'], 0, 0, 'L');
+			PDF::Cell(20, 4, '', 0, 0, 'L');	
+			PDF::Cell(78, 4, $arrayFirma['documentoAsociado'], 0, 0, 'L');
+			PDF::Ln(16);
+			$contador ++;
+		}	
+
+		$tituloPdf = $titulo.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placa;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $rutaCarpeta.'/'.$numeroContrato.'.pdf';
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
+
 	function pagareColocacion($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa       = $this->consultarEmpresa();
+		$nombreEmpresa = $empresa->emprnombre;
+		$lemaEmpresa   = $empresa->emprlema;
 	
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -1653,8 +2003,17 @@ EOD;
 
 	function cartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, $metodo = 'S'){
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-		$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;	
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
 	
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
@@ -1732,8 +2091,17 @@ EOD;
         $areaFormato       = 'GESTIÓN ADMINISTRATIVA Y FINANCIERA';
 		$titulo            = "Formato solicitud crédito del pagaré número ".$pagareNumero;
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa            = $this->consultarEmpresa();
+		$direccionEmpresa 	= $empresa->emprdireccion;	
+		$barrioEmpresa    	= $empresa->emprbarrio;
+		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
+		$celularEmpresa   	= $empresa->emprtelefonocelular;
+		$urlEmpresa       	= $empresa->emprurl;
+		$nombreEmpresa      = $empresa->emprnombre;
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$personeriaJuridica = $empresa->emprpersoneriajuridica;
+		$logoEmpresa        = $empresa->emprlogo;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator($nombreEmpresa);
@@ -1857,8 +2225,17 @@ EOD;
 		$dataInfoPdfFichaTecnica   = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'fichaTecnica')->first();
 		$dataInfoPdfContrato       = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoTransporteEspecial')->first();
 
-		list($direccionEmpresa, $ciudadEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa,
-			$nombreEmpresa, $lemaEmpresa, $siglaEmpresa, $nit, $personeriaJuridica, $logoEmpresa) = $this->consultarEmpresa();
+		$empresa                   = $this->consultarEmpresa();
+		$direccionEmpresa 	       = $empresa->emprdireccion;
+		$barrioEmpresa    	       = $empresa->emprbarrio;
+		$telefonoEmpresa  	       = $empresa->emprtelefonofijo;
+		$celularEmpresa   	       = $empresa->emprtelefonocelular;
+		$urlEmpresa       	       = $empresa->emprurl;
+		$nombreEmpresa             = $empresa->emprnombre;
+		$siglaEmpresa              = $empresa->emprsigla;
+		$nit                       = $empresa->nit;
+		$personeriaJuridica        = $empresa->emprpersoneriajuridica;
+		$logoEmpresa               = $empresa->emprlogo;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('Hacatitama');

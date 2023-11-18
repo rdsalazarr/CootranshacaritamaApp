@@ -172,6 +172,11 @@ class generales
 		return array($success, $message );
 	}
 
+	function obtenerConvocatoriaActa($lugar, $fecha, $hora){	
+		$fechaGenerada = $this->formatearFecha($fecha);
+		return " La proxima reunión se realizará en ".$lugar." el día ".$fechaGenerada ." a partir de ".$hora." horas. ";
+	}
+
 	public function obtenerFechaMaxima($tiempoRespuesta, $fechaProcesar){
         $listaFestivos = DB::table('festivo')->select('festfecha')
 	    					->whereDate('festfecha', '>=', $fechaProcesar)

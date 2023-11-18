@@ -90,7 +90,7 @@ class VehiculoController extends Controller
                 'tipoReferencia'        => 'required|numeric',
                 'tipoMarca'             => 'required|numeric',
                 'tipoCombustible'       => 'required|numeric',
-                'tipoModalidad'         => 'required|numeric',
+                'tipoModalidad'         => 'required',
                 'tipoCarroceria'        => 'required|numeric',
                 'tipoColor'             => 'required|numeric',
                 'agencia'               => 'required|numeric',

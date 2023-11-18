@@ -703,11 +703,7 @@ class MantenimientoController extends Controller
         }
     
         return $fecha;
-    }
-    
-
-
-
+    } 
 
     function calcularCuota($montoPrestamo, $tasaInteresMensual, $plazo) {
         $tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
@@ -775,6 +771,68 @@ class MantenimientoController extends Controller
         $tabla .= "</table>";
     
         return $tabla;
+    }
+
+    public function contrato()
+    {
+        $generales      = new generales();  
+        $generarPdf     = new generarPdf();
+        $informacionPDF = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoModalidadEspecial')->first(); 
+
+        $informacionPDF = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoModalidadIntermunicipal')->first(); 
+
+        $fechaFirmaContrato = '18 de noviembre de 2023';
+        $cuotaSostenimientoAdmon = '105.000';
+        $descuentoPagoAnualAnticipado = '5';
+        $recargoCuotaSostenimientoAdmon = '5';
+        $ciudadExpDocumentoGerente  = 'Ocaña';
+        $nombreGerente   = 'RAMON SALAZAR RINCON';
+        $documentoGerente   = '1978917';
+        $numeroContrato = '20230001';
+        $fechaContrato    = 'veinte (20) días del mes de noviembre de 2023';
+        
+        
+        $arrayDatos = [ "titulo"           => 'Contrato número '.$numeroContrato,
+                        "numeroContrato"   => $numeroContrato,
+                        "placaVehiculo"    => 'PLA001',
+                        "numeroInterno"    => '500',
+                        "propietarios"     => 'rAMO SALAZAR',
+                        "identificaciones" => '1978917',
+                        "direcciones"      => 'CALLE PRINCIPAL',
+                        "telefonos"        => '123456',
+                        "correos"          => 'radasa10@hotmail.com',                    
+                        "metodo"           => 'I'
+                        ];
+
+        $arrayFirmas = [];
+        $firmasContrato = [
+                        "nombreGerente"     => $nombreGerente,
+                        "nombreAsociado"    => 'PEDRO ELIAS QUINTERO URIBE DE PUERTO',
+                        "documentoGerente"  => $documentoGerente,
+                        "documentoAsociado" => '27.963.159'
+        ];
+        array_push($arrayFirmas, $firmasContrato);
+        $firmasContrato = [
+                        "nombreGerente"     => '',
+                        "nombreAsociado"    => 'maria del pilar',
+                        "documentoGerente"  => '',
+                        "documentoAsociado" => '47.962.150'
+        ];
+        array_push($arrayFirmas, $firmasContrato);     
+
+
+        $buscar                     = Array('documentoGerente', 'nombreGerente', 'ciudadExpDocumentoGerente', 'cuotaSostenimientoAdmon','descuentoPagoAnualAnticipado',
+                                    'recargoCuotaSostenimientoAdmon','fechaFirmaContrato','fechaContrato'
+                                    );
+        $remplazo                   = Array($documentoGerente, $nombreGerente, $ciudadExpDocumentoGerente, $cuotaSostenimientoAdmon, $descuentoPagoAnualAnticipado,
+                                    $recargoCuotaSostenimientoAdmon, $fechaFirmaContrato, $fechaContrato 
+                                    ); 
+        $titulo                      = str_replace($buscar,$remplazo,$informacionPDF->ingpdftitulo);
+        $contenido                   = str_replace($buscar,$remplazo,$informacionPDF->ingpdfcontenido); 
+        
+
+        //$generarPdf->contratoVehiculoEspecial($arrayDatos, $contenido, $arrayFirmas);
+        $generarPdf->contratoVehiculoIntermunicipal($arrayDatos, $contenido, $arrayFirmas);
     }
 
 }
