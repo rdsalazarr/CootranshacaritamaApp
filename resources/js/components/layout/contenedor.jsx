@@ -245,9 +245,9 @@ const menuComponente = [
     {id:8,componente : <Dependencia />},
     {id:9,componente : <Persona />},
     {id:10,componente : <Agencia />},
+    {id:11,componente : <Usuario />},
+    {id:12,componente : <Festivos />},
 
-    {id:12,componente : <Usuario />},
-    {id:13,componente : <Festivos />},
     {id:14,componente : <Acta />},
     {id:15,componente : <Certificado />},
     {id:16,componente : <Circular />},
@@ -272,15 +272,20 @@ const menuComponente = [
     {id:35,componente : <AprobacionCredito />},
     {id:36,componente : <DesembolsarCredito />},
     {id:37,componente : <HistorialSolicitudCredito />},
-    {id:38,componente : <CobroCartera />},    
+    {id:38,componente : <CobroCartera />},
     {id:39,componente : <ServicoEspecial />},
     
-    {id:40,componente : <EnConstruccion />},
+    {id:40,componente : <ServicoEspecial />},
     {id:41,componente : <EnConstruccion />},
     {id:42,componente : <EnConstruccion />},
     {id:43,componente : <EnConstruccion />},
     {id:44,componente : <EnConstruccion />},
     {id:45,componente : <EnConstruccion />},
+    {id:46,componente : <EnConstruccion />},
+    {id:47,componente : <EnConstruccion />},
+    {id:48,componente : <EnConstruccion />},
+    {id:49,componente : <EnConstruccion />},
+    {id:50,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {
