@@ -14,33 +14,39 @@ class TipoModalidadVehiculoSeeder extends Seeder
     public function run(): void
     { 
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => 'E',
-            'timovenombre'        => 'ESPECIAL',
-            'timovetienedespacho' => '0'
+            'timoveid'                      => 'E',
+            'timovenombre'                  => 'ESPECIAL',
+            'timovecuotasotenimiento'       => '105000',
+            'timovedescuentopagoanticipado' => '5',
+            'timoverecargomora'             => '5',
+            'timovetienedespacho'           => '1'
         ]);
         
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => 'I',
-            'timovenombre'        => 'INTERMUNICIPAL',
-            'timovetienedespacho' => '1'
+            'timoveid'                      => 'I',
+            'timovenombre'                  => 'INTERMUNICIPAL',
+            'timovecuotasotenimiento'       => '105000',
+            'timovedescuentopagoanticipado' => '5',
+            'timoverecargomora'             => '5',
+            'timovetienedespacho'           => '1'
         ]);
 
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => 'C',
-            'timovenombre'        => 'COLECTIVO',
-            'timovetienedespacho' => '0'
+            'timoveid'                      => 'C',
+            'timovenombre'                  => 'COLECTIVO',
+            'timovecuotasotenimiento'       => '105000',
+            'timovedescuentopagoanticipado' => '5',
+            'timoverecargomora'             => '5',
+            'timovetienedespacho'           => '1'
         ]);
 
         DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => 'M',
-            'timovenombre'        => 'MIXTO',
-            'timovetienedespacho' => '1'
+            'timoveid'                      => 'M',
+            'timovenombre'                  => 'MIXTO',
+            'timovecuotasotenimiento'       => '105000',
+            'timovedescuentopagoanticipado' => '5',
+            'timoverecargomora'             => '5',
+            'timovetienedespacho'           => '1'
         ]);
-
-        DB::table('tipomodalidadvehiculo')->insert([
-            'timoveid'            => 'P',
-            'timovenombre'        => 'PRIVADO',
-            'timovetienedespacho' => '0'
-        ]);       
     }
 }

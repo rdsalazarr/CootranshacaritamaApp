@@ -65,6 +65,7 @@ php artisan make:migration create_archivo_historico_digitalizado
 php artisan make:migration create_informacion_general_pdf
 php artisan make:migration create_agencia
 php artisan make:migration create_tipo_vehiculo
+php artisan make:migration create_tipo_vehiculo_distribucion
 php artisan make:migration create_tipo_marca_vehiculo
 php artisan make:migration create_tipo_referencia_vehiculo
 php artisan make:migration create_tipo_color_vehiculo
@@ -112,6 +113,8 @@ php artisan make:migration create_persona_contrato_servicio_esp
 php artisan make:migration create_contrato_servicio_especial
 php artisan make:migration create_contrato_servicio_especial_vehi
 php artisan make:migration create_contrato_servicio_especial_cond
+
+php artisan make:migration create_ruta
 
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
@@ -182,7 +185,7 @@ php artisan make:model Vehiculos\VehiculoCambioEstado
 php artisan make:model Vehiculos\VehiculoTarjetaOperacion
 php artisan make:model Vehiculos\VehiculoContrato
 php artisan make:model Vehiculos\VehiculoContratoAsocidado
-
+php artisan make:model Vehiculos\TipoVehiculoDistribucion
 
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
@@ -203,6 +206,7 @@ php artisan make:model Despacho\PersonaContratoServicioEspecial
 php artisan make:model Despacho\ContratoServicioEspecial
 php artisan make:model Despacho\ContratoServicioEspecialVehiculo
 php artisan make:model Despacho\ContratoServicioEspecialConductor
+php artisan make:model Despacho\Ruta
 
 
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
@@ -293,6 +297,7 @@ php artisan make:controller Admin\Vehiculos\TiposColorController
 php artisan make:controller Admin\Vehiculos\TiposCarroceriaController
 php artisan make:controller Admin\Vehiculos\VehiculoController
 php artisan make:controller Admin\Vehiculos\ConsultarController
+php artisan make:controller Admin\Vehiculos\TipoModalidadController
 
 php artisan make:controller Admin\Asociado\AsociadoController
 php artisan make:controller Admin\Asociado\DesvincularAsociadoController
@@ -303,7 +308,7 @@ php artisan make:controller Admin\Cartera\SolicitudCreditoController
 php artisan make:controller Admin\Cartera\AprobarSolicitudCreditoController
 php artisan make:controller Admin\Cartera\DesembolsarSolicitudCreditoController
 php artisan make:controller Admin\Despacho\ContratoServicioEspecialController
-
+php artisan make:controller Admin\Despacho\RutaController
 
 php artisan make:controller Admin\DependenciaController
 
@@ -312,3 +317,4 @@ php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 
 php artisan db:seed
+npm install react-beautiful-dnd

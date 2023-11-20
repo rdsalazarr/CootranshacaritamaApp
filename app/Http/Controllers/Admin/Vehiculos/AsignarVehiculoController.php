@@ -144,95 +144,108 @@ class AsignarVehiculoController extends Controller
 
         try {
             $vehiculoId       = $request->vehiculoId;
-            $vehiculocontrato = DB::table('vehiculocontrato')
-                                ->select('vehconid', 'vehconfechainicial', DB::raw("CONCAT(vehconanio, vehconnumero) as numeroContrato"))
-                                ->where('vehiid', $vehiculoId)
-                                ->where('vehconfechafinal', function ($query) use ($vehiculoId) {
-                                    $query->selectRaw('MAX(vehconfechafinal)')
-                                        ->from('vehiculocontrato')
-                                        ->where('vehiid', $vehiculoId);
-                                })
-                                ->first();
+            $generales        = new generales();  
+            $generarPdf       = new generarPdf();
+            $vehiculocontrato = DB::table('vehiculocontrato as vc')
+                                    ->select('vc.vehconid','vc.vehconfechainicial','vc.vehconfechafinal', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
+                                    'v.vehinumerointerno','v.vehiplaca','v.timoveid',
+                                    'tmv.timovecuotasostenimiento','tmv.timovedescuentopagoanticipado','tmv.timoverecargomora')
+                                    ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
+                                    ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
+                                    ->where('vc.vehiid', $vehiculoId)
+                                    ->where('vc.vehconfechafinal', function ($query) use ($vehiculoId) {
+                                        $query->selectRaw('MAX(vehconfechafinal)')
+                                            ->from('vehiculocontrato')
+                                            ->where('vehiid', $vehiculoId);
+                                    })
+                                    ->first();
 
-            $dataRadicado   = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoVehiculo')->first();       
-            $numeroContrato = $vehiculocontrato->numeroContrato;
-            $fechaContrato  = $vehiculocontrato->vehconfechainicial;
-
-            $asociadoVehiculo  = DB::table('asociadovehiculo as av')
-                                        ->select('av.asovehid','p.persid','a.asocid', 'p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-                                            'ti.tipidesigla','me.muninombre as nombreMunicipioExpedicion','p.persdireccion','p.persnumerocelular',
-                                            'v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehimodelo','v.vehicilindraje','v.vehiobservacion','tmv.timavenombre',
-                                            'tcv.ticovenombre','tcrh.ticavenombre','tv.tipvecapacidad',
-                                            DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia)) as referenciaVehiculo"))
-                                        ->join('vehiculo as v', 'v.vehiid', '=', 'av.vehiid')
-                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                        ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
-                                        ->join('tipocolorvehiculo as tcv', 'tcv.ticoveid', '=', 'v.ticoveid')
-                                        ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
-                                        ->join('asociado as a', 'a.asocid', '=', 'av.asocid')
+            $vehiculoContratoAsociados = DB::table('vehiculocontratoasociado as vca')
+                                            ->select('p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                        ->join('asociado as a', 'a.asocid', '=', 'vca.asocid')
                                         ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                        ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
-                                        ->join('municipio as me', function($join)
-                                        {
-                                            $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
-                                            $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
-                                        })
-                                        ->where('av.vehiid', $request->vehiculoId)
-                                        ->where('p.persid', $request->idPersona)->first();
+                                        ->where('vca.vehconid', $vehiculocontrato->vehconid)
+                                        ->get();
 
-            $empresa    = DB::table('empresa as e')->select('p.persdocumento',  DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-                                             'me.muninombre as nombreMunicipioExpedicion','ti.tipidesigla')
-                                            ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                            ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
-                                            ->join('municipio as me', function($join)
-                                            {
-                                                $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
-                                                $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
-                                            })
-                                            ->where('e.emprid', 1)->first();
+            $empresa    = DB::table('empresa as e')->select('p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+                                    'me.muninombre as nombreMunicipioExpedicion')
+                                ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                                ->join('municipio as me', function($join)
+                                {
+                                    $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
+                                    $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
+                                })
+                                ->where('e.emprid', 1)->first();
 
-            $nombreGerente              = $empresa->nombrePersona;
-            $tpDocumentoGerente         = $empresa->tipidesigla;
-            $documentoGerente           = number_format($empresa->persdocumento, 0, ',', '.');
-            $ciudadExpDocumentoGerente  = $empresa->nombreMunicipioExpedicion;;
+            if($vehiculocontrato->timoveid === 7){
+                $idInformacionPdf = 'contratoModalidadEspecial';
+            }else  if($vehiculocontrato->timoveid === 'I'){
+                $idInformacionPdf = 'contratoModalidadIntermunicipal';
+            }else  if($vehiculocontrato->timoveid === 'C'){
+                $idInformacionPdf = 'contratoModalidadColectivo';
+            } else {
+                $idInformacionPdf = 'contratoModalidadMixto';
+            }
 
-            $nombreAsociado             = $asociadoVehiculo->nombrePersona;
-            $tpDocumentoAsociado        = $asociadoVehiculo->tipidesigla;
-            $documentoAsociado          = number_format($asociadoVehiculo->persdocumento, 0, ',', '.');
-            $ciudadExpDocumentoAsociado = $asociadoVehiculo->nombreMunicipioExpedicion;
-            $direccionAsociado          = $asociadoVehiculo->persdireccion;
-            $telefonoAsociado           = $asociadoVehiculo->persnumerocelular;
-            $placaVehiculo              = $asociadoVehiculo->vehiplaca;
-            $numeroInternoVehiculo      = $asociadoVehiculo->vehinumerointerno;
+            $informacionPDF                 = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', $idInformacionPdf)->first(); 
+            $fechaFirmaContrato             = $generales->formatearFecha($vehiculocontrato->vehconfechainicial);
+            $cuotaSostenimientoAdmon        = number_format($vehiculocontrato->timovecuotasostenimiento, 0, ',', '.') ;
+            $descuentoPagoAnualAnticipado   = $vehiculocontrato->timovedescuentopagoanticipado;
+            $recargoCuotaSostenimientoAdmon = $vehiculocontrato->timoverecargomora;
+            $nombreGerente                  = $empresa->nombrePersona;
+            $documentoGerente               = number_format($empresa->persdocumento, 0, ',', '.');
+            $ciudadExpDocumentoGerente      = $empresa->nombreMunicipioExpedicion;;
+            $numeroContrato                 = $vehiculocontrato->numeroContrato;
+            $fechaContrato                  = $generales->formatearFechaContrato($vehiculocontrato->vehconfechainicial);
+            
+            $identificacionAsociado         = '';
+            $nombreAsociado                 = '';
+            $direccionAsociado              = '';
+            $telefonoAsociado               = '';
+            $correoAsociado                 = '';
+            $nombreGerenteFirma             = $nombreGerente;
+            $documentoGerenteFirma          = 'C.C. '.$documentoGerente;
+            $arrayFirmas                    = [];
+            foreach($vehiculoContratoAsociados as $vehiculoContratoAsociado){
+                $identificacionAsociado .= number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.').', ';
+                $nombreAsociado         .= trim($vehiculoContratoAsociado->nombreAsociado).', ';
+                $direccionAsociado      .= $vehiculoContratoAsociado->persdireccion.', ';
+                $telefonoAsociado       .= ($vehiculoContratoAsociado->persnumerocelular !== null ) ? $vehiculoContratoAsociado->persnumerocelular.', ': '';
+                $correoAsociado         .= ($vehiculoContratoAsociado->perscorreoelectronico !== null ) ? $vehiculoContratoAsociado->perscorreoelectronico.', ': ''; 
 
-            $claseVehiculo              = $asociadoVehiculo->referenciaVehiculo;
-            $cilindrajeVehiculo         = $asociadoVehiculo->vehicilindraje;
-            $carroceriaVehiculo         = $asociadoVehiculo->ticavenombre;
-            $modeloVehiculo             = $asociadoVehiculo->vehimodelo;
-            $marcaVehiculo              = $asociadoVehiculo->timavenombre;
-            $colorVehiculo              = $asociadoVehiculo->ticovenombre;
+                $firmasContrato = [
+                        "nombreGerente"     => $nombreGerenteFirma,
+                        "nombreAsociado"    => $vehiculoContratoAsociado->nombreAsociado,
+                        "documentoGerente"  => $documentoGerenteFirma,
+                        "documentoAsociado" => 'C.C. '.number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.'),                        
+                        "direccionAsociado" => $vehiculoContratoAsociado->persdireccion
+                    ];
 
-            $capacidadVehiculo          = str_pad($asociadoVehiculo->tipvecapacidad, 2, "0", STR_PAD_LEFT) ;
-            $documentosAdionales        = '1 Fotografía, Fotocopia Cédula, Fotocopia Tarjeta de Propiedad a su nombre y Reseña del DAS.';
-            $observacionGeneral         = $asociadoVehiculo->vehiobservacion;
+                array_push($arrayFirmas, $firmasContrato);
+                $nombreGerenteFirma     = '';
+                $documentoGerenteFirma  = '';
+            }
 
-            $buscar                     = Array('numeroContrato', 'fechaContrato', 'nombreGerente', 'tpDocumentoGerente','documentoGerente','ciudadExpDocumentoGerente',
-                                                'nombreAsociado','tpDocumentoAsociado', 'documentoAsociado', 'ciudadExpDocumentoAsociado', 'direccionAsociado',
-                                                'telefonoAsociado', 'placaVehiculo', 'numeroInternoVehiculo', 'claseVehiculo', 'cilindrajeVehiculo', 'carroceriaVehiculo',
-                                                'modeloVehiculo', 'marcaVehiculo', 'colorVehiculo', 'capacidadVehiculo', 'documentosAdionales', 'observacionGeneral'
-                                            );
-            $remplazo                   = Array($numeroContrato, $fechaContrato, $nombreGerente, $tpDocumentoGerente, $documentoGerente, $ciudadExpDocumentoGerente,
-                                                $nombreAsociado, $tpDocumentoAsociado, $documentoAsociado, $ciudadExpDocumentoAsociado, $direccionAsociado,
-                                                $telefonoAsociado, $placaVehiculo, $numeroInternoVehiculo, $claseVehiculo, $cilindrajeVehiculo, $carroceriaVehiculo,
-                                                $modeloVehiculo, $marcaVehiculo, $colorVehiculo, $capacidadVehiculo, $documentosAdionales, $observacionGeneral
-                                            ); 
-            $titulo                      = str_replace($buscar,$remplazo,$dataRadicado->ingpdftitulo);
-            $contenido                   = str_replace($buscar,$remplazo,$dataRadicado->ingpdfcontenido); 
-            $generarPdf                  = new generarPdf();
-            $data                        = $generarPdf->contratoVehiculo($titulo, $contenido, $numeroContrato, $placaVehiculo, 'S' );
-        
+            $arrayDatos = [ "titulo"           => 'Contrato número '.$numeroContrato,
+                            "numeroContrato"   => $numeroContrato,
+                            "placaVehiculo"    => $vehiculocontrato->vehiplaca,
+                            "numeroInterno"    => $vehiculocontrato->vehinumerointerno,
+                            "propietarios"     => substr($nombreAsociado, 0, -2),
+                            "identificaciones" => substr($identificacionAsociado, 0, -2),
+                            "direcciones"      => substr($direccionAsociado, 0, -2),
+                            "telefonos"        => substr($telefonoAsociado, 0, -2),
+                            "correos"          => substr($correoAsociado, 0, -2),
+                            "metodo"           => 'S'
+                        ];
+
+            $buscar     = Array('documentoGerente', 'nombreGerente', 'ciudadExpDocumentoGerente', 'cuotaSostenimientoAdmon','descuentoPagoAnualAnticipado',
+                                'recargoCuotaSostenimientoAdmon','fechaFirmaContrato','fechaContrato');
+            $remplazo   = Array($documentoGerente, $nombreGerente, $ciudadExpDocumentoGerente, $cuotaSostenimientoAdmon, $descuentoPagoAnualAnticipado,
+                                $recargoCuotaSostenimientoAdmon, $fechaFirmaContrato, $fechaContrato); 
+            $contenido  = str_replace($buscar,$remplazo,$informacionPDF->ingpdfcontenido);
+            $data       = $generarPdf->contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $idInformacionPdf);
 		    return response()->json(["data" => $data]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

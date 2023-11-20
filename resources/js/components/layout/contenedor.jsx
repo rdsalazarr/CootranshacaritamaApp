@@ -62,6 +62,9 @@ import HistorialSolicitudCredito from "../admin/cartera/solicitudCredito/histori
 
 import ServicoEspecial from "../admin/despacho/servicioEspecial/list";
 
+import Rutas from "../admin/despacho/ruta/list";
+import Rutas2 from "../admin/despacho/ruta/list2";
+
 
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
@@ -139,95 +142,13 @@ const ItemMenu = ({route, text, icon}) => {
     );
 };
 
-const componenteMenu = [
-    /*{   nombre: 'Configuración',
-        icono : 'settings_applications',
-        itemMenu: [  
-            {ruta : 'admin/menu', menu: 'Menu', icono : 'add_chart ', componente : <Menu /> },
-            {ruta : 'admin/informacionInformacionCorreo', menu: 'Info notificar correo', icono : 'mail_outline_icon', componente : <InformacionCorreo />}, 
-            {ruta : 'admin/datosTerritorial', menu: 'Datos territorial', icono : 'language_icon ', componente : <DatosGeograficos /> },
-            {ruta : 'admin/empresa', menu: 'Empresa', icono : 'store', componente : <Empresa /> },            
-        ]
-    },
-    {   nombre: 'Gestionar',
-        icono : 'ac_unit_icon',
-        itemMenu: [            
-            {ruta : 'admin/gestionarTipos', menu: 'Tipos', icono : 'star_rate_icon', componente : <GestionTipos /> },
-            {ruta : 'admin/gestionarSeriesDocumentales', menu: 'Series', icono : 'insert_chart_icon', componente : <SeriesDocumentales /> },
-            {ruta : 'admin/gestionarDependencia', menu: 'Dependencia', icono : 'maps_home_work_icon', componente : <Dependencia /> },
-            {ruta : 'admin/gestionarPersona', menu: 'Persona', icono : 'person_icon', componente : <Persona /> },
-            {ruta : 'admin/usuario', menu: 'Usuario', icono : 'person', componente : <Usuario /> }, 
-            {ruta : 'admin/festivos', menu: 'Festivos', icono : 'calendar_month_icon', componente : <Festivos /> }, 
-        ]
-    } ,
-    {   nombre: 'Produccion documental',
-        icono : 'menu_book_icon',
-        itemMenu: [
-            {ruta : 'admin/produccion/documental/acta', menu: 'Acta', icono : 'local_library_icon', componente : <Acta /> }, 
-            {ruta : 'admin/produccion/documental/certificado', menu: 'Certificado', icono : 'note_icon', componente : <Certificado /> },
-            {ruta : 'admin/produccion/documental/circular', menu: 'Circular', icono : 'menu_book_icon', componente : <Circular /> },
-            {ruta : 'admin/produccion/documental/citacion', menu: 'Citación', icono : 'collections_bookmark_icon', componente : <Citacion /> },           
-            {ruta : 'admin/produccion/documental/constancia', menu: 'Constancia', icono : 'import_contacts_icon', componente : <Constancia /> }, 
-            {ruta : 'admin/produccion/documental/oficio', menu: 'Oficio', icono : 'library_books_icon', componente : <Oficio /> }, 
-        ]
-    },
-    {   nombre: 'Firmar',
-        icono : 'folder_special_icon',
-        itemMenu: [       
-            {ruta : 'admin/produccion/documental/firmar', menu: 'Documentos ', icono : 'import_contacts_icon', componente : <FirmarDocumento /> },
-        ]
-    } ,
-    {   nombre: 'Radicación',
-        icono : 'insert_page_break_icon', //post_add_icon  bookmark_added_icon layers_clear_icon
-        itemMenu: [  
-            {ruta : 'admin/radicacion/documento/entrante', menu: 'Documento entrante', icono : 'post_add_icon', componente : <RadicadoEntrante /> },
-            {ruta : 'admin/radicacion/documento/anular', menu: 'Anular radicado', icono : 'layers_clear_icon', componente : <AnularRadicadoEntrante /> },
-            {ruta : 'admin/radicacion/documento/bandeja', menu: 'Bandeja de radicado', icono : 'content_paste_go_icon', componente : <BandejaRadicadoEntrante /> },
-        ]
-    } ,
-    {   nombre: 'Archivo Histórico',
-        icono : 'forward_to_inbox_icon',
-        itemMenu: [       
-            {ruta : 'admin/archivo/historico/gestionar', menu: 'Gestionar', icono : 'ac_unit_icon', componente : <ArchivoHistorico /> },
-            {ruta : 'admin/archivo/historico/consultar', menu: 'Consultar', icono : 'find_in_page_icon ', componente : <ConsultarArchivoHistorico /> },
-        ]
-    }
-
-    {   nombre: 'Asociados',
-        icono : 'person_search_icon', 
-        itemMenu: [  
-            {ruta : 'admin/gestionar/asociados',           menu: 'Procesar',    icono : 'person_add_alt1_icon', componente : <Asociados /> },
-            {ruta : 'admin/gestionar/desvincularAsociado', menu: 'Desvincular', icono : 'person_remove_icon',   componente : <DesvincularAsociado />}, 
-            {ruta : 'admin/gestionar/asociadosInactivos',  menu: 'Inactivos',   icono : 'person_off_icon',      componente : <AsociadosInactivos /> }, 
-        ]
-    },
-    {   nombre: 'Dirección transporte',
-        icono : 'drive_eta_icon',
-        itemMenu: [
-            {ruta : 'admin/direccion/transporte/tipoVehiculos',   menu: 'Tipos de vehiculos',   icono : 'car_crash_icon',      componente : <TiposVehiculos /> },
-            {ruta : 'admin/direccion/transporte/vehiculos',       menu: 'Vehículo',             icono : 'electric_car_icon',   componente : <Vehiculo />},
-            {ruta : 'admin/direccion/transporte/conductores',     menu: 'Conductores',          icono : 'attach_money_icon',   componente : <Conductor /> },
-            {ruta : 'admin/direccion/transporte/asignarVehiculo', menu: 'Asignación vehículos', icono : 'credit_score_icon',   componente : <AsignarVehiculo /> },           
-            {ruta : 'admin/gestionar/agencia',                    menu: 'Agencia',              icono : 'holiday_village_con', componente : <Agencia /> },
-            {ruta : 'admin/configurar/GeneralPdf',                menu: 'Información PDF',      icono : 'picture_as_pdf',      componente : <InformacionGeneralPdf /> },
-        ]
-    },
-    {   nombre: 'Cartera',
-        icono : 'work_icon',
-        itemMenu: [
-            {ruta : 'admin/cartera/lineaCredito', menu: 'Línea de crédito', icono : 'add_chart ',        componente : <EnConstruccion /> },
-            {ruta : 'admin/cartera/solicitud',    menu: 'Solicitud',        icono : 'add_card_icon',     componente : <EnConstruccion />}, 
-            {ruta : 'admin/cartera/aprobacion',   menu: 'Aprobación',       icono : 'credit_score_icon', componente : <EnConstruccion /> },
-            {ruta : 'admin/cartera/desembolso',   menu: 'Desembolso',       icono : 'attach_money_icon', componente : <EnConstruccion /> },
-            {ruta : 'admin/cartera/cobranza',     menu: 'Cobranza',         icono : 'table_chart_icon',  componente : <EnConstruccion /> },
-        ]
-    },*/
+const componenteMenu = [    
     {   nombre: 'Despacho',
         icono : 'send_time_extension_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <EnConstruccion /> },
-            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <ServicoEspecial /> },
-            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <EnConstruccion />}, 
+            {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <Rutas /> },
+            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas /> },
+            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas2 />}, 
             {ruta : 'admin/despacho/encomienda',        menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
         ]
@@ -247,6 +168,8 @@ const menuComponente = [
     {id:10,componente : <Agencia />},
     {id:11,componente : <Usuario />},
     {id:12,componente : <Festivos />},
+
+    {id:13,componente : <Festivos />},
 
     {id:14,componente : <Acta />},
     {id:15,componente : <Certificado />},
@@ -323,7 +246,6 @@ export default function  Contenedor () {
                                 return item.itemMenu.map((res, i ) =>{
                                     const resultado = menuComponente.find( resul => resul.id === parseInt(res.id));
                                     return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={resultado.componente}></Route>)
-                                    /*return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={res.componente}></Route>)*/  
                                 }
                             )})}
 
@@ -347,6 +269,7 @@ export default function  Contenedor () {
                     {componenteMenu.map((res, i )=>{
                         return <ListMenu res={res} control={open} setControll={setOpen} j={i} key ={'list'+ i}/>
                     }) }
+
                     <ItemMenu route={'admin/miPerfil'} text={'Mi perfil'} icon={'person'} />
                     <ItemMenu route={'logout'} text={'Salir'} icon={'exit_to_app'} />
                 </Drawer>

@@ -3,6 +3,7 @@ import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../layout/general';
 import Carroceria from "./carroceria/list";
 import Referencia from "./referencia/list";
+import Modalidad from "./modalidad/list";
 import Marca from "./marca/list";
 import Color from "./color/list";
 import Tipo from "./tipo/list";
@@ -31,6 +32,7 @@ export default function List(){
                 <Tab label="Marca" />
                 <Tab label="Color" />
                 <Tab label="Carroceria" />
+                <Tab label="Modalidad" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -51,6 +53,10 @@ export default function List(){
 
             <TabPanel value={value} index={4}>
                 <Carroceria />
+            </TabPanel>
+
+            <TabPanel value={value} index={5}>
+                <Modalidad />
             </TabPanel>
         </Box>
     )

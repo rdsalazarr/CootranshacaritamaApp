@@ -11,5 +11,5 @@ class TipoModalidadVehiculo extends Model
 
     protected $table      = 'tipomodalidadvehiculo';
 	protected $primaryKey = 'timoveid';
-    protected $fillable   = ['timovenombre','timovetienedespacho'];
+    protected $fillable   = ['timovenombre','timovecuotasostenimiento','timovedescuentopagoanticipado','timoverecargomora','timovetienedespacho'];
 }

@@ -2,6 +2,7 @@
 
 namespace App\Util;
 
+use App\Util\convertirNumeroALetras;
 use Carbon\Carbon;
 use DB;
 
@@ -98,6 +99,18 @@ class generales
 		$hora        = substr($separarfech[2], 3, 5);//no trae los segundos
 		$mesEnLetra   = $this->obtenerMes($mes);
 		return $dia." de ".$mesEnLetra." de ".$anyo." a las ".$hora; 
+	}
+
+	public function formatearFechaContrato($fecha){
+		$convertirNumeroALetras = new convertirNumeroALetras();
+		$separarFecha           = explode('-',$fecha);
+		$anyo                   = $separarFecha[0];
+		$mes                    = $separarFecha[1];
+		$dia                    = $separarFecha[2];
+		$mesEnLetra             = $this->obtenerMes($mes);
+		$diaEnLetra             = $convertirNumeroALetras->valorEnLetras($dia);
+
+		return $diaEnLetra.' ('.str_pad($dia, 2, "0", STR_PAD_LEFT).') días del mes de '.$mesEnLetra.' de '.$anyo;
 	}
 
 	public function formatearFechaLargaPagare($fecha){

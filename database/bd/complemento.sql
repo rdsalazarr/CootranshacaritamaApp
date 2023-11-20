@@ -54,3 +54,7 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 
 ALTER TABLE `contratoservicioespecial` ADD `coseesvalorcontrato` VARCHAR(10) NOT NULL AFTER `coseesfechafinal`;
 ALTER TABLE `contratoservicioespecial` ADD `coseesnombreuniontemporal` VARCHAR(100) NULL AFTER `coseesdescripcionrecorrido`;
+
+
+
+ALTER TABLE `tipomodalidadvehiculo` ADD `timovecuotasotenimiento` VARCHAR(8) NULL AFTER `timovenombre`, ADD `timovedescuentopagoanticipado` VARCHAR(4) NULL AFTER `timovecuotasostenimiento`, ADD `timoverecargomora` VARCHAR(4) NULL AFTER `timovedescuentopagoanticipado`;

@@ -1642,7 +1642,7 @@ EOD;
 		}
 	}
 
-	function contratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
+	/*function contratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
 
 		$empresa              = $this->consultarEmpresa();
 		$direccionEmpresa 	  = $empresa->emprdireccion;		
@@ -1692,9 +1692,9 @@ EOD;
 		}else{
 			PDF::output($tituloPdf, $metodo);
 		}
-	}
+	}*/
 
-	function contratoVehiculoEspecial($arrayDatos, $contenido, $arrayFirmas){
+	function contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $tipoContrato){
 
 		$titulo            = $arrayDatos['titulo'];
 		$numeroContrato    = $arrayDatos['numeroContrato'];
@@ -1721,148 +1721,27 @@ EOD;
 		$personeriaJuridica = $empresa->emprpersoneriajuridica;
 		$logoEmpresa        = $empresa->emprlogo;
 
-        PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator($nombreEmpresa);
-		PDF::SetSubject($titulo);
-		PDF::SetKeywords('Contrato, Vehículo, Especial, '.$siglaEmpresa.', '.$numeroContrato );
-        PDF::SetTitle($titulo);	
-
-		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
-
-		PDF::SetProtection(array('copy'), '', null, 0, null);
-		PDF::SetPrintHeader(true);
-		PDF::SetPrintFooter(true);
-		PDF::SetMargins(20, 36, 15);
-		PDF::AddPage('P', 'Letter');
-		PDF::SetAutoPageBreak(true, 26);
-		PDF::SetY(16);
-		PDF::Ln(20);
-		PDF::SetFont('helvetica', 'B', 12);
-		PDF::Cell(176, 4, 'CONTRATO DE ADMINISTRACIÓN Y/O VINCULACION POR AFILIACIÓN:', 0, 0, 'C');
-		PDF::Ln(4);
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(176, 4, 'Decreto Único Reglamentario del Sector Transporte', 0, 0, 'C');
-		PDF::Ln(4);
-		PDF::Cell(176, 4, 'Servicio Público de Pasajeros en la Modalidad de Transporte Especial', 0, 0, 'C');
-		PDF::Ln(12);
-
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'No. Contrato:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $numeroContrato, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Placa:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $placaVehiculo, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'No móvil:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $numeroInterno, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Propietarios:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $propietarios, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Identificación:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $identificaciones, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Dirección:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $direcciones, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Teléfono:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $telefonos, 0, 0, 'L');
-		PDF::Ln(5);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Correo Electrónico:', 0, 0, 'L');
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $correos, 0, 0, 'L');
-		PDF::Ln(12);
-		PDF::SetFont('helvetica', '', 9);
-		PDF::writeHTML($contenido, true, false, true, false, '');
-		PDF::Ln(4);
-		PDF::SetFont('helvetica', 'B', 10);
-		PDF::Cell(80, 4, 'La EMPRESA', 0, 0, 'L');
-		PDF::Cell(16, 4, '', 0, 0, 'L');
-		PDF::Cell(80, 4, 'El PROPIETARIO', 0, 0, 'L');
-		PDF::Ln(20);
-
-		$contador = 0;
-		foreach($arrayFirmas as $arrayFirma){
-			$top = ($contador === 0) ? 'T': '';		
-			PDF::Cell(78, 4, $arrayFirma['nombreGerente'], $top, 0, 'L');
-			PDF::Cell(20, 4, '', 0, 0, 'L');
-			PDF::Cell(78, 4, $arrayFirma['nombreAsociado'], 'T', 0, 'L');
-			PDF::Ln(5);
-			PDF::Cell(78, 4, $arrayFirma['documentoGerente'], 0, 0, 'L');
-			PDF::Cell(20, 4, '', 0, 0, 'L');	
-			PDF::Cell(78, 4, $arrayFirma['documentoAsociado'], 0, 0, 'L');
-			PDF::Ln(16);
-			$contador ++;
-		}	
-
-		$tituloPdf = $titulo.'.pdf';
-		if($metodo === 'S'){
-			return base64_encode(PDF::output($tituloPdf, 'S'));
-		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
-			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placa;
-			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-			$rutaPdf      = $rutaCarpeta.'/'.$numeroContrato.'.pdf';
-			PDF::output($rutaPdf, 'F');
-			return $rutaPdf;
-		}else{
-			PDF::output($tituloPdf, $metodo);
+		if($tipoContrato === 'E'){
+		   $nombreTipoContrato = 'Especial';
+		}else if($tipoContrato === 'I'){
+			$nombreTipoContrato = 'Intermunicipal';
+		}else if($tipoContrato === 'C'){
+			$nombreTipoContrato = 'Colectivo';
+		}else {
+			$nombreTipoContrato = 'Mixto';
 		}
-	}
-
-	function contratoVehiculoIntermunicipal($arrayDatos, $contenido, $arrayFirmas){
-
-		$titulo            = $arrayDatos['titulo'];
-		$numeroContrato    = $arrayDatos['numeroContrato'];
-		$placaVehiculo     = $arrayDatos['placaVehiculo'];
-		$numeroInterno     = $arrayDatos['numeroInterno'];
-		$propietarios      = $arrayDatos['propietarios'];
-		$identificaciones  = $arrayDatos['identificaciones'];
-		$direcciones       = $arrayDatos['direcciones'];
-		$telefonos         = $arrayDatos['telefonos'];
-		$correos           = $arrayDatos['correos'];	
-		$metodo            = $arrayDatos['metodo'];
-
-		$empresa            = $this->consultarEmpresa();
-		$direccionEmpresa 	= $empresa->emprdireccion;
-		$ciudadEmpresa    	= $empresa->muninombre;
-		$barrioEmpresa    	= $empresa->emprbarrio;
-		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
-		$celularEmpresa   	= $empresa->emprtelefonocelular;
-		$urlEmpresa       	= $empresa->emprurl;
-		$nombreEmpresa      = $empresa->emprnombre;
-		$lemaEmpresa        = $empresa->emprlema;
-		$siglaEmpresa       = $empresa->emprsigla;
-		$nit                = $empresa->nit;
-		$personeriaJuridica = $empresa->emprpersoneriajuridica;
-		$logoEmpresa        = $empresa->emprlogo;
 
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator($nombreEmpresa);
 		PDF::SetSubject($titulo);
-		PDF::SetKeywords('Contrato, Vehículo, Especial, '.$siglaEmpresa.', '.$numeroContrato );
+		PDF::SetKeywords('Contrato, Vehículo, '.$nombreTipoContrato.', '.$siglaEmpresa.', '.$numeroContrato );
         PDF::SetTitle($titulo);	
 
 		//Encabezado y pie de pagina del pdf
 		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
 
-		PDF::SetProtection(array('copy'), '', null, 0, null);
+		//PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		PDF::SetMargins(20, 36, 15);
@@ -1870,13 +1749,33 @@ EOD;
 		PDF::SetAutoPageBreak(true, 26);
 		PDF::SetY(16);
 		PDF::Ln(20);
-		PDF::SetFont('helvetica', 'B', 12);
-		PDF::Cell(176, 4, 'CONTRATO DE VINCULACIÓN POR AFILIACIÓN ', 0, 0, 'C');
-		PDF::Ln(4);
-		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(176, 4, 'MODALIDAD TRANSPORTE INTERMUNICIPAL ', 0, 0, 'C');
-		PDF::Ln(12);
 
+		PDF::SetFont('helvetica', 'B', 12);
+		if($tipoContrato === 'E'){
+			PDF::Cell(176, 4, 'CONTRATO DE ADMINISTRACIÓN Y/O VINCULACION POR AFILIACIÓN:', 0, 0, 'C');
+			PDF::Ln(4);
+			PDF::SetFont('helvetica', 'B', 11);
+			PDF::Cell(176, 4, 'Decreto Único Reglamentario del Sector Transporte', 0, 0, 'C');
+			PDF::Ln(4);
+			PDF::Cell(176, 4, 'Servicio Público de Pasajeros en la Modalidad de Transporte Especial', 0, 0, 'C');
+		}else if($tipoContrato === 'I'){
+			PDF::Cell(176, 4, 'CONTRATO DE VINCULACIÓN POR AFILIACIÓN ', 0, 0, 'C');
+			PDF::Ln(4);
+			PDF::SetFont('helvetica', 'B', 11);
+			PDF::Cell(176, 4, 'MODALIDAD TRANSPORTE INTERMUNICIPAL ', 0, 0, 'C');
+		}else if($tipoContrato === 'C'){
+			PDF::Cell(176, 4, 'CONTRATO DE VINCULACIÓN POR AFILIACIÓN ', 0, 0, 'C');
+			PDF::Ln(4);
+			PDF::SetFont('helvetica', 'B', 11);
+			PDF::Cell(176, 4, 'MODALIDAD TRANSPORTE COLECTIVO ', 0, 0, 'C');
+		}else {
+			PDF::Cell(176, 4, 'CONTRATO DE VINCULACIÓN POR AFILIACIÓN ', 0, 0, 'C');
+			PDF::Ln(4);
+			PDF::SetFont('helvetica', 'B', 11);
+			PDF::Cell(176, 4, 'MODALIDAD TRANSPORTE MIXTO ', 0, 0, 'C');
+		}
+
+		PDF::Ln(12);
 		PDF::SetFont('helvetica', '', 11);
 		PDF::Cell(40, 4, 'No. Contrato:', 0, 0, 'L');
 		PDF::SetFont('helvetica', 'B', 11);
@@ -1936,6 +1835,12 @@ EOD;
 			PDF::Cell(78, 4, $arrayFirma['documentoGerente'], 0, 0, 'L');
 			PDF::Cell(20, 4, '', 0, 0, 'L');	
 			PDF::Cell(78, 4, $arrayFirma['documentoAsociado'], 0, 0, 'L');
+			PDF::Ln(5);
+			PDF::Cell(78, 4, '', 0, 0, 'L');
+			PDF::Cell(20, 4, '', 0, 0, 'L');
+			PDF::SetFont('helvetica', '', 9);
+			PDF::Cell(78, 4, $arrayFirma['direccionAsociado'], 0, 0, 'L');
+			PDF::SetFont('helvetica', 'B', 10);
 			PDF::Ln(16);
 			$contador ++;
 		}	

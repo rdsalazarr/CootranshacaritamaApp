@@ -777,62 +777,112 @@ class MantenimientoController extends Controller
     {
         $generales      = new generales();  
         $generarPdf     = new generarPdf();
-        $informacionPDF = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoModalidadEspecial')->first(); 
 
-        $informacionPDF = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'contratoModalidadIntermunicipal')->first(); 
 
-        $fechaFirmaContrato = '18 de noviembre de 2023';
-        $cuotaSostenimientoAdmon = '105.000';
-        $descuentoPagoAnualAnticipado = '5';
-        $recargoCuotaSostenimientoAdmon = '5';
-        $ciudadExpDocumentoGerente  = 'Ocaña';
-        $nombreGerente   = 'RAMON SALAZAR RINCON';
-        $documentoGerente   = '1978917';
-        $numeroContrato = '20230001';
-        $fechaContrato    = 'veinte (20) días del mes de noviembre de 2023';
+        $vehiculoId = 2;
+        $vehiculocontrato = DB::table('vehiculocontrato as vc')
+                                    ->select('vc.vehconid','vc.vehconfechainicial','vc.vehconfechafinal', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
+                                    'v.vehinumerointerno','v.vehiplaca','v.timoveid',
+                                    'tmv.timovecuotasostenimiento','tmv.timovedescuentopagoanticipado','tmv.timoverecargomora')
+                                    ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
+                                    ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
+                                    ->where('vc.vehiid', $vehiculoId)
+                                    ->where('vc.vehconfechafinal', function ($query) use ($vehiculoId) {
+                                        $query->selectRaw('MAX(vehconfechafinal)')
+                                            ->from('vehiculocontrato')
+                                            ->where('vehiid', $vehiculoId);
+                                    })
+                                    ->first();
+
+        $vehiculoContratoAsociados = DB::table('vehiculocontratoasociado as vca')
+                                    ->select('p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                   ->join('asociado as a', 'a.asocid', '=', 'vca.asocid')
+                                   ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                   ->where('vca.vehconid', $vehiculocontrato->vehconid)
+                                   ->get();
+
+         $empresa    = DB::table('empresa as e')->select('p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+                                'me.muninombre as nombreMunicipioExpedicion')
+                               ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                               ->join('municipio as me', function($join)
+                               {
+                                   $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
+                                   $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
+                               })
+                               ->where('e.emprid', 1)->first();
+
+        if($vehiculocontrato->timoveid === 7){
+            $idInformacionPdf = 'contratoModalidadEspecial';
+        }else  if($vehiculocontrato->timoveid === 'I'){
+            $idInformacionPdf = 'contratoModalidadIntermunicipal';
+        }else  if($vehiculocontrato->timoveid === 'C'){
+            $idInformacionPdf = 'contratoModalidadColectivo';
+        } else {
+            $idInformacionPdf = 'contratoModalidadMixto';
+        }
+
+        $informacionPDF                 = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', $idInformacionPdf)->first(); 
+        $fechaFirmaContrato             = $generales->formatearFecha($vehiculocontrato->vehconfechainicial);
+        $cuotaSostenimientoAdmon        = number_format($vehiculocontrato->timovecuotasostenimiento, 0, ',', '.') ;
+        $descuentoPagoAnualAnticipado   = $vehiculocontrato->timovedescuentopagoanticipado;
+        $recargoCuotaSostenimientoAdmon = $vehiculocontrato->timoverecargomora;
+        $nombreGerente                  = $empresa->nombrePersona;
+        $documentoGerente               = number_format($empresa->persdocumento, 0, ',', '.');
+        $ciudadExpDocumentoGerente      = $empresa->nombreMunicipioExpedicion;;
+        $numeroContrato                 = $vehiculocontrato->numeroContrato;
+        $fechaContrato                  = $generales->formatearFechaContrato($vehiculocontrato->vehconfechainicial);
         
-        
+        $identificacionAsociado         = '';
+        $nombreAsociado                 = '';
+        $direccionAsociado              = '';
+        $telefonoAsociado               = '';
+        $correoAsociado                 = '';
+        $nombreGerenteFirma             = $nombreGerente;
+        $documentoGerenteFirma          = 'C.C. '.$documentoGerente;
+        $arrayFirmas                    = [];
+        foreach($vehiculoContratoAsociados as $vehiculoContratoAsociado){
+            $identificacionAsociado .= number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.').', ';
+            $nombreAsociado         .= $vehiculoContratoAsociado->nombreAsociado.', ';
+            $direccionAsociado      .= $vehiculoContratoAsociado->persdireccion.', ';
+            $telefonoAsociado       .= ($vehiculoContratoAsociado->persnumerocelular !== null ) ? $vehiculoContratoAsociado->persnumerocelular.', ': '';
+            $correoAsociado         .= ($vehiculoContratoAsociado->perscorreoelectronico !== null ) ? $vehiculoContratoAsociado->perscorreoelectronico.', ': ''; 
+
+            $firmasContrato = [
+                    "nombreGerente"     => $nombreGerenteFirma,
+                    "nombreAsociado"    => $vehiculoContratoAsociado->nombreAsociado,
+                    "documentoGerente"  => $documentoGerenteFirma,
+                    "documentoAsociado" => 'C.C. '.number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.'),
+                    "direccionAsociado" => $vehiculoContratoAsociado->persdireccion
+                ];
+
+            array_push($arrayFirmas, $firmasContrato);
+            $nombreGerenteFirma     = '';
+            $documentoGerenteFirma  = '';
+        }
+
         $arrayDatos = [ "titulo"           => 'Contrato número '.$numeroContrato,
                         "numeroContrato"   => $numeroContrato,
-                        "placaVehiculo"    => 'PLA001',
-                        "numeroInterno"    => '500',
-                        "propietarios"     => 'rAMO SALAZAR',
-                        "identificaciones" => '1978917',
-                        "direcciones"      => 'CALLE PRINCIPAL',
-                        "telefonos"        => '123456',
-                        "correos"          => 'radasa10@hotmail.com',                    
+                        "placaVehiculo"    => $vehiculocontrato->vehiplaca,
+                        "numeroInterno"    => $vehiculocontrato->vehinumerointerno,
+                        "propietarios"     => substr($nombreAsociado, 0, -2),
+                        "identificaciones" => substr($identificacionAsociado, 0, -2),
+                        "direcciones"      => substr($direccionAsociado, 0, -2),
+                        "telefonos"        => substr($telefonoAsociado, 0, -2),
+                        "correos"          => substr($correoAsociado, 0, -2),
                         "metodo"           => 'I'
-                        ];
+                    ]; 
 
-        $arrayFirmas = [];
-        $firmasContrato = [
-                        "nombreGerente"     => $nombreGerente,
-                        "nombreAsociado"    => 'PEDRO ELIAS QUINTERO URIBE DE PUERTO',
-                        "documentoGerente"  => $documentoGerente,
-                        "documentoAsociado" => '27.963.159'
-        ];
-        array_push($arrayFirmas, $firmasContrato);
-        $firmasContrato = [
-                        "nombreGerente"     => '',
-                        "nombreAsociado"    => 'maria del pilar',
-                        "documentoGerente"  => '',
-                        "documentoAsociado" => '47.962.150'
-        ];
-        array_push($arrayFirmas, $firmasContrato);     
-
-
-        $buscar                     = Array('documentoGerente', 'nombreGerente', 'ciudadExpDocumentoGerente', 'cuotaSostenimientoAdmon','descuentoPagoAnualAnticipado',
-                                    'recargoCuotaSostenimientoAdmon','fechaFirmaContrato','fechaContrato'
-                                    );
-        $remplazo                   = Array($documentoGerente, $nombreGerente, $ciudadExpDocumentoGerente, $cuotaSostenimientoAdmon, $descuentoPagoAnualAnticipado,
-                                    $recargoCuotaSostenimientoAdmon, $fechaFirmaContrato, $fechaContrato 
-                                    ); 
-        $titulo                      = str_replace($buscar,$remplazo,$informacionPDF->ingpdftitulo);
-        $contenido                   = str_replace($buscar,$remplazo,$informacionPDF->ingpdfcontenido); 
-        
-
-        //$generarPdf->contratoVehiculoEspecial($arrayDatos, $contenido, $arrayFirmas);
-        $generarPdf->contratoVehiculoIntermunicipal($arrayDatos, $contenido, $arrayFirmas);
+        $buscar     = Array('documentoGerente', 'nombreGerente', 'ciudadExpDocumentoGerente', 'cuotaSostenimientoAdmon','descuentoPagoAnualAnticipado',
+                            'recargoCuotaSostenimientoAdmon','fechaFirmaContrato','fechaContrato'
+                            );
+        $remplazo   = Array($documentoGerente, $nombreGerente, $ciudadExpDocumentoGerente, $cuotaSostenimientoAdmon, $descuentoPagoAnualAnticipado,
+                            $recargoCuotaSostenimientoAdmon, $fechaFirmaContrato, $fechaContrato 
+                            ); 
+        $contenido  = str_replace($buscar,$remplazo,$informacionPDF->ingpdfcontenido);         
+ 
+        $generarPdf->contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $idInformacionPdf);
     }
 
 }

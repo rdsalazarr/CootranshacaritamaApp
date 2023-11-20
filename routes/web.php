@@ -51,6 +51,7 @@ use App\Http\Controllers\Admin\Archivo\HistoricoConsultarController;
 use App\Http\Controllers\Admin\Vehiculos\TipoVehiculoController;
 use App\Http\Controllers\Admin\Vehiculos\TipoReferenciaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoCarroceriaController;
+use App\Http\Controllers\Admin\Vehiculos\TipoModalidadController;
 use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
 use App\Http\Controllers\Admin\Vehiculos\VehiculoController;
@@ -68,6 +69,7 @@ use App\Http\Controllers\Admin\Cartera\HistorialSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\ShowSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\GestionCobroCarteraController;
 
+use App\Http\Controllers\Admin\Despacho\RutaController;
 use App\Http\Controllers\Admin\Despacho\ContratoServicioEspecialController;
 
 Route::get('/', [FrondController::class, 'index']);
@@ -359,6 +361,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/color/salve', [TipoColorController::class, 'salve']);
             Route::post('/color/destroy', [TipoColorController::class, 'destroy']);
 
+            Route::get('/modalidad/list', [TipoModalidadController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::post('/modalidad/salve', [TipoModalidadController::class, 'salve']);
+            Route::post('/modalidad/destroy', [TipoModalidadController::class, 'destroy']);
+
             Route::get('/vehiculo/list', [VehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/vehiculos');
             Route::post('/vehiculo/list/datos', [VehiculoController::class, 'datos']);
             Route::post('/vehiculo/salve', [VehiculoController::class, 'salve']);
@@ -408,15 +414,18 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/imprimir/documento/desembolso', [ShowSolicitudCreditoController::class, 'imprimir']);
 
             Route::get('/historial/solicitud/credito', [HistorialSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/historial');
-    
+
             Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');
             Route::post('/show/colocacion', [GestionCobroCarteraController::class, 'showColocacion']);
             Route::post('/hacer/seguimiento/colocacion', [GestionCobroCarteraController::class, 'salveSeguimiento']);
-
         });
 
         Route::prefix('/despacho')->group(function(){
-            Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index']); //->middleware('security:admin/despacho/servicioEspecial');
+            Route::get('/ruta/list', [RutaController::class, 'index'])->middleware('security:admin/despacho/ruta');
+            Route::post('/ruta/salve', [RutaController::class, 'salve']);
+            Route::post('/ruta/destroy', [RutaController::class, 'destroy']);
+
+            Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index'])->middleware('security:admin/despacho/servicioEspecial');
             Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);
             Route::post('/servicio/especial/consultar/persona', [ContratoServicioEspecialController::class, 'consultarPersona']);
             Route::post('/servicio/especial/salve', [ContratoServicioEspecialController::class, 'salve']);
