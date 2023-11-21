@@ -4,9 +4,9 @@ import { TabPanel } from '../../../layout/general';
 import Carroceria from "./carroceria/list";
 import Referencia from "./referencia/list";
 import Modalidad from "./modalidad/list";
+import Vehiculo from "./vehiculo/list";
 import Marca from "./marca/list";
 import Color from "./color/list";
-import Tipo from "./tipo/list";
 
 export default function List(){
 
@@ -19,7 +19,7 @@ export default function List(){
 
     return (
         <Box>
-            <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Gestion de tipos de vehículos</Typography>
+            <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Gestion de tipos correspondiente a los vehículos</Typography>
             </Box>
 
             <Tabs value={value} onChange={handleChangeTab} 
@@ -36,7 +36,7 @@ export default function List(){
             </Tabs>
 
             <TabPanel value={value} index={0}>
-                <Tipo />
+                <Vehiculo />
             </TabPanel>
 
             <TabPanel value={value} index={1}>

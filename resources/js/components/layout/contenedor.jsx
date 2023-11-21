@@ -60,9 +60,10 @@ import DesembolsarCredito from "../admin/cartera/cambiarEstado/desembolsar/searc
 import CobroCartera from "../admin/cartera/gestionCobro/list";
 import HistorialSolicitudCredito from "../admin/cartera/solicitudCredito/historial";
 
+import Rutas from "../admin/despacho/ruta/list";
 import ServicoEspecial from "../admin/despacho/servicioEspecial/list";
 
-import Rutas from "../admin/despacho/ruta/list";
+import Rutas1 from "../admin/despacho/ruta/list1";
 import Rutas2 from "../admin/despacho/ruta/list2";
 
 
@@ -147,9 +148,9 @@ const componenteMenu = [
         icono : 'send_time_extension_icon',
         itemMenu: [
             {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <Rutas /> },
-            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas /> },
-            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas2 />}, 
-            {ruta : 'admin/despacho/encomienda',        menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas1 /> },
+            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
+            {ruta : 'admin/despacho/encomienda',        menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},
             {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
         ]
     },
@@ -196,12 +197,12 @@ const menuComponente = [
     {id:36,componente : <DesembolsarCredito />},
     {id:37,componente : <HistorialSolicitudCredito />},
     {id:38,componente : <CobroCartera />},
-    {id:39,componente : <ServicoEspecial />},
+    {id:39,componente : <Rutas />},
     
     {id:40,componente : <ServicoEspecial />},
-    {id:41,componente : <EnConstruccion />},
-    {id:42,componente : <EnConstruccion />},
-    {id:43,componente : <EnConstruccion />},
+    {id:41,componente : <Rutas1 />},
+    {id:42,componente : <Rutas2 />},
+    {id:43,componente : <Rutas1 />},
     {id:44,componente : <EnConstruccion />},
     {id:45,componente : <EnConstruccion />},
     {id:46,componente : <EnConstruccion />},

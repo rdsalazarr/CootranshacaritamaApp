@@ -3,7 +3,7 @@ import { ModalDefaultAuto } from '../../../../layout/modal';
 import TablaGeneral from '../../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
-import { Box, Card} from '@mui/material';
+import { Box} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
@@ -36,27 +36,25 @@ export default function List(){
 
     return (
         <Box className={'containerMedium'} >
-            <Card className={'cardContainer'} >
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Nombre','Cuota sostenimiento','Descuento pago anticipado', 'Recargo por mora','Posee despacho', 'Actualizar']}
-                        ver={['timovenombre','cuotaSostenimiento','descuentoPagoAnticipado','moraRecargo','tieneDespacho']}
-                        accion={[
-                            {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,0)} },
-                        ]}
-                        funciones={{orderBy: true, search: false, pagination:false}}
-                    />
-                </Box>
-
-                <ModalDefaultAuto
-                    title={modal.titulo}
-                    content={modales[modal.vista]}
-                    close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
-                    tam = {modal.tamano}
-                    abrir ={modal.open}
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Nombre','Cuota sostenimiento','Descuento pago anticipado', 'Recargo por mora','Posee despacho', 'Actualizar']}
+                    ver={['timovenombre','cuotaSostenimiento','descuentoPagoAnticipado','moraRecargo','tieneDespacho']}
+                    accion={[
+                        {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,0)} },
+                    ]}
+                    funciones={{orderBy: true, search: false, pagination:false}}
                 />
-            </Card>
+            </Box>
+
+            <ModalDefaultAuto
+                title={modal.titulo}
+                content={modales[modal.vista]}
+                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                tam = {modal.tamano}
+                abrir ={modal.open}
+            />
         </Box>
     )
 }

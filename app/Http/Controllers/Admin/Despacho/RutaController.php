@@ -12,7 +12,8 @@ class RutaController extends Controller
 {
     public function index(){
         $data = DB::table('ruta as r')
-                    ->select('r.rutaid','do.depanombre as nombreDeptoOrigen', 'mo.muninombre as nombreMunicipioOrigen',   
+                    ->select('r.rutaid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','r.rutaactiva',
+                    'do.depanombre as nombreDeptoOrigen', 'mo.muninombre as nombreMunicipioOrigen',   
                     'de.depanombre as nombreDeptoDestino', 'md.muninombre as nombreMunicipioDestino',
                     DB::raw("if(r.rutaactiva = 1 ,'Sí', 'No') as estado"))
                     ->join('departamento as do', 'do.depaid', '=', 'r.depaidorigen')
@@ -39,10 +40,6 @@ class RutaController extends Controller
         $departamentos = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
         $municipios    = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
         $ruta          = [];
-        if($request->tipo === 'U'){
-            $ruta = DB::table('ruta')->select('rutaid','depaidorigen','muniidorigen','depaiddestino','muniiddestino','rutaactiva')
-                        ->where('rutaid', $request->codigo)->first();
-        }
 
         return response()->json(["departamentos" => $departamentos, "municipios" => $municipios, "ruta" => $ruta]);
     }
@@ -71,7 +68,7 @@ class RutaController extends Controller
             $ruta->save();
 
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeNotificar, 'planillaId' => $coseesid]);
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
         } catch (Exception $error){
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
