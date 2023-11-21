@@ -312,7 +312,6 @@ php artisan make:controller Admin\Despacho\RutaController
 
 php artisan make:controller Admin\DependenciaController
 
-
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 

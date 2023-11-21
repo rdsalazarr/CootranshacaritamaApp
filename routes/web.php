@@ -422,6 +422,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::prefix('/despacho')->group(function(){
             Route::get('/ruta/list', [RutaController::class, 'index'])->middleware('security:admin/despacho/ruta');
+            Route::post('/ruta/datos', [RutaController::class, 'datos']);
             Route::post('/ruta/salve', [RutaController::class, 'salve']);
             Route::post('/ruta/destroy', [RutaController::class, 'destroy']);
 
