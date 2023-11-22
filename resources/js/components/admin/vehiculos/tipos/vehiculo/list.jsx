@@ -5,7 +5,7 @@ import {LoaderModal} from "../../../../layout/loader";
 import Eliminar from '../../../../layout/modalFijas';
 import instance from '../../../../layout/instance';
 import Distribucion from './distribucion';
-import { Box} from '@mui/material';
+import {Box} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
