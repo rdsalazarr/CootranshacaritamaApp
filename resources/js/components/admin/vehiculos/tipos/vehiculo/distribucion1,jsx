@@ -4,6 +4,53 @@ import { Box} from '@mui/material';
 
 export default function Distribucion(){
 
+    const [asientos, setAsientos] = useState([
+
+        { id: '0', contenido: '' , clase:'conductor', esCondutor: true},
+        { id: '2', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '3', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '4', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '5', contenido: '' , clase:'pasillo', esCondutor: false},
+
+
+        { id: '6', contenido: '1' , clase:'asiento', esCondutor: false},
+        { id: '7', contenido: '2' , clase:'asiento', esCondutor: false},
+        { id: '8', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '9', contenido: '3' , clase:'asiento', esCondutor: false},
+        { id: '10', contenido: '4' , clase:'asiento', esCondutor: false},   
+
+        { id: '11', contenido: '5', clase:'asiento', esCondutor: false },
+        { id: '12', contenido: '6', clase:'asiento', esCondutor: false },
+        { id: '13', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '14', contenido: '7', clase:'asiento', esCondutor: false },
+        { id: '15', contenido: '8', clase:'asiento', esCondutor: false },
+
+        { id: '16', contenido: '9', clase:'asiento', esCondutor: false },
+        { id: '17', contenido: '10', clase:'asiento', esCondutor: false },
+        { id: '18', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '19', contenido: '11', clase:'asiento', esCondutor: false },
+        { id: '20', contenido: '12', clase:'asiento', esCondutor: false },
+
+        { id: '21', contenido: '13', clase:'asiento', esCondutor: false },
+        { id: '22', contenido: '14', clase:'asiento', esCondutor: false },
+        { id: '23', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '24', contenido: '15', clase:'asiento', esCondutor: false },
+        { id: '25', contenido: '16', clase:'asiento', esCondutor: false },
+
+        { id: '26', contenido: '17', clase:'asiento', esCondutor: false },
+        { id: '27', contenido: '18', clase:'asiento', esCondutor: false },
+        { id: '28', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '29', contenido: '19', clase:'asiento', esCondutor: false },
+        { id: '30', contenido: '20', clase:'asiento', esCondutor: false },
+
+        { id: '31', contenido: '21', clase:'asiento', esCondutor: false },
+        { id: '32', contenido: '22', clase:'asiento', esCondutor: false },
+        { id: '33', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '34', contenido: '23', clase:'asiento', esCondutor: false },
+        { id: '35', contenido: '24', clase:'asiento', esCondutor: false },
+
+    ]);
+    
     const [vehicles, setVehicles] = useState([
         { id: '1', name: '1' },
         { id: '2', name: '2' },    

@@ -46,7 +46,7 @@ export default function List(){
     if(loader){
         return <LoaderModal />
     }
-
+//, inicio();
     return (
         <Box className={'container'}>
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
@@ -67,7 +67,7 @@ export default function List(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''})}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />  

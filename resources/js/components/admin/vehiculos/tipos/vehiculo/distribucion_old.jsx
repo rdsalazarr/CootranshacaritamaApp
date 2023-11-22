@@ -133,7 +133,7 @@ export default function Distribucion({data, tipo}){
        setAsientos(nuevosAsientos.map((asiento, index) => ({ ...asiento, id: String(index + 1) })));
     }
     
-    const handleSubmit = () =>{
+    const handleSubmit = () =>{      
        /*// setLoader(true);
         let formData = {...asientos};
         formData.tpVehiculo = data.tipvehid;
@@ -162,17 +162,17 @@ export default function Distribucion({data, tipo}){
                         <DragDropContext onDragEnd={handleDragEnd} direction="horizontal">
                             <Droppable droppableId="asientos">
                             {(provided) => (
-                                <Box className={claseModeloVehiculo} fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}
+                                <Box className={claseModeloVehiculo} 
                                 {...provided.droppableProps} 
-                                ref={provided.innerRef} >
+                                ref={provided.innerRef} 
+                                fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}>
                                     {asientos.map((asiento, index) => (
                                         <Draggable key={asiento.id} draggableId={asiento.id} index={index} isDragDisabled={asiento.esCondutor} >
                                             {(provided) => (
-                                                <Box
-                                                    {...provided.draggableProps}
+                                                <Box className={asiento.clase}
                                                     ref={provided.innerRef}
+                                                    {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
-                                                    className={asiento.clase}
                                                     >
                                                     <p>{asiento.contenido}</p>
                                                 </Box>

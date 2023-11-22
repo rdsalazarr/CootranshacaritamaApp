@@ -344,6 +344,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/tipo/list', [TipoVehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
             Route::post('/tipo/salve', [TipoVehiculoController::class, 'salve']);
             Route::post('/tipo/destroy', [TipoVehiculoController::class, 'destroy']);
+            Route::post('/distribucion/tipo/vehiculo', [TipoVehiculoController::class, 'datos']);
+            Route::post('/tipo/distribucion/salve', [TipoVehiculoController::class, 'distribucion']);
 
             Route::get('/referencia/list', [TipoReferenciaController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
             Route::post('/referencia/salve', [TipoReferenciaController::class, 'salve']);
