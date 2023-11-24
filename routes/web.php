@@ -429,6 +429,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/ruta/listar/datos', [RutaController::class, 'datos']);
             Route::post('/ruta/salve', [RutaController::class, 'salve']);
             Route::post('/ruta/destroy', [RutaController::class, 'destroy']);
+            Route::post('/ruta/listar/datos/tiquete', [RutaController::class, 'datosTiquete']);
+            Route::post('/ruta/salvar/datos/tiquete', [RutaController::class, 'tiquete']); 
 
             Route::post('/planillas/list', [PlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/planillas');
             Route::post('/planillas/listar/datos', [PlanillaRutaController::class, 'datos']);

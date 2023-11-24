@@ -65,10 +65,9 @@ import ServicoEspecial from "../admin/despacho/servicioEspecial/list";
 import Planillas from "../admin/despacho/planilla/list";
 import Encomiendas from "../admin/despacho/encomienda/list";
 
-import Rutas1 from "../admin/despacho/ruta/list1";
-import Rutas2 from "../admin/despacho/ruta/list2";
-import Rutas3 from "../admin/despacho/ruta/ruta3";
-
+import Rutas1 from "../admin/vehiculos/tipos/vehiculo/old/list1";
+import Rutas2 from "../admin/vehiculos/tipos/vehiculo/old/list2";
+import Rutas3 from "../admin/vehiculos/tipos/vehiculo/old/ruta3";
 
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
@@ -147,13 +146,13 @@ const ItemMenu = ({route, text, icon}) => {
 };
 
 const componenteMenu = [    
-    {   nombre: 'Despacho',
+    {   nombre: 'Otros',
         icono : 'send_time_extension_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <Rutas /> },
+           /* {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <Rutas /> },
             {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas1 /> },
             {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
-            {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},
+            {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},*/
             {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas />},
             {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas1 />},
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas2 />},
@@ -204,8 +203,7 @@ const menuComponente = [
     {id:37,componente : <HistorialSolicitudCredito />},
     {id:38,componente : <CobroCartera />},
     {id:39,componente : <Rutas />},
-    
-    {id:40,componente : <ServicoEspecial  />},
+    {id:40,componente : <ServicoEspecial />},
     {id:41,componente : <Planillas />},
     {id:42,componente : <Encomiendas />},
     

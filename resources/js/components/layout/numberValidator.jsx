@@ -17,8 +17,7 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props, r
                     },
                 });
             }}
-            thousandSeparator
-            isNumericString
+            thousandSeparator            
             allowNegative={false}
             prefix="$"
         />

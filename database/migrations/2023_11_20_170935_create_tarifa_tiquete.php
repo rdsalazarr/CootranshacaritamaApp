@@ -17,7 +17,7 @@ return new class extends Migration
             $table->tinyInteger('depaiddestino')->unsigned()->comment('Identificador del departamento de destino del tiquete');
             $table->smallInteger('muniiddestino')->unsigned()->comment('Identificador del municipio de destino del tiquete');
             $table->string('tartiqvalor', 8)->comment('Valor del tiquete');
-            $table->string('tartiqfondoreposicion', 6)->comment('Valor para el fondo de reposición del tiquete');
+            $table->decimal('tartiqfondoreposicion',6,2)->comment('Porcentaje para el fondo de reposición del tiquete');
             $table->timestamps();
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutatartiq');
             $table->foreign('depaiddestino')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depatartiqdestino');

@@ -5,7 +5,6 @@ import { ModalDefaultAuto } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
-import Tiquete from './tiquete';
 import NewEdit from './new';
 
 export default function List(){
@@ -21,12 +20,10 @@ export default function List(){
 
     const modales = [
                         <NewEdit tipo={'I'}  />,
-                        <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Tiquete data={modal.data} /> ,
-                        <Eliminar id={(tipo === 3) ? modal.data.persid : null} ruta={'/admin/despacho/ruta/destroy'} cerrarModal={cerrarModal} />
+                        <NewEdit data={modal.data} tipo={'U'} />
                     ];
 
-    const tituloModal = ['Nueva ruta','Editar ruta','Asignar valor del tiquete para la ruta',''];
+    const tituloModal = ['Nueva planilla','Editar planilla','Despachar vehículo',''];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
@@ -35,7 +32,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/despacho/ruta/list').then(res=>{
+        instance.post('/admin/despacho/planillas/list', {estado:'R'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -49,19 +46,15 @@ export default function List(){
 
     return (
         <Box>
-            <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar rutas</Typography>
-                </Box>
+            <Card className={'cardContainer'} >              
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Departamento origen','Municipio origen','Departamento destino', 'Municipio destino','Activa','Actualizar','Tiquete','Eliminar']}
-                        ver={["nombreDeptoOrigen","nombreMunicipioOrigen","nombreDeptoDestino","nombreMunicipioDestino","estado"]}
+                        titulo={['Fecha registo','Fecha de salida','Origen', 'Destino','Número','Vehículo','Conductor','Registrado por','Recibida por','Actualizar']}
+                        ver={["fechaHoraRegistro","fechaHoraSalida","municipioOrigen","municipioDestino","numeroPlanilla","nombreVehiculo", "nombreConductor", "usuarioRegistra", "usuarioRecibe"]}
                         accion={[
                             {tipo: 'T', icono : 'add',                    color: 'green',  funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',                   color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'currency_exchange_icon', color: 'green',  funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'delete',                 color: 'red',    funcion : (data)=>{edit(data,3)} },
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />

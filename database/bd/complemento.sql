@@ -58,3 +58,20 @@ ALTER TABLE `contratoservicioespecial` ADD `coseesnombreuniontemporal` VARCHAR(1
 
 
 ALTER TABLE `tipomodalidadvehiculo` ADD `timovecuotasotenimiento` VARCHAR(8) NULL AFTER `timovenombre`, ADD `timovedescuentopagoanticipado` VARCHAR(4) NULL AFTER `timovecuotasostenimiento`, ADD `timoverecargomora` VARCHAR(4) NULL AFTER `timovedescuentopagoanticipado`;
+
+ALTER TABLE `tarifatiquete` CHANGE `tartiqfondoreposicion` `tartiqfondoreposicion` DECIMAL(6,2) NOT NULL COMMENT 'Valor para el fondo de reposición del tiquete';
+ALTER TABLE `tarifatiquete` CHANGE `tartiqfondoreposicion` `tartiqfondoreposicion` DECIMAL(6,2) NOT NULL COMMENT 'Valor para el fondo de reposición del tiquete';
+
+
+INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,updated_at) VALUES
+(1123, 18, '54399', 'Aspacica' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1124, 18, '54400', 'La Vega de San Antonio', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1125, 9, '20615', 'Otaré', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1126, 9, '20012', 'Besote', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1127, 9, '20014', 'Casacará', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1128, 18, '54246', 'Guamalito', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1129, 9, '20015', 'Cuatrovientos', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1130, 9, '20016', 'El burro', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1131, 9, '20017', 'La loma', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1132, 9, '20018', 'La mata', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1133, 9, '20019', 'Rincon Hondo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

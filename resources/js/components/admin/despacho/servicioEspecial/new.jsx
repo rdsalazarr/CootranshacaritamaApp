@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import {TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell, Avatar, Autocomplete, createFilterOptions} from '@mui/material';
+import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {ModalDefaultAuto } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
@@ -108,7 +109,6 @@ export default function New({data, tipo}){
         setEsEmpresa((e.target.value === 5) ? true : false);
         setFormData(newFormData);
     }
-
 
     const adicionarFilaVehiculo = () =>{
         if(formDataAdicionarVehiculo.vehiculoId === ''){
@@ -499,17 +499,15 @@ export default function New({data, tipo}){
 
                 <Grid container spacing={2}>
                     <Grid item xl={2} md={2} sm={6} xs={12}>
-                        <TextValidator
-                            name={'valorContrato'}
+                        <NumberValidator fullWidth
+                            id={"valorContrato"}
+                            name={"valorContrato"}
+                            label={"Valor contrato"}
                             value={formData.valorContrato}
-                            label={'Valor contrato'}
-                            className={'inputGeneral'}
-                            variant={"standard"}
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required","maxNumber:999999999"]}
-                            errorMessages={["campo obligatorio","Número máximo permitido es el 999999999"]}
+                            type={'numeric'}
+                            require={['required', 'maxStringLength:9']}
+                            error={['Campo obligatorio','Número máximo permitido es el 999999999']}
                             onChange={handleChange}
-                            type={"number"}
                         />
                     </Grid>
 

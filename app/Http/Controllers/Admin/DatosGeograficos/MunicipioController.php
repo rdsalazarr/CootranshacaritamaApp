@@ -37,9 +37,17 @@ class MunicipioController extends Controller
         ]);  
 		
 		try {
-			$municipio = Municipio::findOrFail($request->id);
+			$codigo = $request->codigo;
+			if($request->tipo === 'I'){
+				$municipio          = new Municipio();
+				$maxCodigoMunicipio = DB::table('municipio')->max('municodigo');
+				$codigo             = $maxCodigoMunicipio + 1;
+			}else{
+				$municipio = Municipio::findOrFail($request->id);
+			}
+			
 			$municipio->munidepaid = $request->depto;
-			$municipio->municodigo = $request->codigo;
+			$municipio->municodigo = $codigo;
             $municipio->muninombre = $request->nombre;
 			$municipio->munihacepresencia  = $request->hacePresencia;
 			$municipio->save();

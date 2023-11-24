@@ -15,7 +15,6 @@ INSERT INTO `informacionnotificacioncorreo` (`innocoid`, `innoconombre`, `innoco
 (13, 'notificarAprobacionSolicitudCredito', 'Decisión tomada sobre la solicitud de crédito por un valor de $ valorCredito', '<p dir=\"ltr\" style=\"text-align: justify;\">Estimado <strong>nombreSolicitante</strong>,</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Es un placer saludarte. Queremos informarte que hemos completado la revisi&oacute;n de tu solicitud de cr&eacute;dito por un monto de $ <strong>valorCredito</strong>. Nos complace comunicarte que tu solicitud ha sido <strong>aprobada</strong>.&nbsp;</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Detalles de la decisi&oacute;n:</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Monto aprobado: $ <strong>montoAprobado<br></strong>Tasa de Inter&eacute;s: <strong>tasaInteres %<br></strong>Plazo: <strong>plazoCredito</strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">A continuaci&oacute;n te recomendamos tener en cuenta las siguientes observaciones: <strong>observacionesGenerales</strong>.</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\"><br>Agradecemos tu confianza en la <strong>COOPERATIVA DE TRANSPORTADORES HACARITAMA.</strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">&nbsp;</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Cordialmente,</p>\r\n<p style=\"text-align: justify;\"><strong>&nbsp;</strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\"><strong>nombreGerente</strong><br><strong>COOPERATIVA DE TRANSPORTADORES HACARITAMA</strong></p>\r\n<p>&nbsp;</p>', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (14, 'notificarNegacionSolicitudCredito', 'Decisión tomada sobre la solicitud de crédito por un valor de $ valorCredito', '<p dir=\"ltr\" style=\"text-align: justify;\">Estimado <strong>nombreSolicitante</strong>,</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Es un placer saludarte. Queremos informarte que hemos completado la revisi&oacute;n de tu solicitud de cr&eacute;dito por un monto de $ <strong>valorCredito</strong>. Nos complace comunicarte que tu solicitud ha sido <strong>negada</strong>.&nbsp;</p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Lamentamos informarte que <strong>observacionesGenerales</strong>. Entendemos que esto puede ser decepcionante, pero estamos aqu&iacute; para ayudarte en cualquier otra consulta o proceso futuro.<strong><br></strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\">Agradecemos tu confianza en la <strong>COOPERATIVA DE TRANSPORTADORES HACARITAMA</strong>.</p>\r\n<p style=\"text-align: justify;\"><strong>&nbsp;<br></strong>Cordialmente,</p>\r\n<p style=\"text-align: justify;\"><strong>&nbsp;</strong></p>\r\n<p dir=\"ltr\" style=\"text-align: justify;\"><strong>nombreGerente</strong><br><strong>COOPERATIVA DE TRANSPORTADORES HACARITAMA</strong></p>\r\n<p style=\"text-align: justify;\">&nbsp;</p>', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-
 INSERT INTO departamento (depaid, depacodigo, depanombre,created_at,updated_at) VALUES
 (1, '05', 'Antioquia', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (2, '08', 'Atlántico', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -51,6 +50,7 @@ INSERT INTO departamento (depaid, depacodigo, depanombre,created_at,updated_at) 
 (32, '97', 'Vaupes' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (33, '99', 'Vichada', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+update departamento set depahacepresencia = true where depaid in (9,18,21, 15);
 
 INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,updated_at) VALUES
 (1, 1, '05001', 'Medellin' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -841,14 +841,14 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 (786, 18, '54128', 'Cachira' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (787, 18, '54172', 'Chinacota' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (788, 18, '54174', 'Chitaga' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(789, 18, '54206', 'Convencion' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(789, 18, '54206', 'Convención' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (790, 18, '54223', 'Cucutilla' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (791, 18, '54239', 'Durania' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (792, 18, '54245', 'El Carmen' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (793, 18, '54250', 'El Tarra' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (794, 18, '54261', 'El Zulia' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (795, 18, '54313', 'Gramalote' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(796, 18, '54344', 'Hacari' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(796, 18, '54344', 'Hacarí' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (797, 18, '54347', 'Herran' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (798, 18, '54377', 'Labateca' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (799, 18, '54385', 'La Esperanza' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -1174,7 +1174,24 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 (1119, 33, '99001', 'Puerto Carreño' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (1120, 33, '99524', 'La Primavera' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (1121, 33, '99624', 'Santa Rosalia' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1122, 33, '99773', 'Cumaribo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(1122, 33, '99773', 'Cumaribo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1123, 18, '54399', 'Aspacica' ,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1124, 18, '54400', 'La Vega de San Antonio', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1125, 9, '20615', 'Otaré', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1126, 9, '20012', 'Besote', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1127, 9, '20014', 'Casacará', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1128, 18, '54246', 'Guamalito', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1129, 9, '20015', 'Cuatrovientos', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1130, 9, '20016', 'El burro', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1131, 9, '20017', 'La loma', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1132, 9, '20018', 'La mata', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1133, 9, '20019', 'Rincon Hondo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+update municipio set munihacepresencia = true 
+where muniid in (804,792,405,789,420,781, 409, 665, 793, 415,416, 796,
+800, 420, 423, 810, 427, 815, 404, 408,  406, 411,412, 796, 418, 424, 421, 426, 99, 428,
+1123,1124,1125,1126, 1127, 1128,1129, 1130, 1131,1132, 1133, 846);
+
 
 --Debe existir el municipio y persona
 INSERT INTO empresa (emprid, persidrepresentantelegal,emprdepaid,emprmuniid,emprnit,emprdigitoverificacion,
@@ -1236,9 +1253,9 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (37, 8, 'Historial S.C.', 'Getionar historial de solicitud de crédito', 'admin/cartera/historial', 'auto_stories_icon ', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (38, 8, 'Cobranza', 'Getionar cobranza', 'admin/cartera/cobranza', 'table_chart_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (39, 9, 'Rutas', 'Getionar de rutas', 'admin/despacho/rutas', 'directions_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(40, 9, 'Servico especial', 'Getionar planilla de servico especial', 'admin/despacho/servicioEspecial', 'taxi_alert_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(41, 9, 'Planillas', 'Getionar planillas', 'admin/despacho/planillas', 'no_crash_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(42, 9, 'Encomiendas', 'Getionar Encomiendas', 'admin/despacho/encomiendas', 'local_shipping_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(40, 9, 'Planillas', 'Getionar planillas', 'admin/despacho/planillas', 'no_crash_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(41, 9, 'Encomiendas', 'Getionar Encomiendas', 'admin/despacho/encomiendas', 'local_shipping_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(42, 9, 'Servico especial', 'Getionar planilla de servico especial', 'admin/despacho/servicioEspecial', 'taxi_alert_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `rol` (`rolid`, `rolnombre`, `rolactivo`, `created_at`, `updated_at`) VALUES
 (1, 'Super administrador', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

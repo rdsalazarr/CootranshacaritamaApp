@@ -35,7 +35,7 @@ class PlanillaRutaController extends Controller
                         $join->on('md.munidepaid', '=', 'r.depaiddestino');
                         $join->on('md.muniid', '=', 'r.muniiddestino');
                     })
-                    ->join('conductor as c', 'c.condid', '=', 'av.condid')
+                    ->join('conductor as c', 'c.condid', '=', 'pr.condid')
                     ->join('persona as p', 'p.persid', '=', 'c.persid')
                     ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
@@ -55,7 +55,7 @@ class PlanillaRutaController extends Controller
         $vehiculos      = DB::table('vehiculo as v')
                                     ->select('v.vehiid', DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
                                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                    ->where('a.agenid', auth()->user()->agenid)->get();
+                                    ->where('v.agenid', auth()->user()->agenid)->get();
 
         $conductores    = DB::table('conductorvehiculo as cv')
                                 ->select('cv.vehiid','cv.convehid', 'p.persid', DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
@@ -65,7 +65,7 @@ class PlanillaRutaController extends Controller
                                 ->where('c.tiescoid', 'A')->get();
 
         $rutas          = DB::table('ruta as r')
-                                 ->select('r.rutaid','mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino')
+                                ->select('r.rutaid',DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"))
                                 ->join('municipio as mo', function($join)
                                 {
                                     $join->on('mo.munidepaid', '=', 'r.depaidorigen');
@@ -77,17 +77,16 @@ class PlanillaRutaController extends Controller
                                     $join->on('md.muniid', '=', 'r.muniiddestino');
                                 })->get();
      
-        $planillaruta   = [];
-
+        $planillaRuta   = [];
         if($request->tipo === 'U'){
-            $planillaruta  = DB::table('planillaruta')
-                                ->select('agenid','rutaid','vehiid','condid','usuaidregistra','usuaidrecibe','plarutfechahoraregistro',
+            $planillaRuta  = DB::table('planillaruta')
+                                ->select('plarutid','agenid','rutaid','vehiid','condid','usuaidregistra','usuaidrecibe','plarutfechahoraregistro',
                                 'plarutconsecutivo','plarutfechahorasalida','plarutfechahorarecibe','plarutgenerada')
                                 ->where('plarutid', $request->codigo)->first();
         }
 
         return response()->json(["vehiculos" => $vehiculos, "conductores"   => $conductores, 
-                                "rutas"      => $rutas,      "planillaruta" => $planillaruta]);
+                                "rutas"      => $rutas,      "planillaRuta" => $planillaRuta]);
     }
 
     public function salve(Request $request)
@@ -103,15 +102,18 @@ class PlanillaRutaController extends Controller
 	        ]);
 
         DB::beginTransaction();
-        try { 
+        try {
             $fechaHoraActual                       = Carbon::now();
-			$planillaruta->agenid                  = auth()->user()->agenid;
-			$planillaruta->rutaid                  = $request->ruta;
+            if($request->tipo === 'I'){
+               $planillaruta->agenid                  = auth()->user()->agenid;
+                $planillaruta->usuaidregistra          = Auth::id();
+                $planillaruta->plarutfechahoraregistro = $fechaHoraActual;
+                $planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo(); 
+            }
+
+            $planillaruta->rutaid                  = $request->ruta;
 			$planillaruta->vehiid                  = $request->vehiculo;
 			$planillaruta->condid                  = $request->conductor;
-			$planillaruta->usuaidregistra          = Auth::id();
-            $planillaruta->plarutfechahoraregistro = $fechaHoraActual;
-			$planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo();
             $planillaruta->plarutfechahorasalida   = $request->fechaHoraSalida;
            	$planillaruta->save();
 

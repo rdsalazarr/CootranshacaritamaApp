@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('plarutconsecutivo', 46)->comment('Consecutivo de la planilla de la ruta');
             $table->dateTime('plarutfechahorasalida')->nullable()->comment('Fecha y hora actual se entrega la planilla para la ruta');
             $table->dateTime('plarutfechahorarecibe')->nullable()->comment('Fecha y hora actual en que se recibe la planilla para la ruta');
-            $table->boolean('plarutgenerada')->default(false)->comment('Determina si la ruta fue generada');
+            $table->boolean('plarutdespachada')->default(false)->comment('Determina si la ruta fue despachada');
             $table->timestamps();
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenplarut');
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutaplarut');

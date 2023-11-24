@@ -6,10 +6,14 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 
-export default function New({data}){
+export default function New({data, tipo}){
 
-    const [formData, setFormData] = useState({id: data.muniid, codigo: data.municodigo, nombre: data.muninombre, 
-                                                hacePresencia: data.munihacepresencia, depto: data.munidepaid });
+    const [formData, setFormData] = useState(
+                                            (tipo !== 'I') ? {id: data.muniid, codigo: data.municodigo, nombre: data.muninombre, 
+                                            hacePresencia: data.munihacepresencia, depto: data.munidepaid, tipo:tipo
+                                            } : {id:'000', codigo:'000', nombre:'', hacePresencia:'1', depto:'', tipo:tipo
+                                            });
+
     const [loader, setLoader] = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
     const [deptos, setDeptos] = useState([]);
@@ -24,6 +28,7 @@ export default function New({data}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({id:'000', codigo:'000', nombre:'', hacePresencia:'1', depto:'', tipo:tipo}) : null;
             setLoader(false);
         })
     }

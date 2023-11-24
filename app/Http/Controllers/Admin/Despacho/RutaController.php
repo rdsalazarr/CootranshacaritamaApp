@@ -39,19 +39,15 @@ class RutaController extends Controller
 	{
         $this->validate(request(),['tipo' => 'required', 'codigo' => 'required']);
 
-        $departamentos  = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
-        $municipios     = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
+        $departamentos  = DB::table('departamento')->select('depaid','depanombre')->where('depahacepresencia', true)->orderBy('depanombre')->get();
+        $municipios     = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
         $rutasNodo      = [];
-        $tarifaTiquetes = [];
 
         if($request->tipo === 'U'){
             $rutasNodo      = DB::table('rutanodo')->select('rutnodid','muniid')->where('rutaid', $request->codigo)->get();
-            $tarifaTiquetes = DB::table('tarifatiquete')
-                                ->select('tartiqid','depaiddestino','muniiddestino','tartiqvalor','tartiqfondoreposicion')
-                                ->where('rutaid', $request->codigo)->get();
         }
 
-        return response()->json(["departamentos" => $departamentos, "municipios" => $municipios, "rutasNodo" => $rutasNodo, "tarifaTiquetes" => $tarifaTiquetes]);
+        return response()->json(["departamentos" => $departamentos, "municipios" => $municipios, "rutasNodo" => $rutasNodo]);
     }
 
     public function salve(Request $request)
@@ -66,8 +62,7 @@ class RutaController extends Controller
             'municipioDestino'     => 'required|numeric',
             'tieneNodos'           => 'required|numeric',
             'estado'               => 'required',
-            'nodos'                => 'nullable|array|min:1',
-            'tarifaTiquetes'       => 'required|array|min:1'
+            'nodos'                => 'nullable|array|min:1'
         ]);
 
         DB::beginTransaction();
@@ -87,10 +82,10 @@ class RutaController extends Controller
 				$rutaid          = $rutaConsecutivo->rutaid;
 			}
 
-            if(count($request->nodos) > 0) {
+            if($request->nodos !== null) {
                 foreach($request->nodos as $dataNodo){
                     $identificador = $dataNodo['identificador'];
-                    $municipio     = $dataNodo['municipio'];
+                    $municipio     = $dataNodo['municipioId'];
                     $nodoEstado    = $dataNodo['estado'];
                     if($nodoEstado === 'I'){
                         $rutaNodo         = new RutaNodo();
@@ -105,18 +100,68 @@ class RutaController extends Controller
                 }
             }
 
-            foreach($request->tarifaTiquetes as $data){
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+        } catch (Exception $error){
+            DB::rollback();
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+        }
+    }
+
+    public function datosTiquete(Request $request)
+	{
+        $this->validate(request(),['codigo' => 'required']);
+
+        $ruta           = DB::table('ruta as r')
+                                ->select('md.muniid', 'md.muninombre')
+                                ->join('municipio as md', function($join)
+                                {
+                                    $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                    $join->on('md.muniid', '=', 'r.muniiddestino');
+                                })
+                                ->where('rutaid', $request->codigo)->first();
+
+        $rutaNodos   = DB::table('rutanodo as rn')->select('m.muniid', 'm.muninombre')
+                                ->join('municipio as m', 'm.muniid', '=', 'rn.muniid')
+                                ->where('rn.rutaid', $request->codigo)
+                                ->orderBy('m.muninombre')->get();
+        
+        $municipioRutas   = [];
+        $municipioRutas[] = ['muniid' => $ruta->muniid, 'muninombre' => $ruta->muninombre]; 
+                                    
+        foreach ($rutaNodos as $item) {
+            $municipioRutas[] = $item;
+        }
+
+        $tarifaTiquetes = DB::table('tarifatiquete')
+                                ->select('tartiqid','depaiddestino','muniiddestino','tartiqvalor','tartiqfondoreposicion',
+                                DB::raw("CONCAT('$ ', FORMAT(tartiqvalor, 0)) as  valorTiquete"))
+                                ->where('rutaid', $request->codigo)->get();
+
+        return response()->json(["municipioRutas" => $municipioRutas, "tarifaTiquetes" => $tarifaTiquetes]);
+    }
+
+    public function tiquete(Request $request)
+	{
+        $this->validate(request(),[
+            'codigo'         => 'required|numeric',
+            'departamento'   => 'required|numeric',
+            'tarifaTiquetes' => 'required|array|min:1'
+        ]);
+
+        DB::beginTransaction();
+        try {
+           foreach($request->tarifaTiquetes as $data){
 				$identificador       = $data['identificador'];
-				$departamentoDestino = $data['departamentoDestino'];
-                $municipioDestino    = $data['municipioDestino'];
+                $municipioId         = $data['municipioId'];
                 $valorTiquete        = $data['valorTiquete'];
                 $fondoReposicion     = $data['fondoReposicion'];
 				$tarifaTiqueteEstado = $data['estado'];
 				if($tarifaTiqueteEstado === 'I'){
 					$tarifaTiquete                        = new TarifaTiquete();
-					$tarifaTiquete->rutaid                = $rutaid;
-					$tarifaTiquete->depaiddestino         = $departamentoDestino;
-                    $tarifaTiquete->muniiddestino         = $municipioDestino;
+					$tarifaTiquete->rutaid                = $request->codigo;
+					$tarifaTiquete->depaiddestino         = $request->departamento;
+                    $tarifaTiquete->muniiddestino         = $municipioId;
                     $tarifaTiquete->tartiqvalor           = $valorTiquete;
                     $tarifaTiquete->tartiqfondoreposicion = $fondoReposicion;
 					$tarifaTiquete->save();

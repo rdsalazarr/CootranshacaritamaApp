@@ -12,8 +12,8 @@ export default function List(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:1, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales     = [ <NewEdit data={modal.data} /> ];
-    const tituloModal = ['Editar municipio'];
+    const modales     = [  <NewEdit tipo={'I'} />, <NewEdit data={modal.data} tipo={'U'} /> ];
+    const tituloModal = ['Nuevo corregimiento', 'Editar municipio'];
 
     const edit = (data, tipo) =>{
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'mediumFlot'});
@@ -41,8 +41,9 @@ export default function List(){
                         datos={data}
                         titulo={['Departamento','Código','Nombre', 'Hace presencia','Actualizar']}
                         ver={["depanombre","municodigo","muninombre","hacePresencia"]}
-                        accion={[                          
-                            {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,0)} },
+                        accion={[
+                            {tipo: 'T', icono : 'add',    color: 'green',  funcion : (data)=>{edit(data,0)} },                    
+                            {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />
