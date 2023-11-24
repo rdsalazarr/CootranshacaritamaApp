@@ -109,7 +109,6 @@ class ContratoServicioEspecialController extends Controller
 				'segundoNombre'        => 'nullable|string|min:3|max:40',
 				'primerApellido'       => 'required|string|min:4|max:40',
 				'segundoApellido'      => 'nullable|string|min:4|max:40',
-				'fechaNacimiento' 	   => 'nullable|date|date_format:Y-m-d',
 				'direccion'            => 'required|string|min:4|max:100',
 				'correo'               => 'nullable|email|string|max:80',
 				'telefonoCelular'      => 'nullable|string|max:20',

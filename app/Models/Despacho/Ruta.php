@@ -11,5 +11,5 @@ class Ruta extends Model
 
     protected $table      = 'ruta';
     protected $primaryKey = 'rutaid';
-    protected $fillable   = ['depaidorigen','muniidorigen','depaiddestino','muniiddestino','rutaactiva'];
+    protected $fillable   = ['depaidorigen','muniidorigen','depaiddestino','muniiddestino','rutatienenodos','rutaactiva'];
 }

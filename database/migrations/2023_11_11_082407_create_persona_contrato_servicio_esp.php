@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('pecosesegundonombre', 40)->nullable()->comment('Segundo nombre de la persona que contrata el servicio especial');
             $table->string('pecoseprimerapellido', 40)->nullable()->comment('Primer apellido de la persona que contrata el servicio especial');
             $table->string('pecosesegundoapellido', 40)->nullable()->comment('Segundo apellido de la persona que contrata el servicio especial');
-            $table->string('pecosedireccion',100)->comment('Determina el genero de la persona que contrata el servicio especial');
+            $table->string('pecosedireccion',100)->comment('Dirección de la persona que contrata el servicio especial');
             $table->string('pecosecorreoelectronico', 80)->nullable()->comment('Correo electrónico de la persona que contrata el servicio especial');
             $table->string('pecosenumerocelular', 20)->nullable()->comment('Número de teléfono fijo de la persona que contrata el servicio especial');
             $table->unique(['tipideid','pecosedocumento'],'uk_personacontratoservicioesp');

@@ -114,7 +114,16 @@ php artisan make:migration create_contrato_servicio_especial
 php artisan make:migration create_contrato_servicio_especial_vehi
 php artisan make:migration create_contrato_servicio_especial_cond
 
+php artisan make:migration create_tipo_encomienda
+php artisan make:migration create_tipo_estado_encomienda
 php artisan make:migration create_ruta
+php artisan make:migration create_ruta_nodo
+php artisan make:migration create_tarifa_tiquete
+php artisan make:migration create_planilla_ruta
+
+php artisan make:migration create_persona_servicio
+php artisan make:migration create_encomienda
+php artisan make:migration create_encomienda_cambio_estado
 
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
@@ -207,6 +216,13 @@ php artisan make:model Despacho\ContratoServicioEspecial
 php artisan make:model Despacho\ContratoServicioEspecialVehiculo
 php artisan make:model Despacho\ContratoServicioEspecialConductor
 php artisan make:model Despacho\Ruta
+php artisan make:model Despacho\RutaNodo
+php artisan make:model Despacho\TarifaTiquete
+php artisan make:model Despacho\PlanillaRuta
+
+php artisan make:model Despacho\Encomienda
+php artisan make:model Despacho\PersonaServicio
+php artisan make:model Despacho\EncomiendaCambioEstado
 
 
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
@@ -249,6 +265,9 @@ php artisan make:seeder TipoEstadoColocacionSeeder
 php artisan make:seeder TipoServicioVehiculoSeeder
 php artisan make:seeder TipoConvenioServicioEspecialSeeder
 php artisan make:seeder TipoContratoServicioEspecialSeeder
+php artisan make:seeder TipoEncomiendaSeeder
+php artisan make:seeder TipoEstadoEncomiendaSeeder
+
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -309,6 +328,10 @@ php artisan make:controller Admin\Cartera\AprobarSolicitudCreditoController
 php artisan make:controller Admin\Cartera\DesembolsarSolicitudCreditoController
 php artisan make:controller Admin\Despacho\ContratoServicioEspecialController
 php artisan make:controller Admin\Despacho\RutaController
+php artisan make:controller Admin\Despacho\EncomiendaController
+php artisan make:controller Admin\Despacho\PlanillaRutaController
+
+
 
 php artisan make:controller Admin\DependenciaController
 

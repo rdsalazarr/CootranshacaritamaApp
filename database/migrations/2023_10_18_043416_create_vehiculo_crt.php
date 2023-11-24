@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vehiculocrt', function (Blueprint $table) {
-            $table->smallIncrements('vehcrtid')->unsigned()->comment('Identificador de la tabla vehículo CRT');
+            $table->bigIncrements('vehcrtid')->unsigned()->comment('Identificador de la tabla vehículo CRT');
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
             $table->string('vehcrtnumero', 30)->comment('Número del CRT del vehículo');
             $table->date('vehcrtfechainicial')->comment('Fecha inicial del CRT del vehículo');

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vehiculopoliza', function (Blueprint $table) {
-            $table->smallIncrements('vehpolid')->unsigned()->comment('Identificador de la tabla vehículo póliza');
+            $table->bigIncrements('vehpolid')->unsigned()->comment('Identificador de la tabla vehículo póliza');
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
             $table->string('vehpolnumeropolizacontractual', 30)->comment('Número de póliza contractual del vehículo');
             $table->string('vehpolnumeropolizaextcontrac', 30)->comment('Número de póliza extra contractual del vehículo');

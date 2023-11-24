@@ -131,3 +131,4 @@ CREATE TABLE `vehiculo` (
   CONSTRAINT `fk_vehiculo_sucursal1` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursal` (`id`),
   CONSTRAINT `fk_vehiculo_tipo_vehiculo1` FOREIGN KEY (`tipo_vehiculo_id`) REFERENCES `tipo_vehiculo` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=348 DEFAULT CHARSET=utf8mb3;
+
