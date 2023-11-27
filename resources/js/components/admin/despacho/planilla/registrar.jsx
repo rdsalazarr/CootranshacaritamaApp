@@ -19,7 +19,7 @@ export default function List(){
     }
 
     const modales = [
-                        <NewEdit tipo={'I'}  />,
+                        <NewEdit tipo={'I'} />,
                         <NewEdit data={modal.data} tipo={'U'} />
                     ];
 
@@ -50,11 +50,12 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Fecha registo','Fecha de salida','Origen', 'Destino','Número','Vehículo','Conductor','Registrado por','Recibida por','Actualizar']}
+                        titulo={['Fecha registo','Fecha de salida','Origen', 'Destino','Número','Vehículo','Conductor','Registrado por','Recibida por','Actualizar', 'Despachar']}
                         ver={["fechaHoraRegistro","fechaHoraSalida","municipioOrigen","municipioDestino","numeroPlanilla","nombreVehiculo", "nombreConductor", "usuarioRegistra", "usuarioRecibe"]}
                         accion={[
-                            {tipo: 'T', icono : 'add',                    color: 'green',  funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',                   color: 'orange', funcion : (data)=>{edit(data,1)} },
+                            {tipo: 'T', icono : 'add',      color: 'green',  funcion : (data)=>{edit(data,0)} },
+                            {tipo: 'B', icono : 'edit',     color: 'orange', funcion : (data)=>{edit(data,1)} },
+                            {tipo: 'B', icono : 'edit',     color: 'red',    funcion : (data)=>{edit(data,2)} },
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />

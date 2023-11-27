@@ -16,12 +16,12 @@ class PlanillaRutaController extends Controller
 		$this->validate(request(),['estado' => 'required']);
 
         $data   = DB::table('planillaruta as pr')
-                    ->select('pr.plarutid','pr.plarutfechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaHoraSalida',
+                    ->select('pr.plarutid','pr.rutaid','pr.vehiid','pr.condid', 'pr.plarutfechahorasalida',
+                    'pr.plarutfechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaHoraSalida',
                     'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
                     DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
                     DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
-                    DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
+                    DB::raw("CONCAT(p.persprimernombre,' ',  p.persprimerapellido) as nombreConductor"),
                     DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos)  as usuarioRegistra"),
                     DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos)  as usuarioRecibe"))
                     ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
@@ -58,7 +58,7 @@ class PlanillaRutaController extends Controller
                                     ->where('v.agenid', auth()->user()->agenid)->get();
 
         $conductores    = DB::table('conductorvehiculo as cv')
-                                ->select('cv.vehiid','cv.convehid', 'p.persid', DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                ->select('c.condid', DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                     p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"))
                                 ->join('conductor as c', 'c.condid', '=', 'cv.condid')
                                 ->join('persona as p', 'p.persid', '=', 'c.persid')
@@ -76,36 +76,30 @@ class PlanillaRutaController extends Controller
                                     $join->on('md.munidepaid', '=', 'r.depaiddestino');
                                     $join->on('md.muniid', '=', 'r.muniiddestino');
                                 })->get();
-     
-        $planillaRuta   = [];
-        if($request->tipo === 'U'){
-            $planillaRuta  = DB::table('planillaruta')
-                                ->select('plarutid','agenid','rutaid','vehiid','condid','usuaidregistra','usuaidrecibe','plarutfechahoraregistro',
-                                'plarutconsecutivo','plarutfechahorasalida','plarutfechahorarecibe','plarutgenerada')
-                                ->where('plarutid', $request->codigo)->first();
-        }
 
-        return response()->json(["vehiculos" => $vehiculos, "conductores"   => $conductores, 
-                                "rutas"      => $rutas,      "planillaRuta" => $planillaRuta]);
+        $fechaActual = Carbon::now()->format('Y-m-d');
+
+        return response()->json(["fechaActual" => $fechaActual, "vehiculos" => $vehiculos, "conductores" => $conductores,  "rutas" => $rutas]);
     }
 
     public function salve(Request $request)
 	{
-        $encoid       = $request->codigo;
-	    $planillaruta = ($encoid != 000) ? PlanillaRuta::findOrFail($encoid) : new PlanillaRuta(); 
+        $plarutid     = $request->codigo;
+	    $planillaruta = ($plarutid != 000) ? PlanillaRuta::findOrFail($plarutid) : new PlanillaRuta(); 
 
 	    $this->validate(request(),[	
                 'ruta'            => 'required|numeric',
                 'vehiculo'        => 'required|numeric',
                 'conductor'       => 'required|numeric',
-                'fechaHoraSalida' => 'required|date_format:H:i',
+                //'fechaHoraSalida' => 'required|date|date_format:Y-m-d\TH:i:s.u\Z',
 	        ]);
 
+          //  dd($request->fechaHoraSalida);
         DB::beginTransaction();
         try {
             $fechaHoraActual                       = Carbon::now();
             if($request->tipo === 'I'){
-               $planillaruta->agenid                  = auth()->user()->agenid;
+               $planillaruta->agenid                   = auth()->user()->agenid;
                 $planillaruta->usuaidregistra          = Auth::id();
                 $planillaruta->plarutfechahoraregistro = $fechaHoraActual;
                 $planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo(); 
@@ -114,16 +108,11 @@ class PlanillaRutaController extends Controller
             $planillaruta->rutaid                  = $request->ruta;
 			$planillaruta->vehiid                  = $request->vehiculo;
 			$planillaruta->condid                  = $request->conductor;
-            $planillaruta->plarutfechahorasalida   = $request->fechaHoraSalida;
-           	$planillaruta->save();
-
-            if($request->tipo === 'I'){
-                $planillaConsecutivo = PlanillaRuta::latest('plarutid')->first();
-				$plarutid            = $planillaConsecutivo->plarutid;
-            }
+            $planillaruta->plarutfechahorasalida   = $fechaHoraActual; //$request->fechaHoraSalida;
+           	$planillaruta->save();    
    
             DB::commit();
-        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', 'planillaId' => $plarutid]);
+        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
