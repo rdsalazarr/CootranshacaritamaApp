@@ -433,8 +433,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/ruta/salvar/datos/tiquete', [RutaController::class, 'tiquete']); 
 
             Route::post('/planillas/list', [PlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/planillas');
-            Route::post('/planillas/listar/datos', [PlanillaRutaController::class, 'datos']);
-            Route::post('/planillas/salve', [PlanillaRutaController::class, 'salve']);
+            Route::post('/planilla/listar/datos', [PlanillaRutaController::class, 'datos']);
+            Route::post('/planilla/salve', [PlanillaRutaController::class, 'salve']);
+            Route::post('/planilla/consultar/datos', [PlanillaRutaController::class, 'consultarDatos']);
+            Route::post('/planilla/registrar/salida', [PlanillaRutaController::class, 'registrarSalida']);
+            Route::post('/planilla/visualizar/PDF', [PlanillaRutaController::class, 'verPlanilla']);
 
             Route::post('/encomienda/list', [EncomiendaController::class, 'index'])->middleware('security:admin/despacho/encomiendas');
             Route::post('/encomienda/listar/datos', [EncomiendaController::class, 'datos']);

@@ -67,7 +67,7 @@ class generarPdf
 		$convocatoriaDescripcion = ($convocatoria == 1) ? $funcion->obtenerConvocatoriaActa($convocatorialugar, $convocatoriafecha, $convocatoriahora) : '';
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($lugar);
 		PDF::SetKeywords('Acta, documento,'.$siglaEmpresa.', '.$lugar);
         PDF::SetTitle($codigoInstitucional);
@@ -208,7 +208,7 @@ class generarPdf
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Certificado, documento,'.$siglaEmpresa.', '.$titulo);
         PDF::SetTitle($codigoInstitucional);
@@ -318,7 +318,7 @@ class generarPdf
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
         PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($asunto);
 		PDF::SetKeywords('Circular, documento,'.$siglaEmpresa.', '.$asunto.', '.$circularNumero);
         PDF::SetTitle($codigoInstitucional);
@@ -436,7 +436,7 @@ class generarPdf
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($lugar);
 		PDF::SetKeywords('Acta, documento,'.$siglaEmpresa.', '.$lugar);
         PDF::SetTitle($codigoInstitucional);
@@ -559,7 +559,7 @@ class generarPdf
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Constancia, documento,'.$siglaEmpresa.', '.$titulo);
         PDF::SetTitle($codigoInstitucional);
@@ -674,7 +674,7 @@ class generarPdf
 		$totalFirmaRealizadas = $infodocumento->totalFirmaRealizadas;
 
         PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($asunto);
 		PDF::SetKeywords('Oficio, documento,'.$siglaEmpresa.', '.$asunto);
         PDF::SetTitle($codigoInstitucional);
@@ -1080,12 +1080,13 @@ EOD;
 		$empresa        = $this->consultarEmpresa();
 		$urlEmpresa     = $empresa->emprurl;
 		$nombreEmpresa  = $empresa->emprnombre;
+		$siglaEmpresa   = $empresa->emprsigla;
 
 		$documentoRadicado = true;
         $mensajeRadicar    = '';     
 		$tcpdf =new FPDI();
         $tcpdf->SetAuthor('IMPLESOFT');
-        $tcpdf->SetCreator($nombreEmpresa);
+        $tcpdf->SetCreator('ERP '.$siglaEmpresa);
         $tcpdf->SetTitle($consecutivo);
         $tcpdf->SetSubject('Formato de registro de radicado externo');
         $tcpdf->SetKeywords('Radicacion, '.$consecutivo);  
@@ -1212,9 +1213,10 @@ EOD;
 		$empresa        = $this->consultarEmpresa();
 		$urlEmpresa     = $empresa->emprurl;
 		$nombreEmpresa  = $empresa->emprnombre;
+		$siglaEmpresa   = $empresa->emprsigla;
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($asuntoRadicado);
 		PDF::SetKeywords('Stickers, documento,'.$siglaEmpresa.', '.$asuntoRadicado);
         PDF::SetTitle($consecutivo);
@@ -1310,7 +1312,7 @@ EOD;
         $mensajeRadicar    = '';
 		$tcpdf = new FpdiProtection();
         $tcpdf->SetAuthor('IMPLESOFT');
-        $tcpdf->SetCreator($nombreEmpresa);
+        $tcpdf->SetCreator('ERP '.$siglaEmpresa);
         $tcpdf->SetTitle("Expediente");
         $tcpdf->SetSubject('Generacion de expediente del archivo historico');
         $tcpdf->SetKeywords('Expediente, Archivo historico, '.$siglaEmpresa);
@@ -1356,7 +1358,7 @@ EOD;
 		$titulo    = $data->ingpdftitulo;
 		$contenido = $data->ingpdfcontenido;
         PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Documento, Vehículo, '.$siglaEmpresa);
         PDF::SetTitle($titulo);	
@@ -1410,7 +1412,7 @@ EOD;
 		$fechaActual      = $generales->formatearFecha($fechaHoraActual->format('Y-m-d'));
 
         PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Simulador, Crédito, '.$siglaEmpresa.', '.$valorSolicitado.', tasa nominal mensual de '.$tasaNominal.', Número total de meses '.$plazoMensual);
         PDF::SetTitle($titulo);	
@@ -1536,7 +1538,7 @@ EOD;
 		$fechaActual        = $generales->formatearFecha($fechaDesembolso);
 
         PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Colocación, Crédito, '.$siglaEmpresa.', '.$valorSolicitado.', tasa nominal mensual de '.$tasaNominal.', Número total de meses '.$plazoMensual);
         PDF::SetTitle($titulo);	
@@ -1641,59 +1643,7 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
-
-	/*function contratoVehiculo($titulo, $contenido, $numeroContrato, $placa, $metodo = 'S'){
-
-		$empresa              = $this->consultarEmpresa();
-		$direccionEmpresa 	  = $empresa->emprdireccion;		
-		$barrioEmpresa    	  = $empresa->emprbarrio;
-		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
-		$celularEmpresa   	  = $empresa->emprtelefonocelular;
-		$urlEmpresa       	  = $empresa->emprurl;
-		$nombreEmpresa        = $empresa->emprnombre;
-		$siglaEmpresa         = $empresa->emprsigla;
-		$nit                  = $empresa->nit;
-		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
-		$logoEmpresa          = $empresa->emprlogo;
-
-        PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator($nombreEmpresa);
-		PDF::SetSubject($titulo.' '.$placa);
-		PDF::SetKeywords('Contrato, Vehículo, '.$siglaEmpresa.', '.$numeroContrato.', '.$placa);
-        PDF::SetTitle($titulo);	
-
-		//Encabezado y pie de pagina del pdf
-		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
-		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
-
-		PDF::SetProtection(array('copy'), '', null, 0, null);
-		PDF::SetPrintHeader(true);
-		PDF::SetPrintFooter(true);
-		PDF::SetMargins(20, 36, 14);
-		PDF::AddPage('P', 'Letter');
-		PDF::SetAutoPageBreak(true, 30);
-		PDF::SetY(16);
-		PDF::Ln(20);
-		PDF::SetFont('helvetica', 'B', 13);
-		PDF::Cell(176, 4, $titulo, 0, 0, 'C');
-		PDF::Ln(12);
-		PDF::SetFont('helvetica', '', 11);
-		PDF::writeHTML($contenido, true, false, true, false, '');
-
-		$tituloPdf = $titulo.'.pdf';
-		if($metodo === 'S'){
-			return base64_encode(PDF::output($tituloPdf, 'S'));
-		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
-			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placa;
-			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-			$rutaPdf      = $rutaCarpeta.'/'.$numeroContrato.'.pdf';
-			PDF::output($rutaPdf, 'F');
-			return $rutaPdf;
-		}else{
-			PDF::output($tituloPdf, $metodo);
-		}
-	}*/
-
+	
 	function contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $tipoContrato){
 
 		$titulo            = $arrayDatos['titulo'];
@@ -1732,7 +1682,7 @@ EOD;
 		}
 
         PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Contrato, Vehículo, '.$nombreTipoContrato.', '.$siglaEmpresa.', '.$numeroContrato );
         PDF::SetTitle($titulo);	
@@ -1866,7 +1816,7 @@ EOD;
 		$lemaEmpresa   = $empresa->emprlema;
 	
         PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo.' '.$documento);
 		PDF::SetKeywords('Colocación, Vehículo, '.$siglaEmpresa.', '.$numeroPagare.', '.$documento);
         PDF::SetTitle($titulo);	
@@ -1921,7 +1871,7 @@ EOD;
 		$logoEmpresa        = $empresa->emprlogo;
 	
         PDF::SetAuthor('IMPLESOFT'); 
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo.' '.$documento);
 		PDF::SetKeywords('Colocación, Vehículo, '.$siglaEmpresa.', '.$numeroPagare.', '.$documento.', '.$titulo);
         PDF::SetTitle($titulo);	
@@ -2009,7 +1959,7 @@ EOD;
 		$logoEmpresa        = $empresa->emprlogo;
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator($nombreEmpresa);
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
 		PDF::SetKeywords('Colocación, Formato, '.$siglaEmpresa.','.$numeroVehiculo.','.$placaVehiculo.','.$pagareNumero);
         PDF::SetTitle($titulo);
@@ -2143,7 +2093,7 @@ EOD;
 		$logoEmpresa               = $empresa->emprlogo;
 
 		PDF::SetAuthor('IMPLESOFT');
-		PDF::SetCreator('Hacatitama');
+		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject("Formato único de extracto del contrato del servicio público de transporte terrestre automotor especial Nº ".$numeroContratoEspecial);
 		PDF::SetKeywords('Formato, contrato, servicio público');
         PDF::SetTitle("Formato contrato del servicio público de transporte terrestre");
@@ -2549,5 +2499,246 @@ EOD;
         PDF::Cell(10, 6,'',0,0,'L');
         PDF::SetFont('helvetica','',10);
         PDF::Cell(90, 6,'EL CONTRATISTA',0,0,'L');
+	}
+
+	function planillaServicioTransporte($arrayDatos){
+
+		$fechaPlanilla      = $arrayDatos['fechaPlanilla'];
+		$numeroPlanilla     = $arrayDatos['numeroPlanilla'];
+		$fechaSalida        = $arrayDatos['fechaSalida'];
+		$horaSalida         = $arrayDatos['horaSalida'];
+		$nombreRuta         = $arrayDatos['nombreRuta'];
+		$numeroVehiculo     = $arrayDatos['numeroVehiculo'];
+		$placaVehiculo      = $arrayDatos['placaVehiculo'];
+		$conductorVehiculo  = $arrayDatos['conductorVehiculo'];
+		$documentoConductor = $arrayDatos['documentoConductor'];
+		$telefonoConductor  = $arrayDatos['telefonoConductor'];
+		$valorEncomienda    = $arrayDatos['valorEncomienda'];
+		$valorDomicilio     = $arrayDatos['valorDomicilio'];
+		$valorComision      = $arrayDatos['valorComision'];
+		$valorTotal         = $arrayDatos['valorTotal'];
+		$numeroOperacion    = $arrayDatos['numeroOperacion'];
+		$usuarioElabora     = $arrayDatos['usuarioElabora'];
+		$usuarioDespacha    = $arrayDatos['usuarioDespacha'];
+		$direccionAgencia   = $arrayDatos['direccionAgencia'];
+		$telefonoAgencia    = $arrayDatos['telefonoAgencia'];
+		$mensajePlanilla    = $arrayDatos['mensajePlanilla'];
+
+		$metodo             = $arrayDatos['metodo'];	
+		$linea              = str_pad('', 66, "-", STR_PAD_LEFT);
+		$empresa            = $this->consultarEmpresa();
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$correEmpresa 	    = $empresa->emprcorreo;
+		$urlEmpresa       	= $empresa->emprurl;
+		$personeriaJuridica	= $empresa->emprpersoneriajuridica;
+		
+		PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator('ERP '.$siglaEmpresa);
+		PDF::SetSubject("Formato de planilla de viaje Nº ".$numeroPlanilla);
+		PDF::SetKeywords('Formato, planilla, servicio público');
+        PDF::SetTitle("Formato planilla número ".$numeroPlanilla);
+
+		//PDF::AddPage('P', array(60,196));
+		PDF::AddPage('P', array(60,214));
+		PDF::SetMargins(2, 4 , 2);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+		PDF::SetAutoPageBreak(true, 2);
+		PDF::SetY(2);
+		PDF::SetFont('helvetica','',7);
+		PDF::Ln(4);
+		PDF::Cell(56, 3,$siglaEmpresa, 0, 0,'C'); 
+		PDF::Ln(3);
+		PDF::Cell(56, 3,"NIT: ".$nit, 0, 0,'C');
+		PDF::Ln(3);
+		PDF::Cell(56, 3,$personeriaJuridica, 0, 0,'C'); 
+        PDF::Ln(3);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::Ln(2);
+		PDF::Cell(56, 2,"PLANILLA DE VIAJE", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+		
+		PDF::Cell(12, 3,"Fecha:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$fechaPlanilla, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Planilla:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$numeroPlanilla, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Salida:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$fechaSalida, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Hora:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$horaSalida, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Ruta:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$nombreRuta, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Vehiculo:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$numeroVehiculo, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Placa:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$placaVehiculo, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Conductor:", 0, 0,'L');
+		PDF::Cell(44, 3,$conductorVehiculo, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"C.C.:", 0, 0,'L');
+		PDF::Cell(44, 3,$documentoConductor, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Telefono:", 0, 0,'L');
+		PDF::Cell(44, 3,$telefonoConductor, 0, 0,'L'); 
+
+		PDF::Ln(3);
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"INFORMACIÓN DE TIQUETES", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(14, 3,"Tiquete", 0, 0,'C');
+		PDF::Cell(6, 3,"P", 0, 0,'C'); 
+		PDF::Cell(12, 3,"Pasajero", 0, 0,'C');
+		PDF::Cell(11, 3,"Destino", 0, 0,'C');
+		PDF::Cell(11, 3,"Valor", 0, 0,'C');
+		PDF::Ln(3);
+
+		for($i = 0; $i <= 9; $i++){		
+			PDF::Cell(14, 3,"112-00422".$i, 0, 0,'L');
+			PDF::Cell(6, 3,"16", 0, 0,'L'); 
+			PDF::Cell(12, 3,substr("GUIDO MORALEZ", 0, 8) , 0, 0,'L');
+			PDF::Cell(12, 3,substr("AGUACHICA", 0, 7) , 0, 0,'L');
+			PDF::Cell(12, 3,"$ 22,000", 0, 0,'L');
+			PDF::Ln(3);
+		}
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::SetFont('helvetica','',6);
+		PDF::Cell(22, 3, 'Subtotal:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 367,000', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'Fondo de reposición:', 0, 0,'L');
+		PDF::Cell(34, 3, '-$ 3,670', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'Estampillas:', 0, 0,'L');
+		PDF::Cell(34, 3, '-$ 18,000', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'Valor total:', 0, 0,'L');
+		PDF::Cell(34, 3, '-$ 345,330', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'Nro. pasajeros:', 0, 0,'L');
+		PDF::Cell(34, 3, '9', 0, 0,'R');
+
+		PDF::Ln(3);
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"INFORMACIÓN DE ENCOMIENDAS", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(22, 3, 'V. Encomiendas:', 0, 0,'L');
+		PDF::Cell(34, 3, $valorEncomienda, 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'V. Domicilio:', 0, 0,'L');
+		PDF::Cell(34, 3, $valorDomicilio, 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'V. Comisión:', 0, 0,'L');
+		PDF::Cell(34, 3, $valorComision , 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'V. Total:', 0, 0,'L');
+		PDF::Cell(34, 3, $valorTotal , 0, 0,'R');
+		PDF::Ln(3);
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"DETALLE DEL FONDO DE REPOSICIÓN", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(22, 3, 'OFI. PARQUE:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 1,770', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'OFI. SANTA CLARA:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 1,300', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'OOFI. PARQUE 2:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 600', 0, 0,'R');
+		PDF::Ln(3);
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"DETALLE DE ESTAMPILLAS", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(22, 3, 'OFI. PARQUE:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 9,000', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'OFI. SANTA CLARA:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 6,000', 0, 0,'R');
+		PDF::Ln(3);
+		PDF::Cell(22, 3, 'OOFI. PARQUE 2:', 0, 0,'L');
+		PDF::Cell(34, 3, '$ 3,000', 0, 0,'R');
+		PDF::Ln(3);
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(12, 3, 'Operación:', 0, 0,'L');
+		PDF::Cell(44, 3, $numeroOperacion, 0, 0,'l');
+		PDF::Ln(3);
+		PDF::Cell(12, 3, 'Elabora:', 0, 0,'L');
+		PDF::Cell(44, 3, $usuarioElabora, 0, 0,'l');
+		PDF::Ln(3);
+		PDF::Cell(12, 3, 'Despacha:', 0, 0,'L');
+		PDF::Cell(44, 3, $usuarioDespacha, 0, 0,'l');
+		PDF::Ln(3);
+		PDF::Cell(12, 3, 'Dirección:', 0, 0,'L');
+		PDF::Cell(44, 3, $direccionAgencia, 0, 0,'l');
+		PDF::Ln(3);
+		PDF::Cell(12, 3, 'Teléfono:', 0, 0,'L');
+		PDF::Cell(44, 3, $telefonoAgencia, 0, 0,'l');
+		PDF::Ln(3);
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');	
+		PDF::Ln(3);
+
+		PDF::MultiCell(56, 3, $mensajePlanilla, 0, 'L', false, 1);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');	
+		PDF::Ln(3);
+		PDF::MultiCell(56, 3, 'Vigilado por la superintendencia de puertos y transporte', 0, 'C', false, 1);
+		PDF::Cell(56, 2, $urlEmpresa, 0, 0,'C');
+
+		$tituloPdf = 'Planilla_viaje_No_'.$numeroPlanilla.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en temporal
+			$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
+			fopen($rutaCarpeta, "w+");
+			PDF::output($rutaCarpeta, 'F');
+			return $rutaCarpeta;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
 	}
 }
