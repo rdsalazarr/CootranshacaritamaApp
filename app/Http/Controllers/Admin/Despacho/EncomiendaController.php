@@ -18,7 +18,7 @@ class EncomiendaController extends Controller
 
         $comparador = ($request->estado === 'R') ? '=' : '<>';
 
-        $data = DB::table('encomienda as e')->select('e.encoid','e.encofechahoraregistro', 'te.tipencnombre as tipoEncomienda','tee.tiesennombre as estado',
+        $data = DB::table('encomienda as e')->select('e.encoid','e.encofechahoraregistro as fechaHoraRegistro', 'te.tipencnombre as tipoEncomienda','tee.tiesennombre as estado',
                                     DB::raw("CONCAT(de.depanombre,' ',md.muninombre) as destinoEncomienda"),
                                     DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
                                         ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaRemitente"),
@@ -44,20 +44,29 @@ class EncomiendaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $tiposEncomienda = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
-        $departamentos   = DB::table('departamento')->select('depaid','depanombre')->orderBy('depanombre')->get();
-        $municipios      = DB::table('municipio')->select('muniid','munidepaid','muninombre')->orderBy('muninombre')->get();
-        $encomienda      = [];
+        $tiposEncomiendas     = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
+        $departamentos        = DB::table('departamento')->select('depaid','depanombre')->where('depahacepresencia', true)->orderBy('depanombre')->get();
+        $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+        $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
+        $encomienda           = [];
 
         if($request->tipo === 'U'){
-            $encomienda  = DB::table('encomienda')
-                                ->select('encoid','perseridremitente','perseriddestino','depaidorigen','muniidorigen','depaiddestino','muniiddestino',
-                                'tipencid','encocontenido','encocantidad','encovalordeclarado','encovalorenvio','encovalordomicilio', 'encoobservacion')
-                                ->where('encoid', $request->codigo)->first();
+            $encomienda  = DB::table('encomienda as e')
+                                ->select('e.encoid','e.perseridremitente','e.perseriddestino','e.depaidorigen','e.muniidorigen','e.depaiddestino','e.muniiddestino',
+                                'e.tipencid','e.encocontenido','e.encocantidad','e.encovalordeclarado','e.encovalorenvio','e.encovalordomicilio', 'e.encoobservacion',
+                                'psr.tipideid','psr.perserdocumento','psr.perserprimernombre','psr.persersegundonombre','psr.perserprimerapellido',
+                                'psr.persersegundoapellido','psr.perserdireccion', 'psr.persercorreoelectronico','psr.persernumerocelular',
+                                'psd.tipideid as tipideidDestino','psd.perserdocumento as perserdocumentoDestino','psd.perserprimernombre as perserprimernombreDestino',
+                                'psd.persersegundonombre as persersegundonombreDestino','psd.perserprimerapellido as perserprimerapellidoDestino',
+                                'psd.persersegundoapellido as persersegundoapellidoDestino','psd.perserdireccion as perserdireccionDestino', 
+                                'psd.persercorreoelectronico as persercorreoelectronicoDestino', 'psd.persernumerocelular as persernumerocelularDestino')
+                                ->join('personaservicio as psr', 'psr.perserid', '=', 'e.perseridremitente')
+                                ->join('personaservicio as psd', 'psr.perserid', '=', 'e.perseriddestino')
+                                ->where('e.encoid', $request->codigo)->first();
         }
 
-        return response()->json(["tiposEncomienda" => $tiposEncomienda, "departamentos" => $departamentos, 
-                                "municipios"       => $municipios,      "encomienda"    => $encomienda]);
+        return response()->json(["tiposEncomiendas" => $tiposEncomiendas, "tipoIdentificaciones" => $tipoIdentificaciones, "departamentos" => $departamentos, 
+                                "municipios"       => $municipios,        "encomienda"    => $encomienda]);
     }
 
     public function consultarPersona(Request $request)

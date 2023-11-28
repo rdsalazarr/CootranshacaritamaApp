@@ -332,7 +332,7 @@ export default function Search(){
                                     label={'Observación general'}
                                     className={'inputGeneral'} 
                                     variant={"standard"} 
-                                    inputProps={{autoComplete: 'off', maxLength: 1000}}                        
+                                    inputProps={{autoComplete: 'off', maxLength: 1000}}
                                     onChange={handleChange}
                                 />
                             </Grid>
