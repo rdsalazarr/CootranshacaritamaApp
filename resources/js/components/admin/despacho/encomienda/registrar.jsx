@@ -3,29 +3,37 @@ import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import { Box, Card} from '@mui/material';
+import VisualizarPdf from './visualizarPdf';
+import { Box} from '@mui/material';
 import NewEdit from './new';
+import Show from './show';
 
 export default function List(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
-    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    const [tipo, setTipo] = useState(0);
+    const [modal, setModal] = useState({open : false, vista:4, data:{}, titulo:'', tamano:'bigFlot'});
 
     const modales = [
                         <NewEdit tipo={'I'} />,
-                        <NewEdit data={modal.data} tipo={'U'} />
+                        <NewEdit data={modal.data} tipo={'U'} />,
+                        <Show data={modal.data} />,
+                        <VisualizarPdf id={(tipo === 3) ? modal.data.encoid : null} />
                     ];
 
-    const tituloModal = ['Nueva encomienda','Editar encomienda'];
+    const tituloModal = ['Nueva encomienda','Editar encomienda',
+                        'Visualizar información general de la encomienda',
+                        'Visualizar PDF planilla encomienda'];
 
     const edit = (data, tipo) =>{
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'mediumFlot'});
+        setTipo(tipo);
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 3) ? 'smallFlot' : 'bigFlot'});
     }
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/despacho/encomienda/list', {estado:false}).then(res=>{
+        instance.post('/admin/despacho/encomienda/list', {estado:'R', tipo:'REGISTRADO'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -42,11 +50,13 @@ export default function List(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Fecha registo','Tipo encomienda','Destino', 'Remitente','Destinatario','Estado','Actualizar']}
-                    ver={["fechaHoraRegistro","tipoEncomienda","destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino","estado"]}
+                    titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario','Estado','Actualizar','Visualizar', 'PDF']}
+                    ver={["fechaHoraRegistro","tipoEncomienda","nombreRuta", "destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino","estado"]}
                     accion={[
-                        {tipo: 'T', icono : 'add',             color: 'green',  funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',            color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'T', icono : 'add',            color: 'green',  funcion : (data)=>{edit(data, 0)} },
+                        {tipo: 'B', icono : 'edit',           color: 'orange', funcion : (data)=>{edit(data, 1)} },
+                        {tipo: 'B', icono : 'visibility',     color: 'green',  funcion : (data)=>{edit(data, 2)} },
+                        {tipo: 'B', icono : 'picture_as_pdf', color: 'red',    funcion : (data)=>{edit(data, 3)} }
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />
@@ -55,7 +65,7 @@ export default function List(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                close={() =>{setModal({open : false, vista:4, data:{}, titulo:'', tamano: ''}), inicio();}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

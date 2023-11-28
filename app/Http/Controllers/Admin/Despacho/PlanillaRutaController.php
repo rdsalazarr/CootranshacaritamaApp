@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Despacho;
 
-use App\Http\Controllers\Controller;
+use App\Models\Despacho\EncomiendaCambioEstado;
 use App\Models\Despacho\PlanillaRuta;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Exception, DB, Auth;
-use App\Util\generales;
 use App\Util\generarPdf;
+use App\Util\generales;
 use Carbon\Carbon;
 
 class PlanillaRutaController extends Controller
@@ -129,7 +130,7 @@ class PlanillaRutaController extends Controller
                         DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
                         DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
                         DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),                        
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
                         DB::raw('(SELECT COUNT(encoid) AS encoid FROM encomienda WHERE plarutid = pr.plarutid) AS totalEncomiendas'))
                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                         ->join('municipio as mo', function($join)
@@ -156,6 +157,7 @@ class PlanillaRutaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required', 'conductor' => 'required', 'vehiculo' => 'required']);
         try {
+            $fechaHoraActual = Carbon::now();
 
             //Verifico que el conductor y el vehiculo no este suspendido
             $conductor   = DB::table('conductor')->select('condid')->where('tiescoid', 'A')->where('condid', $request->conductor)->first();
@@ -171,6 +173,18 @@ class PlanillaRutaController extends Controller
             $planillaruta                   = PlanillaRuta::findOrFail($request->codigo);
             $planillaruta->plarutdespachada = true;
            	$planillaruta->save();
+
+            $encomiendas      = DB::table('encomienda')->select('encoid')->where('plarutid', $request->codigo)->get();
+            foreach($encomiendas as $encomienda){
+                $encomiendacambioestado 				   = new EncomiendaCambioEstado();
+                $encomiendacambioestado->encoid            = $encomienda->encoid;
+                $encomiendacambioestado->tiesenid          = 'T';
+                $encomiendacambioestado->encaesusuaid      = Auth::id();
+                $encomiendacambioestado->encaesfechahora   = $fechaHoraActual;
+                $encomiendacambioestado->encaesobservacion = 'En transporte hacia el terminal destino. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+                $encomiendacambioestado->save();
+            }
+
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

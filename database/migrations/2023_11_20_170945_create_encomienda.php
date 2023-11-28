@@ -23,7 +23,9 @@ return new class extends Migration
             $table->tinyInteger('depaiddestino')->unsigned()->comment('Identificador del departamento de destino de la encomienda');
             $table->smallInteger('muniiddestino')->unsigned()->comment('Identificador del municipio de destino de la encomienda'); 
             $table->string('tipencid', 2)->comment('Identificador del tipo encomienda');
-            $table->string('tiesenid', 2)->comment('Identificador del tipo estado encomienda');           
+            $table->string('tiesenid', 2)->comment('Identificador del tipo estado encomienda');
+            $table->string('encoanio', 4)->comment('Año en el cual se registra la encomienda');
+            $table->string('encoconsecutivo', 4)->comment('Consecutivo de la encomienda asignado por cada año');
             $table->dateTime('encofechahoraregistro')->comment('Fecha y hora actual en el que se registra la encomienda');
             $table->string('encocontenido', 1000)->comment('Descripción del contenido de la encomienda');
             $table->string('encocantidad', 4)->comment('Cantidad de elemento en la encomienda');

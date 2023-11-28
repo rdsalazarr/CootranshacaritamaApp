@@ -2741,4 +2741,172 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
+
+	function planillaEncomienda($arrayDatos){
+		
+		$mensajePlanilla    = $arrayDatos['mensajePlanilla'];
+		$fechaPlanilla      = $arrayDatos['fechaPlanilla'];
+		$numeroEncomienda   = $arrayDatos['numeroEncomienda'];
+
+		$usuarioElabora    = $arrayDatos['usuarioElabora'];
+		$direccionAgencia  = $arrayDatos['direccionAgencia'];
+		$telefonoAgencia   = $arrayDatos['telefonoAgencia'];
+
+		$metodo             = $arrayDatos['metodo'];
+		$linea              = str_pad('', 66, "-", STR_PAD_LEFT);
+		$empresa            = $this->consultarEmpresa();
+		$siglaEmpresa       = $empresa->emprsigla;
+		$nit                = $empresa->nit;
+		$correEmpresa 	    = $empresa->emprcorreo;
+		$urlEmpresa       	= $empresa->emprurl;
+		$personeriaJuridica	= $empresa->emprpersoneriajuridica;
+		
+		PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator('ERP '.$siglaEmpresa);
+		PDF::SetSubject("Formato de planilla de encomienda Nº ".$numeroEncomienda);
+		PDF::SetKeywords('Formato, planilla, servicio público, encomienda, '. $numeroEncomienda);
+        PDF::SetTitle("Formato encomienda número ".$numeroEncomienda);
+
+		PDF::AddPage('P', array(60,130));
+		PDF::SetMargins(2, 4 , 2);
+		PDF::SetPrintHeader(false);
+		PDF::SetPrintFooter(false);
+		PDF::SetAutoPageBreak(true, 2);
+		PDF::SetY(2);
+		PDF::SetFont('helvetica','',7);
+		PDF::Ln(4);
+		PDF::Cell(56, 3,$siglaEmpresa, 0, 0,'C'); 
+		PDF::Ln(3);
+		PDF::Cell(56, 3,"NIT: ".$nit, 0, 0,'C');
+		PDF::Ln(3);
+		PDF::Cell(56, 3,$personeriaJuridica, 0, 0,'C'); 
+        PDF::Ln(3);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::Ln(2);
+		PDF::Cell(56, 2,"FACTURA DE ENCOMIENDA", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+		
+		PDF::Cell(18, 3,"Fecha:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$fechaPlanilla, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(18, 3,"Número:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Ruta:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Tipo encomienda:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Origen:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Destino:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Valor declarado:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(18, 3,"Valor envío:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Valor domicilio:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Valor Seguro:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(18, 3,"Valor Total:", 0, 0,'L'); 
+		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"INFORMACIÓN DEL REMITENTE", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(12, 3,"Nombre:", 0, 0,'L');
+		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Dirección:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Teléfono:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"INFORMACIÓN DEL DESTINATARIO", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(12, 3,"Nombre:", 0, 0,'L');
+		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Dirección:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(12, 3,"Teléfono:", 0, 0,'L'); 
+		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Ln(3);
+		
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');
+		PDF::Ln(2);
+		PDF::Cell(56, 3,"DETALLE DE USUARIO", 0, 0,'C');
+		PDF::Ln(2);
+		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
+		PDF::SetFont('helvetica','',6);
+		PDF::Ln(3);
+
+		PDF::Cell(12, 3, 'Registrado:', 0, 0,'L');
+		PDF::Cell(44, 3, $usuarioElabora, 0, 0,'l');
+		PDF::Ln(3);	
+		PDF::Cell(12, 3, 'Dirección:', 0, 0,'L');
+		PDF::Cell(44, 3, $direccionAgencia, 0, 0,'l');
+		PDF::Ln(3);
+		PDF::Cell(12, 3, 'Teléfono:', 0, 0,'L');
+		PDF::Cell(44, 3, $telefonoAgencia, 0, 0,'l');
+		PDF::Ln(3);
+		PDF::SetFont('helvetica','',7);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');	
+		PDF::Ln(3);
+
+		PDF::MultiCell(56, 3, $mensajePlanilla, 0, 'L', false, 1);
+		PDF::Cell(56, 2, $linea, 0, 0,'L');	
+		PDF::Ln(3);
+		PDF::MultiCell(56, 3, 'Vigilado por la superintendencia de puertos y transporte', 0, 'C', false, 1);
+		PDF::Cell(56, 2, $urlEmpresa, 0, 0,'C');
+
+		$tituloPdf = 'Planilla_encomienda_no_'.$numeroEncomienda.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en temporal
+			$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
+			fopen($rutaCarpeta, "w+");
+			PDF::output($rutaCarpeta, 'F');
+			return $rutaCarpeta;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
 }

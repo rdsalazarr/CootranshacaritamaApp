@@ -430,7 +430,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/ruta/salve', [RutaController::class, 'salve']);
             Route::post('/ruta/destroy', [RutaController::class, 'destroy']);
             Route::post('/ruta/listar/datos/tiquete', [RutaController::class, 'datosTiquete']);
-            Route::post('/ruta/salvar/datos/tiquete', [RutaController::class, 'tiquete']); 
+            Route::post('/ruta/salvar/datos/tiquete', [RutaController::class, 'tiquete']);
 
             Route::post('/planillas/list', [PlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/planillas');
             Route::post('/planilla/listar/datos', [PlanillaRutaController::class, 'datos']);
@@ -443,6 +443,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/encomienda/listar/datos', [EncomiendaController::class, 'datos']);
             Route::post('/encomienda/consultar/datos/persona', [EncomiendaController::class, 'consultarPersona']);
             Route::post('/encomienda/salve', [EncomiendaController::class, 'salve']);
+            Route::post('/encomienda/show/general', [EncomiendaController::class, 'show']);
+            Route::post('/encomienda/visualizar/PDF', [EncomiendaController::class, 'verPlanilla']);
 
             Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index'])->middleware('security:admin/despacho/servicioEspecial');
             Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);
