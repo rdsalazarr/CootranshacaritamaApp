@@ -24,7 +24,7 @@ export default function List(){
 
     const tituloModal = ['Nueva encomienda','Editar encomienda',
                         'Visualizar información general de la encomienda',
-                        'Visualizar PDF planilla encomienda'];
+                        'Visualizar PDF factura de encomienda'];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);

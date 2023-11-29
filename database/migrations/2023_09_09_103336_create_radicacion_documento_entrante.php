@@ -20,7 +20,7 @@ return new class extends Migration
             $table->smallInteger('muniid')->unsigned()->nullable()->comment('Identificador del municipio del cual proviene el documento');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el estado del documento');
             $table->string('radoenconsecutivo', 4)->comment('Consecutivo del radicado');
-            $table->string('radoenanio', 4)->comment('Año en el cual se crea el radicado');
+            $table->year('radoenanio', 4)->comment('Año en el cual se crea el radicado');
             $table->dateTime('radoenfechahoraradicado')->comment('Fecha y hora en la cual se radica el documento');
             $table->date('radoenfechamaximarespuesta')->comment('Fecha máxima para emitir la respuesta del radicado del documento');
             $table->date('radoenfechadocumento')->comment('Fecha que contiene el documento');

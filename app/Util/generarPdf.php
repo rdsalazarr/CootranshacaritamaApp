@@ -2742,24 +2742,36 @@ EOD;
 		}
 	}
 
-	function planillaEncomienda($arrayDatos){
-		
-		$mensajePlanilla    = $arrayDatos['mensajePlanilla'];
-		$fechaPlanilla      = $arrayDatos['fechaPlanilla'];
-		$numeroEncomienda   = $arrayDatos['numeroEncomienda'];
+	function facturaEncomienda($arrayDatos){
+		$numeroEncomienda      = $arrayDatos['numeroEncomienda'];
+		$fechaEncomienda       = $arrayDatos['fechaEncomienda'];
+		$rutaEncomienda        = $arrayDatos['rutaEncomienda'];
+		$tipoEncomienda        = $arrayDatos['tipoEncomienda'];
+		$origenEncomienda      = $arrayDatos['origenEncomienda'];
+		$destinoEncomienda     = $arrayDatos['destinoEncomienda'];
+		$valorDeclarado        = $arrayDatos['valorDeclarado'];
+		$valorEnvio            = $arrayDatos['valorEnvio'];
+		$valorDomicilio        = $arrayDatos['valorDomicilio'];
+		$valorTotal            = $arrayDatos['valorTotal'];
+		$nombreRemitente       = $arrayDatos['nombreRemitente'];
+		$direccionRemitente    = $arrayDatos['direccionRemitente'];
+		$telefonoRemitente     = $arrayDatos['telefonoRemitente'];
+		$nombreDestinatario    = $arrayDatos['nombreDestinatario'];
+		$direccionDestinatario = $arrayDatos['direccionDestinatario'];
+		$telefonoDestinatario  = $arrayDatos['telefonoDestinatario'];
+		$usuarioElabora        = $arrayDatos['usuarioElabora'];
+		$nombreAgencia         = $arrayDatos['nombreAgencia'];
+		$direccionAgencia      = $arrayDatos['direccionAgencia'];
+		$telefonoAgencia       = $arrayDatos['telefonoAgencia'];
+		$metodo                = $arrayDatos['metodo'];
 
-		$usuarioElabora    = $arrayDatos['usuarioElabora'];
-		$direccionAgencia  = $arrayDatos['direccionAgencia'];
-		$telefonoAgencia   = $arrayDatos['telefonoAgencia'];
-
-		$metodo             = $arrayDatos['metodo'];
-		$linea              = str_pad('', 66, "-", STR_PAD_LEFT);
-		$empresa            = $this->consultarEmpresa();
-		$siglaEmpresa       = $empresa->emprsigla;
-		$nit                = $empresa->nit;
-		$correEmpresa 	    = $empresa->emprcorreo;
-		$urlEmpresa       	= $empresa->emprurl;
-		$personeriaJuridica	= $empresa->emprpersoneriajuridica;
+		$linea                 = str_pad('', 66, "-", STR_PAD_LEFT);
+		$empresa               = $this->consultarEmpresa();
+		$siglaEmpresa          = $empresa->emprsigla;
+		$nit                   = $empresa->nit;
+		$correEmpresa 	       = $empresa->emprcorreo;
+		$urlEmpresa       	   = $empresa->emprurl;
+		$personeriaJuridica	   = $empresa->emprpersoneriajuridica;
 		
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('ERP '.$siglaEmpresa);
@@ -2790,45 +2802,45 @@ EOD;
 		PDF::Ln(3);
 		
 		PDF::Cell(18, 3,"Fecha:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$fechaPlanilla, 0, 0,'L'); 
+		PDF::Cell(38, 3,$fechaEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 		PDF::Cell(18, 3,"Número:", 0, 0,'L'); 
 		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Ruta:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$rutaEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Tipo encomienda:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$tipoEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Origen:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$origenEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Destino:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$destinoEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Valor declarado:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(18, 3,"Valor declarado:", 0, 0,'L');
+		PDF::Cell(38, 3,$valorDeclarado, 0, 0,'L'); 
 		PDF::Ln(3);
 		PDF::Cell(18, 3,"Valor envío:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$valorEnvio, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor domicilio:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$valorDomicilio, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor Seguro:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$valorSeguro, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor Total:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(38, 3,$valorTotal, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::SetFont('helvetica','',7);
@@ -2841,13 +2853,13 @@ EOD;
 		PDF::Ln(3);
 
 		PDF::Cell(12, 3,"Nombre:", 0, 0,'L');
-		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
-		PDF::Ln(3);
+		PDF::Cell(44, 3,$nombreRemitente, 0, 0,'L'); 
+		PDF::Ln(3);	
 		PDF::Cell(12, 3,"Dirección:", 0, 0,'L'); 
-		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(44, 3,$direccionRemitente, 0, 0,'L'); 
 		PDF::Ln(3);
 		PDF::Cell(12, 3,"Teléfono:", 0, 0,'L'); 
-		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(44, 3,$telefonoRemitente, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::SetFont('helvetica','',7);
@@ -2860,13 +2872,13 @@ EOD;
 		PDF::Ln(3);
 
 		PDF::Cell(12, 3,"Nombre:", 0, 0,'L');
-		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(44, 3,$nombreDestinatario, 0, 0,'L'); 
 		PDF::Ln(3);
 		PDF::Cell(12, 3,"Dirección:", 0, 0,'L'); 
-		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(44, 3,$direccionDestinatario, 0, 0,'L'); 
 		PDF::Ln(3);
 		PDF::Cell(12, 3,"Teléfono:", 0, 0,'L'); 
-		PDF::Cell(44, 3,$numeroEncomienda, 0, 0,'L'); 
+		PDF::Cell(44, 3,$telefonoDestinatario, 0, 0,'L'); 
 		PDF::Ln(3);
 		
 		PDF::SetFont('helvetica','',7);
@@ -2881,6 +2893,9 @@ EOD;
 		PDF::Cell(12, 3, 'Registrado:', 0, 0,'L');
 		PDF::Cell(44, 3, $usuarioElabora, 0, 0,'l');
 		PDF::Ln(3);	
+		PDF::Cell(12, 3,"Agencia:", 0, 0,'L');
+		PDF::Cell(44, 3,$nombreAgencia, 0, 0,'L'); 
+		PDF::Ln(3);
 		PDF::Cell(12, 3, 'Dirección:', 0, 0,'L');
 		PDF::Cell(44, 3, $direccionAgencia, 0, 0,'l');
 		PDF::Ln(3);

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->smallInteger('tipdesid')->unsigned()->comment('Identificador de la tabla tipo despedida');
             $table->string('codopoconsecutivo', 4)->comment('Consecutivo de la oficio');
             $table->string('codoposigla', 3)->comment('Sigla de la dependencia productora de la oficio');
-            $table->string('codopoanio', 4)->comment('Año en el cual se crea la oficio');
+            $table->year('codopoanio', 4)->comment('Año en el cual se crea la oficio');
             $table->string('codopotitulo', 80)->nullable()->comment('Título de la persona a la que va dirigido el ofico');  
             $table->string('codopociudad', 80)->comment('Ciudad a la que va dirigido el oficio');
             $table->string('codopocargodestinatario', 80)->nullable()->comment('Nombre del cargo de la persona ala que va dirigido el oficio'); 

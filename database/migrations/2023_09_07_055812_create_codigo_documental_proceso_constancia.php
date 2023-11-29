@@ -18,7 +18,7 @@ return new class extends Migration
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el documento');
             $table->string('codopnconsecutivo', 4)->comment('Consecutivo de la constancia');
             $table->string('codopnsigla', 3)->comment('Sigla de la dependencia productora de la constancia');
-            $table->string('codopnanio', 4)->comment('Año en el cual se crea la constancia');  
+            $table->year('codopnanio', 4)->comment('Año en el cual se crea la constancia');  
             $table->string('codopntitulo', 200)->comment('Título con el que se crea la constancia');
             $table->string('codopncontenidoinicial', 1000)->comment('contenido incial de la constancia');
             $table->timestamps();

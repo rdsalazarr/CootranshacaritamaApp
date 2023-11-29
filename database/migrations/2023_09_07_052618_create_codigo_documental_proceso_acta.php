@@ -18,7 +18,7 @@ return new class extends Migration
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el documento');
             $table->string('codopaconsecutivo', 4)->comment('Consecutivo del acta');
             $table->string('codopasigla', 3)->comment('Sigla de la dependencia productora del acta');
-            $table->string('codopaanio', 4)->comment('Año en el cual se crea el acta');
+            $table->year('codopaanio', 4)->comment('Año en el cual se crea el acta');
             $table->string('codopahorainicio', 6)->comment('Hora de inicio del acta');
             $table->string('codopahorafinal', 6)->comment('Hora de final del acta');
             $table->string('codopalugar', 200)->comment('Lugar donde se realiza el acta');

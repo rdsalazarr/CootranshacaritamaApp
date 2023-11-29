@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('vehconid')->unsigned()->comment('Identificador de la tabla vehículo contrato');
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
             $table->integer('persidgerente')->unsigned()->comment('Identificador de la persona');
-            $table->string('vehconanio', 4)->comment('Año en el cual se realiza el contrato del vehículo');
+            $table->year('vehconanio', 4)->comment('Año en el cual se realiza el contrato del vehículo');
             $table->string('vehconnumero', 4)->comment('Número de contrato del vehículo por cada año');
             $table->date('vehconfechainicial')->comment('Fecha inicial del contrato del vehículo');
             $table->date('vehconfechafinal')->comment('Fecha final del contrato del vehículo');

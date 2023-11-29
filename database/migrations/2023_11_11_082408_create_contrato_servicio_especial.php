@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('ticoseid', 2)->comment('Identificador del tipo contrato servicio especial');
             $table->string('ticossid', 2)->comment('Identificador del tipo contrato servicio especial');
             $table->dateTime('coseesfechahora')->comment('Fecha y hora actual en el que se registra el contrato de servicio especial');
-            $table->string('coseesanio', 4)->comment('Año en el cual se realiza el contrato de servicio especial');
+            $table->year('coseesanio', 4)->comment('Año en el cual se realiza el contrato de servicio especial');
             $table->string('coseesconsecutivo', 4)->comment('Consecutivo del contrato de servicio especial dado por cada año');
             $table->date('coseesfechaincial')->comment('Fecha de inicio del contrato de servicio especial');
             $table->date('coseesfechafinal')->comment('Fecha final del contrato de servicio especial');

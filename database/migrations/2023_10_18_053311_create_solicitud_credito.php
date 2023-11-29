@@ -20,9 +20,9 @@ return new class extends Migration
             $table->string('tiesscid', 2)->comment('Identificador del tipo de estado de la solicitud de crédito');
             $table->date('solcrefechasolicitud')->comment('Fecha de registro de la solicitud de crédito');
             $table->string('solcredescripcion', 1000)->comment('Descripción de la solicitud de crédito');
-            $table->string('solcrevalorsolicitado', 10)->comment('Monto o valor de la solicitud de crédito');
+            $table->decimal('solcrevalorsolicitado', 12, 2)->comment('Monto o valor de la solicitud de crédito');
             $table->decimal('solcretasa',6,2)->comment('Tasa de interés para solicitud de crédito');
-            $table->string('solcrenumerocuota', 3)->comment('Número de cuota de la solicitud de crédito');
+            $table->decimal('solcrenumerocuota', 5, 0)->comment('Número de cuota de la solicitud de crédito');
             $table->string('solcreobservacion', 1000)->nullable()->comment('Observación general de la  solicitud de crédito');
             $table->timestamps();
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuasolcre'); 

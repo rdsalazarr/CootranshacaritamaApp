@@ -306,32 +306,78 @@ class EncomiendaController extends Controller
 		$this->validate(request(),['codigo'   => 'required']);
 		try{
 
-            $generarPdf   = new generarPdf();
+            $encomienda  = DB::table('encomienda as e')
+                            ->select('e.encofechahoraregistro', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"),
+                            'te.tipencnombre','do.depanombre as deptoOrigen', 'mor.muninombre as municipioOrigen', 'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino',
+                            'e.encocontenido','e.encocantidad','e.encovalordeclarado','e.encovalorenvio','e.encovalordomicilio', 
+                            DB::raw("CONCAT(psr.perserprimernombre,' ',if(psr.persersegundonombre is null ,'', psr.persersegundonombre),' ',
+                            psr.perserprimerapellido,' ',if(psr.persersegundoapellido is null ,' ', psr.persersegundoapellido)) as nombrePersonaRemitente"),
+                            'psr.perserdireccion', 'psr.persernumerocelular',
+                            DB::raw("CONCAT(psd.perserprimernombre,' ',if(psd.persersegundonombre is null ,'', psd.persersegundonombre),' ',
+                            psd.perserprimerapellido,' ',if(psd.persersegundoapellido is null ,' ', psd.persersegundoapellido)) as nombrePersonaDestinatario"),
+                            'psd.perserdireccion as direccionDestino',  'psd.persernumerocelular as numeroCelularDestino',
+                            DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 'a.agennombre', 'a.agendireccion',
+                            DB::raw("CONCAT(a.agentelefonocelular,' ', if(a.agentelefonofijo is null ,' ', ' - ',psd.agentelefonofijo)) as telefonoAgencia"))
+                            ->join('personaservicio as psr', 'psr.perserid', '=', 'e.perseridremitente')
+                            ->join('personaservicio as psd', 'psd.perserid', '=', 'e.perseriddestino')
+                            ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
+                            ->join('planillaruta as pr', 'pr.plarutid', '=', 'e.plarutid')
+                            ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                            ->join('municipio as mo', function($join)
+                            {
+                                $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                $join->on('mo.muniid', '=', 'r.muniidorigen');
+                            })
+                            ->join('municipio as md', function($join)
+                            {
+                                $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                $join->on('md.muniid', '=', 'r.muniiddestino');
+                            })
+                            ->join('departamento as do', 'do.depaid', '=', 'e.depaidorigen')
+                            ->join('municipio as mor', function($join)
+                            {
+                                $join->on('mor.munidepaid', '=', 'e.depaidorigen');
+                                $join->on('mor.muniid', '=', 'e.muniidorigen');
+                            })
+                            ->join('departamento as dd', 'dd.depaid', '=', 'e.depaiddestino')
+                            ->join('municipio as mde', function($join)
+                            {
+                                $join->on('mde.munidepaid', '=', 'e.depaiddestino');
+                                $join->on('mde.muniid', '=', 'e.muniiddestino');
+                            })
+                            ->join('usuario as u', 'u.usuaid', '=', 'e.usuaid')
+                            ->join('agencia as a', 'a.agenid', '=', 'e.agenid')
+                            ->where('e.encoid', $request->codigo)->first();
+
             $arrayDatos   = [
-                                "fechaPlanilla"      => '2023-11-27',
-                                "numeroPlanilla"     => '101-084043',
-                                "fechaSalida"        => '2023-11-27',
-                                "horaSalida"         => '05:30',
-                                "nombreRuta"         => '007 - OCANA - ABREGO',
-                                "numeroVehiculo"     => '437',
-                                "placaVehiculo"      => 'UVG039',
-                                "conductorVehiculo"  => 'JORGE EMIRO RUEDA SANGUINO',
-                                "documentoConductor" => '88283517',
-                                "telefonoConductor"  => '3166147490',
-                                "valorEncomienda"    => '$ 0',
-                                "valorDomicilio"     => '$ 0',
-                                "valorComision"      => '$ 0',
-                                "valorTotal"         => '$ 0',
-                                "numeroOperacion"    => '568675',
-                                "usuarioElabora"     => 'NIXSON RIOS',
-                                "usuarioDespacha"    => 'KAREN YESENIA CONTRERAS JIMENE',
-                                "direccionAgencia"   => 'PARQUE PRINCIPAL',
-                                "telefonoAgencia"    => '3142154286',
-                                "mensajePlanilla"    => '*** FELIZ VIAJE ***',
-                                "numeroEncomienda"   => '20230001',
+                                "fechaEncomienda"       => $encomienda->encofechahoraregistro,
+                                "numeroEncomienda"      => '101084043',
+                                "rutaEncomienda"        => $encomienda->nombreRuta,
+                                "tipoEncomienda"        => $encomienda->tipencnombre,
+                                "origenEncomienda"      => $encomienda->municipioOrigen,
+                                "destinoEncomienda"     => $encomienda->municipioDestino,
+                                "contenido"             => $encomienda->encocontenido,
+                                "cantidad"              => $encomienda->encocantidad,
+                                "valorDeclarado"        => $encomienda->encovalordeclarado,
+                                "valorEnvio"            => $encomienda->encovalorenvio,
+                                "valorDomicilio"        => $encomienda->encovalordomicilio,
+                                "valorTotal"            => intval($encomienda->encovalordeclarado) +  intval($encomienda->encovalorenvio) + intval($encomienda->encovalordomicilio),
+                                "nombreRemitente"       => $encomienda->nombrePersonaRemitente,
+                                "direccionRemitente"    => $encomienda->perserdireccion,
+                                "telefonoRemitente"     => $encomienda->persernumerocelular,
+                                "nombreDestinatario"    => $encomienda->nombrePersonaDestinatario,
+                                "direccionDestinatario" => $encomienda->direccionDestino,
+                                "telefonoDestinatario"  => $encomienda->numeroCelularDestino,
+                                "usuarioElabora"        => $encomienda->nombreUsuario,
+                                "nombreAgencia"         => $encomienda->agennombre,
+                                "direccionAgencia"      => $encomienda->agendireccion,
+                                "telefonoAgencia"       => $encomienda->telefonoAgencia,
+                                "mensajePlanilla"       => '*** FELIZ VIAJE ***',
                                 "metodo" => 'S'
                             ];
-            $data         = $generarPdf->planillaEncomienda($arrayDatos);
+
+            $generarPdf   = new generarPdf();
+            $data         = $generarPdf->facturaEncomienda($arrayDatos);
   			return response()->json(["data" => $data ]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);

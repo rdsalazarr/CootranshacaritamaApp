@@ -18,7 +18,7 @@ return new class extends Migration
             $table->tinyInteger('tipactid')->unsigned()->comment('Identificador del tipo de acta');  
             $table->string('codoptconsecutivo', 4)->comment('Consecutivo del citación');
             $table->string('codoptsigla', 3)->comment('Sigla de la dependencia productora del citación');
-            $table->string('codoptanio', 4)->comment('Año en el cual se crea el citación');
+            $table->year('codoptanio', 4)->comment('Año en el cual se crea el citación');
             $table->string('codopthora', 8)->comment('Hora de la citación');
             $table->string('codoptlugar', 80)->comment('Lugar donde se realiza el citación');
             $table->date('codoptfecharealizacion')->comment('Fecha para la conovocatoria del citación');
