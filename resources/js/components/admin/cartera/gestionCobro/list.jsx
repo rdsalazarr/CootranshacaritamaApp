@@ -22,7 +22,6 @@ export default function List(){
                        ];
 
     const edit = (data, tipo) =>{
-        console.log(data);   
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'mediumFlot' : 'bigFlot'});
     }
 

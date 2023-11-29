@@ -22,6 +22,7 @@ export default function New({data, tipo}){
                                               contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',    
                                               ruta:'',                   valorSeguro:'',                 valorTotal:'',                tipo:tipo});
 
+    const [configuracionEncomienda, setConfiguracionEncomienda] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [esEmpresaRemitente, setEsEmpresaRemitente] = useState(false);
     const [esEmpresaDestino, setEsEmpresaDestino] = useState(false);
@@ -180,7 +181,7 @@ export default function New({data, tipo}){
         let valorDeclarado         = (e.target.name === 'valorDeclarado' ) ? e.target.value : formData.valorDeclarado;
         let valorEnvio             = (e.target.name === 'valorEnvio' ) ? e.target.value : formData.valorEnvio ;
         let valorDomicilio         = (e.target.name === 'valorDomicilio' ) ? e.target.value : formData.valorDomicilio;
-        let valorSeguro            = valorDeclarado * 0.01;
+        let valorSeguro            = (valorDeclarado * configuracionEncomienda.conencporcentajeseguro) / 100;
         let valorTotal             = Number(valorEnvio) + Number(valorDomicilio) + Number(valorSeguro);
         newFormData.valorDeclarado = valorDeclarado;
         newFormData.valorEnvio     = valorEnvio;
@@ -193,7 +194,8 @@ export default function New({data, tipo}){
     useEffect(()=>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/despacho/encomienda/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{   
+        instance.post('/admin/despacho/encomienda/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
+            setConfiguracionEncomienda(res.configuracionEncomienda);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTiposEncomiendas(res.tiposEncomiendas);
             setPlanillaRutas(res.planillaRutas);

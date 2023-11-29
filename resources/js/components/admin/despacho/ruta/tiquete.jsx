@@ -24,9 +24,10 @@ export default function Tiquete({data}){
 
     const [formData, setFormData]               = useState({codigo:data.rutaid, departamento: data.depaiddestino});
     const [formDataTiquete, setFormDataTiquete] = useState({municipioId:'', nombreMunicipio:'', valorTiquete: '', valorTiqueteMostrar: '', fondoReposicion:'1.00'});
-    const [valorTiquetes, setValorTiquetes] = useState([]);
+    const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
+    const [tipoProceso, setTipoProceso] = useState('I');
     const [habilitado, setHabilitado] = useState(true);
-    const [municipios, setMunicipios] = useState([]);   
+    const [municipios, setMunicipios] = useState([]);    
     const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
@@ -34,13 +35,13 @@ export default function Tiquete({data}){
     }
  
     const handleSubmit = () =>{
-        if(valorTiquetes.length === 0){
+        if(tarifaTiquetes.length === 0){
             showSimpleSnackbar('Debe adicionar como mínimo una tarifa de tiquete para la ruta', 'error');
             return
         }
  
         let newFormData            = {...formData}
-        newFormData.tarifaTiquetes = valorTiquetes;
+        newFormData.tarifaTiquetes = tarifaTiquetes;
         setLoader(true);
         instance.post('/admin/despacho/ruta/salvar/datos/tiquete', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -68,34 +69,62 @@ export default function Tiquete({data}){
             showSimpleSnackbar('Debe ingresar un valor del fondo de reposición', 'error');
             return
         }
-        if(valorTiquetes.some(nod => nod.municipioId == formDataTiquete.municipioId)){
+        if(tipoProceso === 'I' && tarifaTiquetes.some(nod => nod.municipioId == formDataTiquete.municipioId)){
             showSimpleSnackbar('Este registro ya fue adicionado', 'error');
             return
         }
 
-        let newValorTiquetes           = [...valorTiquetes];
+        let newTarifaTiquetes          = [...tarifaTiquetes];
         const resultadoNombreMunicipio = municipios.filter((mun) => mun.muniid == formDataTiquete.municipioId);
-        newValorTiquetes.push({identificador:'', municipioId:formDataTiquete.municipioId, nombreMunicipio: resultadoNombreMunicipio[0].muninombre, valorTiquete: formDataTiquete.valorTiquete, valorTiqueteMostrar: formatearNumero(formDataTiquete.valorTiquete), fondoReposicion: formDataTiquete.fondoReposicion, estado: 'I'});
+        if(tipoProceso === 'I'){
+            newTarifaTiquetes.push({identificador:'', municipioId:formDataTiquete.municipioId, nombreMunicipio: resultadoNombreMunicipio[0].muninombre, valorTiquete: formDataTiquete.valorTiquete, 
+                                valorTiqueteMostrar: formatearNumero(formDataTiquete.valorTiquete), fondoReposicion: formDataTiquete.fondoReposicion, estado: 'I'}); 
+            setTarifaTiquetes(newTarifaTiquetes);
+        }else{
+            let arrayTarifaTiquetes = [];
+            tarifaTiquetes.map((res,i) =>{  
+                if(res.identificador === formDataTiquete.identificador){
+                    arrayTarifaTiquetes.push({ identificador:res.identificador, municipioId: formDataTiquete.municipioId, nombreMunicipio:resultadoNombreMunicipio[0].muninombre,
+                        valorTiquete: formDataTiquete.valorTiquete, valorTiqueteMostrar: formatearNumero(formDataTiquete.valorTiquete), fondoReposicion: formDataTiquete.fondoReposicion, estado: 'U' });
+                }else{
+                    arrayTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, 
+                        valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'U'});
+                }
+            })
+            setTarifaTiquetes(arrayTarifaTiquetes);
+        }
+        
         setFormDataTiquete({municipioId:'', nombreMunicipio:'', valorTiquete: '', fondoReposicion:'1.00' });
-        setValorTiquetes(newValorTiquetes);
+        setTipoProceso('I');
     }
 
     const eliminarFilaTarifa = (id) =>{
-        let newValorTiquetes = [];
-        valorTiquetes.map((res,i) =>{
+        let newTarifaTiquetes = [];
+        tarifaTiquetes.map((res,i) =>{
             if(res.estado === 'U' && i === id){
-                newValorTiquetes.push({ identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'D' }); 
+                newTarifaTiquetes.push({ identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'D' }); 
             }else if(res.estado === 'D' && i === id){
-                newValorTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'U'});
+                newTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'U'});
             }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
-                newValorTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado:res.estado});
+                newTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado:res.estado});
             }else{
                 if(i != id){
-                    newValorTiquetes.push({identificador:res.identificador,municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'I' });
+                    newTarifaTiquetes.push({identificador:res.identificador,municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar, fondoReposicion: res.fondoReposicion,estado: 'I' });
                 }
             }
         })
-        setValorTiquetes(newValorTiquetes);
+        setTarifaTiquetes(newTarifaTiquetes);
+    }
+
+    const editarFilaTarifa = (id) =>{
+        const resultadoTarifaTiquetes      = tarifaTiquetes.filter((tarifa) => tarifa.identificador == id);   
+        let newFormDataTiquete             = {...formDataTiquete}
+        newFormDataTiquete.identificador   = resultadoTarifaTiquetes[0].identificador;
+        newFormDataTiquete.municipioId     = resultadoTarifaTiquetes[0].municipioId;
+        newFormDataTiquete.valorTiquete    = resultadoTarifaTiquetes[0].valorTiquete;
+        newFormDataTiquete.fondoReposicion = resultadoTarifaTiquetes[0].fondoReposicion;
+        setFormDataTiquete(newFormDataTiquete);
+        setTipoProceso('U');
     }
 
     useEffect(()=>{
@@ -122,7 +151,7 @@ export default function Tiquete({data}){
                 }
             });
 
-            setValorTiquetes(newValorTiquetes);
+            setTarifaTiquetes(newValorTiquetes);
             setLoader(false);
         })
     }, []);
@@ -198,14 +227,14 @@ export default function Tiquete({data}){
 
                     <Grid item xl={2} md={2} sm={12} xs={12}>
                         <Button type={"submit"} className={'modalBtn'} 
-                            startIcon={<AddIcon />}> {"Agregar"}
+                            startIcon={<AddIcon />}> {(tipoProceso === 'I') ? "Agregar" : "Actualizar"}
                         </Button>
                     </Grid>
                 </Grid>
 
             </ValidatorForm>
 
-            {(valorTiquetes.length > 0) ?
+            {(tarifaTiquetes.length > 0) ?
                 <Fragment>
                         <Grid container spacing={2}>
                         <Grid item md={12} xl={12} sm={12} xs={12}>
@@ -222,25 +251,34 @@ export default function Tiquete({data}){
                                             <TableCell>Municipio destino</TableCell>
                                             <TableCell>Valor tiquete</TableCell>
                                             <TableCell>Fondo de reposición</TableCell>
-                                            <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
+                                            <TableCell style={{width: '10%'}} className='cellCenter'>Editar </TableCell>
+                                            <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
 
-                                    { valorTiquetes.map((tari, a) => {
+                                    { tarifaTiquetes.map((tari, a) => {
                                         return(
                                             <TableRow key={'rowA-' +a} className={(tari['estado'] == 'D')? 'tachado': null}>
 
                                                 <TableCell>
-                                                    <p> {tari['nombreMunicipio']}</p>
+                                                     {tari['nombreMunicipio']}
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <p> {tari['valorTiqueteMostrar']}</p>
+                                                    {tari['valorTiqueteMostrar']}
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <p> {tari['fondoReposicion']}</p>
+                                                     {tari['fondoReposicion']}
+                                                </TableCell>
+
+                                                <TableCell className='cellCenter'>
+                                                    {(tari['estado'] == 'U')?
+                                                        <Icon key={'iconDelete'+a} className={'icon top orange'}
+                                                            onClick={() => {editarFilaTarifa(tari['identificador']);}}
+                                                        >edit</Icon>
+                                                    : null}
                                                 </TableCell>
 
                                                 <TableCell className='cellCenter'>

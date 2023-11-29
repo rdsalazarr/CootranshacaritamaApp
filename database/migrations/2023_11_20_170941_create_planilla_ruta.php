@@ -20,7 +20,7 @@ return new class extends Migration
             $table->smallInteger('usuaidregistra')->unsigned()->comment('Identificador del usuario que rgistra la planilla');
             $table->smallInteger('usuaidrecibe')->unsigned()->nullable()->comment('Identificador del usuario que recibe la planilla');
             $table->dateTime('plarutfechahoraregistro')->comment('Fecha y hora actual en el que se registra la planilla');
-            $table->string('plarutconsecutivo', 46)->comment('Consecutivo de la planilla de la ruta');
+            $table->string('plarutconsecutivo', 6)->comment('Consecutivo de la planilla de la ruta');
             $table->dateTime('plarutfechahorasalida')->nullable()->comment('Fecha y hora actual se entrega la planilla para la ruta');
             $table->dateTime('plarutfechahorarecibe')->nullable()->comment('Fecha y hora actual en que se recibe la planilla para la ruta');
             $table->boolean('plarutdespachada')->default(false)->comment('Determina si la ruta fue despachada');

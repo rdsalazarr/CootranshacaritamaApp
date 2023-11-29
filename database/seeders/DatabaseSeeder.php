@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoConvenioServicioEspecialSeeder::class);        
         $this->call(TipoEncomiendaSeeder::class);
         $this->call(TipoEstadoEncomiendaSeeder::class);
+        $this->call(ConfiguracionEncomiendaSeeder::class);       
         
     }
 }

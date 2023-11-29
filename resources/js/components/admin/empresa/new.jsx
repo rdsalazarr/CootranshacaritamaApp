@@ -1,7 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box } from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Tab, Tabs } from '@mui/material';
+import NumberValidator from '../../layout/numberValidator';
 import showSimpleSnackbar from '../../layout/snackBar';
+import { TabPanel } from '../../layout/general';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../layout/instance';
@@ -17,20 +19,35 @@ export default function New({data}){
                         celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', personeriaJuridica : (data.emprpersoneriajuridica !== null ) ? data.emprpersoneriajuridica : '',
                         horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '',
                         url: data.emprurl, codigoPostal: data.emprcodigopostal,  
-                        logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: ''
-                    });
+                        logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: '',
+                        valorMinimoEnvio: '', porcentajeSeguro:'', porcentajeComisionEmpresa:'', porcentajeComisionAgencia:'', 
+                        porcentajeComisionVehiculo:''
+                    });  
 
     const logo = formData.imagen; 
+    const [value, setValue] = useState(0); 
+    const [jefes, setJefes] = useState([]);
     const [logoEmpresa, setLogo] = useState();
     const [loader, setLoader] = useState(true); 
     const [habilitado, setHabilitado] = useState(true);
     const [municipios, setMunicipios] = useState([]);
     const [newMunicipios, setNewMunicipios] = useState([]);
-    const [departamentos, setDepartamentos] = useState([]);
-    const [jefes, setJefes] = useState([]);
-   
+    const [departamentos, setDepartamentos] = useState([]);  
+    const [variantTab, setVariantTab] = useState((window.innerWidth <= 768) ? 'scrollable' : 'fullWidth');
+    const [formDataMensajeimpresion, setFormDataMensajeimpresion] = useState([{codigo: '', nombre: '', valor: ''}]);
+
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
+
+    const handleChangeMensajeimpresion = (e, index) =>{
+        let newFormDataMensajeimpresion = [...formDataMensajeimpresion];
+        newFormDataMensajeimpresion[index][e.target.name] = e.target.value; 
+        setFormDataMensajeimpresion(newFormDataMensajeimpresion);
+    }
+
+    const handleChangeTab = (event, newValue) => {
+        setValue(newValue);
     }
 
     const handleSubmit = () =>{
@@ -39,6 +56,16 @@ export default function New({data}){
            dataFile.append(key, formData[key])
         })
         dataFile.append('logo', (logoEmpresa !== undefined) ? logoEmpresa : '');
+
+        let totalCampoMensaje = 0;
+        Object.keys(formDataMensajeimpresion).forEach(function(key) {
+            dataFile.append('mensajeImpresionCodigo'+key, formDataMensajeimpresion[key].codigo);
+            dataFile.append('mensajeImpresionNombre'+key, formDataMensajeimpresion[key].nombre);
+            dataFile.append('mensajeImpresionValor'+key, formDataMensajeimpresion[key].valor);
+            totalCampoMensaje ++;
+        })
+        dataFile.append('totalCampoMensaje', totalCampoMensaje);
+
         setLoader(true);
         instance.post('/admin/empresa/salve', dataFile).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -46,28 +73,7 @@ export default function New({data}){
             (res.success) ? setHabilitado(false) : null;
             setLoader(false);
         })
-    }
-
-    useEffect(()=>{
-        instance.get('/admin/empresa/list/datos').then(res=>{ 
-            setJefes(res.jefes);
-            let depto_id =  formData.departamento;
-            let mun      = [];
-            res.municipios.forEach(function(muni){
-                if(muni.munidepaid === depto_id){
-                    mun.push({
-                        muniid: muni.muniid,
-                        muninombre: muni.muninombre
-                    });
-                }
-            });
-            setDepartamentos(res.deptos);
-            setMunicipios(res.municipios);
-            setNewMunicipios(mun);
-            setLoader(false);
-        })
-    }, []);
- 
+    }    
     const consultarMunicipio = () =>{
         let depto_id =  formData.departamento;
         let mun      = [];
@@ -83,6 +89,46 @@ export default function New({data}){
         setNewMunicipios(mun);
         setLoader(false);
     }
+
+    useEffect(()=>{
+        let newFormData = {...formData}
+        instance.get('/admin/empresa/list/datos').then(res=>{
+            let configuracionEncomienda             = res.configuracionEncomienda;
+            newFormData.valorMinimoEnvio            = configuracionEncomienda.conencvalorminimoenvio;
+            newFormData.porcentajeSeguro            = configuracionEncomienda.conencporcentajeseguro;
+            newFormData.porcentajeComisionEmpresa   = configuracionEncomienda.conencporcencomisionempresa;
+            newFormData.porcentajeComisionAgencia   = configuracionEncomienda.conencporcencomisionagencia;
+            newFormData.porcentajeComisionVehiculo  = configuracionEncomienda.conencporcencomisionvehiculo;
+ 
+            let dataMsj = [];
+            res.mensajeImpresiones.forEach(function(msj){
+                dataMsj.push({
+                    codigo: msj.menimpid,
+                    nombre: msj.menimpnombre,
+                    valor:  msj.menimpvalor
+                });
+            })
+ 
+            let depto_id =  formData.departamento;
+            let mun      = [];
+            res.municipios.forEach(function(muni){
+                if(muni.munidepaid === depto_id){
+                    mun.push({
+                        muniid: muni.muniid,
+                        muninombre: muni.muninombre
+                    });
+                }
+            });
+
+            setJefes(res.jefes);
+            setNewMunicipios(mun);
+            setFormData(newFormData);
+            setDepartamentos(res.deptos);
+            setMunicipios(res.municipios);
+            setFormDataMensajeimpresion(dataMsj);
+            setLoader(false);
+        })
+    }, []); 
 
     if(loader){
         return <LoaderModal />
@@ -366,6 +412,126 @@ export default function New({data}){
                         </Box>
                     </Grid>
                 : null }
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <Tabs value={value} onChange={handleChangeTab} 
+                        sx={{background: '#e2e2e2'}}
+                        indicatorColor="secondary"
+                        textColor="secondary"
+                        variant={variantTab} >
+                        <Tab label="Mensajes de impresión" />
+                        <Tab label="Configuracion  de encomiendas" />
+                    </Tabs>
+
+                    <TabPanel value={value} index={0}>
+                        <Grid container spacing={2}>
+                            { formDataMensajeimpresion.map((msj, i) => { 
+                                return(
+                                    <Fragment key={'rowI-' +i}>
+                                        <Grid item xl={3} md={3} sm={4} xs={12}>
+                                            <Box className='frmTexto'>
+                                                <label>Nombre</label>
+                                                <span>{msj['nombre']}</span>
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xl={9} md={9} sm={8} xs={12}>
+                                            <TextValidator 
+                                                name={'valor'}
+                                                value={msj['valor']}
+                                                label={'Valor'}
+                                                className={'inputGeneral'} 
+                                                variant={"standard"} 
+                                                inputProps={{autoComplete: 'off', maxLength: 500}}
+                                                onChange={(e) => {handleChangeMensajeimpresion(e, i)}} 
+                                            />
+                                        </Grid>
+                                        
+                                    </Fragment>
+                                    )
+                                })
+                            }
+                        </Grid>
+                    </TabPanel>
+
+                    <TabPanel value={value} index={1}>
+                        <Grid container spacing={2}>
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <NumberValidator fullWidth
+                                    id={"valorMinimoEnvio"}
+                                    name={"valorMinimoEnvio"}
+                                    label={"Valor mínimo envío"}
+                                    value={formData.valorMinimoEnvio}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:8']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 99999999']}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'porcentajeSeguro'}
+                                    value={formData.porcentajeSeguro}
+                                    label={'Porcentaje seguro'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required","maxNumber:99"]}
+                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99"]}
+                                    onChange={handleChange}
+                                    type={"number"}
+                                />
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'porcentajeComisionEmpresa'}
+                                    value={formData.porcentajeComisionEmpresa}
+                                    label={'Porcentaje comisión empresa'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required","maxNumber:99"]}
+                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99"]}
+                                    onChange={handleChange}
+                                    type={"number"}
+                                />
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'porcentajeComisionAgencia'}
+                                    value={formData.porcentajeComisionAgencia}
+                                    label={'Porcentaje comisión agencia'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required","maxNumber:99"]}
+                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99"]}
+                                    onChange={handleChange}
+                                    type={"number"}
+                                />
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'porcentajeComisionVehiculo'}
+                                    value={formData.porcentajeComisionVehiculo}
+                                    label={'Porcentaje comisión vehículo'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required","maxNumber:99"]}
+                                    errorMessages={["campo obligatorio","Número máximo permitido es el 99"]}
+                                    onChange={handleChange}
+                                    type={"number"}
+                                />
+                            </Grid>
+
+                        </Grid>
+                    </TabPanel>
+                </Grid>
 
             </Grid>
 

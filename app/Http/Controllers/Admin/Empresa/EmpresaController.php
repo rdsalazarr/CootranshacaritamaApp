@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Empresa;
 
+use App\Models\Empresa\ConfiguracionEncomienda;
+use App\Models\Empresa\MensajeImpresion;
 use App\Http\Controllers\Controller;
 use App\Util\redimencionarImagen;
 use App\Models\Empresa\Empresa;
@@ -34,7 +36,13 @@ class EmpresaController extends Controller
                        )
                    ->whereIn('carlabid', [1, 4])->get();
 
-        return response()->json(["deptos" => $deptos, "municipios" => $municipios, "jefes" => $jefes]);  
+        $mensajeImpresiones      = DB::table('mensajeimpresion')->select('menimpid','menimpnombre','menimpvalor')->OrderBy('menimpnombre')->get();
+        $configuracionEncomienda = DB::table('configuracionencomienda')->select('conencid','conencvalorminimoenvio','conencporcentajeseguro',
+                                    'conencporcencomisionempresa', 'conencporcencomisionagencia', 'conencporcencomisionvehiculo')
+                                    ->where('conencid', 1)->OrderBy('conencid')->first();
+
+        return response()->json(["deptos" => $deptos, "municipios" => $municipios, "jefes" => $jefes,
+                                "mensajeImpresiones" => $mensajeImpresiones, "configuracionEncomienda" => $configuracionEncomienda]);
     }
 
 	public function salve(Request $request)
@@ -59,7 +67,8 @@ class EmpresaController extends Controller
                 'codigoPostal'       => 'nullable|max:10',
                 'logo'               => 'nullable|mimes:png|max:1000'
 			]);
-
+ 
+        DB::beginTransaction();
 		try {
 
             $funcion = new generales();
@@ -77,7 +86,7 @@ class EmpresaController extends Controller
                 $nombreBD = $request->logo_old;
             }
 
-			$empresa = Empresa::findOrFail($request->codigo);
+			$empresa                           = Empresa::findOrFail($request->codigo);
             $empresa->persidrepresentantelegal = $request->jefe;
             $empresa->emprdepaid               = $request->departamento;
 			$empresa->emprmuniid               = $request->municipio;
@@ -97,8 +106,27 @@ class EmpresaController extends Controller
             $empresa->emprcodigopostal         = $request->codigoPostal;
             $empresa->emprlogo                 = $nombreBD;
 			$empresa->save();
+
+            $configuracionencomienda                               = ConfiguracionEncomienda::findOrFail(1);
+            $configuracionencomienda->conencvalorminimoenvio       = $request->valorMinimoEnvio;
+            $configuracionencomienda->conencporcentajeseguro       = $request->porcentajeSeguro;
+            $configuracionencomienda->conencporcencomisionempresa  = $request->porcentajeComisionEmpresa;
+            $configuracionencomienda->conencporcencomisionagencia  = $request->porcentajeComisionAgencia;
+            $configuracionencomienda->conencporcencomisionvehiculo = $request->porcentajeComisionVehiculo;
+            $configuracionencomienda->save();
+
+            for($i = 0; $i < $request->totalCampoMensaje; $i++){
+                $identificador = 'mensajeImpresionCodigo'.$i;
+                $valor         = 'mensajeImpresionValor'.$i;
+                $mensajeimpresion               = MensajeImpresion::findOrFail($request->$identificador);
+                 $mensajeimpresion->menimpvalor  = $request->$valor;
+                $mensajeimpresion->save();
+            }
+
+            DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
+            DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
 	}

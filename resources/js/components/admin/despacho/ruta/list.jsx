@@ -23,7 +23,7 @@ export default function List(){
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
                         <Tiquete data={modal.data} /> ,
-                        <Eliminar id={(tipo === 3) ? modal.data.persid : null} ruta={'/admin/despacho/ruta/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 3) ? modal.data.rutaid : null} ruta={'/admin/despacho/ruta/destroy'} cerrarModal={cerrarModal} />
                     ];
 
     const tituloModal = ['Nueva ruta','Editar ruta','Asignar valor del tiquete para la ruta',''];

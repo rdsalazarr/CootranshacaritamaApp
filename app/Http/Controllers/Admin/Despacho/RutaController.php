@@ -168,7 +168,12 @@ class RutaController extends Controller
 				}else if($tarifaTiqueteEstado === 'D'){
 					$tarifaTiquete = TarifaTiquete::findOrFail($identificador);
 					$tarifaTiquete->delete();
-				}else{// Omitir
+				}else{// Editar
+                    $tarifaTiquete = TarifaTiquete::findOrFail($identificador);
+                    $tarifaTiquete->muniiddestino         = $municipioId;
+                    $tarifaTiquete->tartiqvalor           = $valorTiquete;
+                    $tarifaTiquete->tartiqfondoreposicion = $fondoReposicion;
+                    $tarifaTiquete->save();
 				}
 			}
 
@@ -186,11 +191,26 @@ class RutaController extends Controller
 		if($planillaruta){
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una dependencia del sistema']);
 		}else{
+            DB::beginTransaction();
 			try {
-				$ruta = Ruta::findOrFail($request->codigo);
+                $ruta = Ruta::findOrFail($request->codigo);
+                if ($ruta->has('rutaNodos')){ 
+					foreach ($ruta->rutaNodos as $idRutaNodos){
+						$ruta->rutaNodos()->delete($idRutaNodos);
+					}
+				}
+
+                if ($ruta->has('tarifaTiquete')){ 
+					foreach ($ruta->tarifaTiquete as $idTarifaTiquete){
+						$ruta->tarifaTiquete()->delete($idTarifaTiquete);
+					}
+				}
+
 				$ruta->delete();
+                DB::commit();
 				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 			} catch (Exception $error){
+                DB::rollback();
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}

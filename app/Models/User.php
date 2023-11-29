@@ -43,9 +43,8 @@ class User extends Authenticatable
                         'usuapassword' => 'hashed',
                     ];
 
-
     //Para realizar la relacion con los roles
-    public function usuarioRoles(){     
-        return $this->hasMany('App\Models\UsuarioRol', 'usurolusuaid', 'usuaid');
-    } 
+    public function usuarioRoles(){
+        return $this->hasMany('App\Models\Usuario\UsuarioRol', 'usurolusuaid', 'usuaid');
+    }
 }

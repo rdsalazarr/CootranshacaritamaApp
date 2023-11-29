@@ -203,9 +203,9 @@ const menuComponente = [
     {id:37,componente : <HistorialSolicitudCredito />},
     {id:38,componente : <CobroCartera />},
     {id:39,componente : <Rutas />},
-    {id:40,componente : <ServicoEspecial />},
-    {id:41,componente : <Planillas />},
-    {id:42,componente : <Encomiendas />},
+    {id:40,componente : <Planillas />},
+    {id:41,componente : <Encomiendas />},
+    {id:42,componente : <ServicoEspecial />},
     
     {id:43,componente : <Rutas1 />},
     {id:44,componente : <Rutas2 />},

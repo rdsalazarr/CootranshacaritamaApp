@@ -60,10 +60,13 @@ class EncomiendaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $tiposEncomiendas     = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
-        $departamentos        = DB::table('departamento')->select('depaid','depanombre')->where('depahacepresencia', true)->orderBy('depanombre')->get();
-        $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
-        $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
+        $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
+        $departamentos           = DB::table('departamento')->select('depaid','depanombre')->where('depahacepresencia', true)->orderBy('depanombre')->get();
+        $municipios              = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+        $tipoIdentificaciones    = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
+        $configuracionEncomienda = DB::table('configuracionencomienda')
+                                            ->select('conencvalorminimoenvio','conencporcentajeseguro','conencporcencomisionempresa',
+                                            'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
 
         $planillaRutas        = DB::table('planillaruta as pr')
                                 ->select('pr.plarutid',DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"))
@@ -80,8 +83,8 @@ class EncomiendaController extends Controller
                                 })
                                 ->where('pr.plarutdespachada', false)
                                 ->get();
-        $encomienda           = [];
 
+        $encomienda           = [];
         if($request->tipo === 'U'){
             $encomienda  = DB::table('encomienda as e')
                                 ->select('e.encoid','e.plarutid','e.perseridremitente','e.perseriddestino','e.depaidorigen','e.muniidorigen','e.depaiddestino','e.muniiddestino',
@@ -97,8 +100,9 @@ class EncomiendaController extends Controller
                                 ->where('e.encoid', $request->codigo)->first();
         }
 
-        return response()->json(["tiposEncomiendas" => $tiposEncomiendas, "tipoIdentificaciones" => $tipoIdentificaciones, "departamentos" => $departamentos, 
-                                "municipios"       => $municipios,        "encomienda"    => $encomienda,                  "planillaRutas" => $planillaRutas]);
+        return response()->json(["tiposEncomiendas"       => $tiposEncomiendas,        "tipoIdentificaciones" => $tipoIdentificaciones, "departamentos" => $departamentos, 
+                                "configuracionEncomienda" => $configuracionEncomienda, "municipios"           => $municipios,           "encomienda"    => $encomienda,                  
+                                "planillaRutas"           => $planillaRutas]);
     }
 
     public function consultarPersona(Request $request)
@@ -159,9 +163,19 @@ class EncomiendaController extends Controller
         DB::beginTransaction();
         try {
 
-            $estadoEncomienda = 'R';
-            $fechaHoraActual  = Carbon::now();
-		
+            //Consulto los valores de la encomienda
+            $configuracionencomienda     = DB::table('configuracionencomienda')
+                                            ->select('conencvalorminimoenvio','conencporcentajeseguro','conencporcencomisionempresa',
+                                            'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
+
+            $porcentajeSeguro           = $configuracionencomienda->conencporcentajeseguro;
+            $porcentajeComisionEmpresa  = $configuracionencomienda->conencporcencomisionempresa;
+            $porcentajeComisionAgencia  = $configuracionencomienda->conencporcencomisionagencia;
+            $porcentajeComisionVehiculo = $configuracionencomienda->conencporcencomisionvehiculo;
+            $estadoEncomienda           = 'R';
+            $fechaHoraActual            = Carbon::now();
+            $valorTotalEncomienda       = intval($request->valorSeguro) + intval($request->valorEnvio) + intval($request->valorDomicilio);
+
 			$personaservicioRemitente->tipideid                = $request->tipoIdentificacionRemitente;
 			$personaservicioRemitente->perserdocumento         = $request->documentoRemitente;
 			$personaservicioRemitente->perserprimernombre      = mb_strtoupper($request->primerNombreRemitente,'UTF-8');
@@ -195,15 +209,15 @@ class EncomiendaController extends Controller
 				$personaservicioConsecutivo = PersonaServicio::latest('perserid')->first();
 				$personaIdDestino           = $personaservicioConsecutivo->perserid;
 			}
-            
+
             if($request->tipo === 'I'){
                 $anioActual                         = $fechaHoraActual->year;
                 $encomienda->agenid                 = auth()->user()->agenid;
                 $encomienda->tiesenid               = $estadoEncomienda;
                 $encomienda->usuaid                 = Auth::id();
                 $encomienda->encofechahoraregistro  = $fechaHoraActual;
-                //$encomienda->encoanio               = $anioActual;
-                //$encomienda->encoconsecutivo        = $this->obtenerConsecutivo($anioActual);
+                $encomienda->encoanio               = $anioActual;
+                $encomienda->encoconsecutivo        = $this->obtenerConsecutivo($anioActual);
             }
 
 			$encomienda->perseridremitente         = $personaIdRemitente;
@@ -221,9 +235,10 @@ class EncomiendaController extends Controller
 			$encomienda->encocontenido             = mb_strtoupper($request->observaciones,'UTF-8');
             $encomienda->encoobservacion           = mb_strtoupper($request->observaciones,'UTF-8');
             $encomienda->encovalorcomisionseguro   = $request->valorSeguro;
-            $encomienda->encovalorcomisionvehiculo = '0';
-            $encomienda->encovalorcomisionagencia  = '0';
-            $encomienda->encovalorcomisionempresa  = '0';
+            $encomienda->encovalorcomisionempresa  = ($valorTotalEncomienda * $porcentajeComisionEmpresa) / 100;
+            $encomienda->encovalorcomisionagencia  = ($valorTotalEncomienda * $porcentajeComisionAgencia) / 100;
+            $encomienda->encovalorcomisionvehiculo = ($valorTotalEncomienda * $porcentajeComisionVehiculo) / 100;
+            $encomienda->encovalortotal            = $valorTotalEncomienda;
 			$encomienda->save();
 
             if($request->tipo === 'I'){
@@ -290,7 +305,7 @@ class EncomiendaController extends Controller
                                 })
                                 ->where('e.encoid', $request->codigo)->first();
 
-        $cambiosEstadoEncomienda =  DB::table('encomiendacambioestado as ece')
+        $cambiosEstadoEncomienda = DB::table('encomiendacambioestado as ece')
                                     ->select('ece.encaesfechahora as fecha','ece.encaesobservacion as observacion','tee.tiesennombre as estado',
                                         DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
                                     ->join('tipoestadoencomienda as tee', 'tee.tiesenid', '=', 'ece.tiesenid')
@@ -303,11 +318,13 @@ class EncomiendaController extends Controller
 
     public function verPlanilla(Request $request)
     {
-		$this->validate(request(),['codigo'   => 'required']);
+		$this->validate(request(),['codigo' => 'required']);
 		try{
 
             $encomienda  = DB::table('encomienda as e')
-                            ->select('e.encofechahoraregistro', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"),
+                            ->select('e.encofechahoraregistro', DB::raw("CONCAT(e.encoanio,'',e.encoconsecutivo) as consecutivoEncomienda"),
+                            DB::raw("CONCAT(FORMAT(e.encovalortotal, 0)) as valorTotal"),
+                            DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"),
                             'te.tipencnombre','do.depanombre as deptoOrigen', 'mor.muninombre as municipioOrigen', 'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino',
                             'e.encocontenido','e.encocantidad','e.encovalordeclarado','e.encovalorenvio','e.encovalordomicilio', 
                             DB::raw("CONCAT(psr.perserprimernombre,' ',if(psr.persersegundonombre is null ,'', psr.persersegundonombre),' ',
@@ -317,7 +334,8 @@ class EncomiendaController extends Controller
                             psd.perserprimerapellido,' ',if(psd.persersegundoapellido is null ,' ', psd.persersegundoapellido)) as nombrePersonaDestinatario"),
                             'psd.perserdireccion as direccionDestino',  'psd.persernumerocelular as numeroCelularDestino',
                             DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 'a.agennombre', 'a.agendireccion',
-                            DB::raw("CONCAT(a.agentelefonocelular,' ', if(a.agentelefonofijo is null ,' ', ' - ',psd.agentelefonofijo)) as telefonoAgencia"))
+                            DB::raw("CONCAT(a.agentelefonocelular,' ', if(a.agentelefonofijo is null ,' ', ' - ',psd.agentelefonofijo)) as telefonoAgencia"),
+                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'ENCOMIENDAS') AS mensajeEncomienda"))
                             ->join('personaservicio as psr', 'psr.perserid', '=', 'e.perseridremitente')
                             ->join('personaservicio as psd', 'psd.perserid', '=', 'e.perseriddestino')
                             ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
@@ -351,7 +369,7 @@ class EncomiendaController extends Controller
 
             $arrayDatos   = [
                                 "fechaEncomienda"       => $encomienda->encofechahoraregistro,
-                                "numeroEncomienda"      => '101084043',
+                                "numeroEncomienda"      => $encomienda->consecutivoEncomienda,
                                 "rutaEncomienda"        => $encomienda->nombreRuta,
                                 "tipoEncomienda"        => $encomienda->tipencnombre,
                                 "origenEncomienda"      => $encomienda->municipioOrigen,
@@ -361,7 +379,7 @@ class EncomiendaController extends Controller
                                 "valorDeclarado"        => $encomienda->encovalordeclarado,
                                 "valorEnvio"            => $encomienda->encovalorenvio,
                                 "valorDomicilio"        => $encomienda->encovalordomicilio,
-                                "valorTotal"            => intval($encomienda->encovalordeclarado) +  intval($encomienda->encovalorenvio) + intval($encomienda->encovalordomicilio),
+                                "valorTotal"            => $encomienda->valorTotal,
                                 "nombreRemitente"       => $encomienda->nombrePersonaRemitente,
                                 "direccionRemitente"    => $encomienda->perserdireccion,
                                 "telefonoRemitente"     => $encomienda->persernumerocelular,
@@ -372,7 +390,7 @@ class EncomiendaController extends Controller
                                 "nombreAgencia"         => $encomienda->agennombre,
                                 "direccionAgencia"      => $encomienda->agendireccion,
                                 "telefonoAgencia"       => $encomienda->telefonoAgencia,
-                                "mensajePlanilla"       => '*** FELIZ VIAJE ***',
+                                "mensajePlanilla"       => $encomienda->mensajeEncomienda,
                                 "metodo" => 'S'
                             ];
 

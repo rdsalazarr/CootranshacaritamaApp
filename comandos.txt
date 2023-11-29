@@ -11,6 +11,10 @@ php artisan make:migration create_usuario_rol
 php artisan make:migration create_informacion_notificacion_correo
 php artisan make:migration create_informacion_configuracion_correo
 php artisan make:migration create_empresa
+
+php artisan make:migration create_mensaje_impresion
+php artisan make:migration create_configuracion_encomienda
+
 php artisan make:migration create_departamento
 php artisan make:migration create_municipio
 php artisan make:migration create_tipo_documental
@@ -138,6 +142,10 @@ php artisan make:model UsuarioRol
 php artisan make:model InformacionNotificacionCorreo
 php artisan make:model InformacionConfiguracionCorreo
 php artisan make:model Empresa
+
+php artisan make:model Empresa\MensajeImpresion
+php artisan make:model Empresa\ConfiguracionEncomienda
+
 php artisan make:model Departamento
 php artisan make:model Municipio
 php artisan make:model TipoDocumental
@@ -267,7 +275,7 @@ php artisan make:seeder TipoConvenioServicioEspecialSeeder
 php artisan make:seeder TipoContratoServicioEspecialSeeder
 php artisan make:seeder TipoEncomiendaSeeder
 php artisan make:seeder TipoEstadoEncomiendaSeeder
-
+php artisan make:seeder ConfiguracionEncomiendaSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -330,9 +338,6 @@ php artisan make:controller Admin\Despacho\ContratoServicioEspecialController
 php artisan make:controller Admin\Despacho\RutaController
 php artisan make:controller Admin\Despacho\EncomiendaController
 php artisan make:controller Admin\Despacho\PlanillaRutaController
-
-
-
 php artisan make:controller Admin\DependenciaController
 
 php artisan make:middleware SecurityMiddleware

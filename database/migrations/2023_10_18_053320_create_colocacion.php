@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('colofechadesembolso')->comment('Fecha de desembolso del crédito');
             $table->year('coloanio', 4)->comment('Año en el cual se desembolsa el crédito');
             $table->string('colonumerodesembolso', 4)->comment('Número de desembolso asignado por cada año');
-            $table->decimal('colovalordesembolsado', 12, 2)->comment('Monto o valor desembolsado');
+            $table->decimal('colovalordesembolsado', 12, 0)->comment('Monto o valor desembolsado');
             $table->decimal('colotasa',6,2)->comment('Tasa de interés aplicado en el desembolso');
             $table->decimal('colonumerocuota', 5, 0)->comment('Número de cuota aprobado en el desembolso');
             $table->timestamps();

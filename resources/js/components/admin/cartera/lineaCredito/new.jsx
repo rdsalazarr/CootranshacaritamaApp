@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack}  from '@mui/material';
+import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
@@ -86,32 +87,28 @@ export default function New({data, tipo}){
                 </Grid> 
 
                <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'montoMinimo'}
+                    <NumberValidator fullWidth
+                        id={"montoMinimo"}
+                        name={"montoMinimo"}
+                        label={"Monto mínimo"}
                         value={formData.montoMinimo}
-                        label={'Monto mínimo'}
-                        className={'inputGeneral'}
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required","minNumber:9999"]}
-                        errorMessages={["campo obligatorio","Número mínimo permitido es el 9999"]}
+                        type={'numeric'}
+                        require={['required', 'maxStringLength:4']}
+                        error={['Campo obligatorio','Número máximo permitido es el 9999']}
                         onChange={handleChange}
-                        type={"number"}
                     />
                 </Grid>
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <TextValidator 
-                        name={'montoMaximo'}
+                    <NumberValidator fullWidth
+                        id={"montoMaximo"}
+                        name={"montoMaximo"}
+                        label={"Monto máximo"}
                         value={formData.montoMaximo}
-                        label={'Monto máximo'}
-                        className={'inputGeneral'}
-                        variant={"standard"} 
-                        inputProps={{autoComplete: 'off'}}
-                        validators={["required","maxNumber:99999999"]}
-                        errorMessages={["campo obligatorio","Número máximo permitido es el 99999999"]}
+                        type={'numeric'}
+                        require={['required', 'maxStringLength:8']}
+                        error={['Campo obligatorio','Número máximo permitido es el 99999999']}
                         onChange={handleChange}
-                        type={"number"}
                     />
                 </Grid>
 
