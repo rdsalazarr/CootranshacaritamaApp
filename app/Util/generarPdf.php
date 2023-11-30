@@ -2752,6 +2752,7 @@ EOD;
 		$valorDeclarado        = $arrayDatos['valorDeclarado'];
 		$valorEnvio            = $arrayDatos['valorEnvio'];
 		$valorDomicilio        = $arrayDatos['valorDomicilio'];
+		$valorSeguro           = $arrayDatos['valorSeguro'];
 		$valorTotal            = $arrayDatos['valorTotal'];
 		$nombreRemitente       = $arrayDatos['nombreRemitente'];
 		$direccionRemitente    = $arrayDatos['direccionRemitente'];
@@ -2763,6 +2764,7 @@ EOD;
 		$nombreAgencia         = $arrayDatos['nombreAgencia'];
 		$direccionAgencia      = $arrayDatos['direccionAgencia'];
 		$telefonoAgencia       = $arrayDatos['telefonoAgencia'];
+		$mensajePlanilla       = $arrayDatos['mensajePlanilla'];
 		$metodo                = $arrayDatos['metodo'];
 
 		$linea                 = str_pad('', 66, "-", STR_PAD_LEFT);
@@ -2825,22 +2827,22 @@ EOD;
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor declarado:", 0, 0,'L');
-		PDF::Cell(38, 3,$valorDeclarado, 0, 0,'L'); 
+		PDF::Cell(38, 3,'$ '.$valorDeclarado, 0, 0,'L'); 
 		PDF::Ln(3);
 		PDF::Cell(18, 3,"Valor envío:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$valorEnvio, 0, 0,'L'); 
+		PDF::Cell(38, 3,'$ '.$valorEnvio, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor domicilio:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$valorDomicilio, 0, 0,'L'); 
+		PDF::Cell(38, 3,'$ '.$valorDomicilio, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor Seguro:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$valorSeguro, 0, 0,'L'); 
+		PDF::Cell(38, 3,'$ '.$valorSeguro, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor Total:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$valorTotal, 0, 0,'L'); 
+		PDF::Cell(38, 3,'$ '.$valorTotal, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::SetFont('helvetica','',7);

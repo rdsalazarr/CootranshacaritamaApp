@@ -28,10 +28,10 @@ export default function Show({data}){
     useEffect(()=>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/despacho/encomienda/show/general', {codigo:formData.codigo}).then(res=>{ 
+        instance.post('/admin/despacho/encomienda/show/general', {codigo:formData.codigo}).then(res=>{
             setCambiosEstadoEncomienda(res.cambiosEstadoEncomienda);
-            let encomienda                          = res.encomienda;      
-            newFormData.tipoIdentificacionRemitente = encomienda.tipideid;
+            let encomienda                          = res.encomienda;
+            newFormData.tipoIdentificacionRemitente = encomienda.tipoIdentificacionRemitente;
             newFormData.documentoRemitente          = encomienda.perserdocumento;
             newFormData.primerNombreRemitente       = encomienda.perserprimernombre;
             newFormData.segundoNombreRemitente      = encomienda.persersegundonombre;
@@ -40,7 +40,7 @@ export default function Show({data}){
             newFormData.direccionRemitente          = encomienda.perserdireccion;
             newFormData.correoRemitente             = encomienda.persercorreoelectronico;
             newFormData.telefonoCelularRemitente    = encomienda.persernumerocelular;
-            newFormData.tipoIdentificacionDestino   = encomienda.tipideidDestino;
+            newFormData.tipoIdentificacionDestino   = encomienda.tipoIdentificacionDestino;
             newFormData.documentoDestino            = encomienda.perserdocumentoDestino;
             newFormData.primerNombreDestino         = encomienda.perserprimernombreDestino;
             newFormData.segundoNombreDestino        = encomienda.persersegundonombreDestino;

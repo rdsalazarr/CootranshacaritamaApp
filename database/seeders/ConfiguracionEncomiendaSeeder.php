@@ -22,7 +22,7 @@ class ConfiguracionEncomiendaSeeder extends Seeder
             'conencporcentajeseguro'        => '1.0',
             'conencporcencomisionempresa'   => '10.0',
             'conencporcencomisionagencia'   => '20.0',
-            'conencporcencomisionconductor' => '70.0',
+            'conencporcencomisionvehiculo'  => '70.0',
             'created_at'                    => $fechaHoraActual,
             'updated_at'                    => $fechaHoraActual,
         ]);

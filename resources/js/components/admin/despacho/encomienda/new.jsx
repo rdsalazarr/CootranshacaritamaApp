@@ -46,6 +46,7 @@ export default function New({data, tipo}){
     }
 
     const handleSubmit = () =>{
+        console.log("listo para enviar");
         setLoader(true);
         instance.post('/admin/despacho/encomienda/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -75,7 +76,7 @@ export default function New({data, tipo}){
         let documento                           = (e.target.name === 'documentoRemitente' ) ? e.target.value : formData.documentoRemitente ;
         newFormData.tipoIdentificacionRemitente = tpIdentificacion;
         newFormData.documentoRemitente          = documento;
-       if (tpIdentificacion !=='' && documento !==''){
+       if (tpIdentificacion !=='' && documento !== ''){
             setLoader(true);
             instance.post('/admin/despacho/encomienda/consultar/datos/persona', {tipoIdentificacion:tpIdentificacion, documento: documento}).then(res=>{
                 if(res.success){
@@ -101,7 +102,7 @@ export default function New({data, tipo}){
                 setLoader(false); 
             })
         }
-        setEsEmpresaRemitente((e.target.value === 5) ? true : false);
+        setEsEmpresaRemitente((tpIdentificacion === 5) ? true : false);
         setFormData(newFormData);
     }
 
@@ -111,7 +112,7 @@ export default function New({data, tipo}){
         let documento                         = (e.target.name === 'documentoDestino' ) ? e.target.value : formData.documentoDestino ;
         newFormData.tipoIdentificacionDestino = tpIdentificacion;
         newFormData.documentoDestino          = documento;
-       if (tpIdentificacion !=='' && documento !==''){
+       if (tpIdentificacion !=='' && documento !== ''){
             setLoader(true);
             instance.post('/admin/despacho/encomienda/consultar/datos/persona', {tipoIdentificacion:tpIdentificacion, documento: documento}).then(res=>{
                 if(res.success){
@@ -137,7 +138,7 @@ export default function New({data, tipo}){
                 setLoader(false);
             })
         }
-        setEsEmpresaDestino((e.target.value === 5) ? true : false);
+        setEsEmpresaDestino((tpIdentificacion === 5) ? true : false);
         setFormData(newFormData);
     }
 
@@ -208,20 +209,20 @@ export default function New({data, tipo}){
                 newFormData.tipoIdentificacionRemitente = encomienda.tipideid;
                 newFormData.documentoRemitente          = encomienda.perserdocumento;
                 newFormData.primerNombreRemitente       = encomienda.perserprimernombre;
-                newFormData.segundoNombreRemitente      = encomienda.persersegundonombre;
-                newFormData.primerApellidoRemitente     = encomienda.perserprimerapellido;
-                newFormData.segundoApellidoRemitente    = encomienda.persersegundoapellido;
+                newFormData.segundoNombreRemitente      = (encomienda.persersegundonombre !== null) ? encomienda.persersegundonombre : '';
+                newFormData.primerApellidoRemitente     = (encomienda.perserprimerapellido !== null) ? encomienda.perserprimerapellido : '';
+                newFormData.segundoApellidoRemitente    = (encomienda.persersegundoapellido !== null) ? encomienda.persersegundoapellido : '';
                 newFormData.direccionRemitente          = encomienda.perserdireccion;
-                newFormData.correoRemitente             = encomienda.persercorreoelectronico;
+                newFormData.correoRemitente             = (encomienda.persercorreoelectronico !== null) ? encomienda.persercorreoelectronico : '';
                 newFormData.telefonoCelularRemitente    = encomienda.persernumerocelular;
                 newFormData.tipoIdentificacionDestino   = encomienda.tipideidDestino;
                 newFormData.documentoDestino            = encomienda.perserdocumentoDestino;
                 newFormData.primerNombreDestino         = encomienda.perserprimernombreDestino;
-                newFormData.segundoNombreDestino        = encomienda.persersegundonombreDestino;
-                newFormData.primerApellidoDestino       = encomienda.perserprimerapellidoDestino;
-                newFormData.segundoApellidoDestino      = encomienda.persersegundoapellidoDestino;
+                newFormData.segundoNombreDestino        = (encomienda.persersegundonombreDestino !== null) ? encomienda.persersegundonombreDestino : '';
+                newFormData.primerApellidoDestino       = (encomienda.perserprimerapellidoDestino !== null) ? encomienda.perserprimerapellidoDestino : '';
+                newFormData.segundoApellidoDestino      = (encomienda.persersegundoapellidoDestino !== null) ? encomienda.persersegundoapellidoDestino : '';
                 newFormData.direccionDestino            = encomienda.perserdireccionDestino;
-                newFormData.correoDestino               = encomienda.persercorreoelectronicoDestino;
+                newFormData.correoDestino               = (encomienda.persercorreoelectronicoDestino !== null) ? encomienda.persercorreoelectronicoDestino : '';
                 newFormData.telefonoCelularDestino      = encomienda.persernumerocelularDestino;
                 newFormData.departamentoOrigen          = encomienda.depaidorigen;
                 newFormData.municipioOrigen             = encomienda.muniidorigen;
@@ -231,14 +232,12 @@ export default function New({data, tipo}){
                 newFormData.cantidad                    = encomienda.encocantidad;
                 newFormData.valorDeclarado              = encomienda.encovalordeclarado;
                 newFormData.valorEnvio                  = encomienda.encovalorenvio;
-                newFormData.valorDomicilio              = encomienda.encovalordomicilio;
+                newFormData.valorDomicilio              = (encomienda.encovalordomicilio !== null) ? encomienda.encovalordomicilio : '';
                 newFormData.contenido                   = encomienda.encocontenido;
                 newFormData.observaciones               = encomienda.encoobservacion;
                 newFormData.ruta                        = encomienda.plarutid;
-                let valorSeguro                         = encomienda.encovalordeclarado * 0.01;
-                let valorTotal                          = Number(encomienda.encovalorenvio) + Number(encomienda.encovalordomicilio) + Number(valorSeguro);
-                newFormData.valorSeguro                 = formatearNumero(valorSeguro);
-                newFormData.valorTotal                  = formatearNumero(valorTotal);
+                newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
+                newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal); 
                 setFormData(newFormData);
 
                 let municipiosOrigen = [];
@@ -284,6 +283,25 @@ export default function New({data, tipo}){
                         <Box className='frmDivision'>
                             Información de la encomienda
                         </Box>
+                    </Grid>
+
+                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <SelectValidator
+                            name={'ruta'}
+                            value={formData.ruta}
+                            label={'Ruta'}
+                            className={'inputGeneral'}
+                            variant={"standard"} 
+                            inputProps={{autoComplete: 'off'}}
+                            validators={["required"]}
+                            errorMessages={["Debe hacer una selección"]}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value={""}>Seleccione</MenuItem>
+                            {planillaRutas.map(res=>{
+                                return <MenuItem value={res.plarutid} key={res.plarutid} >{res.nombreRuta}</MenuItem>
+                            })}
+                        </SelectValidator>
                     </Grid>
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
@@ -364,25 +382,6 @@ export default function New({data, tipo}){
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <SelectValidator
-                            name={'ruta'}
-                            value={formData.ruta}
-                            label={'Ruta'}
-                            className={'inputGeneral'}
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {planillaRutas.map(res=>{
-                                return <MenuItem value={res.plarutid} key={res.plarutid} >{res.nombreRuta}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
                             name={'tipoEncomienda'}
                             value={formData.tipoEncomienda}
                             label={'Tipo de encomienda'}
@@ -448,8 +447,8 @@ export default function New({data, tipo}){
                             label={"Valor domicilio"}
                             value={formData.valorDomicilio}
                             type={'numeric'}
-                            require={['required', 'maxStringLength:8']}
-                            error={['Campo obligatorio','Número máximo permitido es el 99999999']}
+                            require={['maxStringLength:8']}
+                            error={['Número máximo permitido es el 99999999']}
                             onChange={calcularValorEncomienda}
                         />
                     </Grid>
@@ -757,8 +756,8 @@ export default function New({data, tipo}){
                             className={'inputGeneral'} 
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off', maxLength: 80}}
-                            validators={['required', 'isEmail']}
-                            errorMessages={['Campo requerido', 'Correo no válido']}
+                            validators={['isEmail']}
+                            errorMessages={['Correo no válido']}
                             type={"email"}
                             onChange={handleChange}
                         />
