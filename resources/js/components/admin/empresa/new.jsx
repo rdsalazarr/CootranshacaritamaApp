@@ -20,7 +20,7 @@ export default function New({data}){
                         horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '',
                         url: data.emprurl, codigoPostal: data.emprcodigopostal,  
                         logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: '',
-                        valorMinimoEnvio: '', porcentajeSeguro:'', porcentajeComisionEmpresa:'', porcentajeComisionAgencia:'', 
+                        valorMinimoEnvio: '', valorMinimoDeclarado:'', porcentajeSeguro:'', porcentajeComisionEmpresa:'', porcentajeComisionAgencia:'', 
                         porcentajeComisionVehiculo:''
                     });  
 
@@ -95,6 +95,7 @@ export default function New({data}){
         instance.get('/admin/empresa/list/datos').then(res=>{
             let configuracionEncomienda             = res.configuracionEncomienda;
             newFormData.valorMinimoEnvio            = configuracionEncomienda.conencvalorminimoenvio;
+            newFormData.valorMinimoDeclarado        = configuracionEncomienda.conencvalorminimodeclarado;            
             newFormData.porcentajeSeguro            = configuracionEncomienda.conencporcentajeseguro;
             newFormData.porcentajeComisionEmpresa   = configuracionEncomienda.conencporcencomisionempresa;
             newFormData.porcentajeComisionAgencia   = configuracionEncomienda.conencporcencomisionagencia;
@@ -462,6 +463,19 @@ export default function New({data}){
                                     name={"valorMinimoEnvio"}
                                     label={"Valor mínimo envío"}
                                     value={formData.valorMinimoEnvio}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:8']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 99999999']}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <NumberValidator fullWidth
+                                    id={"valorMinimoDeclarado"}
+                                    name={"valorMinimoDeclarado"}
+                                    label={"Valor mínimo declarado"}
+                                    value={formData.valorMinimoDeclarado}
                                     type={'numeric'}
                                     require={['required', 'maxStringLength:8']}
                                     error={['Campo obligatorio','Número máximo permitido es el 99999999']}

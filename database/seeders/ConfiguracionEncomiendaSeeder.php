@@ -19,6 +19,7 @@ class ConfiguracionEncomiendaSeeder extends Seeder
         DB::table('configuracionencomienda')->insert([
             'conencid'                      => '1',
             'conencvalorminimoenvio'        => '3900',
+            'conencvalorminimodeclarado'    => '10000',
             'conencporcentajeseguro'        => '1.0',
             'conencporcencomisionempresa'   => '10.0',
             'conencporcencomisionagencia'   => '20.0',

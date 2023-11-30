@@ -70,6 +70,7 @@ use App\Http\Controllers\Admin\Cartera\ShowSolicitudCreditoController;
 use App\Http\Controllers\Admin\Cartera\GestionCobroCarteraController;
 
 use App\Http\Controllers\Admin\Despacho\RutaController;
+use App\Http\Controllers\Admin\Despacho\TiqueteController;
 use App\Http\Controllers\Admin\Despacho\EncomiendaController;
 use App\Http\Controllers\Admin\Despacho\PlanillaRutaController;
 use App\Http\Controllers\Admin\Despacho\ContratoServicioEspecialController;
@@ -444,7 +445,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/encomienda/consultar/datos/persona', [EncomiendaController::class, 'consultarPersona']);
             Route::post('/encomienda/salve', [EncomiendaController::class, 'salve']);
             Route::post('/encomienda/show/general', [EncomiendaController::class, 'show']);
-            Route::post('/encomienda/visualizar/PDF', [EncomiendaController::class, 'verPlanilla']);
+            Route::post('/encomienda/visualizar/PDF', [EncomiendaController::class, 'verFactura']);
+
+            Route::post('/tiquete/list', [TiqueteController::class, 'index'])->middleware('security:admin/despacho/tiquetes');
+            Route::post('/tiquete/listar/datos', [TiqueteController::class, 'datos']);
+            Route::post('/tiquete/consultar/datos/persona', [TiqueteController::class, 'consultarPersona']);
+            Route::post('/tiquete/salve', [TiqueteController::class, 'salve']);
+            Route::post('/tiquete/show/general', [TiqueteController::class, 'show']);
+            Route::post('/tiquete/visualizar/PDF', [TiqueteController::class, 'verFactura']);
 
             Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index'])->middleware('security:admin/despacho/servicioEspecial');
             Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);

@@ -37,7 +37,7 @@ class EmpresaController extends Controller
                    ->whereIn('carlabid', [1, 4])->get();
 
         $mensajeImpresiones      = DB::table('mensajeimpresion')->select('menimpid','menimpnombre','menimpvalor')->OrderBy('menimpnombre')->get();
-        $configuracionEncomienda = DB::table('configuracionencomienda')->select('conencid','conencvalorminimoenvio','conencporcentajeseguro',
+        $configuracionEncomienda = DB::table('configuracionencomienda')->select('conencid','conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro',
                                     'conencporcencomisionempresa', 'conencporcencomisionagencia', 'conencporcencomisionvehiculo')
                                     ->where('conencid', 1)->OrderBy('conencid')->first();
 
@@ -109,6 +109,7 @@ class EmpresaController extends Controller
 
             $configuracionencomienda                               = ConfiguracionEncomienda::findOrFail(1);
             $configuracionencomienda->conencvalorminimoenvio       = $request->valorMinimoEnvio;
+            $configuracionencomienda->conencvalorminimodeclarado   = $request->valorMinimoDeclarado;
             $configuracionencomienda->conencporcentajeseguro       = $request->porcentajeSeguro;
             $configuracionencomienda->conencporcencomisionempresa  = $request->porcentajeComisionEmpresa;
             $configuracionencomienda->conencporcencomisionagencia  = $request->porcentajeComisionAgencia;

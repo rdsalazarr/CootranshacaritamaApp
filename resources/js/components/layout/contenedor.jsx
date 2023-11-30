@@ -64,6 +64,7 @@ import Rutas from "../admin/despacho/ruta/list";
 import ServicoEspecial from "../admin/despacho/servicioEspecial/list";
 import Planillas from "../admin/despacho/planilla/list";
 import Encomiendas from "../admin/despacho/encomienda/list";
+import Tiquetes from "../admin/despacho/tiquete/list";
 
 import Rutas1 from "../admin/vehiculos/tipos/vehiculo/old/list1";
 import Rutas2 from "../admin/vehiculos/tipos/vehiculo/old/list2";
@@ -153,7 +154,7 @@ const componenteMenu = [
             {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas1 /> },
             {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
             {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},*/
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas />},
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <Tiquetes />},
             {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas1 />},
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas2 />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas3 />},
@@ -205,12 +206,12 @@ const menuComponente = [
     {id:39,componente : <Rutas />},
     {id:40,componente : <Planillas />},
     {id:41,componente : <Encomiendas />},
-    {id:42,componente : <ServicoEspecial />},
+    {id:42,componente : <ServicoEspecial />},    
+    {id:43,componente : <Tiquetes />},
     
-    {id:43,componente : <Rutas1 />},
     {id:44,componente : <Rutas2 />},
     {id:45,componente : <Rutas3 />},
-    {id:46,componente : <EnConstruccion />},
+    {id:46,componente : <Rutas1 />},
     {id:47,componente : <EnConstruccion />},
     {id:48,componente : <EnConstruccion />},
     {id:49,componente : <EnConstruccion />},

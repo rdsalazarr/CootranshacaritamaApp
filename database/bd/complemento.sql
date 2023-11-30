@@ -75,3 +75,12 @@ INSERT INTO municipio (muniid, munidepaid, municodigo, muninombre,created_at,upd
 (1131, 9, '20017', 'La loma', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (1132, 9, '20018', 'La mata', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (1133, 9, '20019', 'Rincon Hondo', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+ALTER TABLE `configuracionencomienda` ADD `conencvalorminimodeclarado` DECIMAL(10.0) NULL COMMENT 'Valor mínimo declarado del envío de la encomienda' AFTER `conencvalorminimoenvio`;
+UPDATE `configuracionencomienda` SET `conencvalorminimodeclarado` = '10000', `created_at` = NULL, `updated_at` = NULL WHERE `configuracionencomienda`.`conencid` = 1;
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(43, 9, 'Tiquetes', 'Getionar Tiquetes', 'admin/despacho/tiquetes', 'card_travel_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(43, 1, 43);

@@ -11,6 +11,6 @@ class ConfiguracionEncomienda extends Model
 
     protected $table      = 'configuracionencomienda';
     protected $primaryKey = 'conencid';
-    protected $fillable   = ['conencvalorminimoenvio','conencporcentajeseguro', 'conencporcencomisionempresa',
+    protected $fillable   = ['conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro', 'conencporcencomisionempresa',
                              'conencporcencomisionagencia', 'conencporcencomisionvehiculo'];
 }

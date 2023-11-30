@@ -19,7 +19,7 @@ export default function New({data, tipo}){
                                               direccionDestino:'',       correoDestino:'',               telefonoCelularDestino:'',    departamentoOrigen:'',
                                               municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
                                               cantidad:'',               valorDeclarado :'',             valorEnvio:'',                valorDomicilio:'',
-                                              contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',    
+                                              contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',
                                               ruta:'',                   valorSeguro:'',                 valorTotal:'',                tipo:tipo});
 
     const [configuracionEncomienda, setConfiguracionEncomienda] = useState([]);
@@ -29,7 +29,6 @@ export default function New({data, tipo}){
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
     const [tiposEncomiendas, setTiposEncomiendas] = useState([]);
     const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
-    const [departamentos, setDepartamentos] = useState([]);
     const [planillaRutas, setPlanillaRutas] = useState([]);
     const [idEncomienda , setIdEncomienda] = useState(0); 
     const [abrirModal, setAbrirModal] = useState(false);
@@ -142,33 +141,41 @@ export default function New({data, tipo}){
         setFormData(newFormData);
     }
 
-    const consultarMunicipioOrigen = (e) =>{
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-        let municipiosOrigen = [];
-        let deptoOrigen      = e.target.value;
+    const consultarMunicipios = (e) =>{
+        let newFormData              = {...formData}
+        const planillaRutasFiltradas = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
+        let depaIdOrigen             = planillaRutasFiltradas[0].depaidorigen;
+        let depaIdDestino            = planillaRutasFiltradas[0].depaiddestino;
+        let muniIdOrigen             = planillaRutasFiltradas[0].muniidorigen;
+        let muniIdDestino            = planillaRutasFiltradas[0].muniiddestino;
+
+        let municipiosOrigen = []; 
         municipios.forEach(function(muni){ 
-            if(muni.munidepaid === deptoOrigen){
+            if(muni.munidepaid === depaIdOrigen){
                 municipiosOrigen.push({
                     muniid:     muni.muniid,
                     muninombre: muni.muninombre
                 });
             }
         });
-        setMunicipiosOrigen(municipiosOrigen);
-    }
 
-    const consultarMunicipioDestino = (e) =>{
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
         let municipiosDestino = [];
-        let deptoDestino      = e.target.value;
         municipios.forEach(function(muni){ 
-            if(muni.munidepaid === deptoDestino){
+            if(muni.munidepaid === depaIdDestino){
                 municipiosDestino.push({
                     muniid:     muni.muniid,
                     muninombre: muni.muninombre
                 });
             }
         });
+
+        newFormData.ruta                = e.target.value;
+        newFormData.municipioOrigen     = muniIdOrigen;
+        newFormData.municipioDestino    = muniIdDestino;
+        newFormData.departamentoOrigen  = depaIdOrigen;
+        newFormData.departamentoDestino = depaIdDestino;
+        setFormData(newFormData);
+        setMunicipiosOrigen(municipiosOrigen);
         setMunicipiosDestino(municipiosDestino);
     }
 
@@ -196,12 +203,21 @@ export default function New({data, tipo}){
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/despacho/encomienda/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
+            let valorEnvio             =  res.configuracionEncomienda.conencvalorminimoenvio
+            let valorDeclarado         = res.configuracionEncomienda.conencvalorminimodeclarado;
+            let valorSeguro            = (valorDeclarado * res.configuracionEncomienda.conencporcentajeseguro) / 100;
+            let valorTotal             = Number(valorEnvio) + Number(valorSeguro);
+            newFormData.valorDeclarado = valorDeclarado;
+            newFormData.valorEnvio     = valorEnvio;
+            newFormData.valorSeguro    = formatearNumero(valorSeguro);
+            newFormData.valorTotal     = formatearNumero(valorTotal);
+
             setConfiguracionEncomienda(res.configuracionEncomienda);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTiposEncomiendas(res.tiposEncomiendas);
             setPlanillaRutas(res.planillaRutas);
-            setDepartamentos(res.departamentos);
             setMunicipios(res.municipios);
+
             if(tipo === 'U'){
                 let encomienda                          = res.encomienda;
                 newFormData.personaIdRemitente          = encomienda.perseridremitente;
@@ -237,8 +253,7 @@ export default function New({data, tipo}){
                 newFormData.observaciones               = encomienda.encoobservacion;
                 newFormData.ruta                        = encomienda.plarutid;
                 newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
-                newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal); 
-                setFormData(newFormData);
+                newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal);
 
                 let municipiosOrigen = [];
                 let deptoOrigen      = encomienda.depaidorigen;
@@ -266,6 +281,8 @@ export default function New({data, tipo}){
                 setEsEmpresaRemitente((encomienda.tipideid === 5) ? true : false);
                 setEsEmpresaDestino((encomienda.tipideidDestino === 5) ? true : false);
             }
+
+            setFormData(newFormData);
             setLoader(false);
         })
     }, []);
@@ -295,30 +312,11 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange}
+                            onChange={consultarMunicipios}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {planillaRutas.map(res=>{
                                 return <MenuItem value={res.plarutid} key={res.plarutid} >{res.nombreRuta}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'departamentoOrigen'}
-                            value={formData.departamentoOrigen}
-                            label={'Departamento origen'}
-                            className={'inputGeneral'}
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Debe hacer una selección"]}
-                            onChange={consultarMunicipioOrigen}
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {departamentos.map(res=>{
-                                return <MenuItem value={res.depaid} key={res.depaid} >{res.depanombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
@@ -333,30 +331,11 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange} 
+                            onChange={handleChange}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosOrigen.map(res=>{
                                 return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'departamentoDestino'}
-                            value={formData.departamentoDestino}
-                            label={'Departamento destino'}
-                            className={'inputGeneral'}
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Debe hacer una selección"]}
-                            onChange={consultarMunicipioDestino}
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {departamentos.map(res=>{
-                                return <MenuItem value={res.depaid} key={res.depaid} >{res.depanombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
@@ -789,10 +768,10 @@ export default function New({data, tipo}){
             </ValidatorForm>
 
             <ModalDefaultAuto
-                title   = {'Visualizar PDF factura de encomienda'} 
+                title   = {'Visualizar factura en PDF de encomienda'} 
                 content = {<VisualizarPdf id={idEncomienda} />} 
                 close   = {() =>{setAbrirModal(false);}} 
-                tam     = 'mediumFlot' 
+                tam     = 'smallFlot'
                 abrir   = {abrirModal}
             />
         </Box>

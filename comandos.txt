@@ -129,6 +129,9 @@ php artisan make:migration create_persona_servicio
 php artisan make:migration create_encomienda
 php artisan make:migration create_encomienda_cambio_estado
 
+php artisan make:migration create_tiquete
+php artisan make:migration create_tiquete_puesto
+
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
 php artisan make:model IngresoSistema
@@ -232,6 +235,8 @@ php artisan make:model Despacho\Encomienda
 php artisan make:model Despacho\PersonaServicio
 php artisan make:model Despacho\EncomiendaCambioEstado
 
+php artisan make:model Despacho\Tiquete
+php artisan make:model Despacho\TiquetePuesto
 
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
@@ -338,6 +343,7 @@ php artisan make:controller Admin\Despacho\ContratoServicioEspecialController
 php artisan make:controller Admin\Despacho\RutaController
 php artisan make:controller Admin\Despacho\EncomiendaController
 php artisan make:controller Admin\Despacho\PlanillaRutaController
+php artisan make:controller Admin\Despacho\TiqueteController
 php artisan make:controller Admin\DependenciaController
 
 php artisan make:middleware SecurityMiddleware

@@ -60,29 +60,29 @@ class EncomiendaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
-        $departamentos           = DB::table('departamento')->select('depaid','depanombre')->where('depahacepresencia', true)->orderBy('depanombre')->get();
+        $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();       
         $municipios              = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
         $tipoIdentificaciones    = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
         $configuracionEncomienda = DB::table('configuracionencomienda')
-                                            ->select('conencvalorminimoenvio','conencporcentajeseguro','conencporcencomisionempresa',
+                                            ->select('conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro','conencporcencomisionempresa',
                                             'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
 
         $planillaRutas        = DB::table('planillaruta as pr')
-                                ->select('pr.plarutid',DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"))
-                                ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                                ->join('municipio as mo', function($join)
-                                {
-                                    $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                    $join->on('mo.muniid', '=', 'r.muniidorigen');
-                                })
-                                ->join('municipio as md', function($join)
-                                {
-                                    $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                    $join->on('md.muniid', '=', 'r.muniiddestino');
-                                })
-                                ->where('pr.plarutdespachada', false)
-                                ->get();
+                                    ->select('pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino',
+                                    DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"))
+                                    ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                                    ->join('municipio as mo', function($join)
+                                    {
+                                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                        $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                    })
+                                    ->join('municipio as md', function($join)
+                                    {
+                                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                        $join->on('md.muniid', '=', 'r.muniiddestino');
+                                    })
+                                    ->where('pr.plarutdespachada', false)
+                                    ->get();
 
         $encomienda           = [];
         if($request->tipo === 'U'){
@@ -100,9 +100,8 @@ class EncomiendaController extends Controller
                                 ->where('e.encoid', $request->codigo)->first();
         }
 
-        return response()->json(["tiposEncomiendas"       => $tiposEncomiendas,        "tipoIdentificaciones" => $tipoIdentificaciones, "departamentos" => $departamentos, 
-                                "configuracionEncomienda" => $configuracionEncomienda, "municipios"           => $municipios,           "encomienda"    => $encomienda,                  
-                                "planillaRutas"           => $planillaRutas]);
+        return response()->json(["tiposEncomiendas"       => $tiposEncomiendas,        "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas" => $planillaRutas,
+                                "configuracionEncomienda" => $configuracionEncomienda, "municipios"           => $municipios,           "encomienda"    => $encomienda]);
     }
 
     public function consultarPersona(Request $request)
@@ -164,7 +163,7 @@ class EncomiendaController extends Controller
         try {
 
             //Consulto los valores de la encomienda
-            $configuracionencomienda     = DB::table('configuracionencomienda')
+            $configuracionencomienda    = DB::table('configuracionencomienda')
                                             ->select('conencvalorminimoenvio','conencporcentajeseguro','conencporcencomisionempresa',
                                             'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
 
@@ -319,7 +318,7 @@ class EncomiendaController extends Controller
         return response()->json(["encomienda" => $encomienda, "cambiosEstadoEncomienda" => $cambiosEstadoEncomienda ]);
     }
 
-    public function verPlanilla(Request $request)
+    public function verFactura(Request $request)
     {
 		$this->validate(request(),['codigo' => 'required']);
 		try{

@@ -100,7 +100,7 @@ class PlanillaRutaController extends Controller
         try {
             $fechaHoraActual                       = Carbon::now();
             if($request->tipo === 'I'){
-               $planillaruta->agenid                   = auth()->user()->agenid;
+                $planillaruta->agenid                  = auth()->user()->agenid;
                 $planillaruta->usuaidregistra          = Auth::id();
                 $planillaruta->plarutfechahoraregistro = $fechaHoraActual;
                 $planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo(); 
@@ -176,6 +176,11 @@ class PlanillaRutaController extends Controller
 
             $encomiendas      = DB::table('encomienda')->select('encoid')->where('plarutid', $request->codigo)->get();
             foreach($encomiendas as $encomienda){
+
+                $encomienda           = Encomienda::findOrFail($encomienda->encoid);
+                $encomienda->tiesenid = 'T';
+                $encomienda->save();
+
                 $encomiendacambioestado 				   = new EncomiendaCambioEstado();
                 $encomiendacambioestado->encoid            = $encomienda->encoid;
                 $encomiendacambioestado->tiesenid          = 'T';
@@ -191,7 +196,7 @@ class PlanillaRutaController extends Controller
 		}
     }
 
-    public function verPlanilla(Request $request)
+    public function verFactura(Request $request)
     {
 		$this->validate(request(),['codigo'   => 'required']);
 		try{

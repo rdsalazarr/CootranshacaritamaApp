@@ -22,9 +22,9 @@ export default function List(){
                         <VisualizarPdf id={(tipo === 3) ? modal.data.encoid : null} />
                     ];
 
-    const tituloModal = ['Nueva encomienda','Editar encomienda',
-                        'Visualizar información general de la encomienda',
-                        'Visualizar factura en PDF de encomienda'];
+    const tituloModal = ['Nuevo tiquete','Editar tiquete',
+                        'Visualizar información general del tiquete',
+                        'Visualizar factura en PDF de tiquete'];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
@@ -33,7 +33,7 @@ export default function List(){
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/despacho/encomienda/list', {estado:'R', tipo:'REGISTRADO'}).then(res=>{
+        instance.post('/admin/despacho/tiquete/list', {estado:'R', tipo:'REGISTRADO'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 

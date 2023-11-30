@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('configuracionencomienda', function (Blueprint $table) {
             $table->tinyIncrements('conencid')->comment('Identificador de la tabla configuración encomienda'); 
             $table->decimal('conencvalorminimoenvio', 10, 0)->comment('Valor mínimo del envío de la encomienda');
+            $table->decimal('conencvalorminimodeclarado', 10, 0)->comment('Valor mínimo declarado del envío de la encomienda');
             $table->decimal('conencporcentajeseguro', 3, 0)->comment('Porcentaje del seguro del envío de la encomienda');
             $table->decimal('conencporcencomisionempresa', 3, 0)->comment('Porcentaje de comisión de la empresa del envío de la encomienda');
             $table->decimal('conencporcencomisionagencia', 3, 0)->comment('Porcentaje de comisión de la agencia del envío de la encomienda');
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */

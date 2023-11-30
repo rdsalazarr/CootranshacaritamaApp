@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('encomienda', function (Blueprint $table) {
             $table->increments('encoid')->unsigned()->comment('Identificador de la tabla encomienda');
-            $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia que esta generando la planilla');
+            $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia que esta registrando la encomienda');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea el registro de la encomienda');
             $table->integer('plarutid')->unsigned()->comment('Identificador de la planilla ruta');
             $table->integer('perseridremitente')->unsigned()->comment('Identificador de la persona que envia la encomienda');
@@ -41,6 +41,7 @@ return new class extends Migration
             $table->date('encofecharecibido')->nullable()->comment('Fecha de recibido de la encomienda');
             $table->boolean('encopagada')->default(false)->comment('Determina si la encomienda fue pagada');
             $table->timestamps();
+            $table->unique(['encoanio','encoconsecutivo'],'uk_encomienda');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenenco');
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuaenco');
             $table->foreign('plarutid')->references('plarutid')->on('planillaruta')->onUpdate('cascade')->index('fk_plarutenco');
