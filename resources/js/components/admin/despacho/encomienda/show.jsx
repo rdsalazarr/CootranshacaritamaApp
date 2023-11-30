@@ -61,10 +61,8 @@ export default function Show({data}){
             newFormData.contenido                   = encomienda.encocontenido;
             newFormData.observaciones               = encomienda.encoobservacion;
             newFormData.ruta                        = encomienda.nombreRuta;
-            let valorSeguro                         = encomienda.encovalordeclarado * 0.01;
-            let valorTotal                          = parseInt(encomienda.encovalorenvio) + parseInt(encomienda.encovalordomicilio) + parseInt(valorSeguro);
-            newFormData.valorSeguro                 = formatearNumero(valorSeguro);
-            newFormData.valorTotal                  = formatearNumero(valorTotal);
+            newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
+            newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal); 
             setFormData(newFormData);        
             setEsEmpresaRemitente((encomienda.tipideid === 5) ? true : false);
             setEsEmpresaDestino((encomienda.tipideidDestino === 5) ? true : false);
