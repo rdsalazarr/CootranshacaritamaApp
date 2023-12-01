@@ -45,7 +45,6 @@ export default function New({data, tipo}){
     }
 
     const handleSubmit = () =>{
-        console.log("listo para enviar");
         setLoader(true);
         instance.post('/admin/despacho/encomienda/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -141,27 +140,75 @@ export default function New({data, tipo}){
         setFormData(newFormData);
     }
 
-    const consultarMunicipios = (e) =>{
+    const consultarMunicipioOrigen = (e) =>{
         let newFormData              = {...formData}
         const planillaRutasFiltradas = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
         let depaIdOrigen             = planillaRutasFiltradas[0].depaidorigen;
-        let depaIdDestino            = planillaRutasFiltradas[0].depaiddestino;
         let muniIdOrigen             = planillaRutasFiltradas[0].muniidorigen;
+        let municipioOrigen          = planillaRutasFiltradas[0].municipioOrigen;
+        let depaIdDestino            = planillaRutasFiltradas[0].depaiddestino;
         let muniIdDestino            = planillaRutasFiltradas[0].muniiddestino;
+        let municipioDestino         = planillaRutasFiltradas[0].municipioDestino;
 
         let municipiosOrigen = []; 
         municipios.forEach(function(muni){ 
-            if(muni.munidepaid === depaIdOrigen){
+            if(muni.munidepaid === depaIdDestino){
                 municipiosOrigen.push({
                     muniid:     muni.muniid,
+                    munidepaid: muni.munidepaid,
                     muninombre: muni.muninombre
                 });
             }
         });
 
+        municipiosOrigen.push({
+            muniid:     muniIdOrigen,
+            munidepaid: depaIdOrigen,
+            muninombre: municipioOrigen
+        });
+
+        newFormData.ruta                = e.target.value;
+        newFormData.municipioOrigen     = muniIdOrigen;
+        newFormData.departamentoOrigen  = depaIdOrigen; 
+        newFormData.departamentoDestino = depaIdDestino;
+        newFormData.municipioDestino    = muniIdDestino; 
+
         let municipiosDestino = [];
         municipios.forEach(function(muni){ 
             if(muni.munidepaid === depaIdDestino){
+                municipiosDestino.push({
+                    muniid:     muni.muniid,
+                    munidepaid: muni.munidepaid,
+                    muninombre: muni.muninombre
+                });
+            }
+        });
+
+        municipiosDestino.push({
+            muniid:     muniIdDestino,
+            munidepaid: depaIdDestino,
+            muninombre: municipioDestino
+        });
+
+        setFormData(newFormData);
+        setMunicipiosOrigen(municipiosOrigen);
+        setMunicipiosDestino(municipiosDestino);
+    }
+
+    const consultarMunicipioDestino = (e) =>{
+        let newFormData                 = {...formData}
+        const municipiosOrigenFiltrados = municipiosOrigen.filter(mun => mun.muniid === e.target.value);
+        let depaIdOrigen                = municipiosOrigenFiltrados[0].munidepaid;   
+        newFormData.departamentoOrigen  = depaIdOrigen;
+        newFormData.municipioOrigen     = e.target.value;
+
+        const planillaRutasFiltradas    = planillaRutas.filter(planilla => planilla.plarutid === formData.ruta);
+        let muniIdDestino               = planillaRutasFiltradas[0].muniiddestino;
+        let municipioDestino            = planillaRutasFiltradas[0].municipioDestino;
+
+        let municipiosDestino = [];
+        municipios.forEach(function(muni){ 
+            if(muni.muniid !== e.target.value){
                 municipiosDestino.push({
                     muniid:     muni.muniid,
                     muninombre: muni.muninombre
@@ -169,13 +216,12 @@ export default function New({data, tipo}){
             }
         });
 
-        newFormData.ruta                = e.target.value;
-        newFormData.municipioOrigen     = muniIdOrigen;
-        newFormData.municipioDestino    = muniIdDestino;
-        newFormData.departamentoOrigen  = depaIdOrigen;
-        newFormData.departamentoDestino = depaIdDestino;
+        municipiosDestino.push({
+            muniid:     muniIdDestino,
+            muninombre: municipioDestino
+        });
+
         setFormData(newFormData);
-        setMunicipiosOrigen(municipiosOrigen);
         setMunicipiosDestino(municipiosDestino);
     }
 
@@ -312,7 +358,7 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={consultarMunicipios}
+                            onChange={consultarMunicipioOrigen}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {planillaRutas.map(res=>{
@@ -325,13 +371,13 @@ export default function New({data, tipo}){
                         <SelectValidator
                             name={'municipioOrigen'}
                             value={formData.municipioOrigen}
-                            label={'Municipio origen'}
+                            label={'Municipio nodo origen'}
                             className={'inputGeneral'}
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange}
+                            onChange={consultarMunicipioDestino}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosOrigen.map(res=>{
@@ -344,7 +390,7 @@ export default function New({data, tipo}){
                         <SelectValidator
                             name={'municipioDestino'}
                             value={formData.municipioDestino}
-                            label={'Municipio destino'}
+                            label={'Municipio nodo destino'}
                             className={'inputGeneral'}
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}

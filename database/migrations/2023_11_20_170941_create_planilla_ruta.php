@@ -20,11 +20,13 @@ return new class extends Migration
             $table->smallInteger('usuaidregistra')->unsigned()->comment('Identificador del usuario que rgistra la planilla');
             $table->smallInteger('usuaidrecibe')->unsigned()->nullable()->comment('Identificador del usuario que recibe la planilla');
             $table->dateTime('plarutfechahoraregistro')->comment('Fecha y hora actual en el que se registra la planilla');
-            $table->string('plarutconsecutivo', 6)->comment('Consecutivo de la planilla de la ruta');
+            $table->year('plarutanio', 4)->comment('Año en el cual se genera de la planilla de la ruta');
+            $table->string('plarutconsecutivo', 4)->comment('Consecutivo de la planilla de la ruta');
             $table->dateTime('plarutfechahorasalida')->nullable()->comment('Fecha y hora actual se entrega la planilla para la ruta');
             $table->dateTime('plarutfechahorarecibe')->nullable()->comment('Fecha y hora actual en que se recibe la planilla para la ruta');
             $table->boolean('plarutdespachada')->default(false)->comment('Determina si la ruta fue despachada');
             $table->timestamps();
+            $table->unique(['plarutanio','plarutconsecutivo'],'uk_planillaruta');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenplarut');
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutaplarut');
             $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehiplarut'); 

@@ -17,15 +17,14 @@ class TiqueteController extends Controller
     {
 		$this->validate(request(),['estado' => 'required']);
    
-        /*$data   = DB::table('tiquete as t')
-                    ->select('t.tiquid','t.rutaid', 't.tiqufechahoraregistro','pr.plarutfechahorasalida as fechaSalida',
+        $data   = DB::table('tiquete as t')
+                    ->select('t.tiquid','pr.rutaid', 't.tiqufechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaSalida',
                     'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
                     DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
                     DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                     DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
                             ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente") )
                     ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                    ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                     ->join('municipio as mo', function($join)
                     {
                         $join->on('mo.munidepaid', '=', 't.depaidorigen');
@@ -35,14 +34,14 @@ class TiqueteController extends Controller
                     {
                         $join->on('md.munidepaid', '=', 't.depaiddestino');
                         $join->on('md.muniid', '=', 't.muniiddestino');
-                    })                 
-                    ->join('personaservicio as ps', 'ps.perserid', '=', 'c.perserid')
+                    })
+                    ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                     ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                     ->where('pr.agenid', auth()->user()->agenid) 
                     ->where('pr.plarutdespachada', $request->estado)
-                    ->orderBy('pr.plarutid', 'Desc')->get();*/
-                    $data              = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+                    ->orderBy('pr.plarutid', 'Desc')->get();
+
         return response()->json(["data" => $data]);
     }
 
@@ -50,12 +49,19 @@ class TiqueteController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $municipios              = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
-        $tipoIdentificaciones    = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
+        $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+        $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
+        $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre')
+                                    ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
+                                    ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
+
+        $tarifaTiquetes         = DB::table('tarifatiquete as tt')
+                                    ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion')
+                                    ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')->get();
 
         $planillaRutas        = DB::table('planillaruta as pr')
-                                ->select('pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino',
-                                DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"))
+                                ->select('pr.rutaid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                 ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                 ->join('municipio as mo', function($join)
                                 {
@@ -71,8 +77,17 @@ class TiqueteController extends Controller
                                 ->get();
 
         $tiquete = [];
+        if($request->tipo === 'U'){
+            $tiquete  = DB::table('tiquete as t')
+                                ->select('r.tiquid','plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino',
+                                't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal',
+                                'psr.tipideid','psr.perserdocumento','psr.perserprimernombre','psr.persersegundonombre','psr.perserprimerapellido',
+                                'psr.persersegundoapellido','psr.perserdireccion', 'psr.persercorreoelectronico','psr.persernumerocelular')
+                                ->join('personaservicio as psr', 'psr.perserid', '=', 't.perserid')
+                                ->where('t.tiquid', $request->codigo)->first();
+        }
 
-        return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas" => $planillaRutas, 
+        return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas" => $planillaRutas, "tarifaTiquetes" => $tarifaTiquetes,
                                   "municipios"           => $municipios,           "tiquete"    => $tiquete]);
     }
 
@@ -99,32 +114,29 @@ class TiqueteController extends Controller
 	    $this->validate(request(),[
 			    'tipoIdentificacion'   => 'required|numeric',
 				'documento'            => 'required|string|min:6|max:15|unique:personaservicio,perserdocumento,'.$personaservicio->perserid.',perserid',
-				'primerNombreps'       => 'required|string|min:3|max:140',
-				'segundoNombreps'      => 'nullable|string|min:3|max:40',
-				'primerApellidops'     => 'nullable|string|min:4|max:40',
-				'segundoApellidops'    => 'nullable|string|min:4|max:40',
-				'direccionps'          => 'required|string|min:4|max:100',
-				'correops'             => 'nullable|email|string|max:80',
+				'primerNombre'       => 'required|string|min:3|max:140',
+				'segundoNombre'      => 'nullable|string|min:3|max:40',
+				'primerApellido'     => 'nullable|string|min:4|max:40',
+				'segundoApellido'    => 'nullable|string|min:4|max:40',
+				'direccion'          => 'required|string|min:4|max:100',
+				'correo'             => 'nullable|email|string|max:80',
 				'telefonoCelular'      => 'nullable|string|max:20',
                 'departamentoOrigen'   => 'required|numeric',
                 'municipioOrigen'      => 'required|numeric',
                 'departamentoDestino'  => 'required|numeric',
                 'municipioDestino'     => 'required|numeric',
                 'ruta'                 => 'required|numeric',
-				'cantidad'             => 'required|numeric|between:1,99',
+                'valorTiquete'         => 'required|numeric|between:1,99999999',
                 'valorDescuento'       => 'required|numeric|between:1,99999999',
-                'valorComision'        => 'required|numeric|between:1,99999999',
-                'valorSeguro'          => 'nullable|numeric|between:1,99999999',
                 'valorFondoReposicion' => 'nullable|numeric|between:1,99999999',
-                'valorEstampilla'      => 'nullable|numeric|between:1,99999999'
+                'valorTotal'           => 'nullable|numeric|between:1,99999999'
 	        ]);
 
         DB::beginTransaction();
         try {
      
             $fechaHoraActual         = Carbon::now();
-            $valorTotalTiquete       = intval($request->valorSeguro) + intval($request->valorEnvio) + intval($request->valorDomicilio);
-
+      
 			$personaservicio->tipideid                = $request->tipoIdentificacion;
 			$personaservicio->perserdocumento         = $request->documento;
 			$personaservicio->perserprimernombre      = mb_strtoupper($request->primerNombre,'UTF-8');
@@ -144,7 +156,7 @@ class TiqueteController extends Controller
 
             if($request->tipo === 'I'){
                 $anioActual                     = $fechaHoraActual->year;
-                $tiquete->agenid                = auth()->user()->agenid;   
+                $tiquete->agenid                = auth()->user()->agenid;
                 $tiquete->usuaid                = Auth::id();
                 $tiquete->tiqufechahoraregistro = $fechaHoraActual;
                 $tiquete->tiquanio              = $anioActual;
@@ -157,13 +169,11 @@ class TiqueteController extends Controller
 			$tiquete->muniidorigen             = $request->municipioOrigen;
 			$tiquete->depaiddestino            = $request->departamentoDestino;
             $tiquete->muniiddestino            = $request->municipioDestino;
-            $tiquete->tiqucantidad             = $request->cantidad;
+            $tiquete->tiqucantidad             = 2;
+            $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
-            $tiquete->tiquvalorcomision        = $request->valorComision;
-            $tiquete->tiquvalorseguro          = $request->valorSeguro;
             $tiquete->tiquvalorfondoreposicion = $request->valorFondoReposicion;
-            $tiquete->tiquvalorestampilla      = $request->valorEstampilla;
-            $tiquete->tiquvalortotal           = $valorTotalTiquete;
+            $tiquete->tiquvalortotal           = $request->valorTotal;
 			$tiquete->save();
 
             if($request->tipo === 'I'){

@@ -12,5 +12,5 @@ class PlanillaRuta extends Model
     protected $table      = 'planillaruta';
     protected $primaryKey = 'plarutid';
     protected $fillable   = ['agenid','rutaid','vehiid','condid','usuaidregistra','usuaidrecibe','plarutfechahoraregistro',
-                            'plarutconsecutivo','plarutfechahorasalida','plarutfechahorarecibe','plarutdespachada'];    
+                            'plarutanio','plarutconsecutivo','plarutfechahorasalida','plarutfechahorarecibe','plarutdespachada'];    
 }

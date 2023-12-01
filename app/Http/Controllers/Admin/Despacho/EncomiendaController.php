@@ -60,16 +60,20 @@ class EncomiendaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();       
-        $municipios              = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+        $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
+        $municipios              = DB::table('municipio as m')
+                                        ->select('m.muniid','m.munidepaid','m.muninombre')
+                                        ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
+                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
+
         $tipoIdentificaciones    = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
         $configuracionEncomienda = DB::table('configuracionencomienda')
                                             ->select('conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro','conencporcencomisionempresa',
                                             'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
 
         $planillaRutas        = DB::table('planillaruta as pr')
-                                    ->select('pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino',
-                                    DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"))
+                                    ->select('pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                    DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                     ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                     ->join('municipio as mo', function($join)
                                     {
@@ -161,6 +165,8 @@ class EncomiendaController extends Controller
 
         DB::beginTransaction();
         try {
+
+
 
             //Consulto los valores de la encomienda
             $configuracionencomienda    = DB::table('configuracionencomienda')

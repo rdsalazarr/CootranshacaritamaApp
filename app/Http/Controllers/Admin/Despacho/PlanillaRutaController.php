@@ -100,10 +100,12 @@ class PlanillaRutaController extends Controller
         try {
             $fechaHoraActual                       = Carbon::now();
             if($request->tipo === 'I'){
+                $anioActual                            = $fechaHoraActual->year;
                 $planillaruta->agenid                  = auth()->user()->agenid;
                 $planillaruta->usuaidregistra          = Auth::id();
                 $planillaruta->plarutfechahoraregistro = $fechaHoraActual;
-                $planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo(); 
+                //$planillaruta->plarutanio              = $anioActual;
+                $planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo($anioActual); 
             }
 
             $planillaruta->rutaid                  = $request->ruta;
@@ -232,9 +234,12 @@ class PlanillaRutaController extends Controller
         }
 	}
 
-    public function obtenerConsecutivo()
+    public function obtenerConsecutivo($anioActual)
 	{
-        $consecutivoPlanilla = DB::table('planillaruta')->select('plarutconsecutivo as consecutivo')->orderBy('plarutid', 'desc')->first();
+        $consecutivoPlanilla = DB::table('planillaruta')->select('plarutconsecutivo as consecutivo')
+                                                       // ->where('plarutanio', $anioActual)
+                                                        ->where('agenid', auth()->user()->agenid)
+                                                        ->orderBy('tiquid', 'Desc')->orderBy('plarutid', 'desc')->first();
         $consecutivo = ($consecutivoPlanilla === null) ? 1 : $consecutivoPlanilla->consecutivo + 1;
         return str_pad($consecutivo,  6, "0", STR_PAD_LEFT);
     }

@@ -43,15 +43,15 @@ export default function List(){
 
     if(loader){
         return <LoaderModal />
-    }
+    }                          
 
     return (
         <Box>
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario','Estado','Actualizar','Visualizar', 'PDF']}
-                    ver={["fechaHoraRegistro","tipoEncomienda","nombreRuta", "destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino","estado"]}
+                    titulo={['Fecha registo','Fecha salida','Número tiquete','Origen', 'Destino','Vehículo','Cliente','Actualizar','Visualizar', 'PDF']}
+                    ver={["fechaHoraRegistro","fechaSalida","numeroTiquete", "municipioOrigen","municipioDestino","nombreVehiculo","nombreCliente"]}
                     accion={[
                         {tipo: 'T', icono : 'add',            color: 'green',  funcion : (data)=>{edit(data, 0)} },
                         {tipo: 'B', icono : 'edit',           color: 'orange', funcion : (data)=>{edit(data, 1)} },

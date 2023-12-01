@@ -13,8 +13,6 @@ import Polizas from './polizas';
 import Soat from './soat';
 import Crt from './crt';
 
-
-
 export default function Search(){
 
     const [formData, setFormData] = useState({vehiculoId:''})
