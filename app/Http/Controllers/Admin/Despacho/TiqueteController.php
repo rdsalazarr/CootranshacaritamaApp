@@ -134,9 +134,9 @@ class TiqueteController extends Controller
 
         DB::beginTransaction();
         try {
-     
+
             $fechaHoraActual         = Carbon::now();
-      
+
 			$personaservicio->tipideid                = $request->tipoIdentificacion;
 			$personaservicio->perserdocumento         = $request->documento;
 			$personaservicio->perserprimernombre      = mb_strtoupper($request->primerNombre,'UTF-8');
@@ -210,25 +210,19 @@ class TiqueteController extends Controller
 		$this->validate(request(),['codigo' => 'required']);
 		try{
 
-            /*$encomienda  = DB::table('encomienda as e')
-                            ->select('e.encofechahoraregistro', DB::raw("CONCAT(e.encoanio,'',e.encoconsecutivo) as consecutivoEncomienda"),
-                            'e.encovalortotal', 'e.encovalorcomisionseguro',
+          $tiquete  = DB::table('tiquete as t')
+                            ->select('t.tiqufechahoraregistro', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'),t.tiquanio,'',t.tiquconsecutivo) as consecutivoEncomienda"),
+                            't.tiquvalortiquete', 't.tiquvalordescuento','t.tiquvalortotal',
                             DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"),
-                            'te.tipencnombre','do.depanombre as deptoOrigen', 'mor.muninombre as municipioOrigen', 'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino',
-                            'e.encocontenido','e.encocantidad','e.encovalordeclarado','e.encovalorenvio','e.encovalordomicilio', 
-                            DB::raw("CONCAT(psr.perserprimernombre,' ',if(psr.persersegundonombre is null ,'', psr.persersegundonombre),' ',
-                            psr.perserprimerapellido,' ',if(psr.persersegundoapellido is null ,' ', psr.persersegundoapellido)) as nombrePersonaRemitente"),
-                            'psr.perserdireccion', 'psr.persernumerocelular',
-                            DB::raw("CONCAT(psd.perserprimernombre,' ',if(psd.persersegundonombre is null ,'', psd.persersegundonombre),' ',
-                            psd.perserprimerapellido,' ',if(psd.persersegundoapellido is null ,' ', psd.persersegundoapellido)) as nombrePersonaDestinatario"),
-                            'psd.perserdireccion as direccionDestino',  'psd.persernumerocelular as numeroCelularDestino',
+                           'mor.muninombre as municipioOrigen',  'mde.muninombre as municipioDestino',
+                            DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                            ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersona"),
+                            'ps.perserdireccion', 'ps.persernumerocelular',
                             DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 'a.agennombre', 'a.agendireccion',
                             DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"),
-                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'ENCOMIENDAS') AS mensajeEncomienda"))
-                            ->join('personaservicio as psr', 'psr.perserid', '=', 'e.perseridremitente')
-                            ->join('personaservicio as psd', 'psd.perserid', '=', 'e.perseriddestino')
-                            ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
-                            ->join('planillaruta as pr', 'pr.plarutid', '=', 'e.plarutid')
+                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'TIQUETES') AS mensajeTiquete"))
+                            ->join('personaservicio as ps', 'psperserid', '=', 't.perserid')
+                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
                             ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                             ->join('municipio as mo', function($join)
                             {
@@ -239,53 +233,44 @@ class TiqueteController extends Controller
                             {
                                 $join->on('md.munidepaid', '=', 'r.depaiddestino');
                                 $join->on('md.muniid', '=', 'r.muniiddestino');
-                            })
-                            ->join('departamento as do', 'do.depaid', '=', 'e.depaidorigen')
+                            })               
                             ->join('municipio as mor', function($join)
                             {
-                                $join->on('mor.munidepaid', '=', 'e.depaidorigen');
-                                $join->on('mor.muniid', '=', 'e.muniidorigen');
-                            })
-                            ->join('departamento as dd', 'dd.depaid', '=', 'e.depaiddestino')
+                                $join->on('mor.munidepaid', '=', 't.depaidorigen');
+                                $join->on('mor.muniid', '=', 't.muniidorigen');
+                            })                          
                             ->join('municipio as mde', function($join)
                             {
-                                $join->on('mde.munidepaid', '=', 'e.depaiddestino');
-                                $join->on('mde.muniid', '=', 'e.muniiddestino');
+                                $join->on('mde.munidepaid', '=', 't.depaiddestino');
+                                $join->on('mde.muniid', '=', 't.muniiddestino');
                             })
-                            ->join('usuario as u', 'u.usuaid', '=', 'e.usuaid')
-                            ->join('agencia as a', 'a.agenid', '=', 'e.agenid')
-                            ->where('e.encoid', $request->codigo)->first();*/
+                            ->join('usuario as u', 'u.usuaid', '=', 't.usuaid')
+                            ->join('agencia as a', 'a.agenid', '=', 't.agenid')
+                            ->where('t.tiquid', $request->codigo)->first();
 
             $arrayDatos   = [
-                                "fechaEncomienda"       => $encomienda->encofechahoraregistro,
-                                "numeroEncomienda"      => $encomienda->consecutivoEncomienda,
-                                "rutaEncomienda"        => $encomienda->nombreRuta,
-                                "tipoEncomienda"        => $encomienda->tipencnombre,
-                                "origenEncomienda"      => $encomienda->municipioOrigen,
-                                "destinoEncomienda"     => $encomienda->municipioDestino,
-                                "contenido"             => $encomienda->encocontenido,
-                                "cantidad"              => $encomienda->encocantidad,
-                                "valorDeclarado"        => number_format($encomienda->encovalordeclarado, 0,',','.'),
-                                "valorSeguro"           => number_format($encomienda->encovalorcomisionseguro, 0,',','.'),
-                                "valorEnvio"            => number_format($encomienda->encovalorenvio, 0,',','.'),
-                                "valorDomicilio"        => number_format($encomienda->encovalordomicilio, 0,',','.'),
-                                "valorTotal"            => number_format($encomienda->encovalortotal, 0,',','.'),
-                                "nombreRemitente"       => $encomienda->nombrePersonaRemitente,
-                                "direccionRemitente"    => $encomienda->perserdireccion,
-                                "telefonoRemitente"     => $encomienda->persernumerocelular,
-                                "nombreDestinatario"    => $encomienda->nombrePersonaDestinatario,
-                                "direccionDestinatario" => $encomienda->direccionDestino,
-                                "telefonoDestinatario"  => $encomienda->numeroCelularDestino,
-                                "usuarioElabora"        => $encomienda->nombreUsuario,
-                                "nombreAgencia"         => $encomienda->agennombre,
-                                "direccionAgencia"      => $encomienda->agendireccion,
-                                "telefonoAgencia"       => $encomienda->telefonoAgencia,
-                                "mensajePlanilla"       => $encomienda->mensajeEncomienda,
-                                "metodo" => 'S'
+                                "numeroTiquete"     => $tiquete->numeroTiquete,
+                                "fechaTiquete"      => $tiquete->fechaTiquete,
+                                "rutaTiquete"       => $tiquete->nombreRuta,
+                                "origenTiquete"     => $tiquete->municipioOrigen,
+                                "destinoTiquete"    => $tiquete->municipioDestino,
+                                "valorTiquete"      => number_format($tiquete->tiquvalortiquete, 0,',','.'),
+                                "descuentoTiquete"  => number_format($tiquete->tiquvalordescuento, 0,',','.'),
+                                "valorTotalTiquete" => number_format($tiquete->tiquvalortotal, 0,',','.'),
+                                "numeroPuesto"      => $tiquete->nombrePersona,
+                                "nombreCliente"     => $tiquete->nombreCliente,
+                                "direccionCliente"  => $tiquete->perserdireccion,
+                                "telefonoCliente"   => $tiquete->persernumerocelular,
+                                "usuarioElabora"    => $tiquete->nombreUsuario,
+                                "nombreAgencia"     => $tiquete->agennombre,
+                                "direccionAgencia"  => $tiquete->agendireccion,
+                                "telefonoAgencia"   => $tiquete->telefonoAgencia,
+                                "mensajePlanilla"   => $tiquete->mensajeTiquete,
+                                "metodo"            => 'S'
                             ];
 
             $generarPdf   = new generarPdf();
-            $data         = $generarPdf->facturaEncomienda($arrayDatos);
+            $data         = $generarPdf->facturaTiquete($arrayDatos);
   			return response()->json(["data" => $data ]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);

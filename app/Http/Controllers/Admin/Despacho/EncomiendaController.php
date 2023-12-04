@@ -400,7 +400,7 @@ class EncomiendaController extends Controller
                                 "direccionAgencia"      => $encomienda->agendireccion,
                                 "telefonoAgencia"       => $encomienda->telefonoAgencia,
                                 "mensajePlanilla"       => $encomienda->mensajeEncomienda,
-                                "metodo" => 'S'
+                                "metodo"                => 'S'
                             ];
 
             $generarPdf   = new generarPdf();
