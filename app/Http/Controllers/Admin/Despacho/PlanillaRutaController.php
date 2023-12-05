@@ -25,7 +25,7 @@ class PlanillaRutaController extends Controller
                     DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
                     DB::raw("CONCAT(p.persprimernombre,' ',  p.persprimerapellido) as nombreConductor"),
                     DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos)  as usuarioRegistra"),
-                    DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos)  as usuarioRecibe"))
+                    DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos)  as usuarioDespacha"))
                     ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                     ->join('municipio as mo', function($join)
                     {
@@ -42,7 +42,7 @@ class PlanillaRutaController extends Controller
                     ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                     ->join('usuario as ur', 'ur.usuaid', '=', 'pr.usuaidregistra')
-                    ->leftJoin('usuario as urg', 'urg.usuaid', '=', 'pr.usuaidrecibe')
+                    ->leftJoin('usuario as urg', 'urg.usuaid', '=', 'pr.usuaiddespacha')
                     ->where('pr.agenid', auth()->user()->agenid) 
                     ->where('pr.plarutdespachada', $request->estado)
                     ->orderBy('pr.plarutid', 'Desc')->get();
@@ -98,13 +98,13 @@ class PlanillaRutaController extends Controller
 
         DB::beginTransaction();
         try {
-            $fechaHoraActual                       = Carbon::now();
+            $fechaHoraActual                           = Carbon::now();
             if($request->tipo === 'I'){
                 $anioActual                            = $fechaHoraActual->year;
                 $planillaruta->agenid                  = auth()->user()->agenid;
                 $planillaruta->usuaidregistra          = Auth::id();
                 $planillaruta->plarutfechahoraregistro = $fechaHoraActual;
-                //$planillaruta->plarutanio              = $anioActual;
+                $planillaruta->plarutanio              = $anioActual;
                 $planillaruta->plarutconsecutivo       = $this->obtenerConsecutivo($anioActual); 
             }
 
@@ -173,6 +173,7 @@ class PlanillaRutaController extends Controller
             }
 
             $planillaruta                   = PlanillaRuta::findOrFail($request->codigo);
+            $planillaruta->usuaiddespacha   = Auth::id();
             $planillaruta->plarutdespachada = true;
            	$planillaruta->save();
 
@@ -198,35 +199,67 @@ class PlanillaRutaController extends Controller
 		}
     }
 
-    public function verFactura(Request $request)
+    public function verPlanilla(Request $request)
     {
 		$this->validate(request(),['codigo'   => 'required']);
 		try{
 
+            $planillaruta  = DB::table('planillaruta as pr')
+                            ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida', DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),         
+                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
+                            'v.vehiplaca','v.vehinumerointerno','p.persdocumento','p.persnumerocelular',
+                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
+                            DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
+                            DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),
+                            'a.agennombre', 'a.agendireccion',
+                            DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"),
+                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'PLANILLA') AS mensajePlanilla"))
+                            ->join('conductor as c', 'c.condid', '=', 'pr.condid')
+                            ->join('persona as p', 'p.persid', '=', 'c.persid')
+                            ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
+                            ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                            ->join('municipio as mo', function($join)
+                            {
+                                $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                $join->on('mo.muniid', '=', 'r.muniidorigen');
+                            })
+                            ->join('municipio as md', function($join)
+                            {
+                                $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                $join->on('md.muniid', '=', 'r.muniiddestino');
+                            })                            
+                            ->join('agencia as a', 'a.agenid', '=', 'pr.agenid')
+                            ->join('usuario as ur', 'ur.usuaid', '=', 'pr.usuaidregistra')
+                            ->leftJoin('usuario as urd', 'urd.usuaid', '=', 'pr.usuaiddespacha')
+                            ->where('pr.plarutid', $request->codigo)->first();
+
             $generarPdf   = new generarPdf();
             $arrayDatos   = [
-                                "fechaPlanilla"      => '2023-11-27',
-                                "numeroPlanilla"     => '101-084043',
-                                "fechaSalida"        => '2023-11-27',
-                                "horaSalida"         => '05:30',
-                                "nombreRuta"         => '007 - OCANA - ABREGO',
-                                "numeroVehiculo"     => '437',
-                                "placaVehiculo"      => 'UVG039',
-                                "conductorVehiculo"  => 'JORGE EMIRO RUEDA SANGUINO',
-                                "documentoConductor" => '88283517',
-                                "telefonoConductor"  => '3166147490',
+                                "fechaPlanilla"      => $planillaruta->plarutfechahoraregistro,
+                                "numeroPlanilla"     => $planillaruta->consecutivoPlanilla,
+                                "fechaSalida"        => substr($planillaruta->plarutfechahorasalida, 0, -9),        
+                                "horaSalida"         => substr($planillaruta->plarutfechahorasalida, -8, 10),
+                                "nombreRuta"         => $planillaruta->nombreRuta,
+                                "numeroVehiculo"     => $planillaruta->vehinumerointerno,
+                                "placaVehiculo"      => $planillaruta->vehiplaca,
+                                "conductorVehiculo"  => $planillaruta->nombreConductor,
+                                "documentoConductor" => $planillaruta->persdocumento,
+                                "telefonoConductor"  => $planillaruta->persnumerocelular,
                                 "valorEncomienda"    => '$ 0',
                                 "valorDomicilio"     => '$ 0',
                                 "valorComision"      => '$ 0',
                                 "valorTotal"         => '$ 0',
                                 "numeroOperacion"    => '568675',
-                                "usuarioElabora"     => 'NIXSON RIOS',
-                                "usuarioDespacha"    => 'KAREN YESENIA CONTRERAS JIMENE',
-                                "direccionAgencia"   => 'PARQUE PRINCIPAL',
-                                "telefonoAgencia"    => '3142154286',
-                                "mensajePlanilla"    => '*** FELIZ VIAJE ***',
-                                "metodo" => 'S'
+                                "usuarioElabora"     => $planillaruta->usuarioRegistra,
+                                "usuarioDespacha"    => $planillaruta->usuarioDespahcca,
+                                "nombreAgencia"      => $planillaruta->agennombre,
+                                "direccionAgencia"   => $planillaruta->agendireccion,
+                                "telefonoAgencia"    => $planillaruta->telefonoAgencia,
+                                "mensajePlanilla"    => $planillaruta->mensajePlanilla,
+                                "metodo"             => 'S'
                             ];
+
             $data         = $generarPdf->planillaServicioTransporte($arrayDatos);
   			return response()->json(["data" => $data ]);
         }catch(Exception $e){

@@ -4,20 +4,16 @@ import instance from '../../../layout/instance';
 import {Grid, Box } from '@mui/material';
 
 export default function Show({data}){
-    const [formData, setFormData] = useState({codigo:data.encoid,        tipoIdentificacionRemitente:'', documentoRemitente:'',        primerNombreRemitente:'',
-                                              segundoNombreRemitente:'', primerApellidoRemitente:'',     segundoApellidoRemitente:'',  direccionRemitente:'',
-                                              correoRemitente:'',        telefonoCelularRemitente:'',    tipoIdentificacionDestino:'', documentoDestino:'',
-                                              primerNombreDestino:'',    segundoNombreDestino :'',       primerApellidoDestino:'',     segundoApellidoDestino:'',
-                                              direccionDestino:'',       correoDestino:'',               telefonoCelularDestino:'',    departamentoOrigen:'',
-                                              municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
-                                              cantidad:'',               valorDeclarado :'',             valorEnvio:'',                valorDomicilio:'',
-                                              contenido:'',              observaciones: '',              ruta:'',                      valorSeguro:'',                 
-                                              valorTotal:''});
+    const [formData, setFormData] = useState({codigo:data.tiquid,     tipoIdentificacion:'',          documento:'',          primerNombre:'',
+                                             segundoNombre:'',        primerApellido:'',              segundoApellido:'',    direccion:'',
+                                             correo:'',               telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
+                                             departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planilla:'',
+                                             valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         cantidadPuesto: '',
+                                             valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:''  });
 
-    const [cambiosEstadoEncomienda, setCambiosEstadoEncomienda] = useState([]);
-    const [esEmpresaRemitente, setEsEmpresaRemitente] = useState(false);
-    const [esEmpresaDestino, setEsEmpresaDestino] = useState(false);
-    const [loader, setLoader] = useState(false);    
+  
+    const [esEmpresa, setEsEmpresa] = useState(false);
+    const [loader, setLoader] = useState(false);
 
     const formatearNumero = (numero) =>{
         const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
@@ -27,44 +23,29 @@ export default function Show({data}){
     useEffect(()=>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/despacho/encomienda/show/general', {codigo:formData.codigo}).then(res=>{
-            setCambiosEstadoEncomienda(res.cambiosEstadoEncomienda);
-            let encomienda                          = res.encomienda;
-            newFormData.tipoIdentificacionRemitente = encomienda.tipoIdentificacionRemitente;
-            newFormData.documentoRemitente          = encomienda.perserdocumento;
-            newFormData.primerNombreRemitente       = encomienda.perserprimernombre;
-            newFormData.segundoNombreRemitente      = encomienda.persersegundonombre;
-            newFormData.primerApellidoRemitente     = encomienda.perserprimerapellido;
-            newFormData.segundoApellidoRemitente    = encomienda.persersegundoapellido;
-            newFormData.direccionRemitente          = encomienda.perserdireccion;
-            newFormData.correoRemitente             = encomienda.persercorreoelectronico;
-            newFormData.telefonoCelularRemitente    = encomienda.persernumerocelular;
-            newFormData.tipoIdentificacionDestino   = encomienda.tipoIdentificacionDestino;
-            newFormData.documentoDestino            = encomienda.perserdocumentoDestino;
-            newFormData.primerNombreDestino         = encomienda.perserprimernombreDestino;
-            newFormData.segundoNombreDestino        = encomienda.persersegundonombreDestino;
-            newFormData.primerApellidoDestino       = encomienda.perserprimerapellidoDestino;
-            newFormData.segundoApellidoDestino      = encomienda.persersegundoapellidoDestino;
-            newFormData.direccionDestino            = encomienda.perserdireccionDestino;
-            newFormData.correoDestino               = encomienda.persercorreoelectronicoDestino;
-            newFormData.telefonoCelularDestino      = encomienda.persernumerocelularDestino;
-            newFormData.departamentoOrigen          = encomienda.deptoOrigen;
-            newFormData.municipioOrigen             = encomienda.municipioOrigen;
-            newFormData.departamentoDestino         = encomienda.deptoDestino;
-            newFormData.municipioDestino            = encomienda.municipioDestino;
-            newFormData.tipoEncomienda              = encomienda.tipencnombre;
-            newFormData.cantidad                    = encomienda.encocantidad;
-            newFormData.valorDeclarado              = formatearNumero(encomienda.encovalordeclarado);
-            newFormData.valorEnvio                  = formatearNumero(encomienda.encovalorenvio);
-            newFormData.valorDomicilio              = formatearNumero(encomienda.encovalordomicilio);
-            newFormData.contenido                   = encomienda.encocontenido;
-            newFormData.observaciones               = encomienda.encoobservacion;
-            newFormData.ruta                        = encomienda.nombreRuta;
-            newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
-            newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal); 
-            setFormData(newFormData);        
-            setEsEmpresaRemitente((encomienda.tipideid === 5) ? true : false);
-            setEsEmpresaDestino((encomienda.tipideidDestino === 5) ? true : false);
+        instance.post('/admin/despacho/tiquete/show/general', {codigo:formData.codigo}).then(res=>{
+            let tiquete                             = res.tiquete;
+            newFormData.personaId                   = tiquete.perserid;
+            newFormData.tipoIdentificacion          = tiquete.tipoIdentificacion;
+            newFormData.documento                   = tiquete.perserdocumento;
+            newFormData.primerNombre                = tiquete.perserprimernombre;
+            newFormData.segundoNombre               = (tiquete.persersegundonombre !== null) ? tiquete.persersegundonombre : '';
+            newFormData.primerApellido              = (tiquete.perserprimerapellido !== null) ? tiquete.perserprimerapellido : '';
+            newFormData.segundoApellido             = (tiquete.persersegundoapellido !== null) ? tiquete.persersegundoapellido : '';
+            newFormData.direccion                   = tiquete.perserdireccion;
+            newFormData.correo                      = (tiquete.persercorreoelectronico !== null) ? tiquete.persercorreoelectronico : '';
+            newFormData.telefonoCelular             = tiquete.persernumerocelular;
+            newFormData.departamentoDestino         = tiquete.deptoDestino;
+            newFormData.municipioDestino            = tiquete.municipioDestino;
+            newFormData.planilla                    = tiquete.nombreRuta;
+            newFormData.valorTiquete                = tiquete.tiquvalortiquete;
+            newFormData.valorDescuento              = formatearNumero(tiquete.tiquvalordescuento);
+            newFormData.cantidadPuesto              = tiquete.tiqucantidad;
+            newFormData.valorTiqueteMostrar         = formatearNumero(tiquete.tiquvalortiquete);
+            newFormData.valorFondoReposicionMostrar = formatearNumero(tiquete.tiquvalorfondoreposicion);
+            newFormData.valorTotalTiquete           = formatearNumero(tiquete.tiquvalortotal);
+            setEsEmpresa((tiquete.tipideid === 5) ? true : false);
+            setFormData(newFormData);
             setLoader(false);
         })
     }, []);
@@ -74,258 +55,152 @@ export default function Show({data}){
     }
 
     return (
-        <Grid container spacing={2}>
+        <Box>
+            <Grid container spacing={2}>
 
-            <Grid item md={12} xl={12} sm={12} xs={12}>
-                <Box className='frmDivision'>
-                    Información de la encomienda
-                </Box>
+                <Grid item md={12} xl={12} sm={12} xs={12}>
+                    <Box className='frmDivision'>
+                        Información del tiquete
+                    </Box>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Planilla</label>
+                        <span>{formData.planilla}</span>
+                    </Box>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Municipio nodo destino</label>
+                        <span>{formData.municipioDestino}</span>
+                    </Box>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Cantidad de puestos</label>
+                        <span>{formData.cantidadPuesto}</span>
+                    </Box>
+                </Grid>
             </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Departamento origen</label>
-                    <span>{formData.departamentoOrigen}</span>
-                </Box>
-            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xl={9} md={9} sm={12} xs={12}>
+                    <Grid container spacing={2}>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Municipio origen</label>
-                    <span>{formData.municipioOrigen}</span>
-                </Box>
-            </Grid>
+                    </Grid>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Departamento destino</label>
-                    <span>{formData.departamentoDestino}</span>
-                </Box>
-            </Grid>
+                <Grid item xl={3} md={3} sm={12} xs={12} style={{marginTop:'1em'}}>
+                    <Grid container spacing={2}>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Municipio destino</label>
-                    <span>{formData.municipioDestino}</span>
-                </Box>
-            </Grid>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Valor tiquete $</label>
+                                <span className='textoRojo'>{'\u00A0'+ formData.valorTiqueteMostrar}</span>
+                            </Box>
+                        </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Ruta</label>
-                    <span>{formData.ruta}</span>
-                </Box>
-            </Grid>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Valor descuento $</label>
+                                <span className='textoRojo'>{'\u00A0'+formData.valorDescuento}</span>
+                            </Box>
+                        </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Tipo de encomienda</label>
-                    <span>{formData.tipoEncomienda}</span>
-                </Box>
-            </Grid>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Fondo de reposición $ </label>
+                                <span className='textoRojo'>{'\u00A0'+ formData.valorFondoReposicionMostrar}</span>
+                            </Box>
+                        </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Cantidad</label>
-                    <span>{formData.cantidad}</span>
-                </Box>
-            </Grid>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Total $ </label>
+                                <span className='textoRojo'> {'\u00A0'+ formData.valorTotalTiquete}</span>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Valor declarado</label>
-                    <span>$ {formData.valorDeclarado}</span>
-                </Box>
-            </Grid>
+                <Grid item md={12} xl={12} sm={12} xs={12}>
+                    <Box className='frmDivision'>
+                        Información de la persona
+                    </Box>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Valor envío</label>
-                    <span>$ {formData.valorEnvio}</span>
-                </Box>
-            </Grid>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Tipo de identificación</label>
+                        <span>{formData.tipoIdentificacion}</span>
+                    </Box>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Valor domicilio</label>
-                    <span>$ {formData.valorDomicilio}</span>
-                </Box>
-            </Grid>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>{(esEmpresa)? 'NIT' : 'Número de identificación'} </label>
+                        <span>{formData.documento}</span>
+                    </Box>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Seguro</label>
-                    <span>$ {formData.valorSeguro}</span>
-                </Box>
-            </Grid>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>{(esEmpresa)? 'Razón social' : 'Primer nombre'}</label>
+                        <span>{formData.primerNombre}</span>
+                    </Box>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Total</label>
-                    <span>$ {formData.valorTotal}</span>
-                </Box>
-            </Grid>
+                {(!esEmpresa)?
+                    <Fragment>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Segundo nombre</label>
+                                <span>{formData.segundoNombre}</span>
+                            </Box>
+                        </Grid>
 
-            <Grid item xl={12} md={12} sm={12} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Contenido</label>
-                    <span>{formData.contenido}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={12} md={12} sm={12} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Observaciones</label>
-                    <span>{formData.observaciones}</span>
-                </Box>
-            </Grid>
-
-            <Grid item md={12} xl={12} sm={12} xs={12}>
-                <Box className='frmDivision'>
-                    Información del remitente
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Tipo de identificación</label>
-                    <span>{formData.tipoIdentificacionRemitente}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>{(esEmpresaRemitente)? 'NIT' : 'Número de identificación'} </label>
-                    <span>{formData.documentoRemitente}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>{(esEmpresaRemitente)? 'Razón social' : 'Primer nombre'}</label>
-                    <span>{formData.primerNombreRemitente}</span>
-                </Box>
-            </Grid>
-
-            {(!esEmpresaRemitente)?
-                <Fragment>
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='frmTexto'>
-                            <label>Segundo nombre</label>
-                            <span>{formData.segundoNombreRemitente}</span>
-                        </Box>
-                    </Grid>
+                                <label>Primer apellido</label>
+                                <span>{formData.primerApellido}</span>
+                            </Box>
+                        </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                       <Box className='frmTexto'>
-                            <label>Primer apellido</label>
-                            <span>{formData.primerApellidoRemitente}</span>
-                        </Box>
-                    </Grid>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Segundo apellido</label>
+                                <span>{formData.segundoApellido}</span>
+                            </Box>
+                        </Grid>
+                    </Fragment>
+                : null}
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Segundo apellido</label>
-                            <span>{formData.segundoApellidoRemitente}</span>
-                        </Box>
-                    </Grid>
-                </Fragment>
-            : null}
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Dirección</label>
+                        <span>{formData.direccion}</span>
+                    </Box>
+                </Grid>
 
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Dirección</label>
-                    <span>{formData.direccionRemitente}</span>
-                </Box>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Correo electrónico</label>
+                        <span>{formData.correo}</span>
+                    </Box>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>Teléfono</label>
+                        <span>{formData.telefonoCelular}</span>
+                    </Box>
+                </Grid>
+                 
+
             </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Correo electrónico</label>
-                    <span>{formData.correoRemitente}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Teléfono</label>
-                    <span>{formData.telefonoCelularRemitente}</span>
-                </Box>
-            </Grid>
-
-            <Grid item md={12} xl={12} sm={12} xs={12}>
-                <Box className='frmDivision'>
-                    Información del destino
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Tipo de identificación</label>
-                    <span>{formData.tipoIdentificacionDestino}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>{(esEmpresaDestino)? 'NIT' : 'Número de identificación'} </label>
-                    <span>{formData.documentoDestino}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>{(esEmpresaDestino)? 'Razón social' : 'Primer nombre'}</label>
-                    <span>{formData.primerNombreDestino}</span>
-                </Box>
-            </Grid>
-
-            {(!esEmpresaDestino)?
-                <Fragment>
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Segundo nombre</label>
-                            <span>{formData.segundoNombreDestino}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                       <Box className='frmTexto'>
-                            <label>Primer apellido</label>
-                            <span>{formData.primerApellidoDestino}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Segundo apellido</label>
-                            <span>{formData.segundoApellidoDestino}</span>
-                        </Box>
-                    </Grid>
-                </Fragment>
-            : null}
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Dirección</label>
-                    <span>{formData.direccionDestino}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Correo electrónico</label>
-                    <span>{formData.correoDestino}</span>
-                </Box>
-            </Grid>
-
-            <Grid item xl={3} md={3} sm={6} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Teléfono</label>
-                    <span>{formData.telefonoCelularDestino}</span>
-                </Box>
-            </Grid>
-
-        </Grid>
+        </Box>
     )
 }

@@ -17,7 +17,7 @@ class ContratoServicioEspecialController extends Controller
 {
     public function index(Request $request)
     {
-		$this->validate(request(),['tipo'   => 'required']);
+		$this->validate(request(),['tipo' => 'required']);
 		$fechaHoraActual = Carbon::now();
 		$fechaActual     = $fechaHoraActual->format('Y-m-d');
 

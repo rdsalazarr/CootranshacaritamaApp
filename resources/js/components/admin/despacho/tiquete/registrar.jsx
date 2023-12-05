@@ -19,7 +19,7 @@ export default function List(){
                         <NewEdit tipo={'I'} />,
                         <NewEdit data={modal.data} tipo={'U'} />,
                         <Show data={modal.data} />,
-                        <VisualizarPdf id={(tipo === 3) ? modal.data.encoid : null} />
+                        <VisualizarPdf id={(tipo === 3) ? modal.data.tiquid : null} />
                     ];
 
     const tituloModal = ['Nuevo tiquete','Editar tiquete',

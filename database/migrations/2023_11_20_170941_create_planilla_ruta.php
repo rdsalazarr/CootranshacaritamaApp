@@ -18,21 +18,21 @@ return new class extends Migration
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
             $table->integer('condid')->unsigned()->comment('Identificador del conductor');
             $table->smallInteger('usuaidregistra')->unsigned()->comment('Identificador del usuario que rgistra la planilla');
-            $table->smallInteger('usuaidrecibe')->unsigned()->nullable()->comment('Identificador del usuario que recibe la planilla');
+            $table->smallInteger('usuaiddespacha')->unsigned()->nullable()->comment('Identificador del usuario que despacha la planilla');
             $table->dateTime('plarutfechahoraregistro')->comment('Fecha y hora actual en el que se registra la planilla');
             $table->year('plarutanio', 4)->comment('Año en el cual se genera de la planilla de la ruta');
             $table->string('plarutconsecutivo', 4)->comment('Consecutivo de la planilla de la ruta');
             $table->dateTime('plarutfechahorasalida')->nullable()->comment('Fecha y hora actual se entrega la planilla para la ruta');
-            $table->dateTime('plarutfechahorarecibe')->nullable()->comment('Fecha y hora actual en que se recibe la planilla para la ruta');
+            $table->dateTime('plarutfechallegadaaldestino')->nullable()->comment('Fecha y hora en el cual se recibe la planilla en su destino final');
             $table->boolean('plarutdespachada')->default(false)->comment('Determina si la ruta fue despachada');
             $table->timestamps();
             $table->unique(['plarutanio','plarutconsecutivo'],'uk_planillaruta');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenplarut');
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutaplarut');
-            $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehiplarut'); 
+            $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehiplarut');
             $table->foreign('condid')->references('condid')->on('conductor')->onUpdate('cascade')->index('fk_condplarut');
             $table->foreign('usuaidregistra')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuaplarutregistra');
-            $table->foreign('usuaidrecibe')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuaplarutrecibe');
+            $table->foreign('usuaiddespacha')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuaplarutdespacha');
         });
     }
 

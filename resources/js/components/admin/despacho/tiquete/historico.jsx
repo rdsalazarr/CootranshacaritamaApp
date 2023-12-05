@@ -10,21 +10,17 @@ export default function Historico(){
 
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
-    const [tipo, setTipo] = useState(0);
     const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
-
     const modales = [<Show data={modal.data} /> ];
-
-    const tituloModal = ['Visualizar información general de la encomienda'];
+    const tituloModal = ['Visualizar información general del tiquete'];
 
     const edit = (data, tipo) =>{
-        setTipo(tipo);
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 1) ? 'smallFlot' : 'bigFlot'});
     }
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/despacho/encomienda/list', {estado:'R', tipo:'HISTORICO'}).then(res=>{
+        instance.post('/admin/despacho/tiquete/list', {estado:'R', tipo:'HISTORICO'}).then(res=>{
             setData(res.data);
             setLoader(false);
         }) 
@@ -41,8 +37,8 @@ export default function Historico(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario','Estado','Visualizar']}
-                    ver={["fechaHoraRegistro","tipoEncomienda","nombreRuta", "destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino","estado"]}
+                    titulo={['Fecha registo','Fecha salida','Número tiquete','Origen', 'Destino','Vehículo','Cliente','Visualizar']}
+                    ver={["fechaHoraRegistro","fechaSalida","numeroTiquete", "municipioOrigen","municipioDestino","nombreVehiculo","nombreCliente"]}
                     accion={[
                         {tipo: 'B', icono : 'visibility',     color: 'green',  funcion : (data)=>{edit(data, 0)} }
                     ]}
@@ -53,7 +49,7 @@ export default function Historico(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''}), inicio();}}
+                close={() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''})}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

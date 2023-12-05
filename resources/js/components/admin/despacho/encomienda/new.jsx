@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import {TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import {Button, Grid, MenuItem, Stack, Box} from '@mui/material';
+import {Button, Grid, MenuItem, Stack, Box, FormControlLabel, Switch} from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {ModalDefaultAuto } from '../../../layout/modal';
@@ -26,9 +26,10 @@ export default function New({data, tipo}){
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [esEmpresaRemitente, setEsEmpresaRemitente] = useState(false);
     const [esEmpresaDestino, setEsEmpresaDestino] = useState(false);
+    const [enviarEncomienda, setEnviarEncomienda] = useState(false);
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
     const [tiposEncomiendas, setTiposEncomiendas] = useState([]);
-    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
+    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);    
     const [planillaRutas, setPlanillaRutas] = useState([]);
     const [idEncomienda , setIdEncomienda] = useState(0); 
     const [abrirModal, setAbrirModal] = useState(false);
@@ -44,9 +45,15 @@ export default function New({data, tipo}){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
     }
 
+    const handleChangeEnviarEncomienda = (e) => {
+        setEnviarEncomienda(e.target.checked);
+    }
+
     const handleSubmit = () =>{
+        let newFormData             = {...formData}
+        newFormData.enviarEncomienda = enviarEncomienda;
         setLoader(true);
-        instance.post('/admin/despacho/encomienda/salve', formData).then(res=>{
+        instance.post('/admin/despacho/encomienda/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
@@ -662,6 +669,15 @@ export default function New({data, tipo}){
                         />
                     </Grid>
 
+                    <Grid item md={6} xl={6} sm={6} xs={12}>
+                        <FormControlLabel
+                            control={<Switch name={'notificar'} 
+                            value={enviarEncomienda} onChange={handleChangeEnviarEncomienda} 
+                            color="secondary"/>} 
+                            label="Enviar copia de la factura de la encomienda al correo"
+                        />
+                    </Grid>
+
                     <Grid item md={12} xl={12} sm={12} xs={12}>
                         <Box className='frmDivision'>
                             Información del destino
@@ -815,7 +831,7 @@ export default function New({data, tipo}){
 
             <ModalDefaultAuto
                 title   = {'Visualizar factura en PDF de encomienda'} 
-                content = {<VisualizarPdf id={idEncomienda} />} 
+                content = {<VisualizarPdf id={idEncomienda} />}
                 close   = {() =>{setAbrirModal(false);}} 
                 tam     = 'smallFlot'
                 abrir   = {abrirModal}

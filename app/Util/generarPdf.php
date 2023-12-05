@@ -2908,7 +2908,7 @@ EOD;
 		PDF::Cell(56, 2, $linea, 0, 0,'L');	
 		PDF::Ln(3);
 
-		PDF::MultiCell(56, 3, $mensajePlanilla, 0, 'L', false, 1);
+		PDF::MultiCell(56, 3, $mensajePlanilla, 0, 'C', false, 1);
 		PDF::Cell(56, 2, $linea, 0, 0,'L');	
 		PDF::Ln(3);
 		PDF::MultiCell(56, 3, 'Vigilado por la superintendencia de puertos y transporte', 0, 'C', false, 1);
@@ -2936,7 +2936,7 @@ EOD;
 		$valorTiquete       = $arrayDatos['valorTiquete'];
 		$descuentoTiquete   = $arrayDatos['descuentoTiquete'];
 		$valorTotalTiquete  = $arrayDatos['valorTotalTiquete'];
-		$numeroPuesto       = $arrayDatos['numeroPuesto'];
+		$numeroPuestos      = $arrayDatos['numeroPuestos'];
 		$nombreCliente      = $arrayDatos['nombreCliente'];
 		$direccionCliente   = $arrayDatos['direccionCliente'];
 		$telefonoCliente    = $arrayDatos['telefonoCliente'];
@@ -2958,7 +2958,7 @@ EOD;
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject("Formato de planilla de Tiquete Nº ".$numeroTiquete);
-		PDF::SetKeywords('Formato, planilla, servicio público, Tiquete, '. $numeroTiquete);
+		PDF::SetKeywords('Formato, Planilla, Tiquete, Servicio público,'. $numeroTiquete);
         PDF::SetTitle("Formato Tiquete número ".$numeroTiquete);
 
 		PDF::AddPage('P', array(60,130));
@@ -3003,7 +3003,7 @@ EOD;
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Puesto:", 0, 0,'L');
-		PDF::Cell(38, 3,'$ '.$numeroPuesto, 0, 0,'L');
+		PDF::Cell(38, 3,$numeroPuestos, 0, 0,'L');
 		PDF::Ln(3);
 
 		PDF::Cell(18, 3,"Valor:", 0, 0,'L');
@@ -3061,7 +3061,7 @@ EOD;
 		PDF::Cell(56, 2, $linea, 0, 0,'L');	
 		PDF::Ln(3);
 
-		PDF::MultiCell(56, 3, $mensajePlanilla, 0, 'L', false, 1);
+		PDF::MultiCell(56, 3, $mensajePlanilla, 0, 'C', false, 1);
 		PDF::Cell(56, 2, $linea, 0, 0,'L');	
 		PDF::Ln(3);
 		PDF::MultiCell(56, 3, 'Vigilado por la superintendencia de puertos y transporte', 0, 'C', false, 1);

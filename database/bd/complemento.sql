@@ -84,3 +84,9 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (43, 9, 'Tiquetes', 'Getionar Tiquetes', 'admin/despacho/tiquetes', 'card_travel_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (43, 1, 43);
+
+
+ALTER TABLE `planillaruta` CHANGE `usuaidrecibe` `usuaiddespacha` SMALLINT(5) UNSIGNED NULL DEFAULT NULL COMMENT 'Identificador del usuario que recibe la planilla';
+ALTER TABLE `planillaruta` CHANGE `plarutfechahorarecibe` `plarutfechallegadaaldestino` DATETIME NULL DEFAULT NULL COMMENT 'Fecha y hora actual en que se recibe la planilla para la ruta';
+
+ALTER TABLE `planillaruta` ADD `plarutanio` YEAR NULL AFTER `plarutfechahoraregistro`;

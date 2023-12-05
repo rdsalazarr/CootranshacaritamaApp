@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tiquetepuesto', function (Blueprint $table) {
             $table->bigIncrements('tiqpueid')->unsigned()->comment('Identificador de la tabla tiquete puesto');
             $table->integer('tiquid')->unsigned()->comment('Identificador del tiquete');
-            $table->decimal('tiqpuenumeropuesto', 3)->comment('Número de puesto en el tiquete');
+            $table->string('tiqpuenumeropuesto', 3)->comment('Número de puesto en el tiquete');
             $table->timestamps();
             $table->foreign('tiquid')->references('tiquid')->on('tiquete')->onUpdate('cascade')->index('fk_tiqutiqpue');
         });

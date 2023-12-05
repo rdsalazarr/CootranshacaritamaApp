@@ -9,7 +9,7 @@ export default function VisualizarPdf({id}){
 
     useEffect(()=>{
         setLoader(true);
-        instancePdf.post('/admin/despacho/encomienda/visualizar/PDF', {codigo: id}).then(res=>{
+        instancePdf.post('/admin/despacho/tiquete/visualizar/PDF', {codigo: id}).then(res=>{
             let url = 'data:application/pdf;base64,'+res.data;
             setPdf(url);
             setLoader(false);
