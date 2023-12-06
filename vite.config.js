@@ -3,6 +3,9 @@ import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+    build: {
+        chunkSizeWarningLimit: 100000000
+    },
     plugins: [
         react(),
         laravel({

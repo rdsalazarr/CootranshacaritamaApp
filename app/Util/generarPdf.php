@@ -2433,6 +2433,7 @@ EOD;
 
 	function listaPasajeros($arrayDatos, $idCifrado, $logoEmpresa){
 		$firmaGerente  = $arrayDatos['firmaGerente'];
+		$nombreGerente = $arrayDatos['nombreGerente'];
 		PDF::AddPage('P', 'Letter');
 		PDF::SetMargins(10, 30 , 10);
 		PDF::SetPrintHeader(false);
@@ -2490,7 +2491,7 @@ EOD;
         PDF::SetFont('helvetica','B',10);
         PDF::Cell(90, 6,'',0,0,'L');
         PDF::Cell(10, 6,'',0,0,'L');
-        PDF::Cell(90, 6,'LUIS MANUEL ASCANIO CLARO',0,0,'L');
+        PDF::Cell(90, 6,$nombreGerente,0,0,'L');
         PDF::Ln(6);
 		PDF::Image('images/selloCooperativa.png', 120, $posicionY + 8, 30, 18);
 		PDF::Image($firmaGerente, 110, $posicionY + 22, 46, 10);
@@ -2501,37 +2502,40 @@ EOD;
         PDF::Cell(90, 6,'EL CONTRATISTA',0,0,'L');
 	}
 
-	function planillaServicioTransporte($arrayDatos){
+	function planillaServicioTransporte($arrayDatos, $tiquetes, $agencias){
 
-		$fechaPlanilla      = $arrayDatos['fechaPlanilla'];
-		$numeroPlanilla     = $arrayDatos['numeroPlanilla'];
-		$fechaSalida        = $arrayDatos['fechaSalida'];
-		$horaSalida         = $arrayDatos['horaSalida'];
-		$nombreRuta         = $arrayDatos['nombreRuta'];
-		$numeroVehiculo     = $arrayDatos['numeroVehiculo'];
-		$placaVehiculo      = $arrayDatos['placaVehiculo'];
-		$conductorVehiculo  = $arrayDatos['conductorVehiculo'];
-		$documentoConductor = $arrayDatos['documentoConductor'];
-		$telefonoConductor  = $arrayDatos['telefonoConductor'];
-		$valorEncomienda    = $arrayDatos['valorEncomienda'];
-		$valorDomicilio     = $arrayDatos['valorDomicilio'];
-		$valorComision      = $arrayDatos['valorComision'];
-		$valorTotal         = $arrayDatos['valorTotal'];
-		$numeroOperacion    = $arrayDatos['numeroOperacion'];
-		$usuarioElabora     = $arrayDatos['usuarioElabora'];
-		$usuarioDespacha    = $arrayDatos['usuarioDespacha'];
-		$direccionAgencia   = $arrayDatos['direccionAgencia'];
-		$telefonoAgencia    = $arrayDatos['telefonoAgencia'];
-		$mensajePlanilla    = $arrayDatos['mensajePlanilla'];
-
-		$metodo             = $arrayDatos['metodo'];	
-		$linea              = str_pad('', 66, "-", STR_PAD_LEFT);
-		$empresa            = $this->consultarEmpresa();
-		$siglaEmpresa       = $empresa->emprsigla;
-		$nit                = $empresa->nit;
-		$correEmpresa 	    = $empresa->emprcorreo;
-		$urlEmpresa       	= $empresa->emprurl;
-		$personeriaJuridica	= $empresa->emprpersoneriajuridica;
+		$fechaPlanilla        = $arrayDatos['fechaPlanilla'];
+		$numeroPlanilla       = $arrayDatos['numeroPlanilla'];
+		$fechaSalida          = $arrayDatos['fechaSalida'];
+		$horaSalida           = $arrayDatos['horaSalida'];
+		$nombreRuta           = $arrayDatos['nombreRuta'];
+		$numeroVehiculo       = $arrayDatos['numeroVehiculo'];
+		$placaVehiculo        = $arrayDatos['placaVehiculo'];
+		$conductorVehiculo    = $arrayDatos['conductorVehiculo'];
+		$documentoConductor   = $arrayDatos['documentoConductor'];
+		$telefonoConductor    = $arrayDatos['telefonoConductor'];
+		$valorEncomienda      = $arrayDatos['valorEncomienda'];
+		$valorDomicilio       = $arrayDatos['valorDomicilio'];
+		$valorComision        = $arrayDatos['valorComision'];
+		$valorTotal           = $arrayDatos['valorTotal'];
+		$numeroOperacion      = $arrayDatos['numeroOperacion'];
+		$usuarioElabora       = $arrayDatos['usuarioElabora'];
+		$usuarioDespacha      = $arrayDatos['usuarioDespacha'];
+		$direccionAgencia     = $arrayDatos['direccionAgencia'];
+		$telefonoAgencia      = $arrayDatos['telefonoAgencia'];
+		$mensajePlanilla      = $arrayDatos['mensajePlanilla'];
+		$subTotalTiquete      = $arrayDatos['subTotalTiquete'];
+		$valorFondoReposicion = $arrayDatos['valorFondoReposicion'];
+		$valorTotalTiquete    = $arrayDatos['valorTotalTiquete'];
+		$cantidadPasajeros    = $arrayDatos['cantidadPasajeros'];
+		$metodo               = $arrayDatos['metodo'];
+		$linea                = str_pad('', 66, "-", STR_PAD_LEFT);
+		$empresa              = $this->consultarEmpresa();
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$correEmpresa 	      = $empresa->emprcorreo;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$personeriaJuridica	  = $empresa->emprpersoneriajuridica;
 		
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('ERP '.$siglaEmpresa);
@@ -2609,12 +2613,12 @@ EOD;
 		PDF::Cell(11, 3,"Valor", 0, 0,'C');
 		PDF::Ln(3);
 
-		for($i = 0; $i <= 9; $i++){		
-			PDF::Cell(14, 3,"112-00422".$i, 0, 0,'L');
-			PDF::Cell(6, 3,"16", 0, 0,'L'); 
-			PDF::Cell(12, 3,substr("GUIDO MORALEZ", 0, 8) , 0, 0,'L');
-			PDF::Cell(12, 3,substr("AGUACHICA", 0, 7) , 0, 0,'L');
-			PDF::Cell(12, 3,"$ 22,000", 0, 0,'L');
+		foreach($tiquetes as $tiquete){
+			PDF::Cell(14, 3,$tiquete->numeroTiquete, 0, 0,'L');
+			PDF::Cell(6, 3,$tiquete->totalTiquete, 0, 0,'L'); 
+			PDF::Cell(12, 3,substr($tiquete->nombreCliente, 0, 8) , 0, 0,'L');
+			PDF::Cell(12, 3,substr($tiquete->municipioDestino, 0, 7) , 0, 0,'L');
+			PDF::Cell(12, 3, number_format($tiquete->totalTiquete,0,',','.') , 0, 0,'L');
 			PDF::Ln(3);
 		}
 
@@ -2623,19 +2627,19 @@ EOD;
 		PDF::Ln(2);
 		PDF::SetFont('helvetica','',6);
 		PDF::Cell(22, 3, 'Subtotal:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 367,000', 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($tiquete->subTotalTiquete,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Fondo de reposición:', 0, 0,'L');
-		PDF::Cell(34, 3, '-$ 3,670', 0, 0,'R');
+		PDF::Cell(34, 3, '-$ '.number_format($tiquete->valorFondoReposicion,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Estampillas:', 0, 0,'L');
-		PDF::Cell(34, 3, '-$ 18,000', 0, 0,'R');
+		PDF::Cell(34, 3, '-$ 0', 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Valor total:', 0, 0,'L');
-		PDF::Cell(34, 3, '-$ 345,330', 0, 0,'R');
+		PDF::Cell(34, 3, '-$ '.number_format($tiquete->valorTotalTiquete,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Nro. pasajeros:', 0, 0,'L');
-		PDF::Cell(34, 3, '9', 0, 0,'R');
+		PDF::Cell(34, 3, $tiquete->cantidadPasajeros, 0, 0,'R');
 
 		PDF::Ln(3);
 		PDF::SetFont('helvetica','',7);
@@ -2669,15 +2673,11 @@ EOD;
 		PDF::SetFont('helvetica','',6);
 		PDF::Ln(3);
 
-		PDF::Cell(22, 3, 'OFI. PARQUE:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 1,770', 0, 0,'R');
-		PDF::Ln(3);
-		PDF::Cell(22, 3, 'OFI. SANTA CLARA:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 1,300', 0, 0,'R');
-		PDF::Ln(3);
-		PDF::Cell(22, 3, 'OOFI. PARQUE 2:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 600', 0, 0,'R');
-		PDF::Ln(3);
+		foreach($agencias as $agencia){
+			PDF::Cell(22, 3, $agencia->nombreAgencia, 0, 0,'L');
+			PDF::Cell(34, 3, '$ '.number_format($agencia->totalFondoReposicion,0,',','.'), 0, 0,'R');
+			PDF::Ln(3);
+		}
 
 		PDF::SetFont('helvetica','',7);
 		PDF::Cell(56, 2, $linea, 0, 0,'L');
@@ -2694,7 +2694,7 @@ EOD;
 		PDF::Cell(22, 3, 'OFI. SANTA CLARA:', 0, 0,'L');
 		PDF::Cell(34, 3, '$ 6,000', 0, 0,'R');
 		PDF::Ln(3);
-		PDF::Cell(22, 3, 'OOFI. PARQUE 2:', 0, 0,'L');
+		PDF::Cell(22, 3, 'OFI. PARQUE 2:', 0, 0,'L');
 		PDF::Cell(34, 3, '$ 3,000', 0, 0,'R');
 		PDF::Ln(3);
 

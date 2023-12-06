@@ -160,6 +160,18 @@ const componenteMenu = [
             {ruta : 'admin/despacho/otros3',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas3 />},
         ]
     },
+    {   nombre: 'Caja',
+        icono : 'attach_money_icon',
+        itemMenu: [
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <Tiquetes />},
+        ]
+    },
+    {   nombre: 'Informes',
+        icono : 'assessment_icon',
+        itemMenu: [
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <Tiquetes />},
+        ]
+    }
 ];
 
 const menuComponente = [

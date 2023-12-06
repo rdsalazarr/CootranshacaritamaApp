@@ -205,16 +205,24 @@ class PlanillaRutaController extends Controller
 		try{
 
             $planillaruta  = DB::table('planillaruta as pr')
-                            ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida', DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),         
-                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
-                            'v.vehiplaca','v.vehinumerointerno','p.persdocumento','p.persnumerocelular',
+                            ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida','v.vehiplaca','v.vehinumerointerno','p.persdocumento',
+                            'p.persnumerocelular','a.agennombre', 'a.agendireccion',
+                            DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),         
+                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),                            
                             DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
                             DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
-                            DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),
-                            'a.agennombre', 'a.agendireccion',
+                            DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),                            
                             DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"),
-                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'PLANILLA') AS mensajePlanilla"))
+                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'PLANILLA') AS mensajePlanilla"),
+                            DB::raw('(SELECT SUM(encovalorenvio) AS encovalorenvio FROM encomienda WHERE plarutid = pr.plarutid) AS valorEnvio'),
+                            DB::raw('(SELECT SUM(encovalordomicilio) AS encovalordomicilio FROM encomienda WHERE plarutid = pr.plarutid) AS valorDomicilioEnvio'),
+                            DB::raw('(SELECT SUM(encovalorcomisionseguro) AS encovalorcomisionseguro FROM encomienda WHERE plarutid = pr.plarutid) AS valorComisionEnvio'),
+                            DB::raw('(SELECT SUM(encovalortotal) AS encovalortotal FROM encomienda WHERE plarutid = pr.plarutid) AS valorTotalEnvio'),
+                            DB::raw('(SELECT SUM(tiquvalortiquete) AS tiquvalortiquete FROM tiquete WHERE plarutid = pr.plarutid) AS subTotalTiquete'),
+                            DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS valorFondoReposicion'),
+                            DB::raw('(SELECT SUM(tiquvalortotal) AS tiquvalortotal FROM tiquete WHERE plarutid = pr.plarutid) AS valorTotalTiquete'),
+                            DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))
                             ->join('conductor as c', 'c.condid', '=', 'pr.condid')
                             ->join('persona as p', 'p.persid', '=', 'c.persid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
@@ -234,34 +242,58 @@ class PlanillaRutaController extends Controller
                             ->leftJoin('usuario as urd', 'urd.usuaid', '=', 'pr.usuaiddespacha')
                             ->where('pr.plarutid', $request->codigo)->first();
 
-            $generarPdf   = new generarPdf();
-            $arrayDatos   = [
-                                "fechaPlanilla"      => $planillaruta->plarutfechahoraregistro,
-                                "numeroPlanilla"     => $planillaruta->consecutivoPlanilla,
-                                "fechaSalida"        => substr($planillaruta->plarutfechahorasalida, 0, -9),        
-                                "horaSalida"         => substr($planillaruta->plarutfechahorasalida, -8, 10),
-                                "nombreRuta"         => $planillaruta->nombreRuta,
-                                "numeroVehiculo"     => $planillaruta->vehinumerointerno,
-                                "placaVehiculo"      => $planillaruta->vehiplaca,
-                                "conductorVehiculo"  => $planillaruta->nombreConductor,
-                                "documentoConductor" => $planillaruta->persdocumento,
-                                "telefonoConductor"  => $planillaruta->persnumerocelular,
-                                "valorEncomienda"    => '$ 0',
-                                "valorDomicilio"     => '$ 0',
-                                "valorComision"      => '$ 0',
-                                "valorTotal"         => '$ 0',
-                                "numeroOperacion"    => '568675',
-                                "usuarioElabora"     => $planillaruta->usuarioRegistra,
-                                "usuarioDespacha"    => $planillaruta->usuarioDespahcca,
-                                "nombreAgencia"      => $planillaruta->agennombre,
-                                "direccionAgencia"   => $planillaruta->agendireccion,
-                                "telefonoAgencia"    => $planillaruta->telefonoAgencia,
-                                "mensajePlanilla"    => $planillaruta->mensajePlanilla,
-                                "metodo"             => 'S'
-                            ];
+            $tiquetes  = DB::table('tiquete as t')
+                            ->select('t.tiquvalortotal as totalTiquete', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            'tp.tiqpuenumeropuesto', 'mde.muninombre as municipioDestino', 
+                            DB::raw("CONCAT(ps.perserprimernombre,' ', ps.perserprimerapellido) as nombreCliente"))
+                            ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                            ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 't.tiquid')
+                            ->join('municipio as mde', function($join)
+                            {
+                                $join->on('mde.munidepaid', '=', 't.depaiddestino');
+                                $join->on('mde.muniid', '=', 't.muniiddestino');
+                            })
+                            ->where('pr.plarutid', $request->codigo)->first();
 
-            $data         = $generarPdf->planillaServicioTransporte($arrayDatos);
-  			return response()->json(["data" => $data ]);
+            $agencias  = DB::table('agencia as a')->select('a.agennombre',
+                            DB::raw("CONCAT('OFI. ',a.agennombre,':') as nombreAgencia"),
+                            DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS totalFondoReposicion'))
+                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.agenid')
+                            ->where('pr.plarutid', $request->codigo)->first();
+
+            $generarPdf = new generarPdf();
+            $arrayDatos = [
+                            "fechaPlanilla"        => $planillaruta->plarutfechahoraregistro,
+                            "numeroPlanilla"       => $planillaruta->consecutivoPlanilla,
+                            "fechaSalida"          => substr($planillaruta->plarutfechahorasalida, 0, -9),        
+                            "horaSalida"           => substr($planillaruta->plarutfechahorasalida, -8, 10),
+                            "nombreRuta"           => $planillaruta->nombreRuta,
+                            "numeroVehiculo"       => $planillaruta->vehinumerointerno,
+                            "placaVehiculo"        => $planillaruta->vehiplaca,
+                            "conductorVehiculo"    => $planillaruta->nombreConductor,
+                            "documentoConductor"   => $planillaruta->persdocumento,
+                            "telefonoConductor"    => $planillaruta->persnumerocelular,
+                            "valorEncomienda"      => $planillaruta->valorEnvio,
+                            "valorDomicilio"       => $planillaruta->valorDomicilioEnvio,
+                            "valorComision"        => $planillaruta->valorComisionEnvio,
+                            "valorTotal"           => $planillaruta->valorTotalEnvio,
+                            "numeroOperacion"      => '00',//568675
+                            "subTotalTiquete"      => $planillaruta->subTotalTiquete,
+                            "valorFondoReposicion" => $planillaruta->valorFondoReposicion,
+                            "valorTotalTiquete"    => $planillaruta->valorTotalTiquete,
+                            "cantidadPasajeros"    => $planillaruta->cantidadPasajeros,
+                            "usuarioElabora"       => $planillaruta->usuarioRegistra,
+                            "usuarioDespacha"      => $planillaruta->usuarioDespahcca,
+                            "nombreAgencia"        => $planillaruta->agennombre,
+                            "direccionAgencia"     => $planillaruta->agendireccion,
+                            "telefonoAgencia"      => $planillaruta->telefonoAgencia,
+                            "mensajePlanilla"      => $planillaruta->mensajePlanilla,
+                            "metodo"               => 'S'
+                        ];
+
+            $data       = $generarPdf->planillaServicioTransporte($arrayDatos, $tiquetes, $agencias);
+  			return response()->json(["data" => $data]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);
         }

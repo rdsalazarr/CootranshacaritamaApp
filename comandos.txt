@@ -351,3 +351,4 @@ php artisan make:middleware PreloadSecurityMiddleware
 
 php artisan db:seed
 npm install react-beautiful-dnd
+responsabilidad
