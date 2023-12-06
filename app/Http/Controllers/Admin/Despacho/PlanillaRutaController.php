@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Despacho;
 use App\Models\Despacho\EncomiendaCambioEstado;
 use App\Models\Despacho\PlanillaRuta;
 use App\Http\Controllers\Controller;
+use App\Models\Despacho\Encomienda;
 use Illuminate\Http\Request;
 use Exception, DB, Auth;
 use App\Util\generarPdf;
@@ -24,8 +25,8 @@ class PlanillaRutaController extends Controller
                     DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
                     DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
                     DB::raw("CONCAT(p.persprimernombre,' ',  p.persprimerapellido) as nombreConductor"),
-                    DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos)  as usuarioRegistra"),
-                    DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos)  as usuarioDespacha"))
+                    DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
+                    DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos) as usuarioDespacha"))
                     ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                     ->join('municipio as mo', function($join)
                     {
@@ -133,7 +134,8 @@ class PlanillaRutaController extends Controller
                         DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
                         DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                     p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
-                        DB::raw('(SELECT COUNT(encoid) AS encoid FROM encomienda WHERE plarutid = pr.plarutid) AS totalEncomiendas'))
+                        DB::raw('(SELECT COUNT(encoid) AS encoid FROM encomienda WHERE plarutid = pr.plarutid) AS totalEncomiendas'),
+                        DB::raw('(SELECT COUNT(tiquid) AS encotiquidid FROM tiquete WHERE plarutid = pr.plarutid) AS totalTiquete'))
                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                         ->join('municipio as mo', function($join)
                         {
@@ -152,7 +154,55 @@ class PlanillaRutaController extends Controller
                         ->where('pr.plarutid', $request->codigo)
                         ->first();
 
-        return response()->json(["planillaRuta" => $planillaRuta]);    
+            $encomiendas = [];
+            if($planillaRuta->totalEncomiendas > 0){
+                $encomiendas = DB::table('encomienda as e')->select('te.tipencnombre as tipoEncomienda',
+                            DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorenvio, 0)) as valorEnvio"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalordeclarado, 0)) as valorDeclarado"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionseguro, 0)) as comisionSeguro"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionempresa, 0)) as comisionEmpresa"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionagencia, 0)) as comisionAgencia"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionvehiculo, 0)) as comisionVehiculo"),
+                            DB::raw("CONCAT('$ ', FORMAT(e.encovalortotal, 0)) as valorTotal"),
+                            DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaRemitente"))
+                            ->join('personaservicio as ps', 'ps.perserid', '=', 'e.perseridremitente')
+                            ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
+                            
+                            ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino')
+                            ->join('municipio as md', function($join)
+                            {
+                                $join->on('md.munidepaid', '=', 'e.depaiddestino');
+                                $join->on('md.muniid', '=', 'e.muniiddestino');
+                            })
+                            ->where('e.plarutid', $request->codigo)->get();
+                }
+
+            $tiquetes    = [];
+            if($planillaRuta->totalTiquete > 0){
+                $tiquetes  = DB::table('tiquete as t')
+                            ->select(
+                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortiquete, 0)) as valorTiquete"),
+                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalordescuento, 0)) as valorDescuento"),
+                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalorfondoreposicion, 0)) as valorValorfondoReposicion"),
+                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortotal, 0)) as valorTotalTiquete"),
+                            DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            'mde.muninombre as municipioDestino', 'a.agennombre as nombreAgencia', 
+                            DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                        ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente"))
+                            ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                            ->join('municipio as mde', function($join)
+                            {
+                                $join->on('mde.munidepaid', '=', 't.depaiddestino');
+                                $join->on('mde.muniid', '=', 't.muniiddestino');
+                            })
+                            ->join('agencia as a', 'a.agenid', '=', 't.agenid')
+                            ->where('pr.plarutid', $request->codigo)->get();
+            }            
+
+        return response()->json(["planillaRuta" => $planillaRuta, "encomiendas" => $encomiendas, "tiquetes" => $tiquetes]);    
     }
     
     public function registrarSalida(Request $request)
@@ -222,7 +272,7 @@ class PlanillaRutaController extends Controller
                             DB::raw('(SELECT SUM(tiquvalortiquete) AS tiquvalortiquete FROM tiquete WHERE plarutid = pr.plarutid) AS subTotalTiquete'),
                             DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS valorFondoReposicion'),
                             DB::raw('(SELECT SUM(tiquvalortotal) AS tiquvalortotal FROM tiquete WHERE plarutid = pr.plarutid) AS valorTotalTiquete'),
-                            DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))
+                            DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))                            
                             ->join('conductor as c', 'c.condid', '=', 'pr.condid')
                             ->join('persona as p', 'p.persid', '=', 'c.persid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
@@ -243,8 +293,8 @@ class PlanillaRutaController extends Controller
                             ->where('pr.plarutid', $request->codigo)->first();
 
             $tiquetes  = DB::table('tiquete as t')
-                            ->select('t.tiquvalortotal as totalTiquete', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
-                            'tp.tiqpuenumeropuesto', 'mde.muninombre as municipioDestino', 
+                            ->select('t.tiquvalortiquete as totalTiquete', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            'tp.tiqpuenumeropuesto as numeroPuesto', 'mde.muninombre as municipioDestino', 
                             DB::raw("CONCAT(ps.perserprimernombre,' ', ps.perserprimerapellido) as nombreCliente"))
                             ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                             ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
@@ -254,13 +304,13 @@ class PlanillaRutaController extends Controller
                                 $join->on('mde.munidepaid', '=', 't.depaiddestino');
                                 $join->on('mde.muniid', '=', 't.muniiddestino');
                             })
-                            ->where('pr.plarutid', $request->codigo)->first();
+                            ->where('pr.plarutid', $request->codigo)->get();
 
             $agencias  = DB::table('agencia as a')->select('a.agennombre',
                             DB::raw("CONCAT('OFI. ',a.agennombre,':') as nombreAgencia"),
                             DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS totalFondoReposicion'))
-                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.agenid')
-                            ->where('pr.plarutid', $request->codigo)->first();
+                            ->join('planillaruta as pr', 'pr.agenid', '=', 'a.agenid')
+                            ->where('pr.plarutid', $request->codigo)->get();
 
             $generarPdf = new generarPdf();
             $arrayDatos = [

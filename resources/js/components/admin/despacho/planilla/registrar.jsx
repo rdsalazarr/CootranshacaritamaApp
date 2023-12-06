@@ -19,7 +19,7 @@ export default function List(){
                         <NewEdit tipo={'I'} />,
                         <NewEdit data={modal.data} tipo={'U'} />,
                         <Despachar data={modal.data} />,
-                        <VisualizarPdf id={1} />
+                        <VisualizarPdf id={2} />
                     ];
 
     const tituloModal = ['Nueva planilla','Editar planilla','Despachar vehículo'];

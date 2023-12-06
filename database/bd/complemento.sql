@@ -90,3 +90,9 @@ ALTER TABLE `planillaruta` CHANGE `usuaidrecibe` `usuaiddespacha` SMALLINT(5) UN
 ALTER TABLE `planillaruta` CHANGE `plarutfechahorarecibe` `plarutfechallegadaaldestino` DATETIME NULL DEFAULT NULL COMMENT 'Fecha y hora actual en que se recibe la planilla para la ruta';
 
 ALTER TABLE `planillaruta` ADD `plarutanio` YEAR NULL AFTER `plarutfechahoraregistro`;
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(44, 9, 'Recibir planilla', 'Getionar proceso de recibir planilla', 'admin/despacho/recibirPlanilla', 'format_align_justify_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(44, 1, 44);

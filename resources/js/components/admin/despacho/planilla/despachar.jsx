@@ -2,7 +2,7 @@ import React, {useState, useEffect, Fragment} from 'react';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
-import { Button, Grid, Stack, Box} from '@mui/material';
+import { Button, Grid, Stack, Box, Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
@@ -13,8 +13,10 @@ export default function Despachar({data}){
     const [formData, setFormData] = useState({codigo:data.plarutid, numeroPlanilla:'', fechaRegistro:'', fechaSalida:'', ruta:'', vehiculo:'', conductor: ''});
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
+    const [encomiendas, setEncomiendas] = useState([]);
+    const [tiquetes, setTiquetes] = useState([]);
     const [loader, setLoader] = useState(false);
-
+    
     const handleSubmit = () =>{
         setLoader(true);
         instance.post('/admin/despacho/planilla/registrar/salida', {codigo:data.plarutid, conductor: data.condid, vehiculo: data.vehiid}).then(res=>{
@@ -37,7 +39,11 @@ export default function Despachar({data}){
             newFormData.ruta             = planillaRuta.nombreRuta;
             newFormData.vehiculo         = planillaRuta.nombreVehiculo;
             newFormData.conductor        = planillaRuta.nombreConductor;
-            newFormData.totalEncomiendas = planillaRuta.totalEncomiendas;            
+            newFormData.totalEncomiendas = planillaRuta.totalEncomiendas;
+            newFormData.totalTiquete     = planillaRuta.totalTiquete;
+
+            setEncomiendas(res.encomiendas);
+            setTiquetes(res.tiquetes);
             setFormData(newFormData);
             setLoader(false);
         })
@@ -107,21 +113,149 @@ export default function Despachar({data}){
                                     Información de encomienda
                                 </Box>
                             </Grid>
-
                             <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <Box className='divisionFormulario'>
-                                    Listado de pasajeros
+                                <Box sx={{maxHeight: '35em', overflow:'auto'}}>
+                                    <Table key={'tablePersona'} className={'tableAdicional'} sx={{width: '98%', margin:'auto'}} sm={{maxHeight: '99%', margin:'auto'}}>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Tipo encomienda</TableCell>
+                                                <TableCell>Nombre del cliente </TableCell>
+                                                <TableCell>Destino</TableCell>
+                                                <TableCell>Valor envío</TableCell>
+                                                <TableCell>Valor declarado</TableCell>
+                                                <TableCell>Comisión seguro</TableCell>
+                                                <TableCell>Comisión empresa</TableCell>
+                                                <TableCell>Comisión agencia</TableCell>
+                                                <TableCell>Comisión vehículo</TableCell>
+                                                <TableCell>Valor total </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+
+                                        { encomiendas.map((enc, a) => {
+                                            return(
+                                                <TableRow key={'rowT-' +a}>
+                                                    <TableCell>
+                                                        {enc['tipoEncomienda']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['nombrePersonaRemitente']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['destinoEncomienda']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['valorEnvio']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['valorDeclarado']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['comisionSeguro']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['comisionEmpresa']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['comisionAgencia']}
+                                                    </TableCell> 
+
+                                                    <TableCell>
+                                                        {enc['comisionVehiculo']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {enc['valorTotal']}
+                                                    </TableCell>
+
+                                                </TableRow>
+                                                );
+                                            })
+                                        }
+                                        </TableBody>
+                                    </Table>
                                 </Box>
                             </Grid>
                         </Fragment>
                     : null}
 
-                    <Grid item xl={12} md={12} sm={12} xs={12}>
-                        <Box className='frmTexto'>
+                    {(formData.totalTiquete > 0) ?
+                        <Fragment>
+                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                <Box className='divisionFormulario'>
+                                    Listado de pasajeros
+                                </Box>
+                            </Grid>
+                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                <Box sx={{maxHeight: '35em', overflow:'auto'}}>
+                                    <Table key={'tablePersona'} className={'tableAdicional'} sx={{width: '98%', margin:'auto'}} sm={{maxHeight: '99%', margin:'auto'}}>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Agencia</TableCell>
+                                                <TableCell>Nombre del cliente </TableCell>
+                                                <TableCell>Número tiquete</TableCell>
+                                                <TableCell>Destino</TableCell>
+                                                <TableCell>Valor tiquete</TableCell>
+                                                <TableCell>Valor descuento</TableCell>
+                                                <TableCell>Valor fondo reposición</TableCell>
+                                                <TableCell>Valor total tiquete</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>  
 
-                        </Box>
-                    </Grid>
+                                        { tiquetes.map((tiq, a) => {                                            
+                                            return(
+                                                <TableRow key={'rowT-' +a}>
+                                                    <TableCell>
+                                                        {tiq['nombreAgencia']}
+                                                    </TableCell>
 
+                                                    <TableCell>
+                                                        {tiq['nombreCliente']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['numeroTiquete']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['municipioDestino']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['valorTiquete']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['valorDescuento']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['valorValorfondoReposicion']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['valorTotalTiquete']}
+                                                    </TableCell>
+
+                                                </TableRow>
+                                                );
+                                            })
+                                        }
+                                        </TableBody>
+                                    </Table>
+                                </Box>
+                            </Grid>
+                        </Fragment>
+                    : null}
+          
                 </Grid>
 
                 <Grid container direction="row"  justifyContent="right">

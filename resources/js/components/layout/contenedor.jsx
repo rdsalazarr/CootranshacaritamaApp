@@ -163,7 +163,7 @@ const componenteMenu = [
     {   nombre: 'Caja',
         icono : 'attach_money_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <Tiquetes />},
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'checklist_rtl_icon',   componente : <Tiquetes />},
         ]
     },
     {   nombre: 'Informes',

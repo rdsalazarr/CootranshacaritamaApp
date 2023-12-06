@@ -38,7 +38,7 @@ export default function List(){
                 <TablaGeneral
                     datos={data}
                     titulo={['Fecha registo','Fecha de salida','Origen', 'Destino','Número','Vehículo','Conductor','Registrado por','Recibida por', 'Imprimir']}
-                    ver={["fechaHoraRegistro","fechaHoraSalida","municipioOrigen","municipioDestino","numeroPlanilla","nombreVehiculo", "nombreConductor", "usuarioRegistra", "usuarioRecibe"]}
+                    ver={["fechaHoraRegistro","fechaHoraSalida","municipioOrigen","municipioDestino","numeroPlanilla","nombreVehiculo", "nombreConductor", "usuarioRegistra", "usuarioDespacha"]}
                     accion={[ {tipo: 'B', icono : 'picture_as_pdf', color: 'orange', funcion : (data)=>{edit(data,0)} }]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />

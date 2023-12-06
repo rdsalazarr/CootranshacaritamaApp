@@ -2609,16 +2609,16 @@ EOD;
 		PDF::Cell(14, 3,"Tiquete", 0, 0,'C');
 		PDF::Cell(6, 3,"P", 0, 0,'C'); 
 		PDF::Cell(12, 3,"Pasajero", 0, 0,'C');
-		PDF::Cell(11, 3,"Destino", 0, 0,'C');
-		PDF::Cell(11, 3,"Valor", 0, 0,'C');
+		PDF::Cell(12, 3,"Destino", 0, 0,'C');
+		PDF::Cell(12, 3,"Valor", 0, 0,'C');
 		PDF::Ln(3);
 
 		foreach($tiquetes as $tiquete){
 			PDF::Cell(14, 3,$tiquete->numeroTiquete, 0, 0,'L');
-			PDF::Cell(6, 3,$tiquete->totalTiquete, 0, 0,'L'); 
+			PDF::Cell(6, 3,$tiquete->numeroPuesto, 0, 0,'L'); 
 			PDF::Cell(12, 3,substr($tiquete->nombreCliente, 0, 8) , 0, 0,'L');
-			PDF::Cell(12, 3,substr($tiquete->municipioDestino, 0, 7) , 0, 0,'L');
-			PDF::Cell(12, 3, number_format($tiquete->totalTiquete,0,',','.') , 0, 0,'L');
+			PDF::Cell(12, 3,substr($tiquete->municipioDestino, 0, 9) , 0, 0,'L');
+			PDF::Cell(12, 3,'$ '.number_format($tiquete->totalTiquete,0,',','.'), 0, 0,'R');
 			PDF::Ln(3);
 		}
 
@@ -2627,19 +2627,19 @@ EOD;
 		PDF::Ln(2);
 		PDF::SetFont('helvetica','',6);
 		PDF::Cell(22, 3, 'Subtotal:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ '.number_format($tiquete->subTotalTiquete,0,',','.'), 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($subTotalTiquete,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Fondo de reposición:', 0, 0,'L');
-		PDF::Cell(34, 3, '-$ '.number_format($tiquete->valorFondoReposicion,0,',','.'), 0, 0,'R');
+		PDF::Cell(34, 3, '-$ '.number_format($valorFondoReposicion,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Estampillas:', 0, 0,'L');
 		PDF::Cell(34, 3, '-$ 0', 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Valor total:', 0, 0,'L');
-		PDF::Cell(34, 3, '-$ '.number_format($tiquete->valorTotalTiquete,0,',','.'), 0, 0,'R');
+		PDF::Cell(34, 3, '-$ '.number_format($valorTotalTiquete,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Nro. pasajeros:', 0, 0,'L');
-		PDF::Cell(34, 3, $tiquete->cantidadPasajeros, 0, 0,'R');
+		PDF::Cell(34, 3, $cantidadPasajeros, 0, 0,'R');
 
 		PDF::Ln(3);
 		PDF::SetFont('helvetica','',7);
@@ -2678,25 +2678,6 @@ EOD;
 			PDF::Cell(34, 3, '$ '.number_format($agencia->totalFondoReposicion,0,',','.'), 0, 0,'R');
 			PDF::Ln(3);
 		}
-
-		PDF::SetFont('helvetica','',7);
-		PDF::Cell(56, 2, $linea, 0, 0,'L');
-		PDF::Ln(2);
-		PDF::Cell(56, 3,"DETALLE DE ESTAMPILLAS", 0, 0,'C');
-		PDF::Ln(2);
-		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
-		PDF::SetFont('helvetica','',6);
-		PDF::Ln(3);
-
-		PDF::Cell(22, 3, 'OFI. PARQUE:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 9,000', 0, 0,'R');
-		PDF::Ln(3);
-		PDF::Cell(22, 3, 'OFI. SANTA CLARA:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 6,000', 0, 0,'R');
-		PDF::Ln(3);
-		PDF::Cell(22, 3, 'OFI. PARQUE 2:', 0, 0,'L');
-		PDF::Cell(34, 3, '$ 3,000', 0, 0,'R');
-		PDF::Ln(3);
 
 		PDF::SetFont('helvetica','',7);
 		PDF::Cell(56, 2, $linea, 0, 0,'L');
