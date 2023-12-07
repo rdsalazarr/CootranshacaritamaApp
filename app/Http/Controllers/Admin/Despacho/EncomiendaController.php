@@ -341,7 +341,8 @@ class EncomiendaController extends Controller
                                     ->join('tipoestadoencomienda as tee', 'tee.tiesenid', '=', 'ece.tiesenid')
                                     ->join('encomienda as e', 'e.encoid', '=', 'ece.encoid')
                                     ->join('usuario as u', 'u.usuaid', '=', 'ece.encaesusuaid')
-                                    ->where('e.encoid', $request->codigo)->get();
+                                    ->where('e.encoid', $request->codigo)
+                                    ->orderBy('encaesid')->get();
 
         return response()->json(["encomienda" => $encomienda, "cambiosEstadoEncomienda" => $cambiosEstadoEncomienda ]);
     }

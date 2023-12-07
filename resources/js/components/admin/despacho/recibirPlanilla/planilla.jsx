@@ -1,18 +1,18 @@
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Fab} from '@mui/material';
+import {Button, Grid, Box, MenuItem, Card} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
 export default function Search(){
-    const [formData, setFormData] = useState({agencia:'', anyo:'', consecutivo:''})   
-    const [habilitado, setHabilitado] = useState(true);
-    const [agencias, setAgencias] = useState([]);    
+
+    const [formData, setFormData] = useState({agencia:'', anyo:'', consecutivo:''});
+    const [agencias, setAgencias] = useState([]);
     const [loader, setLoader] = useState(false);
     const [anyos, setAnyos] = useState([]);
-    
+
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -31,7 +31,6 @@ export default function Search(){
         setLoader(true);
         instance.get('/admin/despacho/recibir/planilla/list').then(res=>{
             setAgencias(res.agencias);
-            console.log(res.anyos);
             setAnyos((res.anyos.length > 0) ? res.anyos : []);
             setLoader(false);
         })
@@ -42,8 +41,8 @@ export default function Search(){
     }
 
     return (
-        <ValidatorForm onSubmit={handleSubmit}>           
-            <Box className={'containerSmall'}>
+        <ValidatorForm onSubmit={handleSubmit}>
+            <Box className={'containerMedium'}>
                 <Card className={'cardContainer'}>
                     <Grid container spacing={2}>
 
@@ -86,7 +85,7 @@ export default function Search(){
                         </Grid>
 
                         <Grid item xl={3} md={3} sm={6} xs={12}>
-                            <TextValidator 
+                            <TextValidator
                                 name={'consecutivo'}
                                 value={formData.consecutivo}
                                 label={'Consecutivo'}

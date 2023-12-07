@@ -7,8 +7,6 @@ import { Box, Card} from '@mui/material';
 import Despachar from './despachar';
 import NewEdit from './new';
 
-import VisualizarPdf from './visualizarPdf';
-
 export default function List(){
 
     const [loader, setLoader] = useState(true);
@@ -18,8 +16,7 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'} />,
                         <NewEdit data={modal.data} tipo={'U'} />,
-                        <Despachar data={modal.data} />,
-                        <VisualizarPdf id={2} />
+                        <Despachar data={modal.data} />
                     ];
 
     const tituloModal = ['Nueva planilla','Editar planilla','Despachar vehículo'];
@@ -47,13 +44,12 @@ export default function List(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Fecha registo','Fecha de salida','Origen', 'Destino','Número','Vehículo','Conductor','Registrado por','Actualizar', 'Despachar', 'PDF']}
+                    titulo={['Fecha registo','Fecha de salida','Origen', 'Destino','Número','Vehículo','Conductor','Registrado por','Actualizar', 'Despachar']}
                     ver={["fechaHoraRegistro","fechaHoraSalida","municipioOrigen","municipioDestino","numeroPlanilla","nombreVehiculo", "nombreConductor", "usuarioRegistra"]}
                     accion={[
                         {tipo: 'T', icono : 'add',             color: 'green',  funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',            color: 'orange', funcion : (data)=>{edit(data,1)} },
-                        {tipo: 'B', icono : 'car_repair_icon', color: 'red',    funcion : (data)=>{edit(data,2)} },
-                        {tipo: 'B', icono : 'picture_as_pdf', color: 'orange', funcion : (data)=>{edit(data,3)} }
+                        {tipo: 'B', icono : 'car_repair_icon', color: 'red',    funcion : (data)=>{edit(data,2)} }
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />

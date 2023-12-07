@@ -14,19 +14,22 @@ class RecibirPlanillaRutaController extends Controller
 {
     public function index()
     {
-        $agencias = DB::table('agencia')->select('agenid','agennombre')->orderBy('agennombre', 'Desc')->get();
-        $anyos    = DB::table('planillaruta')->distinct()->select('plarutanio')->get(); 
-        return response()->json(["agencias" => $agencias, "anyos" => $anyos]);
+        $agencias             = DB::table('agencia')->select('agenid','agennombre')->orderBy('agennombre', 'Desc')->get();
+        $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
+        $anyos                = DB::table('planillaruta')->distinct()->select('plarutanio')->get();
+
+        return response()->json(["agencias" => $agencias, "tipoIdentificaciones" => $tipoIdentificaciones, "anyos" => $anyos]);
     }
 
     public function salve(Request $request)
 	{
-        $this->validate(request(),['agencia' => 'required|numeric', 'anyo' => 'required|numeric', 'consecutivo' => 'required|numeric' ]);
+        $this->validate(request(),['agencia' => 'required|numeric', 'anyo' => 'required|numeric', 'consecutivo' => 'required|numeric']);
 
+        $consecutivo  = str_pad($request->consecutivo,  4, "0", STR_PAD_LEFT);
         $planillaruta = DB::table('planillaruta')->select('plarutid')
                                             ->where('agenid', $request->agencia)
                                             ->where('plarutanio', $request->anyo)
-                                            ->where('plarutconsecutivo', $request->consecutivo)
+                                            ->where('plarutconsecutivo', $consecutivo)
                                             ->whereNull('plarutfechallegadaaldestino')
                                             ->where('plarutdespachada', true)->first();
         if(!$planillaruta){
@@ -56,6 +59,44 @@ class RecibirPlanillaRutaController extends Controller
                 $encomiendacambioestado->encaesobservacion = 'En terminal destino. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $encomiendacambioestado->save();
             }
+
+            DB::commit();
+        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+		} catch (Exception $error){
+            DB::rollback();
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+		}
+    }
+
+    public function salveEntregaEncomienda(Request $request)
+	{
+        $this->validate(request(),['agencia' => 'required|numeric', 'anyo' => 'required|numeric', 'consecutivo' => 'required|numeric' ]);
+
+        $consecutivo = str_pad($request->consecutivo,  4, "0", STR_PAD_LEFT);
+        $encomienda  = DB::table('encomienda')->select('encoid')
+                                            ->where('agenid', $request->agencia)
+                                            ->where('encoanio', $request->anyo)
+                                            ->where('encoconsecutivo', $consecutivo)
+                                            ->where('tiesenid', 'D')->first();
+        if(!$encomienda){
+            return response()->json(['success' => false, 'message'=> 'La información proporcionada no generó resultados para mostrar']); 
+        }
+
+        DB::beginTransaction();
+        try {
+
+            $fechaHoraActual      = Carbon::now();
+            $encomienda           = Encomienda::findOrFail($encomienda->encoid);
+            $encomienda->tiesenid = 'E';
+            $encomienda->save();
+
+            $encomiendacambioestado 				   = new EncomiendaCambioEstado();
+            $encomiendacambioestado->encoid            = $encomienda->encoid;
+            $encomiendacambioestado->tiesenid          = 'E';
+            $encomiendacambioestado->encaesusuaid      = Auth::id();
+            $encomiendacambioestado->encaesfechahora   = $fechaHoraActual;
+            $encomiendacambioestado->encaesobservacion = 'La encomienda ha sido entregada. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+            $encomiendacambioestado->save();
 
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

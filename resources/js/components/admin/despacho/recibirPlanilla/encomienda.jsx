@@ -1,25 +1,24 @@
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Fab} from '@mui/material';
+import {Button, Grid, Box, MenuItem, Card} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
 export default function Encomienda(){
-    const [formData, setFormData] = useState({agencia:'', anyo:'', consecutivo:''})   
-    const [habilitado, setHabilitado] = useState(true);
-    const [agencias, setAgencias] = useState([]);    
+
+    const [formData, setFormData] = useState({tipoIdentificacion:'', tipoPersona:'', documento:''});
+    const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [loader, setLoader] = useState(false);
-    const [anyos, setAnyos] = useState([]);
-    
+
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
     const handleSubmit = () =>{
         setLoader(true);
-        instance.post('/admin/despacho/recibir/planilla/salve', formData).then(res=>{
+        instance.post('/admin/despacho/entregar/encomienda/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setFormData({agencia:'', anyo:'', consecutivo:''}) : null;
@@ -30,9 +29,7 @@ export default function Encomienda(){
     useEffect(()=>{
         setLoader(true);
         instance.get('/admin/despacho/recibir/planilla/list').then(res=>{
-            setAgencias(res.agencias);
-            console.log(res.anyos);
-            setAnyos((res.anyos.length > 0) ? res.anyos : []);
+            setTipoIdentificaciones(res.tipoIdentificaciones);
             setLoader(false);
         })
     }, []);
@@ -42,16 +39,16 @@ export default function Encomienda(){
     }
 
     return (
-        <ValidatorForm onSubmit={handleSubmit}>           
-            <Box className={'containerSmall'}>
+        <ValidatorForm onSubmit={handleSubmit}>
+            <Box className={'containerMedium'}>
                 <Card className={'cardContainer'}>
                     <Grid container spacing={2}>
 
-                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
                             <SelectValidator
-                                name={'agencia'}
-                                value={formData.agencia}
-                                label={'Agencia'}
+                                name={'tipoPersona'}
+                                value={formData.tipoPersona}
+                                label={'Tipo persona'}
                                 className={'inputGeneral'}
                                 variant={"standard"} 
                                 inputProps={{autoComplete: 'off'}}
@@ -60,49 +57,47 @@ export default function Encomienda(){
                                 onChange={handleChange} 
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
-                                {agencias.map(res=>{
-                                    return <MenuItem value={res.agenid} key={res.agenid} >{res.agennombre}</MenuItem>
-                                })}
-                            </SelectValidator>
+                                <MenuItem value={"R"}>Remitente</MenuItem>
+                                <MenuItem value={"D"}>Destinatario</MenuItem>
+                                </SelectValidator>
                         </Grid>
 
                         <Grid item xl={3} md={3} sm={6} xs={12}>
                             <SelectValidator
-                                name={'anyo'}
-                                value={formData.anyo}
-                                label={'Año'}
+                                name={'tipoIdentificacion'}
+                                value={formData.tipoIdentificacion}
+                                label={'Tipo identificación'}
                                 className={'inputGeneral'}
                                 variant={"standard"} 
                                 inputProps={{autoComplete: 'off'}}
                                 validators={["required"]}
                                 errorMessages={["Debe hacer una selección"]}
-                                onChange={handleChange} 
+                                onChange={handleChange}
                             >
                                 <MenuItem value={""}>Seleccione</MenuItem>
-                                {anyos.map(res=>{
-                                    return <MenuItem value={res.plarutanio} key={res.plarutanio} >{res.plarutanio}</MenuItem>
+                                {tipoIdentificaciones.map(res=>{
+                                    return <MenuItem value={res.tipideid} key={res.tipideid} >{res.tipidenombre}</MenuItem>
                                 })}
                             </SelectValidator>
                         </Grid>
 
                         <Grid item xl={3} md={3} sm={6} xs={12}>
-                            <TextValidator 
+                            <TextValidator
                                 name={'consecutivo'}
                                 value={formData.consecutivo}
                                 label={'Consecutivo'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
-                                validators={["required","maxNumber:9999"]}
-                                errorMessages={["campo obligatorio","Número máximo permitido es el 9999"]}
+                                className={'inputGeneral'}
+                                variant={"standard"}
+                                inputProps={{autoComplete: 'off', maxLength: 15}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
                                 onChange={handleChange}
-                                type={"number"}
-                            />                        
+                            />
                         </Grid>
 
-                        <Grid item xl={2} md={2} sm={6} xs={12}>
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
                             <Button type={"submit"} className={'modalBtn'}
-                                startIcon={<SaveIcon />}>Guardar
+                                startIcon={<SaveIcon />}>Consultar
                             </Button>
                         </Grid>
 

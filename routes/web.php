@@ -457,6 +457,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/recibir/planilla/list', [RecibirPlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/recibirPlanilla');
             Route::post('/recibir/planilla/salve', [RecibirPlanillaRutaController::class, 'salve']);
+            Route::post('/entregar/encomienda/salve', [RecibirPlanillaRutaController::class, 'salveEntregaEncomienda']);
 
             Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index'])->middleware('security:admin/despacho/servicioEspecial');
             Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);
