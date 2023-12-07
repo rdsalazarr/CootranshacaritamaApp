@@ -26,7 +26,7 @@ return new class extends Migration
             $table->dateTime('plarutfechallegadaaldestino')->nullable()->comment('Fecha y hora en el cual se recibe la planilla en su destino final');
             $table->boolean('plarutdespachada')->default(false)->comment('Determina si la ruta fue despachada');
             $table->timestamps();
-            $table->unique(['plarutanio','plarutconsecutivo'],'uk_planillaruta');
+            $table->unique(['agenid','plarutanio','plarutconsecutivo'],'uk_planillaruta');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenplarut');
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutaplarut');
             $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehiplarut');

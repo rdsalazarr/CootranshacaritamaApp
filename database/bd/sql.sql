@@ -1258,7 +1258,7 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (40, 9, 'Planillas', 'Getionar planillas', 'admin/despacho/planillas', 'no_crash_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (41, 9, 'Encomiendas', 'Getionar encomiendas', 'admin/despacho/encomiendas', 'local_shipping_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (42, 9, 'Tiquetes', 'Getionar tiquetes', 'admin/despacho/tiquetes', 'card_travel_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(43, 9, 'Recibir planilla', 'Getionar proceso de recibir planilla', 'admin/despacho/recibirPlanilla', 'checklist_rtl_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(43, 9, 'Recibir', 'Getionar proceso de recibir planilla o encomienda', 'admin/despacho/recibirPlanilla', 'checklist_rtl_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (44, 9, 'Servico especial', 'Getionar planilla de servico especial', 'admin/despacho/servicioEspecial', 'taxi_alert_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
  

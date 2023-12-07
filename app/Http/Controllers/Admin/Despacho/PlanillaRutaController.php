@@ -114,7 +114,7 @@ class PlanillaRutaController extends Controller
 			$planillaruta->condid                  = $request->conductor;
             $planillaruta->plarutfechahorasalida   = $request->fechaHoraSalida;
            	$planillaruta->save();    
-   
+
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
@@ -208,6 +208,8 @@ class PlanillaRutaController extends Controller
     public function registrarSalida(Request $request)
 	{
         $this->validate(request(),['codigo' => 'required', 'conductor' => 'required', 'vehiculo' => 'required']);
+
+        DB::beginTransaction();
         try {
             $fechaHoraActual = Carbon::now();
 
@@ -243,8 +245,10 @@ class PlanillaRutaController extends Controller
                 $encomiendacambioestado->save();
             }
 
+            DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
+            DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
     }
@@ -352,7 +356,7 @@ class PlanillaRutaController extends Controller
     public function obtenerConsecutivo($anioActual)
 	{
         $consecutivoPlanilla = DB::table('planillaruta')->select('plarutconsecutivo as consecutivo')
-                                                       // ->where('plarutanio', $anioActual)
+                                                        ->where('plarutanio', $anioActual)
                                                         ->where('agenid', auth()->user()->agenid)
                                                         ->orderBy('tiquid', 'Desc')->orderBy('plarutid', 'desc')->first();
         $consecutivo = ($consecutivoPlanilla === null) ? 1 : $consecutivoPlanilla->consecutivo + 1;

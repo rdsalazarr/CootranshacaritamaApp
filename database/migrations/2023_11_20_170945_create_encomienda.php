@@ -41,7 +41,7 @@ return new class extends Migration
             $table->date('encofecharecibido')->nullable()->comment('Fecha de recibido de la encomienda');
             $table->boolean('encopagada')->default(false)->comment('Determina si la encomienda fue pagada');
             $table->timestamps();
-            $table->unique(['encoanio','encoconsecutivo'],'uk_encomienda');
+            $table->unique(['agenid','encoanio','encoconsecutivo'],'uk_encomienda');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenenco');
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuaenco');
             $table->foreign('plarutid')->references('plarutid')->on('planillaruta')->onUpdate('cascade')->index('fk_plarutenco');

@@ -73,6 +73,7 @@ use App\Http\Controllers\Admin\Despacho\RutaController;
 use App\Http\Controllers\Admin\Despacho\TiqueteController;
 use App\Http\Controllers\Admin\Despacho\EncomiendaController;
 use App\Http\Controllers\Admin\Despacho\PlanillaRutaController;
+use App\Http\Controllers\Admin\Despacho\RecibirPlanillaRutaController;
 use App\Http\Controllers\Admin\Despacho\ContratoServicioEspecialController;
 
 Route::get('/', [FrondController::class, 'index']);
@@ -453,6 +454,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/tiquete/salve', [TiqueteController::class, 'salve']);
             Route::post('/tiquete/show/general', [TiqueteController::class, 'show']);
             Route::post('/tiquete/visualizar/PDF', [TiqueteController::class, 'verFactura']);
+
+            Route::get('/recibir/planilla/list', [RecibirPlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/recibirPlanilla');
+            Route::post('/recibir/planilla/salve', [RecibirPlanillaRutaController::class, 'salve']);
 
             Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index'])->middleware('security:admin/despacho/servicioEspecial');
             Route::post('/servicio/especial/listar/datos', [ContratoServicioEspecialController::class, 'datos']);

@@ -65,6 +65,7 @@ import ServicoEspecial from "../admin/despacho/servicioEspecial/list";
 import Planillas from "../admin/despacho/planilla/list";
 import Encomiendas from "../admin/despacho/encomienda/list";
 import Tiquetes from "../admin/despacho/tiquete/list";
+import RecibirPlanillas from "../admin/despacho/recibirPlanilla/list";
 
 import Rutas1 from "../admin/vehiculos/tipos/vehiculo/old/list1";
 import Rutas2 from "../admin/vehiculos/tipos/vehiculo/old/list2";
@@ -221,7 +222,8 @@ const menuComponente = [
     {id:42,componente : <ServicoEspecial />},    
     {id:43,componente : <Tiquetes />},
     
-    {id:44,componente : <Rutas2 />},
+    {id:44,componente : <RecibirPlanillas />},
+
     {id:45,componente : <Rutas3 />},
     {id:46,componente : <Rutas1 />},
     {id:47,componente : <EnConstruccion />},

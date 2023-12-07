@@ -438,7 +438,9 @@ class EncomiendaController extends Controller
     public function obtenerConsecutivo($anioActual)
 	{
         $consecutivoEncomienda = DB::table('encomienda')->select('encoconsecutivo as consecutivo')
+                                                        ->where('agenid', auth()->user()->agenid)
                                                         ->where('encoanio', $anioActual)->orderBy('encoid', 'desc')->first();
+
         $consecutivo = ($consecutivoEncomienda === null) ? 1 : $consecutivoEncomienda->consecutivo + 1;
         return str_pad($consecutivo,  4, "0", STR_PAD_LEFT);
     }
