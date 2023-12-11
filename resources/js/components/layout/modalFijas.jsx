@@ -3,6 +3,7 @@ import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator} from 'react-material-ui-form-validator';
 import errorTotalizarFirmas from "../../../images/modal/errorTotalizarFirmas.png";
 import suspenderConductor from "../../../images/modal/suspenderConductor.png";
+import entregarEncomienda from "../../../images/modal/entregarEncomienda.png";
 import recibirDocumento from "../../../images/modal/recibirDocumento.png";
 import sellarDocumento from "../../../images/modal/sellarDocumento.png";
 import anularDocumento from "../../../images/modal/anularDocumento.png";
@@ -869,5 +870,59 @@ export function TomarDecisionSolicitudCredito({id, cerrarModal}){
                 </Grid>
             </Grid>
         </ValidatorForm> 
+    )
+}
+
+export function EntregarEncomienda({id, cerrarModal}){
+    const [loader, setLoader] = useState(false);
+    const [habilitado, setHabilitado] = useState(true);
+
+    const continuar = () =>{
+        setLoader(true);
+        instance.post('/admin/despacho/entregar/encomienda/salve', {codigo: id}).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }    
+
+    return (
+        <Grid container spacing={2}>
+            <Box style={{width: '20%', margin: 'auto'}}>
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <Box className='animate__animated animate__rotateIn'>
+                        <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={entregarEncomienda} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                    </Box>
+                </Grid>
+            </Box>
+
+            <Grid item xl={12} md={12} sm={12} xs={12}>
+                <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                Antes de proceder con la entrega de la encomienda, asegúrese de tenerla en sus manos y lista para ser entregada al cliente.
+                </p>
+
+                <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.5em', textAlign: 'center'}}>
+                    ¿Desea continuar con la entrega de la encomienda?
+                </p>
+            </Grid>
+
+            <Grid item xl={6} md={6} sm={6} xs={6}>
+                <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                    startIcon={<ClearIcon />}> Cancelar
+                </Button>
+            </Grid> 
+
+            <Grid item xl={6} md={6} sm={6} xs={6}>
+                <Button onClick={continuar} className='modalBtn' disabled={(habilitado) ? false : true}
+                    startIcon={<SaveIcon />}> Continuar
+                </Button>
+            </Grid> 
+
+        </Grid>
     )
 }

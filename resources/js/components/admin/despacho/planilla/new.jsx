@@ -22,7 +22,7 @@ export default function New({data, tipo}){
                             fechaHoraSalida:data.plarutfechahorasalida,  tipo:tipo 
                         } : {codigo:'000', ruta: '', vehiculo:'', conductor:'', fechaHoraSalida:'', tipo:tipo
                     });
-     
+
     const [conductoresVehiculos, setConductoresVehiculos] = useState([]);
     const [fechaActual, setFechaActual] = useState(new Date());
     const [fechaMinima, setFechaMinima] = useState(dayjs());

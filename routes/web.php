@@ -410,7 +410,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/aprobar/solicitud/credito', [AprobarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/aprobacion');
             Route::get('/listar/estados/solicitud/credito', [AprobarSolicitudCreditoController::class, 'estados']);
-            Route::post('/tomar/decision/solicitud/credito', [AprobarSolicitudCreditoController::class, 'salve']);           
+            Route::post('/tomar/decision/solicitud/credito', [AprobarSolicitudCreditoController::class, 'salve']);
             
             Route::get('/desembolsar/solicitud/credito/datos', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/desembolso');
             Route::post('/consultar/asociado', [DesembolsarSolicitudCreditoController::class, 'consultar']);
@@ -457,6 +457,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/recibir/planilla/list', [RecibirPlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/recibirPlanilla');
             Route::post('/recibir/planilla/salve', [RecibirPlanillaRutaController::class, 'salve']);
+            Route::post('/consultar/persona/entregar/encomienda', [RecibirPlanillaRutaController::class, 'consultarPersona']);
             Route::post('/entregar/encomienda/salve', [RecibirPlanillaRutaController::class, 'salveEntregaEncomienda']);
 
             Route::post('/servicio/especial/list', [ContratoServicioEspecialController::class, 'index'])->middleware('security:admin/despacho/servicioEspecial');

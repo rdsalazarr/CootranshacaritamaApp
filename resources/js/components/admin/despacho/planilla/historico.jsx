@@ -8,10 +8,10 @@ import { Box} from '@mui/material';
 
 export default function List(){
 
-    const [data, setData] = useState([]);
+    const [data, setData]     = useState([]);
     const [loader, setLoader] = useState(true);
-     const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
-    const modales = [<VisualizarPdf id={modal.data.plarutid} /> ];
+    const [modal, setModal]   = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
+    const modales     = [<VisualizarPdf id={modal.data.plarutid} /> ];
     const tituloModal = ['Visualizar PDF del formato de la planilla'];
 
     const edit = (data, tipo) =>{

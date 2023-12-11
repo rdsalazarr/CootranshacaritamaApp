@@ -68,18 +68,64 @@ class RecibirPlanillaRutaController extends Controller
 		}
     }
 
+    public function consultarPersona(Request $request)
+	{
+        $this->validate(request(),['tipoIdentificacion' => 'required|numeric','documento' => 'required|string|max:15', 'tipoPersona' => 'required']);
+
+        $message   = 'La búsqueda con los criterios proporcionados no arrojó resultados. Es posible que la encomienda no esté disponible en el terminal de destino';
+        $consulta  = DB::table('encomienda as e')
+                        ->select('e.encoid','e.tiesenid','e.encofechahoraregistro as fechaHoraRegistro', 'te.tipencnombre as tipoEncomienda',
+                        DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"),
+                        DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mor.muninombre,' - ', mdr.muninombre) as nombreRuta"),
+                        DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                            ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaRemitente"),
+                        DB::raw("CONCAT(ps1.perserprimernombre,' ',if(ps1.persersegundonombre is null ,'', ps1.persersegundonombre),' ',
+                                ps1.perserprimerapellido,' ',if(ps1.persersegundoapellido is null ,' ', ps1.persersegundoapellido)) as nombrePersonaDestino"))
+                        ->join('personaservicio as ps', 'ps.perserid', '=', 'e.perseridremitente')
+                        ->join('personaservicio as ps1', 'ps1.perserid', '=', 'e.perseriddestino')
+                        ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
+                        ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino')
+                        ->join('municipio as md', function($join)
+                        {
+                            $join->on('md.munidepaid', '=', 'e.depaiddestino');
+                            $join->on('md.muniid', '=', 'e.muniiddestino');
+                        })
+                        ->join('planillaruta as pr', 'pr.plarutid', '=', 'e.plarutid')
+                        ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                        ->join('municipio as mor', function($join)
+                        {
+                            $join->on('mor.munidepaid', '=', 'r.depaidorigen');
+                            $join->on('mor.muniid', '=', 'r.muniidorigen');
+                        })
+                        ->join('municipio as mdr', function($join)
+                        {
+                            $join->on('mdr.munidepaid', '=', 'r.depaiddestino');
+                            $join->on('mdr.muniid', '=', 'r.muniiddestino');
+                        });
+
+                        if($request->tipoPersona === 'R')
+                            $consulta = $consulta->where('ps.tipideid', $request->tipoIdentificacion)
+                                                 ->where('ps.perserdocumento', $request->documento);
+
+                        if($request->tipoPersona === 'D')
+                            $consulta = $consulta->where('ps1.tipideid', $request->tipoIdentificacion)
+                                                 ->where('ps1.perserdocumento', $request->documento);
+  
+                $data = $consulta->where('e.tiesenid', 'D')->get();
+
+        return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data, 'message' => $message]);
+    }
+
     public function salveEntregaEncomienda(Request $request)
 	{
-        $this->validate(request(),['agencia' => 'required|numeric', 'anyo' => 'required|numeric', 'consecutivo' => 'required|numeric' ]);
+        $this->validate(request(),['codigo' => 'required|numeric']);
 
         $consecutivo = str_pad($request->consecutivo,  4, "0", STR_PAD_LEFT);
         $encomienda  = DB::table('encomienda')->select('encoid')
-                                            ->where('agenid', $request->agencia)
-                                            ->where('encoanio', $request->anyo)
-                                            ->where('encoconsecutivo', $consecutivo)
+                                            ->where('encoid', $request->codigo)
                                             ->where('tiesenid', 'D')->first();
         if(!$encomienda){
-            return response()->json(['success' => false, 'message'=> 'La información proporcionada no generó resultados para mostrar']); 
+            return response()->json(['success' => false, 'message'=> 'Los datos proporcionados no coinciden. Favor de verificar la información nuevamente']); 
         }
 
         DB::beginTransaction();

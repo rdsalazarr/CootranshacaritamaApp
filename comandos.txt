@@ -352,3 +352,25 @@ php artisan make:middleware PreloadSecurityMiddleware
 php artisan db:seed
 npm install react-beautiful-dnd
 responsabilidad
+
+<select name="credito[tipo_credito_id]" required="">
+    <option value="">SELECCION</option>
+    <option value="35">DERECHO A CUPO CORTE A 28</option>
+    <option value="28">DERECHO DE CUPO</option>
+    <option value="34">DERECHO DE CUPO CORTE A 03</option>
+    <option value="41">EXAMEN MEDICO</option>
+    <option value="36">GASTOS TRANSITO</option>
+    <option value="27">GPS</option>
+    <option value="1">MENSUALIDAD</option>
+    <option value="19">MOVISTAR C28</option>
+    <option value="33">MULTA POLIZAS</option>
+    <option value="3">PLAN COMCEL</option>
+    <option value="4">PLAN MOVISTAR</option>
+    <option value="31">POLIZA RCE- RCC</option>
+    <option value="30">SANCION CONDUCE</option>
+    <option value="44">SANCION MULTA ASAMBLEA</option>
+    <option value="32">SANCION SEGURIDAD SOCIAL</option>
+    <option value="39">SANCION VARIOS</option>
+    <option value="40">SEGURIDAD SOCIAL</option>
+    <option value="29">VARIOS</option>
+</select>
