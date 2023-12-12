@@ -9,7 +9,7 @@ import instance from '../../../layout/instance';
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo: data.tirsanid, nombre: data.tirsannombre, estado: data.tirsanactivo, tipo:tipo 
+                    (tipo !== 'I') ? {codigo: data.tipsanid, nombre: data.tipsannombre, estado: data.tipsanactivo, tipo:tipo 
                                     } : {codigo:'000', nombre: '', estado: '1', tipo:tipo
                                 });
 

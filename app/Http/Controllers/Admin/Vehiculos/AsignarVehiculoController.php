@@ -179,7 +179,7 @@ class AsignarVehiculoController extends Controller
                                 })
                                 ->where('e.emprid', 1)->first();
 
-            if($vehiculocontrato->timoveid === 7){
+            if($vehiculocontrato->timoveid === 'E' ){
                 $idInformacionPdf = 'contratoModalidadEspecial';
             }else  if($vehiculocontrato->timoveid === 'I'){
                 $idInformacionPdf = 'contratoModalidadIntermunicipal';
@@ -189,7 +189,7 @@ class AsignarVehiculoController extends Controller
                 $idInformacionPdf = 'contratoModalidadMixto';
             }
 
-            $informacionPDF                 = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', $idInformacionPdf)->first(); 
+            $informacionPDF                 = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', $idInformacionPdf)->first();
             $fechaFirmaContrato             = $generales->formatearFecha($vehiculocontrato->vehconfechainicial);
             $cuotaSostenimientoAdmon        = number_format($vehiculocontrato->timovecuotasostenimiento, 0, ',', '.') ;
             $descuentoPagoAnualAnticipado   = $vehiculocontrato->timovedescuentopagoanticipado;
@@ -199,6 +199,7 @@ class AsignarVehiculoController extends Controller
             $ciudadExpDocumentoGerente      = $empresa->nombreMunicipioExpedicion;;
             $numeroContrato                 = $vehiculocontrato->numeroContrato;
             $fechaContrato                  = $generales->formatearFechaContrato($vehiculocontrato->vehconfechainicial);
+            $tipoContrato                   = $vehiculocontrato->timoveid;
             
             $identificacionAsociado         = '';
             $nombreAsociado                 = '';
@@ -219,7 +220,7 @@ class AsignarVehiculoController extends Controller
                         "nombreGerente"     => $nombreGerenteFirma,
                         "nombreAsociado"    => $vehiculoContratoAsociado->nombreAsociado,
                         "documentoGerente"  => $documentoGerenteFirma,
-                        "documentoAsociado" => 'C.C. '.number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.'),                        
+                        "documentoAsociado" => 'C.C. '.number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.'),
                         "direccionAsociado" => $vehiculoContratoAsociado->persdireccion
                     ];
 
@@ -245,7 +246,7 @@ class AsignarVehiculoController extends Controller
             $remplazo   = Array($documentoGerente, $nombreGerente, $ciudadExpDocumentoGerente, $cuotaSostenimientoAdmon, $descuentoPagoAnualAnticipado,
                                 $recargoCuotaSostenimientoAdmon, $fechaFirmaContrato, $fechaContrato); 
             $contenido  = str_replace($buscar,$remplazo,$informacionPDF->ingpdfcontenido);
-            $data       = $generarPdf->contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $idInformacionPdf);
+            $data       = $generarPdf->contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $tipoContrato);
 		    return response()->json(["data" => $data]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

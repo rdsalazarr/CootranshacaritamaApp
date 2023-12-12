@@ -11,15 +11,15 @@ class SancionController extends Controller
 {
     public function index()
     {
-        $data = DB::table('tiposancion')->select('tirsanid','tirsannombre','tirsanactivo',
-                                    DB::raw("if(tirsanactivo = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('tirsannombre')->get();
+        $data = DB::table('tiposancion')->select('tipsanid','tipsannombre','tipsanactivo',
+                                    DB::raw("if(tipsanactivo = 1 ,'Sí', 'No') as estado"))
+                                    ->orderBy('tipsannombre')->get();
         return response()->json(["data" => $data]);
     }
 
     public function salve(Request $request)
 	{
-        $id         = $request->codigo;
+        $id          = $request->codigo;
         $tiposancion = ($id != 000) ? TipoSancion::findOrFail($id) : new TipoSancion();
 
 	    $this->validate(request(),[
@@ -28,8 +28,8 @@ class SancionController extends Controller
 	        ]);
 
         try {
-            $tiposancion->tirsannombre = $request->nombre;
-            $tiposancion->tirsanactivo = $request->estado;
+            $tiposancion->tipsannombre = $request->nombre;
+            $tiposancion->tipsanactivo = $request->estado;
             $tiposancion->save();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){
@@ -39,9 +39,9 @@ class SancionController extends Controller
 
     public function destroy(Request $request)
 	{
-		$circular = DB::table('coddocumprocesocircular')->select('tirsanid')->where('tirsanid', $request->codigo)->first();
-		if($circular){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un oficio o a una circular del sistema']);
+		$asociadosancion = DB::table('asociadosancion')->select('tipsanid')->where('tipsanid', $request->codigo)->first();
+		if($asociadosancion){
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una sanción del asociado']);
 		}else{
 			try {
 				$tiposancion = TipoSancion::findOrFail($request->codigo);

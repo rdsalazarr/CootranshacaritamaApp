@@ -10,6 +10,6 @@ class TipoSancion extends Model
     use HasFactory;
 
     protected $table      = 'tiposancion';
-    protected $primaryKey = 'tirsanid';
-    protected $fillable   = ['tirsannombre','tirsanactivo'];
+    protected $primaryKey = 'tipsanid';
+    protected $fillable   = ['tipsannombre','tipsanactivo'];
 }

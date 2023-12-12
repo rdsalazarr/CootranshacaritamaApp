@@ -57,6 +57,7 @@ use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
 use App\Http\Controllers\Admin\Vehiculos\VehiculoController;
 use App\Http\Controllers\Admin\Asociado\AsociadoController;
+use App\Http\Controllers\Admin\Asociado\SancionarController;
 use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
 use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
 use App\Http\Controllers\Admin\Conductor\ConductorController;
@@ -231,7 +232,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/agencia/salve', [AgenciaController::class, 'salve']);
         Route::post('/agencia/destroy', [AgenciaController::class, 'destroy']);
 
-        Route::get('/asociado/list', [AsociadoController::class, 'index'])->middleware('security:admin/gestionar/asociados');       
+        Route::get('/asociado/list', [AsociadoController::class, 'index'])->middleware('security:admin/gestionar/asociados');
         Route::post('/asociado/salve', [AsociadoController::class, 'salve']);
         Route::post('/asociado/destroy', [AsociadoController::class, 'destroy']);
 
@@ -239,8 +240,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/asociado/consultar', [DesvincularAsociadoController::class, 'consultar']);
         Route::post('/asociado/desvincular/salve', [DesvincularAsociadoController::class, 'desvincular']);
 
+        Route::get('/asociado/sancionar/datos', [SancionarController::class, 'index'])->middleware('security:admin/gestionar/sancionarAsociado');
+        Route::post('/asociado/sancionar/salve', [SancionarController::class, 'salve']);
+
         Route::get('/asociado/inactivos', [AsociadoInactivosController::class, 'index'])->middleware('security:admin/gestionar/asociadosInactivos');
-         
+
         Route::prefix('/producion/documental')->group(function(){
 
             Route::post('/acta/list', [ActaController::class, 'index'])->middleware('security:admin/produccion/documental/acta');

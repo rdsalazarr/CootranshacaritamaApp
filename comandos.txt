@@ -88,12 +88,14 @@ php artisan make:migration create_vehiculo_tarjeta_operacion
 php artisan make:migration create_vehiculo_contrato
 php artisan make:migration create_vehiculo_contrato_asociado
 php artisan make:migration create_vehiculo_responsabilidad
+php artisan make:migration create_vehiculo_suspendido
 
 php artisan make:migration create_tipo_estado_conductor
 php artisan make:migration create_tipo_estado_asociado
 php artisan make:migration create_asociado
 php artisan make:migration create_asociado_cambio_estado
 php artisan make:migration create_asociado_vehiculo
+php artisan make:migration create_asociado_sancion
 
 php artisan make:migration create_tipo_conductor
 php artisan make:migration create_conductor
@@ -191,6 +193,7 @@ php artisan make:model TipoEstanteArchivador
 php artisan make:model ArchivoHistorico
 php artisan make:model ArchivoHistoricoDigitalizado
 
+php artisan make:model Tipos\TipoSancion
 php artisan make:model InformacionGeneralPdf
 php artisan make:model Agencia
 php artisan make:model TipoModalidadVehiculo
@@ -210,11 +213,11 @@ php artisan make:model Vehiculos\VehiculoContrato
 php artisan make:model Vehiculos\VehiculoContratoAsocidado
 php artisan make:model Vehiculos\TipoVehiculoDistribucion
 php artisan make:model Vehiculos\VehiculoResponsabilidad
-
-php artisan make:model Tipos\TipoSancion
+php artisan make:model Vehiculos\VehiculoSuspendido
 
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
+php artisan make:model Asociado\AsociadoSancion
 php artisan make:model AsociadoCambioEstado
 php artisan make:model LineaCredito
 php artisan make:model Conductor\Conductor
@@ -338,10 +341,12 @@ php artisan make:controller Admin\Vehiculos\TiposCarroceriaController
 php artisan make:controller Admin\Vehiculos\VehiculoController
 php artisan make:controller Admin\Vehiculos\ConsultarController
 php artisan make:controller Admin\Vehiculos\TipoModalidadController
+php artisan make:controller Admin\Vehiculos\SuspenderController
 
 php artisan make:controller Admin\Asociado\AsociadoController
 php artisan make:controller Admin\Asociado\DesvincularAsociadoController
 php artisan make:controller Admin\Asociado\AsociadoInactivosController
+php artisan make:controller Admin\Asociado\SancionarController
 
 php artisan make:controller Admin\Cartera\LineaCreditoController 
 php artisan make:controller Admin\Cartera\SolicitudCreditoController

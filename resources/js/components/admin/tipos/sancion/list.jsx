@@ -21,7 +21,7 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.tirsanid : null} ruta={'/admin/tipoSancion/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.tipsanid : null} ruta={'/admin/tipoSancion/destroy'} cerrarModal={cerrarModal} />
                     ];
 
     const tituloModal = ['Nueva sanción','Editar sanción',''];
@@ -52,7 +52,7 @@ export default function List(){
                     <TablaGeneral
                         datos={data}
                         titulo={['Nombre','Activo','Actualizar','Eliminar']}
-                        ver={["tipsalnombre","estado"]}
+                        ver={["tipsannombre","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

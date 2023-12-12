@@ -45,7 +45,7 @@ class ConductorController extends Controller
             $estado              = 'S';
             $conductor           = Conductor::findOrFail($condid);
             $conductor->tiescoid = $estado;
-            $asociado->save();
+            $conductor->save();
 
             $conductorcambioestado 					  = new ConductorCambioEstado();
             $conductorcambioestado->condid            = $condid;

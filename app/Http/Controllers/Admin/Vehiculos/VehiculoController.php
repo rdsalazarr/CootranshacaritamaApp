@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Vehiculos;
 
+use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Vehiculos\VehiculoContrato;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
@@ -43,7 +44,7 @@ class VehiculoController extends Controller
                                             $consultaTipoMarca = $consultaTipoMarca->where('timaveactiva', true);
         $tipomarcavehiculos         = $consultaTipoMarca->orderBy('timavenombre')->get();
 
-        $consultaTipoCarroceria      = DB::table('tipocarroceriavehiculo')->select('ticaveid','ticavenombre');
+        $consultaTipoCarroceria     = DB::table('tipocarroceriavehiculo')->select('ticaveid','ticavenombre');
                                         if($tipoPeticion)
                                             $consultaTipoCarroceria = $consultaTipoCarroceria->where('ticaveactivo', true);
         $tipocarroceriavehiculos    = $consultaTipoCarroceria->orderBy('ticavenombre')->get();
@@ -58,10 +59,10 @@ class VehiculoController extends Controller
                                             $consultaAgencia = $consultaAgencia->where('agenactiva', true);
         $agencias                   = $consultaAgencia->orderBy('agennombre')->get();
 
-        $tipocombustiblevehiculos = DB::table('tipocombustiblevehiculo')->select('ticovhid','ticovhnombre')->orderBy('ticovhnombre')->get();
-        $tipomodalidadvehiculos   = DB::table('tipomodalidadvehiculo')->select('timoveid','timovenombre')->orderBy('timovenombre')->get();
-		
-		$vehiculo        = [];
+        $tipocombustiblevehiculos   = DB::table('tipocombustiblevehiculo')->select('ticovhid','ticovhnombre')->orderBy('ticovhnombre')->get();
+        $tipomodalidadvehiculos     = DB::table('tipomodalidadvehiculo')->select('timoveid','timovenombre')->orderBy('timovenombre')->get();
+
+		$vehiculo         = [];
 		if($request->tipo === 'U'){
             $url      = URL::to('/');
 			$vehiculo = DB::table('vehiculo')
@@ -76,14 +77,14 @@ class VehiculoController extends Controller
         return response()->json(['success' => true, 'tipovehiculos' => $tipovehiculos,   'tiporeferenciavehiculos'  => $tiporeferenciavehiculos, 
                                 'tipomarcavehiculos'       => $tipomarcavehiculos,       'tipocarroceriavehiculos'  => $tipocarroceriavehiculos,
                                 'tipocolorvehiculos'       => $tipocolorvehiculos,       'agencias'                 => $agencias,
-                                'tipocombustiblevehiculos' => $tipocombustiblevehiculos, 'tipomodalidadvehiculos'   => $tipomodalidadvehiculos,    
+                                'tipocombustiblevehiculos' => $tipocombustiblevehiculos, 'tipomodalidadvehiculos'   => $tipomodalidadvehiculos,
                                 'vehiculo' => $vehiculo]);
 	}
 
     public function salve(Request $request)
 	{
-        $id       = $request->codigo;
-        $vehiculo = ($id != 000) ? Vehiculo::findOrFail($id) : new Vehiculo();
+        $vehiid   = $request->codigo;
+        $vehiculo = ($vehiid != 000) ? Vehiculo::findOrFail($vehiid) : new Vehiculo();
 
 	    $this->validate(request(),[
                 'tipoVehiculo'          => 'required|numeric',
@@ -113,7 +114,7 @@ class VehiculoController extends Controller
 
         DB::beginTransaction();
         try {
-               
+
             $estado              = 'A';
             $redimencionarImagen = new redimencionarImagen();
             $funcion 		     = new generales();
@@ -129,7 +130,7 @@ class VehiculoController extends Controller
                 $redimencionarImagen->redimencionar($rutaCarpeta.'/'.$rutaFotografia, 200, 110);//Se redimenciona a un solo tipo
 			}else{
 				$rutaFotografia = $request->rutaFotoOld;
-			}            
+			}
 
             $vehiculo->tipvehid              = $request->tipoVehiculo;
             $vehiculo->tireveid              = $request->tipoReferencia;
@@ -175,6 +176,16 @@ class VehiculoController extends Controller
                 $vehiculocontrato->vehconfechafinal   = $fechaFinalContrato;
                 $vehiculocontrato->vehconobservacion  = 'Se ha generado el contrato del vehículo por primera vez. Este procedimiento fue llevado a cabo por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $vehiculocontrato->save();
+
+                $tipoModalidadVehiculo = DB::table('tipomodalidadvehiculo')->select('timovecuotasostenimiento')->where('timoveid', $request->tipoModalidad)->first();
+                $fechasCompromisos     = $funcion->obtenerFechasCompromisoVehiculo($request->fechaInicialContrato);
+                foreach($fechasCompromisos as $fechaCompromiso){
+                    $vehiculoresponsabilidad                             = new VehiculoResponsabilidad();
+                    $vehiculoresponsabilidad->vehiid                     = $vehiid;
+                    $vehiculoresponsabilidad->vehresfechacompromiso      = $fechaCompromiso;
+                    $vehiculoresponsabilidad->vehresvalorresponsabilidad = $tipoModalidadVehiculo->timovecuotasostenimiento;
+                    $vehiculoresponsabilidad->save();
+                }
             }
 
         	DB::commit();

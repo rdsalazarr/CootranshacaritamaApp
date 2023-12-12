@@ -32,6 +32,7 @@ import Agencia from "../admin/agencia/list";
 import Asociados from "../admin/asociado/gestionar/list";
 import DesvincularAsociado from "../admin/asociado/desvincular/search";
 import AsociadosInactivos from "../admin/asociado/inactivos/list";
+import SancionarAsociados from "../admin/asociado/sancionar/search";
 
 import Acta from "../admin/produccionDocumental/acta/list";
 import Citacion from "../admin/produccionDocumental/citacion/list";
@@ -52,6 +53,7 @@ import TiposVehiculos from "../admin/vehiculos/tipos/list";
 import Vehiculo from "../admin/vehiculos/automovil/list";
 import Conductor from "../admin/vehiculos/conductor/list";
 import AsignarVehiculo from "../admin/vehiculos/asignar/search";
+import SuspenderVehiculo from "../admin/vehiculos/suspender/search";
 
 import LineaCredito from "../admin/cartera/lineaCredito/list";
 import SolicitudCredito from "../admin/cartera/solicitudCredito/search";
@@ -220,16 +222,20 @@ const menuComponente = [
     {id:40,componente : <Planillas />},
     {id:41,componente : <Encomiendas />},
     {id:42,componente : <ServicoEspecial />},    
-    {id:43,componente : <Tiquetes />},
+    {id:43,componente : <Tiquetes />},    
+    {id:44,componente : <RecibirPlanillas />},    
+    {id:45,componente : <SancionarAsociados />},    
+    {id:46,componente : <SuspenderVehiculo />},
     
-    {id:44,componente : <RecibirPlanillas />},
-
-    {id:45,componente : <Rutas3 />},
-    {id:46,componente : <Rutas1 />},
     {id:47,componente : <EnConstruccion />},
     {id:48,componente : <EnConstruccion />},
     {id:49,componente : <EnConstruccion />},
-    {id:50,componente : <EnConstruccion />},
+    {id:50,componente : <Rutas1 />},
+    {id:51,componente : <Rutas2 />},
+    {id:52,componente : <Rutas3 />},
+    {id:53,componente : <EnConstruccion />},
+    {id:54,componente : <EnConstruccion />},
+    {id:55,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {
@@ -238,7 +244,7 @@ export default function  Contenedor () {
     const [componente, setComponente] = useState([]); 
 
     useEffect(() => {
-       instance.get('/admin/generarMenu').then(res=>{      
+       instance.get('/admin/generarMenu').then(res=>{
         setComponente(res.data);
         setLoader(false);   
         })

@@ -324,4 +324,37 @@ class generales
 
         return $nuevaFecha;
     }
+
+	function obtenerFechasCompromisoVehiculo($fecha)
+    {
+        // Convertir la fecha a un objeto Carbon
+        $fechaCarbon = Carbon::parse($fecha);
+		$fechas      = [];
+
+        // Generar fechas para los próximos 12 meses
+        for ($i = 1; $i <= 12; $i++) {
+            $fechaSiguiente = $fechaCarbon->copy()->addMonths($i)->day(5);
+            $fechas[]       = $fechaSiguiente->format('Y-m-d');
+        }
+
+        return $fechas;
+    }
+
+	/*public static function obtenerFechasSiguientes($fecha)
+    {
+        // Convertir la fecha a un objeto Carbon
+        $fechaCarbon = Carbon::parse($fecha);
+		$fechas      = [];
+
+        // Generar fechas para los próximos 12 meses
+        for ($i = 1; $i <= 12; $i++) {
+            $fechaSiguiente = $fechaCarbon->copy()->addMonths($i)->day(5);
+            $fechas[]       = $fechaSiguiente->format('Y-m-d');
+        }
+
+        return $fechas;
+    }
+
+	$fechasSiguientes = generales::obtenerFechasSiguientes('2023-12-12');*/
+
 }

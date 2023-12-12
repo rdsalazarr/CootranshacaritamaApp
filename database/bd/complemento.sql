@@ -99,3 +99,16 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 
 
 UPDATE `migrations` SET `migration` = '2023_10_18_043322_create_tipo_servicio_vehiculo' WHERE `migrations`.`id` = 79; UPDATE `migrations` SET `migration` = '2023_10_18_043323_create_tipo_vehiculo_distribucion' WHERE `migrations`.`id` = 80;
+
+
+ALTER TABLE `vehiculoresponsabilidad` CHANGE `vehresfechapago` `vehresfechacompromiso` DATE NOT NULL COMMENT 'Fecha máxima en la cual se debe realizar el pago de la responsabilidad';
+
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(45, 6, 'Sancionar', 'Getionar sanciones asociado', 'admin/gestionar/sancionarAsociado', 'person_add_disabled_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(46, 7, 'Suspender', 'Getionar suspención de vehículo', 'admin/direccion/transporte/suspenderVehiculo', 'no_transfer_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(45, 1, 45),
+(46, 1, 46);

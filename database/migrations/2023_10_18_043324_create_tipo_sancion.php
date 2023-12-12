@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tiposancion', function (Blueprint $table) {
-            $table->smallIncrements('tirsanid')->unsigned()->comment('Identificador de la tabla tipo sanción');
-            $table->string('tirsannombre', 50)->comment('Nombre del tipo vehículo');
-            $table->boolean('tirsanactivo')->default(true)->comment('Determina si el tipo de sanción se encuentra activo');
+            $table->smallIncrements('tipsanid')->unsigned()->comment('Identificador de la tabla tipo sanción');
+            $table->string('tipsannombre', 50)->comment('Nombre del tipo vehículo');
+            $table->boolean('tipsanactivo')->default(true)->comment('Determina si el tipo de sanción se encuentra activo');
             $table->timestamps();
         });
     }

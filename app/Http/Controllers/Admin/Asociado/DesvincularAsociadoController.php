@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Asociado;
 
-use App\Http\Controllers\Controller;
 use App\Models\Asociado\AsociadoCambioEstado;
+use App\Http\Controllers\Controller;
 use App\Models\Asociado\Asociado;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
@@ -38,7 +38,7 @@ class DesvincularAsociadoController extends Controller
     }
 
     public function desvincular(Request $request)
-	{ 
+	{
 		$this->validate(request(),[ 'tipoIdentificacion' => 'required|numeric',
 									'documento' 		 => 'required|string|max:15',
                                     'asociadoId'         => 'required|numeric', 

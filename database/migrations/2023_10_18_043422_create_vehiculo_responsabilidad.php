@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('vehiculoresponsabilidad', function (Blueprint $table) {
             $table->bigIncrements('vehresid')->unsigned()->comment('Identificador de la tabla vehículo responsabilidad');
             $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
-            $table->date('vehresfechapago')->comment('Fecha máxima en la cual se debe realizar el pago de la responsabilidad');
+            $table->date('vehresfechacompromiso')->comment('Fecha máxima en la cual se debe realizar el pago de la responsabilidad');
             $table->decimal('vehresvalorresponsabilidad', 8, 0)->comment('Valor de la responsabilidad o cuota del pago mensual');
             $table->date('vehresfechapagado')->nullable()->comment('Fecha en la cual se realiza el pago de la responsabilidad');
             $table->decimal('vehresvalorpagado', 8, 0)->nullable()->comment('Valor de la responsabilidad pagado');

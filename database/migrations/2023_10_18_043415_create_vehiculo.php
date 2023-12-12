@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('vehiculo', function (Blueprint $table) {
             $table->increments('vehiid')->unsigned()->comment('Identificador de la tabla vehículo');
+            $table->integer('asocid')->unsigned()->comment('Identificador del asociado');
             $table->smallInteger('tipvehid')->unsigned()->comment('Identificador del tipo de vehículo');
             $table->smallInteger('tireveid')->unsigned()->comment('Identificador del tipo de referencia del vehículo');
             $table->smallInteger('timaveid')->unsigned()->comment('Identificador del tipo marca vehículo');
@@ -38,6 +39,7 @@ return new class extends Migration
             $table->string('vehirutafoto', 100)->nullable()->comment('Ruta de la foto del vehículo');
 
             $table->timestamps();
+            $table->foreign('asocid')->references('asocid')->on('asociado')->onUpdate('cascade')->index('fk_asocvehi');
             $table->foreign('tipvehid')->references('tipvehid')->on('tipovehiculo')->onUpdate('cascade')->index('fk_tipvehvehi');
             $table->foreign('tireveid')->references('tireveid')->on('tiporeferenciavehiculo')->onUpdate('cascade')->index('fk_tirevevehi');
             $table->foreign('timaveid')->references('timaveid')->on('tipomarcavehiculo')->onUpdate('cascade')->index('fk_timavevehi');
