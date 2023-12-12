@@ -87,6 +87,7 @@ php artisan make:migration create_vehiculo_soat
 php artisan make:migration create_vehiculo_tarjeta_operacion
 php artisan make:migration create_vehiculo_contrato
 php artisan make:migration create_vehiculo_contrato_asociado
+php artisan make:migration create_vehiculo_responsabilidad
 
 php artisan make:migration create_tipo_estado_conductor
 php artisan make:migration create_tipo_estado_asociado
@@ -131,6 +132,8 @@ php artisan make:migration create_encomienda_cambio_estado
 
 php artisan make:migration create_tiquete
 php artisan make:migration create_tiquete_puesto
+
+php artisan make:migration create_tipo_sancion
 
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
@@ -206,6 +209,9 @@ php artisan make:model Vehiculos\VehiculoTarjetaOperacion
 php artisan make:model Vehiculos\VehiculoContrato
 php artisan make:model Vehiculos\VehiculoContratoAsocidado
 php artisan make:model Vehiculos\TipoVehiculoDistribucion
+php artisan make:model Vehiculos\VehiculoResponsabilidad
+
+php artisan make:model Tipos\TipoSancion
 
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
@@ -309,6 +315,8 @@ php artisan make:controller Admin\Persona\DatosPersonaController
 php artisan make:controller Admin\Conductor\ConductorController
 php artisan make:controller Admin\AgenciaController
 php artisan make:controller Admin\ProducionDocumental\OficioController
+
+php artisan make:controller Admin\Tipos\SancionController
 
 php artisan make:controller Admin\Radicacion\DocumentoEntranteController
 php artisan make:controller Admin\Radicacion\ShowDocumentoEntranteController

@@ -6,6 +6,7 @@ import CargoLaboral from "./cargoLaboral/list";
 import EstanteArchivador from "./estante/list";
 import Documental from "./documental/list";
 import Despedida from "./despedida/list";
+import Sancion from "./sancion/list";
 import Saludo from "./saludo/list";
 
 export default function List(){
@@ -32,6 +33,7 @@ export default function List(){
                 <Tab label="Persona Documental" />
                 <Tab label="Estantes archivador" />
                 <Tab label="Documental" />
+                <Tab label="Sanción" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -56,6 +58,10 @@ export default function List(){
 
             <TabPanel value={value} index={5}>
                 <Documental />
+            </TabPanel>
+
+            <TabPanel value={value} index={6}>
+                <Sancion />
             </TabPanel>
 
           </Box>

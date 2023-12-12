@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\DatosGeograficos\MunicipioController;
 use App\Http\Controllers\Admin\Empresa\EmpresaController;
 use App\Http\Controllers\Admin\Agencia\AgenciaController;
 use App\Http\Controllers\Admin\Tipos\SaludoController;
+use App\Http\Controllers\Admin\Tipos\SancionController;
 use App\Http\Controllers\Admin\Tipos\DespedidaController;
 use App\Http\Controllers\Admin\Tipos\CargoLaboralController;
 use App\Http\Controllers\Admin\Tipos\EstanteArchivadorController;
@@ -181,10 +182,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/tipoDocumental/destroy', [DocumentalController::class, 'destroy']);
 
         Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
-        Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);   
+        Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
-        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');  
+        Route::get('/tipoSancion/list', [SancionController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::post('/tipoSancion/salve', [SancionController::class, 'salve']);
+        Route::post('/tipoSancion/destroy', [SancionController::class, 'destroy']);
+
+        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');
         Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
         Route::post('/serieDocumental/destroy', [SerieDocumentalController::class, 'destroy']);
 

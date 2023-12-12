@@ -96,3 +96,6 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (44, 1, 44);
+
+
+UPDATE `migrations` SET `migration` = '2023_10_18_043322_create_tipo_servicio_vehiculo' WHERE `migrations`.`id` = 79; UPDATE `migrations` SET `migration` = '2023_10_18_043323_create_tipo_vehiculo_distribucion' WHERE `migrations`.`id` = 80;
