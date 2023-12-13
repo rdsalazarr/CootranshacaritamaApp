@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\EnviarNotificacion',
+        'App\Console\Commands\TareasProgramadas',
     ];
 
     /**
@@ -23,11 +23,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $cronLog         = storage_path('logs/cron.log');
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $schedule->command('enviar:notificacion')->dailyAt('06:00')->withoutOverlapping()->appendOutputTo('logs/pr_'.$fechaActual.'.log');
-        //$schedule->command('verificar:notificacion')->everyMinute('06:00')->withoutOverlapping()->appendOutputTo('logs/pr_'.$fechaActual.'.log');
+        $schedule->command('tareas:programadas')->dailyAt('06:00')->withoutOverlapping()->appendOutputTo('logs/pr_'.$fechaActual.'.log');
     }
 
     /**

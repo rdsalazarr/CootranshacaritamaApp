@@ -1,24 +1,24 @@
 <?php
 
 namespace App\Console\Commands;
-use App\Console\Commands\Notificar;
+use App\Console\Commands\Tareas;
 use Illuminate\Console\Command;
 
-class EnviarNotificacion extends Command
+class TareasProgramadas extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'enviar:notificacion';
+    protected $signature = 'tareas:programadas';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Permite enviar notificaciones en el sistema';
+    protected $description = 'Permite programar todas las tareas que utiliza el cron';
 
     /**
      * Create a new command instance.
@@ -36,11 +36,10 @@ class EnviarNotificacion extends Command
      * @return mixed
      */
     public function handle()
-    {     
-        $notificar = new Notificar();
+    {
+        Tareas::verificarSalidaCorreo();
 
-        $notificar->verificarSalidaCorreo();
-        $notificar->notificarSolicitudesEstadoInicial();
-        $notificar->notificarSolicitudesPendientePorResponder();       
+        //$notificar->notificarSolicitudesEstadoInicial();
+       // $notificar->notificarSolicitudesPendientePorResponder();       
     }
 }

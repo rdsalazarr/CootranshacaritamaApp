@@ -3,27 +3,46 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Clases\EnviarEmail;
+use App\Util\notificar;
 use Carbon\Carbon;
 use DB;
 
-class NotificarSolicitud
-{	
+class Tareas
+{
     //Funcion para verificar que si se envia los correos
-    public function verificarSalidaCorreo()
+    public static function verificarSalidaCorreo()
     {
         $emailnotificacion = DB::table('empresa')->select('emprcorreo')->where('emprid', 1)->first();
-        $email = $emailnotificacion->emprcorreo;
-        $fechaHoraActual = Carbon::now();
-        $enviarEmail = new EnviarEmail();
-        $asunto = 'Notificación de prueba enviada hoy '.$fechaHoraActual;
-        $msg = 'Este es el contenido de la notificaciones de prueba para ver si esta funcionando';
-        $enviarEmail->enviar([$email], $asunto, $msg, '', '',0, 1);
+        $email             = $emailnotificacion->emprcorreo;
+
+        $fechaHoraActual   = Carbon::now();
+        $enviarEmail       = new notificar();
+        $asunto            = 'Notificación de prueba enviada hoy '.$fechaHoraActual;
+        $msg               = 'Este es el contenido de la notificaciones de prueba para ver si esta funcionando';
+
+        $email = 'radasa10@hotmail.com';
+        $enviarEmail->correo([$email], $asunto, $msg);
 
         echo"Notifiacion de prueba enviada hoy ".$fechaHoraActual.", al email ".$email."\r\n";
     }
+ 
+    public static function iniciandoProcesoAutomaticos()
+    {
+        $emailnotificacion = DB::table('empresa')->select('emprcorreo')->where('emprid', 1)->first();
+        $email             = $emailnotificacion->emprcorreo;
 
-    //Funcion para notificar las solicitudes en estado inicial
+        $fechaHoraActual   = Carbon::now();
+        $enviarEmail       = new notificar();
+        $asunto            = 'Notificación de prueba enviada hoy '.$fechaHoraActual;
+        $msg               = 'Este es el contenido de la notificaciones de prueba para ver si esta funcionando';
+
+        $email = 'radasa10@hotmail.com';
+        $enviarEmail->correo([$email], $asunto, $msg);
+
+        echo"Notifiacion de prueba enviada hoy ".$fechaHoraActual.", al email ".$email."\r\n";
+     }
+
+    /*//Funcion para notificar las solicitudes en estado inicial
     public function notificarSolicitudesEstadoInicial()
     {   
         $fechaHoraActual = Carbon::now();
@@ -166,5 +185,5 @@ class NotificarSolicitud
         }else{
             echo"No existen solicitudes para notificar \r\n";
        }         
-    }
+    }*/
 }
