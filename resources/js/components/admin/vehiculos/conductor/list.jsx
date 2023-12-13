@@ -48,6 +48,7 @@ export default function List(){
         return <LoaderModal />
     }
 
+    //suspender {tipo: 'B', icono : 'do_not_touch_icon', color: 'red',    funcion : (data)=>{edit(data,4)}},
     return (
         <Box>
             <Card className={'cardContainer'} >
@@ -56,14 +57,13 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Activo','Actualizar','Eliminar','Ver','Suspender']}
+                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Activo','Actualizar','Eliminar','Ver']}
                         ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico","estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',               color: 'green',  funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',              color: 'orange', funcion : (data)=>{edit(data,1)} },
                             {tipo: 'B', icono : 'delete',            color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility',        color: 'green',  funcion : (data)=>{edit(data,3)} },
-                            {tipo: 'B', icono : 'do_not_touch_icon', color: 'red',    funcion : (data)=>{edit(data,4)}},
+                            {tipo: 'B', icono : 'visibility',        color: 'green',  funcion : (data)=>{edit(data,3)} },                            
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />

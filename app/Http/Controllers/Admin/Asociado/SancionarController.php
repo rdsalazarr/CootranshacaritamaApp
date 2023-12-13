@@ -49,7 +49,7 @@ class SancionarController extends Controller
                 $asociadosancion->tipsanid              = $request->tipoSancion;
                 $asociadosancion->asosanfechahora       = $fechaHoraActual;
                 $asociadosancion->asosanfechamaximapago = $request->fechaMaximaPago;
-                $asociadosancion->asosanmotivo          = $request->motivo;
+                $asociadosancion->asosanmotivo          = mb_strtoupper($request->motivo,'UTF-8');
                 $asociadosancion->asosanvalorsancion    = $request->valorSancion;
                 $asociadosancion->save();
 
@@ -63,7 +63,7 @@ class SancionarController extends Controller
                 $asociadocambioestado->tiesasid          = $estado;
                 $asociadocambioestado->ascaesusuaid      = Auth::id();
                 $asociadocambioestado->ascaesfechahora   = $fechaHoraActual;
-                $asociadocambioestado->ascaesobservacion = $request->motivo;
+                $asociadocambioestado->ascaesobservacion = mb_strtoupper($request->motivo,'UTF-8');
                 $asociadocambioestado->save();
             }
 

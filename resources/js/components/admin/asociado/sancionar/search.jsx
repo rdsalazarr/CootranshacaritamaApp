@@ -22,10 +22,8 @@ export default function Search(){
     }
 
     const handleSubmit = () =>{
-        let newFormData        = {...formData};
-        newFormData.fotografia = (formDataFile.archivos.length > 0) ? formDataFile.archivos[0] : '';
         setLoader(true);
-        instance.post('/admin/asociado/sancionar/salve', newFormData).then(res=>{
+        instance.post('/admin/asociado/sancionar/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setFormData({tipoSancion:'', fechaMaximaPago:'', valorSancion: '', motivo: '', numeroInternoInicial:'', numeroInternoFinal:''}) : null;
@@ -33,7 +31,7 @@ export default function Search(){
         })
     }
 
-    const inicio = () =>{
+    useEffect(()=>{
         setLoader(true);
         let newFormData = {...formData}
         instance.get('/admin/asociado/sancionar/datos').then(res=>{
@@ -42,16 +40,13 @@ export default function Search(){
             setFormData(newFormData);
             setLoader(false);
         })
-    }
-
-    useEffect(()=>{inicio();}, []);
+    }, []);
 
     if(loader){
         return <LoaderModal />
     }
 
     return (
-
         <ValidatorForm onSubmit={handleSubmit}>
             <Card className={'cardContainer'} >
                 <Box>
@@ -156,7 +151,7 @@ export default function Search(){
                     </Grid>
                 </Grid>
 
-                <Grid container direction="row"  justifyContent="right" style={{marginTop:'1em'}}>
+                <Grid container direction="row" justifyContent="right" style={{marginTop:'1em'}}>
                     <Stack direction="row" spacing={2}>
                         <Button type={"submit"} className={'modalBtn'}
                             startIcon={<SaveIcon />}> Guardar
@@ -166,6 +161,5 @@ export default function Search(){
 
             </Card>
         </ValidatorForm>
-       
     )
 }

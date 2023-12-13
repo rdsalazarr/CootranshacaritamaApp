@@ -33,9 +33,6 @@ export default function Encomienda(){
         setLoader(true);
         setListaPersonas([]);
         instance.post('/admin/despacho/consultar/persona/entregar/encomienda', formData).then(res=>{
-
-           console.log(res.success);
-
             (!res.success) ? showSimpleSnackbar(res.message, 'error') : setListaPersonas(res.data);
             setLoader(false);
         })

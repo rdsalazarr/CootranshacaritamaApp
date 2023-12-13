@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import imagenVehiculo from "../../../../../images/vehiculo.png";
+import Trazabilidad from '../../../layout/trazabilidad';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import {Grid, Box} from '@mui/material';
 
-export default function Vehiculo({id}){
+export default function Show({id}){
 
     const [formData, setFormData] = useState({  tipoVehiculo: '',   tipoReferencia: '', tipoMarca: '',      tipoCombustible: '', 
                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',          fechaIngreso: '', 
@@ -13,35 +14,39 @@ export default function Vehiculo({id}){
                                                 serieRegrabado: '0', observacion: '',    fotografia: ''
                                         });
     const [loader, setLoader] = useState(false);
+    const [cambiosEstadoVehiculo, setCambiosEstadoVehiculo] = useState([]);
  
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData};
-        instance.post('/admin/direccion/transporte/consultar/informacion/vehiculo', {vehiculoId: id}).then(res=>{
-            let vehiculo                = res.vehiculo;           
-            newFormData.tipoVehiculo    = vehiculo.tipoVehiculo;
-            newFormData.tipoReferencia  = vehiculo.tipoReferencia;
-            newFormData.tipoMarca       = vehiculo.tipoMarca;
-            newFormData.tipoCombustible = vehiculo.tipoCombustible;
-            newFormData.tipoModalidad   = vehiculo.tipoModalidad;
-            newFormData.tipoCarroceria  = vehiculo.tipoCarroceria;
-            newFormData.tipoColor       = vehiculo.tipoColor;
-            newFormData.agencia         = vehiculo.agencia;
-            newFormData.fechaIngreso    = vehiculo.vehifechaingreso;
-            newFormData.numeroInterno   = vehiculo.vehinumerointerno;
-            newFormData.placa           = vehiculo.vehiplaca;
-            newFormData.modelo          = vehiculo.vehimodelo;
-            newFormData.cilindraje      = vehiculo.vehicilindraje;
-            newFormData.numeroMotor     = (vehiculo.vehinumeromotor !== null) ? vehiculo.vehinumeromotor : 'NO REPORTADO';
-            newFormData.numeroChasis    = (vehiculo.vehinumerochasis !== null) ? vehiculo.vehinumerochasis : 'NO REPORTADO';
-            newFormData.numeroSerie     = (vehiculo.vehinumeroserie !== null) ? vehiculo.vehinumeroserie : 'NO REPORTADO';
-            newFormData.numeroEjes      = (vehiculo.vehinumeroejes !== null) ? vehiculo.vehinumeroejes : 'NO REPORTADO'; 
-            newFormData.motorRegrabado  = vehiculo.motorRegrabado;
-            newFormData.chasisRegrabado = vehiculo.chasisRegrabado;
-            newFormData.serieRegrabado  = vehiculo.serieRegrabado;
-            newFormData.observacion     = vehiculo.vehiobservacion;
-            newFormData.showFotografia  = (vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : imagenVehiculo;
-
+        instance.post('/admin/direccion/transporte/vehiculo/show', {vehiculoId: id}).then(res=>{
+            let vehiculo                          = res.vehiculo;           
+            newFormData.tipoVehiculo              = vehiculo.tipoVehiculo;
+            newFormData.tipoReferencia            = vehiculo.tipoReferencia;
+            newFormData.tipoMarca                 = vehiculo.tipoMarca;
+            newFormData.tipoCombustible           = vehiculo.tipoCombustible;
+            newFormData.tipoModalidad             = vehiculo.tipoModalidad;
+            newFormData.tipoCarroceria            = vehiculo.tipoCarroceria;
+            newFormData.tipoColor                 = vehiculo.tipoColor;
+            newFormData.agencia                   = vehiculo.agencia;
+            newFormData.fechaIngreso              = vehiculo.vehifechaingreso;
+            newFormData.numeroInterno             = vehiculo.vehinumerointerno;
+            newFormData.placa                     = vehiculo.vehiplaca;
+            newFormData.modelo                    = vehiculo.vehimodelo;
+            newFormData.cilindraje                = vehiculo.vehicilindraje;
+            newFormData.numeroMotor               = (vehiculo.vehinumeromotor !== null) ? vehiculo.vehinumeromotor : 'NO REPORTADO';
+            newFormData.numeroChasis              = (vehiculo.vehinumerochasis !== null) ? vehiculo.vehinumerochasis : 'NO REPORTADO';
+            newFormData.numeroSerie               = (vehiculo.vehinumeroserie !== null) ? vehiculo.vehinumeroserie : 'NO REPORTADO';
+            newFormData.numeroEjes                = (vehiculo.vehinumeroejes !== null) ? vehiculo.vehinumeroejes : 'NO REPORTADO'; 
+            newFormData.motorRegrabado            = vehiculo.motorRegrabado;
+            newFormData.chasisRegrabado           = vehiculo.chasisRegrabado;
+            newFormData.serieRegrabado            = vehiculo.serieRegrabado;
+            newFormData.observacion               = vehiculo.vehiobservacion;
+            newFormData.showFotografia            = (vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : imagenVehiculo;
+            newFormData.estadoActual              = vehiculo.estadoActual;
+            newFormData.totalCambioEstadoVehiculo = vehiculo.totalCambioEstadoVehiculo;
+           
+            setCambiosEstadoVehiculo(res.cambiosEstadoVehiculo);
             setFormData(newFormData);
             setLoader(false);
         })
@@ -212,13 +217,30 @@ export default function Vehiculo({id}){
             </Grid>
 
             <Grid item xl={2} md={2} sm={12} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Fotografia</label>
-                    <Box className='fotografiaVehiculo' style={{marginTop: '0.6em'}}>
-                        <img src={formData.showFotografia} ></img>
-                    </Box>
-                </Box>
-            </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Fotografia</label>
+                            <Box className='fotografiaVehiculo' style={{marginTop: '0.6em'}}>
+                                <img src={formData.showFotografia} ></img>
+                            </Box>
+                        </Box>
+                    </Grid>
+
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Estado actual</label>
+                            <span>{formData.estadoActual}</span>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Grid>            
+
+            {(formData.totalCambioEstadoVehiculo > 0) ? 
+                <Grid item md={12} xl={12} sm={12} xs={12}>
+                    <Trazabilidad mensaje='Cambio de estado del vehículo' data={cambiosEstadoVehiculo}/>
+                </Grid>
+            : null }
 
         </Grid>
     )   

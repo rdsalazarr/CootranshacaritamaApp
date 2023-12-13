@@ -6,6 +6,7 @@ import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
 import NewEdit from './new';
+import Show from './show';
 
 export default function List(){
 
@@ -21,10 +22,11 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.ticaveid : null} ruta={'/admin/direccion/transporte/vehiculo/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.ticaveid : null} ruta={'/admin/direccion/transporte/vehiculo/destroy'} cerrarModal={cerrarModal} />,
+                        <Show id={(tipo === 3) ? modal.data.vehiid : null} />
                     ];
 
-    const tituloModal = ['Nuevo vehículo','Editar vehículo',''];
+    const tituloModal = ['Nuevo vehículo','Editar vehículo','','Visualizar información general del vehículo'];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
@@ -45,8 +47,6 @@ export default function List(){
         return <LoaderModal />
     }
 
-    
-
     return (
         <Box>
             <Card className={'cardContainer'} >
@@ -55,12 +55,13 @@ export default function List(){
                 <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                     <TablaGeneral
                         datos={data}
-                        titulo={['Tipo vehículo','Fecha ingreso','Número interno','Placa', 'Modelo', 'Cilindraje', 'Número de ejes', 'Actualizar','Eliminar']}
-                        ver={["tipvehnombre","vehifechaingreso","vehinumerointerno","vehiplaca","vehimodelo","vehicilindraje","vehinumeroejes"]}
+                        titulo={['Tipo vehículo','Fecha ingreso','Número interno','Placa', 'Modelo', 'Cilindraje', 'Número de ejes', 'Estado', 'Actualizar','Eliminar', 'Visualizar']}
+                        ver={["tipvehnombre","vehifechaingreso","vehinumerointerno","vehiplaca","vehimodelo","vehicilindraje","vehinumeroejes", "estado"]}
                         accion={[
                             {tipo: 'T', icono : 'add',    color: 'green',   funcion : (data)=>{edit(data,0)} },
                             {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
                             {tipo: 'B', icono : 'delete', color: 'red',    funcion : (data)=>{edit(data,2)} },
+                            {tipo: 'B', icono : 'visibility',        color: 'green',  funcion : (data)=>{edit(data,3)} },
                         ]}
                         funciones={{orderBy: true,search: true, pagination:true}}
                     />

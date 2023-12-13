@@ -11,5 +11,5 @@ class VehiculoCambioEstado extends Model
 
     protected $table      = 'vehiculocambioestado';
     protected $primaryKey = 'vecaesid';
-    protected $fillable   = ['vehiid','tiesveid','vecaesusuaid','vecaesobservacion'];
+    protected $fillable   = ['vehiid','tiesveid','vecaesusuaid','vecaesfechahora','vecaesobservacion'];
 }

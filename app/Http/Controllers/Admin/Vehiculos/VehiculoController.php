@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Vehiculos;
 
 use App\Models\Vehiculos\VehiculoResponsabilidad;
+use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Vehiculos\VehiculoContrato;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
@@ -18,8 +19,9 @@ class VehiculoController extends Controller
     public function index()
     {
         $data = DB::table('vehiculo as v')->select('v.vehiid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
-                                                    'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','tv.tipvehnombre')
+                                                    'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','tv.tipvehnombre', 'tev.tiesvenombre as estado')
                                                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                                    ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'v.tiesveid')
                                                     ->orderBy('v.vehiplaca')->get();
         return response()->json(["data" => $data]);
     }
@@ -167,6 +169,14 @@ class VehiculoController extends Controller
                 $vehiculoMaxConsecutio        = Vehiculo::latest('vehiid')->first();
                 $vehiid                       = $vehiculoMaxConsecutio->vehiid;
 
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $vehiid;
+                $vehiculocambioestado->tiesveid          = $estado;
+                $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = 'Registro del vehículo. Este procedimiento fue llevado a cabo por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+                $vehiculocambioestado->save();
+
                 $vehiculocontrato                     = new VehiculoContrato();
                 $vehiculocontrato->vehiid             = $vehiid;
                 $vehiculocontrato->persidgerente      = $empresa->persidrepresentantelegal;;
@@ -196,11 +206,50 @@ class VehiculoController extends Controller
 		}
 	}
 
+    public function show(Request $request)
+	{
+        $this->validate(request(),['vehiculoId' => 'required']);
+        $url      = URL::to('/');
+        $vehiculo = DB::table('vehiculo as v')
+                        ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
+                                'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
+                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion',
+                                'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
+                                'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto', 'tev.tiesvenombre as estadoActual',
+                                DB::raw("if(v.vehiesmotorregrabado = 1 ,'Sí', 'No') as motorRegrabado"),
+                                DB::raw("if(v.vehieschasisregrabado = 1 ,'Sí', 'No') as chasisRegrabado"),
+                                DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
+                                DB::raw("CONCAT('$url/archivos/vehiculo/', v.vehiplaca, '/', v.vehirutafoto ) as rutaFotografia"),
+                                DB::raw('(SELECT COUNT(vecaesid) AS vecaesid FROM vehiculocambioestado WHERE vehiid = v.vehiid ) AS totalCambioEstadoVehiculo'),)
+                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                        ->join('tiporeferenciavehiculo as trv', 'trv.tireveid', '=', 'v.tireveid')
+                        ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
+                        ->join('tipocolorvehiculo as tcv', 'tcv.ticoveid', '=', 'v.ticoveid')
+                        ->join('tipomodalidadvehiculo as tmvh', 'tmvh.timoveid', '=', 'v.timoveid')
+                        ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
+                        ->join('tipocombustiblevehiculo as tcvh', 'tcvh.ticovhid', '=', 'v.ticovhid')
+                        ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'v.tiesveid')
+                        ->join('agencia as a', 'a.agenid', '=', 'v.agenid')
+                        ->where('v.vehiid', $request->vehiculoId)->first(); 
+
+        $cambiosEstadoVehiculo  = [];
+        if($vehiculo->totalCambioEstadoVehiculo > 0 ){
+            $cambiosEstadoVehiculo =  DB::table('vehiculocambioestado as vce')
+                            ->select('vce.vecaesfechahora as fecha','vce.vecaesobservacion as observacion','tev.tiesvenombre as estado',
+                                DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+                            ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'vce.tiesveid')
+                            ->join('usuario as u', 'u.usuaid', '=', 'vce.vecaesusuaid')
+                            ->where('vce.vehiid', $request->vehiculoId)->get();
+        }
+
+        return response()->json([ "vehiculo" => $vehiculo, "cambiosEstadoVehiculo" => $cambiosEstadoVehiculo]);
+    }
+
     public function destroy(Request $request)
 	{
-		$vehiculo = DB::table('vehiculo')->select('tipvehid')->where('tipvehid', $request->codigo)->first();
-		if($vehiculo){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un vehículo del sistema']);
+		$vehiculocontrato = DB::table('vehiculocontrato')->select('tipvehid')->where('tipvehid', $request->codigo)->first();
+		if($vehiculocontrato){
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un vehículo contrato del sistema']);
 		}else{
 			try {
 				$vehiculo = Vehiculo::findOrFail($request->codigo);

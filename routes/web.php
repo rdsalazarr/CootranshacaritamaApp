@@ -61,6 +61,7 @@ use App\Http\Controllers\Admin\Asociado\SancionarController;
 use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
 use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
 use App\Http\Controllers\Admin\Conductor\ConductorController;
+use App\Http\Controllers\Admin\Vehiculos\SuspenderController;
 use App\Http\Controllers\Admin\Vehiculos\AsignarVehiculoController;
 
 use App\Http\Controllers\Admin\Cartera\LineaCreditoController;
@@ -383,7 +384,11 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/vehiculo/list', [VehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/vehiculos');
             Route::post('/vehiculo/list/datos', [VehiculoController::class, 'datos']);
             Route::post('/vehiculo/salve', [VehiculoController::class, 'salve']);
+            Route::post('/vehiculo/show', [VehiculoController::class, 'show']);
             Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
+
+            Route::get('/suspender/vehiculo/datos', [SuspenderController::class, 'index'])->middleware('security:admin/direccion/transporte/suspenderVehiculo');
+            Route::post('/suspender/vehiculo/salve', [SuspenderController::class, 'salve']);
 
             Route::get('/conductor/list', [ConductorController::class, 'index'])->middleware('security:admin/direccion/transporte/conductores');
             Route::post('/conductor/salve', [ConductorController::class, 'salve']);
