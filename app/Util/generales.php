@@ -357,4 +357,19 @@ class generales
 
 	$fechasSiguientes = generales::obtenerFechasSiguientes('2023-12-12');*/
 
+	function definirRangoNotificacion()
+    {
+        $fechasNotificacion = [
+            Carbon::now()->addDays(30)->toDateString(),
+            Carbon::now()->addDays(15)->toDateString(),
+            Carbon::now()->addDays(10)->toDateString(),
+            Carbon::now()->addDays(5)->toDateString(),
+            Carbon::now()->addDays(2)->toDateString(),
+            Carbon::now()->addDays(1)->toDateString(),
+            Carbon::now()->toDateString(),
+        ];
+
+        return $fechasNotificacion;
+    }
+
 }

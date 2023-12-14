@@ -37,7 +37,8 @@ class TareasProgramadas extends Command
      */
     public function handle()
     {
-        Tareas::verificarSalidaCorreo();
+        //Tareas::verificarSalidaCorreo();
+        Tareas::notificarVencimientoLicencias();
 
         //$notificar->notificarSolicitudesEstadoInicial();
        // $notificar->notificarSolicitudesPendientePorResponder();       
