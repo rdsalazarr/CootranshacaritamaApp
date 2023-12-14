@@ -38,9 +38,16 @@ class TareasProgramadas extends Command
     public function handle()
     {
         //Tareas::verificarSalidaCorreo();
-        Tareas::notificarVencimientoLicencias();
+        //Tareas::notificarVencimientoLicencias();
+        //Tareas::notificarVencimientoSoat();
+       // Tareas::notificarVencimientoCRT();
+       //Tareas::notificarVencimientoPolizas();
+       Tareas::notificarVencimientoTarjetaOperacion();
 
-        //$notificar->notificarSolicitudesEstadoInicial();
-       // $notificar->notificarSolicitudesPendientePorResponder();       
+       
+
+        
+        
+
     }
 }

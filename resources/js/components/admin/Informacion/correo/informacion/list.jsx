@@ -49,30 +49,28 @@ export default function List(){
 
     return (
         <Box className={'containerMedium'} >
-            <Card className={'cardContainer'} >                
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Nombre', 'Asunto','Píe pagina','Copia','Actualizar','Eliminar','Ver']}
-                        ver={["innoconombre","innocoasunto","enviarPiePagina","enviarCopia"]}
-                        accion={[
-                            {tipo: 'T', icono : 'add',        color: 'green',  funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
-                        ]}
-                        funciones={{orderBy: true,search: true, pagination:true}}
-                    />
-                </Box>
-
-                <ModalDefaultAuto
-                    title={modal.titulo}
-                    content={modales[modal.vista]}
-                    close={() =>{setModal({open : false, vista:4, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
-                    tam = {modal.tamano}
-                    abrir ={modal.open}
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Nombre', 'Asunto','Píe pagina','Copia','Actualizar','Eliminar','Ver']}
+                    ver={["innoconombre","innocoasunto","enviarPiePagina","enviarCopia"]}
+                    accion={[
+                        {tipo: 'T', icono : 'add',        color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
+                    ]}
+                    funciones={{orderBy: true,search: true, pagination:true}}
                 />
-            </Card>
+            </Box>
+
+            <ModalDefaultAuto
+                title={modal.titulo}
+                content={modales[modal.vista]}
+                close={() =>{setModal({open : false, vista:4, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
+                tam = {modal.tamano}
+                abrir ={modal.open}
+            />
         </Box>
     )
 }
