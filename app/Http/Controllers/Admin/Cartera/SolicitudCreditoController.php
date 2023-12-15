@@ -20,8 +20,7 @@ class SolicitudCreditoController extends Controller
                         DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno,' ',p.persdocumento,' ', p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
                         ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                        ->join('asociadovehiculo as av', 'av.vehiid', '=', 'v.vehiid')
-                        ->join('asociado as a', 'a.asocid', '=', 'av.asocid')
+                        ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                         ->join('persona as p', 'p.persid', '=', 'a.persid')
                         ->where('v.tiesveid', 'A')
                         ->orderBy('v.vehinumerointerno')->get();

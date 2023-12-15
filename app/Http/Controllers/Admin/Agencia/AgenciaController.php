@@ -24,12 +24,12 @@ class AgenciaController extends Controller
     public function datos()
 	{
         $deptos =  DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
-        $municipios =  DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
+        $municipios =  DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get();
         
        $personas = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
-                       DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos")
-                       )
-                   ->whereIn('carlabid', [1, 2])->get();
+                       DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos"))
+                        ->whereNotIn('persid', [1])
+                        ->whereIn('carlabid', [1, 2])->get();
 
         return response()->json(["deptos" => $deptos, "municipios" => $municipios, "responsables" => $personas]);  
     }    

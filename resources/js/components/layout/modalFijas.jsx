@@ -4,6 +4,7 @@ import { TextValidator, ValidatorForm, SelectValidator} from 'react-material-ui-
 import errorTotalizarFirmas from "../../../images/modal/errorTotalizarFirmas.png";
 import suspenderConductor from "../../../images/modal/suspenderConductor.png";
 import entregarEncomienda from "../../../images/modal/entregarEncomienda.png";
+import activarConductor from "../../../images/modal/activarConductor.png";
 import recibirDocumento from "../../../images/modal/recibirDocumento.png";
 import sellarDocumento from "../../../images/modal/sellarDocumento.png";
 import anularDocumento from "../../../images/modal/anularDocumento.png";
@@ -694,7 +695,7 @@ export function AceptarRadicadoDE({id, idFirma, cerrarModal}){
 }
 
 export function SuspenderConductor({id, cerrarModal}){
-    const [formData, setFormData] = useState({id: id, descripcionSancion:''});
+    const [formData, setFormData] = useState({id: id, descripcionSancion:'', estado:''});
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
 
@@ -704,7 +705,7 @@ export function SuspenderConductor({id, cerrarModal}){
 
     const continuar = () =>{
         setLoader(true);
-        instance.post('/admin/direccion/transporte/conductor/sancionar', formData).then(res=>{
+        instance.post('/admin/direccion/transporte/conductor/suspender', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setHabilitado(false) : null; 
@@ -732,7 +733,99 @@ export function SuspenderConductor({id, cerrarModal}){
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
-                        Para confirmar la sanción del conductor, se requiere que ingrese la observación.
+                        Para confirmar la suspención del conductor, se requiere que ingrese la observación y determinar el estado
+                    </p>
+                </Grid>
+
+                <Grid item xl={10} md={10} sm={8} xs={12}>
+                    <TextValidator
+                        name={'descripcionSancion'}
+                        value={formData.descripcionSancion}
+                        label={'Descripción'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 500}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={2} md={2} sm={4} xs={12}>
+                    <SelectValidator
+                        name={'estado'}
+                        value={formData.estado}
+                        label={'Estado'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        <MenuItem value={"S"}>Suspendido</MenuItem>
+                        <MenuItem value={"D"}>Desvinculado</MenuItem>
+                    </SelectValidator>
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                        startIcon={<ClearIcon />}> Cancelar
+                    </Button>
+                </Grid>
+
+                <Grid item xl={6} md={6} sm={6} xs={6}>
+                    <Button type={"submit"} className='modalBtn' disabled={(habilitado) ? false : true}
+                        startIcon={<SaveIcon />}>Continuar
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </ValidatorForm> 
+    )
+}
+
+export function ActivarConductor({id, cerrarModal}){
+    const [formData, setFormData] = useState({id: id, descripcionSancion:''});
+    const [loader, setLoader] = useState(false);
+    const [habilitado, setHabilitado] = useState(true);
+
+    const handleChange = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
+
+    const continuar = () =>{
+        setLoader(true);
+        instance.post('/admin/direccion/transporte/conductor/activar/salve', formData).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null; 
+            (res.success) ? setFormData({id: id, descripcionSancion:'' }) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }
+
+    return (
+        <ValidatorForm onSubmit={continuar} >
+
+            <Grid container spacing={2}>
+
+                <Box style={{width: '20%', margin: 'auto'}}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='animate__animated animate__rotateIn'>
+                            <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={activarConductor} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                        </Box>
+                    </Grid>
+                </Box>
+
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                        Para confirmar la activación del conductor, se requiere que ingrese la observación.
                     </p>
                 </Grid>
 
@@ -740,7 +833,7 @@ export function SuspenderConductor({id, cerrarModal}){
                     <TextValidator
                         name={'descripcionSancion'}
                         value={formData.descripcionSancion}
-                        label={'Descripción de la sanción'}
+                        label={'Descripción'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
                         inputProps={{autoComplete: 'off', maxLength: 500}}

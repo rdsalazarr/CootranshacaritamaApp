@@ -23,7 +23,7 @@ class UsuarioController extends Controller
                             DB::raw("if(u.usuacambiarpassword = 1,'Sí', 'No') as cambiarpassword"))
                     ->join('persona as p', 'p.persid', '=', 'u.persid')
 					->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
-					//->where('u.usuaid', '>', 1)
+					->whereNotIn('u.usuaid', [1])
                     ->orderBy('u.usuanombre')->orderBy('u.usuaapellidos')->get();
 
 		return response()->json(['success' => true, "data" => $data]);

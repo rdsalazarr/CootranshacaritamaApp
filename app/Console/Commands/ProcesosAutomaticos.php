@@ -39,11 +39,11 @@ class ProcesosAutomaticos extends Command
     {
         $mensaje  = Automaticos::iniciar();
         $mensaje .= Automaticos::suspenderConductor();
-       /* $mensaje .= Automaticos::soat();
-        $mensaje .= Automaticos::CRT();
-        $mensaje .= Automaticos::Polizas();
-        $mensaje .= Automaticos::tarjetaOperacion();
-        $mensaje .= Automaticos::cuotasCreditos();*/
+        $mensaje .= Automaticos::suspenderVehiculosSoat();
+        $mensaje .= Automaticos::suspenderVehiculosCRT();
+        $mensaje .= Automaticos::suspenderVehiculosPolizas();
+        $mensaje .= Automaticos::suspenderVehiculosTarjetaOperacion();
+        $mensaje .= Automaticos::levantarSancionVehiculo();
                     Automaticos::finalizar($mensaje);
     }
 }

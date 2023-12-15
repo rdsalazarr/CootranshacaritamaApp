@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
+import { Button, Grid, MenuItem, Stack, Box, Autocomplete, createFilterOptions}  from '@mui/material';
 import {ButtonFileImg, ContentFile} from "../../../layout/files";
-import { Button, Grid, MenuItem, Stack, Box}  from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
@@ -14,22 +14,25 @@ export default function New({data, tipo}){
                                              tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',          fechaIngreso: '', 
                                              numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',       numeroMotor: '', 
                                              numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                             serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: ''
+                                             serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '',
+                                             asociado:''
                                             });
 
-    const [loader, setLoader] = useState(false); 
-    const [habilitado, setHabilitado] = useState(true);
-    const [tipoVehiculos, setTipoVehiculos] = useState([]);
-    const [tipoReferenciaVehiculos, setTipoReferenciaVehiculos] = useState([]);
-    const [tipoMarcaVehiculos, setTipoMarcaVehiculos] = useState([]);
-    const [tipoCarroceriaVehiculos, setTipoCarroceriaVehiculos] = useState([]);
-    const [tipoColorVehiculos, setTipoColorVehiculos] = useState([]);    
-    const [tipoCombustibleVehiculos, setTipoCombustibleVehiculos] = useState([]);
-    const [tipoModalidadVehiculos, setTipoModalidadVehiculos] = useState([]);
+    
+    const [loader, setLoader] = useState(false);
     const [agencias, setAgencias] = useState([]);
-    const [formDataFile, setFormDataFile] = useState({ archivos : []});     
+    const [asociados, setAsociados] = useState([]);
+    const [habilitado, setHabilitado] = useState(true);
     const [fotoVehiculo, setFotoVehiculo] = useState('');
-
+    const [tipoVehiculos, setTipoVehiculos] = useState([]);    
+    const [tipoColorVehiculos, setTipoColorVehiculos] = useState([]);
+    const [tipoMarcaVehiculos, setTipoMarcaVehiculos] = useState([]);
+    const [formDataFile, setFormDataFile] = useState({ archivos : []});
+    const [tipoModalidadVehiculos, setTipoModalidadVehiculos] = useState([]);
+    const [tipoReferenciaVehiculos, setTipoReferenciaVehiculos] = useState([]);
+    const [tipoCarroceriaVehiculos, setTipoCarroceriaVehiculos] = useState([]);
+    const [tipoCombustibleVehiculos, setTipoCombustibleVehiculos] = useState([]); 
+    
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -63,7 +66,7 @@ export default function New({data, tipo}){
                                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',         fechaIngreso: '', 
                                                                 numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',      numeroMotor: '', 
                                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '' }) : null;
+                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '', asociado:'' }) : null;
 
             setLoader(false);
         })
@@ -72,6 +75,7 @@ export default function New({data, tipo}){
     useEffect(()=>{
         setLoader(true);
         instance.post('/admin/direccion/transporte/vehiculo/list/datos', {codigo: (tipo === 'I') ? '000' : data.vehiid, tipo:tipo}).then(res=>{
+            setAsociados(res.asociados);
             setTipoVehiculos(res.tipovehiculos);
             setTipoReferenciaVehiculos(res.tiporeferenciavehiculos);
             setTipoMarcaVehiculos(res.tipomarcavehiculos);
@@ -83,7 +87,8 @@ export default function New({data, tipo}){
 
             if(tipo === 'U'){
                 let newFormData             = {...formData}
-                let vehiculo                = res.vehiculo;
+                let vehiculo                = res.vehiculo;          
+                newFormData.asociado        = vehiculo.asocid;
                 newFormData.codigo          = vehiculo.vehiid;
                 newFormData.tipoVehiculo    = vehiculo.tipvehid;
                 newFormData.tipoReferencia  = vehiculo.tireveid;
@@ -457,7 +462,32 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={12} md={12} sm={12} xs={12}>
+                <Grid item xl={5} md={5} sm={12} xs={12}>
+                    <Autocomplete
+                        id="asociado"
+                        style={{height: "26px", width: "100%"}}
+                        options={asociados}
+                        getOptionLabel={(option) => option.nombrePersona} 
+                        value={asociados.find(v => v.asocid === formData.asociado) || null}
+                        filterOptions={createFilterOptions({ limit:10 })}
+                        onChange={(event, newInputValue) => {
+                            if(newInputValue){
+                                setFormData({...formData, asociado: newInputValue.asocid})
+                            }
+                        }}
+                        renderInput={(params) =>
+                            <TextValidator {...params}
+                                label="Consultar asociado"
+                                className="inputGeneral"
+                                variant="standard"
+                                validators={["required"]}
+                                errorMessages="Campo obligatorio"
+                                value={formData.asociado}
+                                placeholder="Consulte el asociado aquí..." />}
+                    />
+                </Grid>
+
+                <Grid item xl={7} md={7} sm={12} xs={12}>
                     <TextValidator 
                         name={'observacion'}
                         value={formData.observacion}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Vehiculos;
 
 use App\Models\Vehiculos\VehiculoContratoAsocidado;
 use App\Models\Vehiculos\VehiculoTarjetaOperacion;
+use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Conductor\ConductorVehiculo;
 use App\Models\Asociado\AsociadoVehiculo;
 use App\Models\Vehiculos\VehiculoPoliza;
@@ -11,8 +12,9 @@ use App\Models\Vehiculos\VehiculoSoat;
 use App\Models\Vehiculos\VehiculoCrt;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
+use Exception, File, Auth, DB, URL;
+use App\Models\Vehiculos\Vehiculo;
 use App\Util\redimencionarImagen;
-use Exception, File, DB, URL;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\generales;
@@ -56,151 +58,76 @@ class AsignarVehiculoController extends Controller
         return response()->json([ "vehiculo" => $vehiculo]);
     }
 
-    public function listAsociados(Request $request)
-	{
+    public function listarContratos(Request $request){
         $this->validate(request(),['vehiculoId' => 'required']);
 
-        $asociadoVehiculos  = DB::table('asociadovehiculo as av')
-                                    ->select('av.asovehid','p.persid','a.asocid', DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
-                                    ->join('asociado as a', 'a.asocid', '=', 'av.asocid')
+        $listaContratos = DB::table('vehiculocontrato as vc')
+                                    ->select('vc.vehconid', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),'vc.vehconfechainicial',
+                                    'vc.vehconfechafinal', 'p.persid', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                    ->join('asociado as a', 'a.asocid', '=', 'vc.asocid')
                                     ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                    ->where('av.vehiid', $request->vehiculoId)->get();
+                                    ->where('vc.vehiid', $request->vehiculoId)
+                                    ->get();
 
-        $asociados = DB::table('persona as p')->select('a.asocid', 'p.persid',
-                                DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
-                                ->join('asociado as a', 'a.persid', '=', 'p.persid')
-                                ->where('a.tiesasid', 'A')
-                                ->orderBy('p.persprimernombre')->orderBy('p.perssegundonombre')
-                                ->orderBy('p.persprimerapellido')->orderBy('p.perssegundoapellido')->get();
-                         
-        return response()->json(["asociadoVehiculos" => $asociadoVehiculos, "asociados" => $asociados]);
+        return response()->json(["listaContratos" => $listaContratos]);
     }
-
-    public function salveAsocido(Request $request)
-	{
-	    $this->validate(request(),['vehiculo' => 'required', 'asociados' => 'required|array|min:1']);
-
-        DB::beginTransaction();
-        try {
-
-            $vehiculoId       = $request->vehiculo;
-            $vehiculocontrato = DB::table('vehiculocontrato')
-                                    ->select('vehconid', 'vehconfechafinal')
-                                    ->where('vehiid', $vehiculoId)
-                                    ->where('vehconfechafinal', function ($query) use ($vehiculoId) {
-                                        $query->selectRaw('MAX(vehconfechafinal)')
-                                            ->from('vehiculocontrato')
-                                            ->where('vehiid', $vehiculoId);
-                                    })
-                                    ->first();
-
-            $vehconid = $vehiculocontrato->vehconid;
-
-            foreach($request->asociados as $dataAsociado){
-                $identificador  = $dataAsociado['identificador'];
-                $asociadoId     = $dataAsociado['asociadoId'];
-                $estadoAsociado = $dataAsociado['estado']; 
-
-                if($estadoAsociado === 'I'){
-					$asociadovehiculo         = new AsociadoVehiculo();
-					$asociadovehiculo->asocid = $asociadoId;
-					$asociadovehiculo->vehiid = $vehiculoId;
-					$asociadovehiculo->save();
-
-                    $vehiculocontratoasociado           = new VehiculoContratoAsocidado();
-                    $vehiculocontratoasociado->asocid   = $asociadoId;
-                    $vehiculocontratoasociado->vehconid = $vehconid;
-					$vehiculocontratoasociado->save();
-				}
-
-                if($estadoAsociado === 'D'){
-
-                    $vehiculocontratoasociado = DB::table('vehiculocontratoasociado')
-                                                    ->select('vecoasid')
-                                                    ->where('vehconid', $vehconid)
-                                                    ->where('asocid', $asociadoId)
-                                                    ->first();
-
-                    $vehiculocontratoasociado = VehiculoContratoAsocidado::findOrFail($vehiculocontratoasociado->vecoasid);
-                    $vehiculocontratoasociado->delete();
-
-					$asociadovehiculo = AsociadoVehiculo::findOrFail($identificador);
-					$asociadovehiculo->delete();
-				}
-            }
-            DB::commit();
-            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
-        } catch (Exception $error){
-            DB::rollback();
-            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-        }
-	}
 
     public function showPdf(Request $request)
 	{
-	    $this->validate(request(),['vehiculoId' => 'required', 'idPersona' => 'required']);
+	    $this->validate(request(),['vehiculoId' => 'required', 'idPersona' => 'required', 'idContrato' => 'required']);
 
         try {
             $vehiculoId       = $request->vehiculoId;
+            $idPersona       = $request->idPersona;
+            $idContrato       = $request->idContrato;
             $generales        = new generales();  
             $generarPdf       = new generarPdf();
-            $vehiculocontrato = DB::table('vehiculocontrato as vc')
+            $vehiculoContrato = DB::table('vehiculocontrato as vc')
                                     ->select('vc.vehconid','vc.vehconfechainicial','vc.vehconfechafinal', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
-                                    'v.vehinumerointerno','v.vehiplaca','v.timoveid',
-                                    'tmv.timovecuotasostenimiento','tmv.timovedescuentopagoanticipado','tmv.timoverecargomora')
+                                    'v.vehinumerointerno','v.vehiplaca','v.timoveid','tmv.timovecuotasostenimiento','tmv.timovedescuentopagoanticipado','tmv.timoverecargomora',
+                                    'p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
+                                    'pe.persdocumento as documentoGerente', DB::raw("CONCAT(pe.persprimernombre,' ',if(pe.perssegundonombre is null ,'', pe.perssegundonombre),' ',
+                                    pe.persprimerapellido,' ',if(pe.perssegundoapellido is null ,' ', pe.perssegundoapellido)) as nombreGerente"),'me.muninombre as nombreMunicipioExpedicion')
                                     ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
                                     ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
-                                    ->where('vc.vehiid', $vehiculoId)
-                                    ->where('vc.vehconfechafinal', function ($query) use ($vehiculoId) {
-                                        $query->selectRaw('MAX(vehconfechafinal)')
-                                            ->from('vehiculocontrato')
-                                            ->where('vehiid', $vehiculoId);
+                                    ->join('asociado as a', 'a.asocid', '=', 'vc.asocid')
+                                    ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                    ->join('persona as pe', 'pe.persid', '=', 'vc.persidgerente')
+                                    ->join('empresa as e', 'e.persidrepresentantelegal', '=', 'pe.persid')
+                                    ->join('municipio as me', function($join)
+                                    {
+                                        $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
+                                        $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
                                     })
+                                    ->where('vc.vehiid', $vehiculoId)
+                                    ->where('p.persid', $idPersona)
+                                    ->where('vc.vehconid', $idContrato)
                                     ->first();
 
-            $vehiculoContratoAsociados = DB::table('vehiculocontratoasociado as vca')
-                                            ->select('p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                                        ->join('asociado as a', 'a.asocid', '=', 'vca.asocid')
-                                        ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                        ->where('vca.vehconid', $vehiculocontrato->vehconid)
-                                        ->get();
-
-            $empresa    = DB::table('empresa as e')->select('p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
-                                    'me.muninombre as nombreMunicipioExpedicion')
-                                ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                ->join('municipio as me', function($join)
-                                {
-                                    $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
-                                    $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
-                                })
-                                ->where('e.emprid', 1)->first();
-
-            if($vehiculocontrato->timoveid === 'E' ){
+            if($vehiculoContrato->timoveid === 'E' ){
                 $idInformacionPdf = 'contratoModalidadEspecial';
-            }else  if($vehiculocontrato->timoveid === 'I'){
+            }else  if($vehiculoContrato->timoveid === 'I'){
                 $idInformacionPdf = 'contratoModalidadIntermunicipal';
-            }else  if($vehiculocontrato->timoveid === 'C'){
+            }else  if($vehiculoContrato->timoveid === 'C'){
                 $idInformacionPdf = 'contratoModalidadColectivo';
             } else {
                 $idInformacionPdf = 'contratoModalidadMixto';
             }
 
             $informacionPDF                 = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', $idInformacionPdf)->first();
-            $fechaFirmaContrato             = $generales->formatearFecha($vehiculocontrato->vehconfechainicial);
-            $cuotaSostenimientoAdmon        = number_format($vehiculocontrato->timovecuotasostenimiento, 0, ',', '.') ;
-            $descuentoPagoAnualAnticipado   = $vehiculocontrato->timovedescuentopagoanticipado;
-            $recargoCuotaSostenimientoAdmon = $vehiculocontrato->timoverecargomora;
-            $nombreGerente                  = $empresa->nombrePersona;
-            $documentoGerente               = number_format($empresa->persdocumento, 0, ',', '.');
-            $ciudadExpDocumentoGerente      = $empresa->nombreMunicipioExpedicion;;
-            $numeroContrato                 = $vehiculocontrato->numeroContrato;
-            $fechaContrato                  = $generales->formatearFechaContrato($vehiculocontrato->vehconfechainicial);
-            $tipoContrato                   = $vehiculocontrato->timoveid;
-            
+            $fechaFirmaContrato             = $generales->formatearFecha($vehiculoContrato->vehconfechainicial);
+            $cuotaSostenimientoAdmon        = number_format($vehiculoContrato->timovecuotasostenimiento, 0, ',', '.') ;
+            $descuentoPagoAnualAnticipado   = $vehiculoContrato->timovedescuentopagoanticipado;
+            $recargoCuotaSostenimientoAdmon = $vehiculoContrato->timoverecargomora;
+            $nombreGerente                  = $vehiculoContrato->nombreAsociado;
+            $documentoGerente               = number_format($vehiculoContrato->persdocumento, 0, ',', '.');
+            $ciudadExpDocumentoGerente      = $vehiculoContrato->nombreMunicipioExpedicion;;
+            $numeroContrato                 = $vehiculoContrato->numeroContrato;
+            $fechaContrato                  = $generales->formatearFechaContrato($vehiculoContrato->vehconfechainicial);
+            $tipoContrato                   = $vehiculoContrato->timoveid;
+
             $identificacionAsociado         = '';
             $nombreAsociado                 = '';
             $direccionAsociado              = '';
@@ -209,30 +136,27 @@ class AsignarVehiculoController extends Controller
             $nombreGerenteFirma             = $nombreGerente;
             $documentoGerenteFirma          = 'C.C. '.$documentoGerente;
             $arrayFirmas                    = [];
-            foreach($vehiculoContratoAsociados as $vehiculoContratoAsociado){
-                $identificacionAsociado .= number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.').', ';
-                $nombreAsociado         .= trim($vehiculoContratoAsociado->nombreAsociado).', ';
-                $direccionAsociado      .= $vehiculoContratoAsociado->persdireccion.', ';
-                $telefonoAsociado       .= ($vehiculoContratoAsociado->persnumerocelular !== null ) ? $vehiculoContratoAsociado->persnumerocelular.', ': '';
-                $correoAsociado         .= ($vehiculoContratoAsociado->perscorreoelectronico !== null ) ? $vehiculoContratoAsociado->perscorreoelectronico.', ': ''; 
+        
+            $identificacionAsociado .= number_format($vehiculoContrato->persdocumento, 0, ',', '.').', ';
+            $nombreAsociado         .= trim($vehiculoContrato->nombreAsociado).', ';
+            $direccionAsociado      .= $vehiculoContrato->persdireccion.', ';
+            $telefonoAsociado       .= ($vehiculoContrato->persnumerocelular !== null ) ? $vehiculoContrato->persnumerocelular.', ': '';
+            $correoAsociado         .= ($vehiculoContrato->perscorreoelectronico !== null ) ? $vehiculoContrato->perscorreoelectronico.', ': ''; 
 
-                $firmasContrato = [
-                        "nombreGerente"     => $nombreGerenteFirma,
-                        "nombreAsociado"    => $vehiculoContratoAsociado->nombreAsociado,
-                        "documentoGerente"  => $documentoGerenteFirma,
-                        "documentoAsociado" => 'C.C. '.number_format($vehiculoContratoAsociado->persdocumento, 0, ',', '.'),
-                        "direccionAsociado" => $vehiculoContratoAsociado->persdireccion
-                    ];
+            $firmasContrato = [
+                    "nombreGerente"     => $nombreGerenteFirma,
+                    "nombreAsociado"    => $vehiculoContrato->nombreAsociado,
+                    "documentoGerente"  => $documentoGerenteFirma,
+                    "documentoAsociado" => 'C.C. '.number_format($vehiculoContrato->persdocumento, 0, ',', '.'),
+                    "direccionAsociado" => $vehiculoContrato->persdireccion
+                ];
 
-                array_push($arrayFirmas, $firmasContrato);
-                $nombreGerenteFirma     = '';
-                $documentoGerenteFirma  = '';
-            }
+            array_push($arrayFirmas, $firmasContrato); 
 
             $arrayDatos = [ "titulo"           => 'Contrato número '.$numeroContrato,
                             "numeroContrato"   => $numeroContrato,
-                            "placaVehiculo"    => $vehiculocontrato->vehiplaca,
-                            "numeroInterno"    => $vehiculocontrato->vehinumerointerno,
+                            "placaVehiculo"    => $vehiculoContrato->vehiplaca,
+                            "numeroInterno"    => $vehiculoContrato->vehinumerointerno,
                             "propietarios"     => substr($nombreAsociado, 0, -2),
                             "identificaciones" => substr($identificacionAsociado, 0, -2),
                             "direcciones"      => substr($direccionAsociado, 0, -2),
@@ -240,6 +164,8 @@ class AsignarVehiculoController extends Controller
                             "correos"          => substr($correoAsociado, 0, -2),
                             "metodo"           => 'S'
                         ];
+
+                       
 
             $buscar     = Array('documentoGerente', 'nombreGerente', 'ciudadExpDocumentoGerente', 'cuotaSostenimientoAdmon','descuentoPagoAnualAnticipado',
                                 'recargoCuotaSostenimientoAdmon','fechaFirmaContrato','fechaContrato');
@@ -357,7 +283,7 @@ class AsignarVehiculoController extends Controller
         try {
 
             //Consulto la placa del vehiculo
-            $vehiculo      = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+            $vehiculo      = DB::table('vehiculo')->select('tiesveid','vehiplaca')->where('vehiid', $request->vehiculoId)->first();
 
             $redimencionarImagen  = new redimencionarImagen();
             $funcion 		      = new generales();
@@ -393,6 +319,21 @@ class AsignarVehiculoController extends Controller
                 $vehiculosoat->vehsoarutaarchivo           = $rutaArchivo;
             }
             $vehiculosoat->save();
+
+            if($id === 000 and $vehiculo->tiesveid === 'S'){
+                $estado             = 'A';
+                $vehiculo           = Vehiculo::findOrFail($request->vehiculoId);
+                $vehiculo->tiesveid = $estado;
+                $vehiculo->save();
+
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $request->vehiculoId;
+                $vehiculocambioestado->tiesveid          = $estado;
+                $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = "La activación del vehículo ha sido realizada tras el registro de un nuevo SOAT";
+                $vehiculocambioestado->save();
+            }
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

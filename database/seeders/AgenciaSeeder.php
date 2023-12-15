@@ -17,7 +17,7 @@ class AgenciaSeeder extends Seeder
         $fechaHoraActual = Carbon::now();
 
         DB::table('agencia')->insert([
-            'agenid'              => '1',
+            'agenid'              => '101',
             'persidresponsable'   => '2',
             'agendepaid'          => '18',
             'agenmuniid'          => '804',

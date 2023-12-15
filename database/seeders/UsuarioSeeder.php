@@ -20,10 +20,10 @@ class UsuarioSeeder extends Seeder
             'agenid'        => '1',
         	'usuanombre'    => 'SISTEMA',
             'usuaapellidos' => 'SISTEMA',
-            'usuaemail'     => 'radasa10@hotmail.com',
+            'usuaemail'     => 'notificacioncootranshacaritama@gmail.com',
             'usuanick'      => 'SISTEMA',
             'usuaalias'     => 'SISTEMA',
-        	'password'      => bcrypt('SISTEMA'),
+        	'password'      => bcrypt('Sistemas2023.'),
             'usuaactivo'    => '0',
             'usuacambiarpassword' => '0',
         ]); 

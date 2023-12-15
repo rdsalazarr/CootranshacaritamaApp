@@ -26,7 +26,7 @@ class NotificacionCorreoController extends Controller
 
 		$this->validate(request(),[
                 'nombre'     => 'required|string|min:6|max:50|unique:informacionnotificacioncorreo,innocoid,'.$notificacioncorreo->innocoid.',innocoid',
-                'asunto'     => 'required|string|min:4|max:100',
+                'asunto'     => 'required|string|min:4|max:120',
                 'contenido'  => 'required|string',
                 'piePagina'  => 'required',
                 'copia'      => 'required'

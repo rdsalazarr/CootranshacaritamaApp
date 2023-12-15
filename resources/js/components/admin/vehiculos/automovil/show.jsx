@@ -43,8 +43,9 @@ export default function Show({id}){
             newFormData.serieRegrabado            = vehiculo.serieRegrabado;
             newFormData.observacion               = vehiculo.vehiobservacion;
             newFormData.showFotografia            = (vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : imagenVehiculo;
+            newFormData.nombreAsociado            = vehiculo.nombreAsociado;
             newFormData.estadoActual              = vehiculo.estadoActual;
-            newFormData.totalCambioEstadoVehiculo = vehiculo.totalCambioEstadoVehiculo;
+            newFormData.totalCambioEstadoVehiculo = vehiculo.totalCambioEstadoVehiculo;            
            
             setCambiosEstadoVehiculo(res.cambiosEstadoVehiculo);
             setFormData(newFormData);
@@ -204,8 +205,15 @@ export default function Show({id}){
                         </Box>
                     </Grid>
 
+                    <Grid item xl={6} md={6} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Asociado</label>
+                            <span>{formData.nombreAsociado}</span>
+                        </Box>
+                    </Grid>
+
                     {(formData.observacion !== null) ?
-                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <Grid item xl={6} md={6} sm={12} xs={12}>
                             <Box className='frmTexto'>
                                 <label>Observación general</label>
                                 <span>{formData.observacion}</span>

@@ -63,24 +63,31 @@ class VehiculoController extends Controller
 
         $tipocombustiblevehiculos   = DB::table('tipocombustiblevehiculo')->select('ticovhid','ticovhnombre')->orderBy('ticovhnombre')->get();
         $tipomodalidadvehiculos     = DB::table('tipomodalidadvehiculo')->select('timoveid','timovenombre')->orderBy('timovenombre')->get();
+        $asociados                  = DB::table('persona as p')->select('a.asocid', 'p.persid',
+                                            DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
+                                            ->join('asociado as a', 'a.persid', '=', 'p.persid')
+                                            ->where('a.tiesasid', 'A')
+                                            ->orderBy('p.persprimernombre')->orderBy('p.perssegundonombre')
+                                            ->orderBy('p.persprimerapellido')->orderBy('p.perssegundoapellido')->get();
 
 		$vehiculo         = [];
 		if($request->tipo === 'U'){
             $url      = URL::to('/');
 			$vehiculo = DB::table('vehiculo')
-                                    ->select('vehiid','tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
-                                            'tiesveid','vehifechaingreso','vehinumerointerno','vehiplaca','vehimodelo','vehicilindraje',
-                                            'vehinumeromotor','vehinumerochasis','vehinumeroserie','vehinumeroejes','vehiesmotorregrabado',
-                                            'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto','vehiobservacion',
-                                            DB::raw("CONCAT('$url/archivos/vehiculo/', vehiplaca, '/', vehirutafoto ) as rutaFotografia"))
-									->where('vehiid', $request->codigo)->first();
+                            ->select('asocid','vehiid','tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
+                                    'tiesveid','vehifechaingreso','vehinumerointerno','vehiplaca','vehimodelo','vehicilindraje',
+                                    'vehinumeromotor','vehinumerochasis','vehinumeroserie','vehinumeroejes','vehiesmotorregrabado',
+                                    'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto','vehiobservacion',
+                                    DB::raw("CONCAT('$url/archivos/vehiculo/', vehiplaca, '/', vehirutafoto ) as rutaFotografia"))
+                            ->where('vehiid', $request->codigo)->first();
 		}
 
         return response()->json(['success' => true, 'tipovehiculos' => $tipovehiculos,   'tiporeferenciavehiculos'  => $tiporeferenciavehiculos, 
                                 'tipomarcavehiculos'       => $tipomarcavehiculos,       'tipocarroceriavehiculos'  => $tipocarroceriavehiculos,
                                 'tipocolorvehiculos'       => $tipocolorvehiculos,       'agencias'                 => $agencias,
                                 'tipocombustiblevehiculos' => $tipocombustiblevehiculos, 'tipomodalidadvehiculos'   => $tipomodalidadvehiculos,
-                                'vehiculo' => $vehiculo]);
+                                'vehiculo' => $vehiculo ,                                'asociados'                => $asociados]);
 	}
 
     public function salve(Request $request)
@@ -89,6 +96,7 @@ class VehiculoController extends Controller
         $vehiculo = ($vehiid != 000) ? Vehiculo::findOrFail($vehiid) : new Vehiculo();
 
 	    $this->validate(request(),[
+                'asociado'              => 'required|numeric',
                 'tipoVehiculo'          => 'required|numeric',
                 'tipoReferencia'        => 'required|numeric',
                 'tipoMarca'             => 'required|numeric',
@@ -133,7 +141,8 @@ class VehiculoController extends Controller
 			}else{
 				$rutaFotografia = $request->rutaFotoOld;
 			}
-
+            
+            $vehiculo->asocid                = $request->asociado;
             $vehiculo->tipvehid              = $request->tipoVehiculo;
             $vehiculo->tireveid              = $request->tipoReferencia;
             $vehiculo->timaveid              = $request->tipoMarca;
@@ -178,6 +187,7 @@ class VehiculoController extends Controller
                 $vehiculocambioestado->save();
 
                 $vehiculocontrato                     = new VehiculoContrato();
+                $vehiculocontrato->asocid             = $request->asociado;
                 $vehiculocontrato->vehiid             = $vehiid;
                 $vehiculocontrato->persidgerente      = $empresa->persidrepresentantelegal;;
                 $vehiculocontrato->vehconanio         = $anioActual;
@@ -220,7 +230,11 @@ class VehiculoController extends Controller
                                 DB::raw("if(v.vehieschasisregrabado = 1 ,'Sí', 'No') as chasisRegrabado"),
                                 DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
                                 DB::raw("CONCAT('$url/archivos/vehiculo/', v.vehiplaca, '/', v.vehirutafoto ) as rutaFotografia"),
-                                DB::raw('(SELECT COUNT(vecaesid) AS vecaesid FROM vehiculocambioestado WHERE vehiid = v.vehiid ) AS totalCambioEstadoVehiculo'),)
+                                DB::raw('(SELECT COUNT(vecaesid) AS vecaesid FROM vehiculocambioestado WHERE vehiid = v.vehiid ) AS totalCambioEstadoVehiculo'),
+                                DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                        ->join('asociado as aso', 'aso.asocid', '=', 'v.asocid')
+                        ->join('persona as p', 'p.persid', '=', 'aso.persid')
                         ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                         ->join('tiporeferenciavehiculo as trv', 'trv.tireveid', '=', 'v.tireveid')
                         ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')

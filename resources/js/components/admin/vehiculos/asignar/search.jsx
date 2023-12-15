@@ -7,7 +7,7 @@ import {LoaderModal} from "../../../layout/loader";
 import TarjetaOperacion from './tarjetaOperacion';
 import instance from '../../../layout/instance';
 import Conductores from './conductores';
-import Asociados from './asociados';
+import Contratos from './contratos';
 import Vehiculo from './vehiculo';
 import Polizas from './polizas';
 import Soat from './soat';
@@ -108,7 +108,7 @@ export default function Search(){
                             textColor="secondary"
                             variant={variantTab} >
                             <Tab label="Informacion" />
-                            <Tab label="Asociados" />
+                            <Tab label="Contratos" />
                             <Tab label="Conductores" />
                             <Tab label="Soat" />
                             <Tab label="CRT" />
@@ -121,7 +121,7 @@ export default function Search(){
                         </TabPanel>
     
                         <TabPanel value={value} index={1}>
-                            <Asociados id={formData.vehiculoId}/>
+                            <Contratos id={formData.vehiculoId}/>
                         </TabPanel>
     
                         <TabPanel value={value} index={2}>

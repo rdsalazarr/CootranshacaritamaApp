@@ -33,12 +33,13 @@ class DependenciaController extends Controller
 		$personas = DB::table('persona')
                         ->select('persid','carlabid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ',
                         persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
-                        ->where('persactiva',1)
+                        ->where('persactiva', true)
+                        ->whereNotIn('persid', [1])
                         ->orderBy('persprimernombre')->orderBy('perssegundonombre')
                         ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')->get();
 
-        $seriesdocumentales    = DB::table('seriedocumental')->select('serdocid','serdocnombre')->where('serdocactiva', 1)->orderBy('serdocnombre')->get();        
-        $subseriesdocumentales = DB::table('subseriedocumental')->select('susedoid','serdocid','susedonombre')->where('susedoactiva', 1)->orderBy('susedonombre')->get();
+        $seriesdocumentales    = DB::table('seriedocumental')->select('serdocid','serdocnombre')->where('serdocactiva', true)->orderBy('serdocnombre')->get();        
+        $subseriesdocumentales = DB::table('subseriedocumental')->select('susedoid','serdocid','susedonombre')->where('susedoactiva', true)->orderBy('susedonombre')->get();
 
         $dependenciasubseriedocumentales = [];
         $dependenciapersonas             = [];

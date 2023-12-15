@@ -2,14 +2,16 @@
 
 namespace App\Util;
 
+use App\Models\Conductor\ConductorCambioEstado;
 use App\Models\Conductor\ConductorLicencia;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Conductor\Conductor;
+use Exception, Auth, File, DB, URL;
 use App\Util\redimencionarImagen;
 use App\Models\Asociado\Asociado;
 use App\Models\Persona\Persona;
-use Exception, File, DB, URL;
 use App\Util\generales;
+use Carbon\Carbon;
 
 class personaManager {
 
@@ -176,6 +178,22 @@ class personaManager {
                     if($request->crearHistorial === 'S'){
                         $conductorlicencia                     = new ConductorLicencia();
                         $conductorlicencia->condid             = $request->conductor;
+
+                        //Verifico el estado actual del conductor
+                        if($conductor->tiescoid === 'S'){//Se encuentra suspendido por falta de licencia
+                            $estado              = 'A';
+                            $conductor           = Conductor::findOrFail($request->conductor);
+                            $conductor->tiescoid = $estado;
+                            $conductor->save();
+
+                            $conductorcambioestado 					  = new ConductorCambioEstado();
+                            $conductorcambioestado->condid            = $request->conductor;
+                            $conductorcambioestado->tiescoid          = $estado;
+                            $conductorcambioestado->cocaesusuaid      = Auth::id();
+                            $conductorcambioestado->cocaesfechahora   = Carbon::now();
+                            $conductorcambioestado->cocaesobservacion = 'Se activa el conductor por el registro de la licencia número '.$request->numeroLicencia;
+                            $conductorcambioestado->save();
+                        }
                     }else{
                         $conductorlicencia                     = ConductorLicencia::findOrFail($request->licencia);
                     }

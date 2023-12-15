@@ -55,9 +55,9 @@ export default function New({data, tipo}){
                         name={'nombre'}
                         value={formData.nombre}
                         label={'Nombre'}
-                        className={'inputGeneral'} 
+                        className={'inputGeneral'}
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 100}}
+                        inputProps={{autoComplete: 'off', maxLength: 50}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
@@ -71,7 +71,7 @@ export default function New({data, tipo}){
                         label={'Asunto'}
                         className={'inputGeneral'} 
                         variant={"standard"} 
-                        inputProps={{autoComplete: 'off', maxLength: 100}}
+                        inputProps={{autoComplete: 'off', maxLength: 120}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}

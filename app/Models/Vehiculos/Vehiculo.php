@@ -11,7 +11,7 @@ class Vehiculo extends Model
 
     protected $table      = 'vehiculo';
     protected $primaryKey = 'vehiid';
-    protected $fillable   = ['tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
+    protected $fillable   = ['asocid','tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
                             'tiesveid','vehifechaingreso','vehinumerointerno','vehiplaca','vehimodelo','vehicilindraje',
                             'vehinumeromotor','vehinumerochasis','vehinumeroserie','vehinumeroejes','vehiesmotorregrabado',
                             'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto'];

@@ -35,11 +35,10 @@ class SancionarController extends Controller
         $fechaHoraActual = Carbon::now();
 		try {
 
-            $vehiculos = DB::table('vehiculo as v')
-                            ->select('v.vehiid','av.asocid')
-                            ->join('asociadovehiculo as av', 'a.vehiid', '=', 'v.vehiid')
-                            ->where('v.vehinumerointerno', '>=', $request->numeroInternoInicial)
-                            ->where('v.vehinumerointerno', '<=', $request->numeroInternoFinal)->get();
+            $vehiculos = DB::table('vehiculo')
+                            ->select('vehiid','asocid')
+                            ->where('vehinumerointerno', '>=', $request->numeroInternoInicial)
+                            ->where('vehinumerointerno', '<=', $request->numeroInternoFinal)->get();
 
             foreach( $vehiculos as  $vehiculo){
                 $asociadoId                             = $vehiculo->asocid;

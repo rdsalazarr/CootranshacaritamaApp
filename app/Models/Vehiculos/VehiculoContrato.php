@@ -11,5 +11,5 @@ class VehiculoContrato extends Model
 
     protected $table      = 'vehiculocontrato';
     protected $primaryKey = 'vehconid';
-    protected $fillable   = ['vehiid','persidgerente','vehconanio','vehconnumero','vehconfechainicial','vehconfechafinal','vehconobservacion'];
+    protected $fillable   = ['vehiid','asocid','persidgerente','vehconanio','vehconnumero','vehconfechainicial','vehconfechafinal','vehconobservacion'];
 }
