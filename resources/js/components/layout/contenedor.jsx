@@ -73,6 +73,8 @@ import Rutas1 from "../admin/vehiculos/tipos/vehiculo/old/list1";
 import Rutas2 from "../admin/vehiculos/tipos/vehiculo/old/list2";
 import Rutas3 from "../admin/vehiculos/tipos/vehiculo/old/ruta3";
 
+import CuadriculaArrastrable from "../admin/vehiculos/tipos/vehiculo/old/cuadriculaArrastrable";
+
 //clean_hands_icon
 const HeaderMenu = ({open, setOpen}) =>{
     return (
@@ -157,7 +159,7 @@ const componenteMenu = [
             {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas1 /> },
             {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
             {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},*/
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <Tiquetes />},
+            {ruta : 'admin/despacho/otros',             menu: 'Cuadricula',            icono : 'card_travel_icon',   componente : <CuadriculaArrastrable />},
             {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas1 />},
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas2 />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas3 />},

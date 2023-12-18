@@ -26,7 +26,7 @@ class AsignarVehiculoController extends Controller
     {
         $data = DB::table('vehiculo as v')->select('v.vehiid',DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
                                                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                                    ->where('v.tiesveid', 'A')
+                                                    ->whereIn('v.tiesveid', ['A','S'])
                                                     ->orderBy('v.vehinumerointerno')->get();
         return response()->json(["data" => $data]);
     }
@@ -38,9 +38,9 @@ class AsignarVehiculoController extends Controller
         $vehiculo = DB::table('vehiculo as v')
                         ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
                                 'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
-                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion',
-                                'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
-                                'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto',
+                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion','v.tiesveid','v.vehinumeromotor',
+                                'v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje','v.vehinumerochasis',
+                                'v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto','tev.tiesvenombre as estadoActual',
                                 DB::raw("if(v.vehiesmotorregrabado = 1 ,'Sí', 'No') as motorRegrabado"),
                                 DB::raw("if(v.vehieschasisregrabado = 1 ,'Sí', 'No') as chasisRegrabado"),
                                 DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
@@ -52,6 +52,7 @@ class AsignarVehiculoController extends Controller
                         ->join('tipomodalidadvehiculo as tmvh', 'tmvh.timoveid', '=', 'v.timoveid')
                         ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
                         ->join('tipocombustiblevehiculo as tcvh', 'tcvh.ticovhid', '=', 'v.ticovhid')
+                        ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'v.tiesveid')
                         ->join('agencia as a', 'a.agenid', '=', 'v.agenid')
                         ->where('v.vehiid', $request->vehiculoId)->first(); 
 
@@ -283,8 +284,8 @@ class AsignarVehiculoController extends Controller
         try {
 
             //Consulto la placa del vehiculo
-            $vehiculo      = DB::table('vehiculo')->select('tiesveid','vehiplaca')->where('vehiid', $request->vehiculoId)->first();
-
+            $vehiculo             = DB::table('vehiculo')->select('tiesveid','vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+            $fechaHoraActual      = Carbon::now();
             $redimencionarImagen  = new redimencionarImagen();
             $funcion 		      = new generales();
             $documentoPersona     = $request->documento;
@@ -307,7 +308,7 @@ class AsignarVehiculoController extends Controller
             }
 
             $id                               = $request->codigo;
-            $vehiculosoat                     = ($id != 000) ? VehiculoSoat::findOrFail($id) : new VehiculoSoat();
+            $vehiculosoat                     = ($id != '000') ? VehiculoSoat::findOrFail($id) : new VehiculoSoat();
             $vehiculosoat->vehiid             = $request->vehiculoId;
             $vehiculosoat->vehsoanumero       = $request->numeroSoat;
             $vehiculosoat->vehsoafechainicial = $request->fechaInicio;
@@ -320,7 +321,7 @@ class AsignarVehiculoController extends Controller
             }
             $vehiculosoat->save();
 
-            if($id === 000 and $vehiculo->tiesveid === 'S'){
+            if($id === '000' and $vehiculo->tiesveid === 'S'){
                 $estado             = 'A';
                 $vehiculo           = Vehiculo::findOrFail($request->vehiculoId);
                 $vehiculo->tiesveid = $estado;
@@ -392,8 +393,8 @@ class AsignarVehiculoController extends Controller
         try {
 
             //Consulto la placa del vehiculo
-            $vehiculo      = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
-
+            $vehiculo             = DB::table('vehiculo')->select('tiesveid','vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+            $fechaHoraActual      = Carbon::now();
             $redimencionarImagen  = new redimencionarImagen();
             $funcion 		      = new generales();
             $documentoPersona     = $request->documento;
@@ -416,7 +417,7 @@ class AsignarVehiculoController extends Controller
             }
 
             $id                               = $request->codigo;
-            $vehiculocrt                     = ($id != 000) ? VehiculoCrt::findOrFail($id) : new VehiculoCrt();
+            $vehiculocrt                     = ($id != '000') ? VehiculoCrt::findOrFail($id) : new VehiculoCrt();
             $vehiculocrt->vehiid             = $request->vehiculoId;
             $vehiculocrt->vehcrtnumero       = $request->numeroCrt;
             $vehiculocrt->vehcrtfechainicial = $request->fechaInicio;
@@ -428,6 +429,21 @@ class AsignarVehiculoController extends Controller
                 $vehiculocrt->vehcrtrutaarchivo           = $rutaArchivo;
             }
             $vehiculocrt->save();
+
+            if($id === '000' and $vehiculo->tiesveid === 'S'){
+                $estado             = 'A';
+                $vehiculo           = Vehiculo::findOrFail($request->vehiculoId);
+                $vehiculo->tiesveid = $estado;
+                $vehiculo->save();
+
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $request->vehiculoId;
+                $vehiculocambioestado->tiesveid          = $estado;
+                $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = "La activación del vehículo ha sido realizada tras el registro de un nuevo CRT";
+                $vehiculocambioestado->save();
+            }
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
@@ -487,8 +503,8 @@ class AsignarVehiculoController extends Controller
         try {
 
             //Consulto la placa del vehiculo
-            $vehiculo      = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
-
+            $vehiculo             = DB::table('vehiculo')->select('tiesveid','vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+            $fechaHoraActual      = Carbon::now();
             $redimencionarImagen  = new redimencionarImagen();
             $funcion 		      = new generales();
             $documentoPersona     = $request->documento;
@@ -511,7 +527,7 @@ class AsignarVehiculoController extends Controller
             }
 
             $id                                            = $request->codigo;
-            $vehiculopoliza                                = ($id != 000) ? VehiculoPoliza::findOrFail($id) : new VehiculoPoliza();
+            $vehiculopoliza                                = ($id != '000') ? VehiculoPoliza::findOrFail($id) : new VehiculoPoliza();
             $vehiculopoliza->vehiid                        = $request->vehiculoId;
             $vehiculopoliza->vehpolnumeropolizacontractual = $request->numeroPolizaContractual;
             $vehiculopoliza->vehpolnumeropolizaextcontrac  = $request->numeroPolizaExtraContractual;
@@ -524,6 +540,21 @@ class AsignarVehiculoController extends Controller
                 $vehiculopoliza->vehpolrutaarchivo           = $rutaArchivo;
             }
             $vehiculopoliza->save();
+
+            if($id === '000' and $vehiculo->tiesveid === 'S'){
+                $estado             = 'A';
+                $vehiculo           = Vehiculo::findOrFail($request->vehiculoId);
+                $vehiculo->tiesveid = $estado;
+                $vehiculo->save();
+
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $request->vehiculoId;
+                $vehiculocambioestado->tiesveid          = $estado;
+                $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = "La activación del vehículo ha sido realizada tras el registro de una nueva póliza";
+                $vehiculocambioestado->save();
+            }
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
@@ -591,7 +622,8 @@ class AsignarVehiculoController extends Controller
         try {
 
             //Consulto la placa del vehiculo
-            $vehiculo             = DB::table('vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+            $vehiculo             = DB::table('tiesveid','vehiculo')->select('vehiplaca')->where('vehiid', $request->vehiculoId)->first();
+            $fechaHoraActual      = Carbon::now();
             $redimencionarImagen  = new redimencionarImagen();
             $funcion 		      = new generales();
             $documentoPersona     = $request->documento;
@@ -614,7 +646,7 @@ class AsignarVehiculoController extends Controller
             }
 
             $id                                                 = $request->codigo;
-            $vehiculotarjetaoperacion                           = ($id != 000) ? VehiculoTarjetaOperacion::findOrFail($id) : new VehiculoTarjetaOperacion();
+            $vehiculotarjetaoperacion                           = ($id != '000') ? VehiculoTarjetaOperacion::findOrFail($id) : new VehiculoTarjetaOperacion();
             $vehiculotarjetaoperacion->vehiid                   = $request->vehiculoId;
             $vehiculotarjetaoperacion->tiseveid                 = $request->tipoServicio;
             $vehiculotarjetaoperacion->vetaopnumero             = $request->numeroTarjetaOperacion;
@@ -629,6 +661,21 @@ class AsignarVehiculoController extends Controller
                 $vehiculotarjetaoperacion->vetaoprutaarchivo           = $rutaArchivo;
             }
             $vehiculotarjetaoperacion->save();
+
+            if($id === '000' and $vehiculo->tiesveid === 'S'){
+                $estado             = 'A';
+                $vehiculo           = Vehiculo::findOrFail($request->vehiculoId);
+                $vehiculo->tiesveid = $estado;
+                $vehiculo->save();
+
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $request->vehiculoId;
+                $vehiculocambioestado->tiesveid          = $estado;
+                $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = "La activación del vehículo ha sido realizada tras el registro de una nueva tarjeta de operación";
+                $vehiculocambioestado->save();
+            }
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

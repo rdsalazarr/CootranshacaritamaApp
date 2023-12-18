@@ -120,7 +120,7 @@ export default function Distribucion({data, tipo}){
     }
 
     const handleDragEnd = (result) => {
-        if (!result.destination) return;
+        /*if (!result.destination) return;
 
         if(result.source.index === result.destination.index && result.source.droppableId === result.destination.droppableId){
             return;
@@ -130,10 +130,21 @@ export default function Distribucion({data, tipo}){
         const [movedItem]    = nuevosAsientos.splice(result.source.index, 1);
         nuevosAsientos.splice(result.destination.index, 0, movedItem);
 
+       setAsientos(nuevosAsientos.map((asiento, index) => ({ ...asiento, id: String(index + 1) })));*/
+
+       if (!result.destination) return;
+
+       if (result.source.droppableId !== result.destination.droppableId) {
+           // Si estás moviendo entre diferentes droppables, evita reorganizar
+           return;
+       }
+   
+       const nuevosAsientos = reorder(asientos, result.source.index, result.destination.index);
+   
        setAsientos(nuevosAsientos.map((asiento, index) => ({ ...asiento, id: String(index + 1) })));
     }
     
-    const handleSubmit = () =>{      
+    const handleSubmit = () =>{
        /*// setLoader(true);
         let formData = {...asientos};
         formData.tpVehiculo = data.tipvehid;
@@ -162,17 +173,17 @@ export default function Distribucion({data, tipo}){
                         <DragDropContext onDragEnd={handleDragEnd} direction="horizontal">
                             <Droppable droppableId="asientos">
                             {(provided) => (
-                                <Box className={claseModeloVehiculo} 
+                                <Box className={claseModeloVehiculo} fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}
                                 {...provided.droppableProps} 
-                                ref={provided.innerRef} 
-                                fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}>
+                                ref={provided.innerRef} >
                                     {asientos.map((asiento, index) => (
                                         <Draggable key={asiento.id} draggableId={asiento.id} index={index} isDragDisabled={asiento.esCondutor} >
                                             {(provided) => (
-                                                <Box className={asiento.clase}
-                                                    ref={provided.innerRef}
+                                                <Box
                                                     {...provided.draggableProps}
+                                                    ref={provided.innerRef}
                                                     {...provided.dragHandleProps}
+                                                    className={asiento.clase}
                                                     >
                                                     <p>{asiento.contenido}</p>
                                                 </Box>

@@ -40,6 +40,7 @@ export default function Vehiculo({id}){
             newFormData.chasisRegrabado = vehiculo.chasisRegrabado;
             newFormData.serieRegrabado  = vehiculo.serieRegrabado;
             newFormData.observacion     = vehiculo.vehiobservacion;
+            newFormData.estadoActual    = vehiculo.estadoActual;
             newFormData.showFotografia  = (vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : imagenVehiculo;
 
             setFormData(newFormData);
@@ -209,16 +210,28 @@ export default function Vehiculo({id}){
                     : null }
 
                 </Grid>
-            </Grid>
+            </Grid>    
 
             <Grid item xl={2} md={2} sm={12} xs={12}>
-                <Box className='frmTexto'>
-                    <label>Fotografia</label>
-                    <Box className='fotografiaVehiculo' style={{marginTop: '0.6em'}}>
-                        <img src={formData.showFotografia} ></img>
-                    </Box>
-                </Box>
-            </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Fotografia</label>
+                            <Box className='fotografiaVehiculo' style={{marginTop: '0.6em'}}>
+                                <img src={formData.showFotografia} ></img>
+                            </Box>
+                        </Box>
+                    </Grid>
+
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Estado actual</label>
+                            <span>{formData.estadoActual}</span>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Grid> 
+
 
         </Grid>
     )   

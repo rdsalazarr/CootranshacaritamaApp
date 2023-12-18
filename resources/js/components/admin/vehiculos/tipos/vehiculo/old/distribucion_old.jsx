@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { ValidatorForm } from 'react-material-ui-form-validator';
-import showSimpleSnackbar from '../../../../layout/snackBar';
+import showSimpleSnackbar from '../../../../../layout/snackBar';
 import {Button, Grid, Stack, Box } from '@mui/material';
-import {LoaderModal} from "../../../../layout/loader";
-import instance from '../../../../layout/instance';
+import {LoaderModal} from "../../../../../layout/loader";
+import instance from '../../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
 export default function Distribucion({data, tipo}){
@@ -68,18 +68,18 @@ export default function Distribucion({data, tipo}){
 
         { id: '0', contenido: '' , clase:'conductor', esCondutor: true},
         { id: '2', contenido: '' , clase:'pasillo', esCondutor: false},
-        /*{ id: '3', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '3', contenido: '' , clase:'pasillo', esCondutor: false},
         { id: '4', contenido: '' , clase:'pasillo', esCondutor: false},
-        { id: '5', contenido: '' , clase:'pasillo', esCondutor: false},*/
+        { id: '5', contenido: '' , clase:'pasillo', esCondutor: false},
 
 
         { id: '6', contenido: '1' , clase:'asiento', esCondutor: false},
         { id: '7', contenido: '2' , clase:'asiento', esCondutor: false},
-        //{ id: '8', contenido: '' , clase:'pasillo', esCondutor: false},
+        { id: '8', contenido: '' , clase:'pasillo', esCondutor: false},
         { id: '9', contenido: '3' , clase:'asiento', esCondutor: false},
         { id: '10', contenido: '4' , clase:'asiento', esCondutor: false},   
 
-        /*{ id: '11', contenido: '5', clase:'asiento', esCondutor: false },
+        { id: '11', contenido: '5', clase:'asiento', esCondutor: false },
         { id: '12', contenido: '6', clase:'asiento', esCondutor: false },
         { id: '13', contenido: '' , clase:'pasillo', esCondutor: false},
         { id: '14', contenido: '7', clase:'asiento', esCondutor: false },
@@ -107,7 +107,7 @@ export default function Distribucion({data, tipo}){
         { id: '32', contenido: '22', clase:'asiento', esCondutor: false },
         { id: '33', contenido: '' , clase:'pasillo', esCondutor: false},
         { id: '34', contenido: '23', clase:'asiento', esCondutor: false },
-        { id: '35', contenido: '24', clase:'asiento', esCondutor: false },*/
+        { id: '35', contenido: '24', clase:'asiento', esCondutor: false },
 
     ]);
 
@@ -133,7 +133,7 @@ export default function Distribucion({data, tipo}){
        setAsientos(nuevosAsientos.map((asiento, index) => ({ ...asiento, id: String(index + 1) })));
     }
     
-    const handleSubmit = () =>{
+    const handleSubmit = () =>{      
        /*// setLoader(true);
         let formData = {...asientos};
         formData.tpVehiculo = data.tipvehid;
@@ -162,17 +162,17 @@ export default function Distribucion({data, tipo}){
                         <DragDropContext onDragEnd={handleDragEnd} direction="horizontal">
                             <Droppable droppableId="asientos">
                             {(provided) => (
-                                <Box className={claseModeloVehiculo} fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}
+                                <Box className={claseModeloVehiculo} 
                                 {...provided.droppableProps} 
-                                ref={provided.innerRef} >
+                                ref={provided.innerRef} 
+                                fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}>
                                     {asientos.map((asiento, index) => (
                                         <Draggable key={asiento.id} draggableId={asiento.id} index={index} isDragDisabled={asiento.esCondutor} >
                                             {(provided) => (
-                                                <Box
-                                                    {...provided.draggableProps}
+                                                <Box className={asiento.clase}
                                                     ref={provided.innerRef}
+                                                    {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
-                                                    className={asiento.clase}
                                                     >
                                                     <p>{asiento.contenido}</p>
                                                 </Box>
