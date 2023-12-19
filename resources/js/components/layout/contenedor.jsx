@@ -224,9 +224,9 @@ const menuComponente = [
     {id:42,componente : <Encomiendas />},
     {id:43,componente : <Tiquetes />},
     {id:44,componente : <RecibirPlanillas />},
-    {id:45,componente : <ServicoEspecial />},
+    {id:45,componente : <Rutas2 />},
     
-    {id:47,componente : <EnConstruccion />},
+    {id:47,componente : <ServicoEspecial />},
     {id:48,componente : <EnConstruccion />},
     {id:49,componente : <EnConstruccion />},
     {id:50,componente : <Rutas1 />},

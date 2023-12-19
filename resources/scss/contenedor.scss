@@ -483,14 +483,55 @@ body{
   visibility: hidden !important;
 }
 
+.distribucionPuesto{
+  width: 60%;
+  margin: auto;
+  border: 3px solid #e2e2e2;
+  border-radius: 10px;
+  .asiento {
+    width: 60px;
+    height: 60px;
+    color: #1c1a1a;
+    font-weight: bold;
+    font-size: 1.2em;
+    background-image: url('../images/puestoVehiculo.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 10px;
+    cursor: move;
+    p{
+      padding-top: 0.6em;
+      padding-left: 0.2em;
+      color: #a70505;
+      font-size: 1.2em;
+    }
+  }
+  .pasillo{
+    width: 60px;
+    height: 60px;
+    background-color: #f6f6f6;
+    margin: 10px;
+  }
+  .conductor{
+    width: 60px;
+    height: 60px;
+    background-image: url('../images/conductor.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 10px;
+  }
+}
+
+/*
 .distribucionPuesto {
-  --columnas: 3; /* Cambia según sea necesario */
-  --filas: 2; /* Cambia según sea necesario */
+  --columnas: 3;
+  --filas: 2; 
 
   display: flex;
   justify-content: center;
   align-items: center;
-  /*margin-top: -4em;**/
   width: 50%;
   margin: auto;
 
@@ -503,7 +544,7 @@ body{
     border: 3px solid #e2e2e2;
     border-radius: 10px;
     padding: 5px;
-    transform: rotate(-90deg);/**/
+    transform: rotate(-90deg);
     grid-template-rows: repeat(var(--filas), 50px);
     cursor: move;
   } 
@@ -522,7 +563,7 @@ body{
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    transform: rotate(90deg);/**/
+    transform: rotate(90deg);
     p{
       padding-right: 22px;
       color: #a70505;
@@ -545,16 +586,13 @@ body{
   } 
 }
 
-/* Media Queries para ajustar el diseño según el tamaño de la pantalla */
+
 @media (max-width: 768px) {
   .distribucionPuesto {
     --columnas: 3;
     --filas: 2;
   }
 }
-
-
-
 
 
 /*

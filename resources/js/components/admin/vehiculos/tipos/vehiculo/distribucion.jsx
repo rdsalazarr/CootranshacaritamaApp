@@ -7,6 +7,25 @@ import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
+
+const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
+  
+  const initialData = {
+    list1: [{ id: '0', contenido: '' , clase:'conductor', esCondutor: true},
+            { id: '1', contenido: '' , clase:'pasillo', esCondutor: false},
+            { id: '2', contenido: '1' , clase:'asiento', esCondutor: false},],
+    list2: [
+            { id: '3', contenido: '2', clase:'asiento', esCondutor: false },
+            { id: '4', contenido: '3', clase:'asiento', esCondutor: false },
+            { id: '5', contenido: '4', clase:'asiento', esCondutor: false }],
+  };
+
+
 export default function Distribucion({data, tipo}){
 
     let totalPuesto        = data.tipvenumerofilas * data.tipvenumerocolumnas - 1;
@@ -64,28 +83,62 @@ export default function Distribucion({data, tipo}){
 
     }  */   
 
+    /* <Box class="modeloGeneral">
+                        <Box class="conductor">1</Box>
+                        <Box class="asiento">2</Box>
+                        <Box class="pasillo"></Box>
+                        <Box class="asiento">3</Box>
+                        <Box class="asiento">4</Box>
+                    </Box>*/
+
+
+   const [asientos1, setAsientos1] = useState([
+            { claseGeneral : 'modeloGeneral',
+                puestos:[{ id: '0', contenido: '' , clase:'conductor', esCondutor: true},
+                { id: '2', contenido: '' , clase:'pasillo', esCondutor: false},
+                { id: '3', contenido: '' , clase:'pasillo', esCondutor: false},
+                { id: '4', contenido: '' , clase:'pasillo', esCondutor: false},
+                { id: '5', contenido: '' , clase:'pasillo', esCondutor: false},]
+            },
+
+            { claseGeneral : 'modeloGeneral',
+                puestos:[{ id: '6', contenido: '1', clase:'asiento', esCondutor: false },
+                { id: '7', contenido: '2', clase:'asiento', esCondutor: false },
+                { id: '8', contenido: '' , clase:'pasillo', esCondutor: false},
+                { id: '9', contenido: '3', clase:'asiento', esCondutor: false },
+                { id: '10', contenido: '4', clase:'asiento', esCondutor: false }]
+            },
+            { claseGeneral : 'modeloGeneral',
+                puestos:[{ id: '16', contenido: '5', clase:'asiento', esCondutor: false },
+                { id: '17', contenido: '6', clase:'asiento', esCondutor: false },
+                { id: '18', contenido: '' , clase:'pasillo', esCondutor: false},
+                { id: '19', contenido: '7', clase:'asiento', esCondutor: false },
+                { id: '20', contenido: '8', clase:'asiento', esCondutor: false }]
+        },
+   ])
+
     const [asientos, setAsientos] = useState([
 
-        { id: '0', contenido: '' , clase:'conductor', esCondutor: true},
-        { id: '2', contenido: '' , clase:'pasillo', esCondutor: false},
-        /*{ id: '3', contenido: '' , clase:'pasillo', esCondutor: false},
-        { id: '4', contenido: '' , clase:'pasillo', esCondutor: false},
-        { id: '5', contenido: '' , clase:'pasillo', esCondutor: false},*/
+       /* { id: '0', contenido: 'Conductor' , clase:'conductor', esCondutor: true},
+        { id: '2', contenido: 'pasillo' , clase:'pasillo', esCondutor: false},
+        { id: '3', contenido: 'pasillo' , clase:'pasillo', esCondutor: false},
+        { id: '4', contenido: 'pasillo' , clase:'pasillo', esCondutor: false},
+        { id: '5', contenido: 'pasillo' , clase:'pasillo', esCondutor: false},*/
 
 
-        { id: '6', contenido: '1' , clase:'asiento', esCondutor: false},
-        { id: '7', contenido: '2' , clase:'asiento', esCondutor: false},
-        //{ id: '8', contenido: '' , clase:'pasillo', esCondutor: false},
-        { id: '9', contenido: '3' , clase:'asiento', esCondutor: false},
-        { id: '10', contenido: '4' , clase:'asiento', esCondutor: false},   
+        { id: '6', contenido: '1' , clase:'asiento', esCondutor: false, claseGeneal : 'modeloGeneral'},
+        { id: '7', contenido: '2' , clase:'asiento', esCondutor: false, claseGeneal : ''},
+        { id: '8', contenido: 'pasillo' , clase:'pasillo', esCondutor: false, claseGeneal : ''},
+        { id: '9', contenido: '3' , clase:'asiento', esCondutor: false, claseGeneal : ''},
+        { id: '10', contenido: '4' , clase:'asiento', esCondutor: false, claseGeneal : ''},  
 
-        /*{ id: '11', contenido: '5', clase:'asiento', esCondutor: false },
-        { id: '12', contenido: '6', clase:'asiento', esCondutor: false },
-        { id: '13', contenido: '' , clase:'pasillo', esCondutor: false},
-        { id: '14', contenido: '7', clase:'asiento', esCondutor: false },
-        { id: '15', contenido: '8', clase:'asiento', esCondutor: false },
+        { id: '11', contenido: '5', clase:'asiento', esCondutor: false , claseGeneal : 'modeloGeneral'},
+        { id: '12', contenido: '6', clase:'asiento', esCondutor: false , claseGeneal : ''},
+        { id: '13', contenido: 'pasillo' , clase:'pasillo', esCondutor: false, claseGeneal : ''},
+        { id: '14', contenido: '7', clase:'asiento', esCondutor: false , claseGeneal : ''},
+        { id: '15', contenido: '8', clase:'asiento', esCondutor: false , claseGeneal : ''},
 
-        { id: '16', contenido: '9', clase:'asiento', esCondutor: false },
+       /* { id: '16', contenido: '9', clase:'asiento', esCondutor: false },
         { id: '17', contenido: '10', clase:'asiento', esCondutor: false },
         { id: '18', contenido: '' , clase:'pasillo', esCondutor: false},
         { id: '19', contenido: '11', clase:'asiento', esCondutor: false },
@@ -111,27 +164,36 @@ export default function Distribucion({data, tipo}){
 
     ]);
 
-    const reorder = (list, startIndex, endIndex) =>{
-        const result = [...list];
-        const [removed] = result.splice(startIndex, 1);
-        result.splice(endIndex, 0, removed);
 
-        return result;
-    }
+    const [dataPuesto, setDataPuesto] = useState(initialData);
 
     const handleDragEnd = (result) => {
-        if (!result.destination) return;
-
-        if(result.source.index === result.destination.index && result.source.droppableId === result.destination.droppableId){
-            return;
-        }
-
-        const nuevosAsientos = [...asientos];
-        const [movedItem]    = nuevosAsientos.splice(result.source.index, 1);
-        nuevosAsientos.splice(result.destination.index, 0, movedItem);
-
-       setAsientos(nuevosAsientos.map((asiento, index) => ({ ...asiento, id: String(index + 1) })));
-    }
+      if (!result.destination) return;
+  
+      const { source, destination } = result;
+  
+      if (source.droppableId === destination.droppableId) {
+        const items = reorder(
+          dataPuesto[source.droppableId],
+          source.index,
+          destination.index
+        );
+  
+        setDataPuesto({ ...dataPuesto, [source.droppableId]: items });
+      } else {
+        const sourceItems = [...dataPuesto[source.droppableId]];
+        const destItems = [...dataPuesto[destination.droppableId]];
+  
+        const [movedItem] = sourceItems.splice(source.index, 1);
+        destItems.splice(destination.index, 0, movedItem);
+  
+        setDataPuesto({
+          ...dataPuesto,
+          [source.droppableId]: sourceItems,
+          [destination.droppableId]: destItems,
+        });
+      }
+    };
     
     const handleSubmit = () =>{
        /*// setLoader(true);
@@ -158,34 +220,83 @@ export default function Distribucion({data, tipo}){
                 </Grid>
 
                 <Grid item xl={12} md={12} sm={12} xs={12}>
-                    <Box className='distribucionPuesto'>
-                        <DragDropContext onDragEnd={handleDragEnd} direction="horizontal">
-                            <Droppable droppableId="asientos">
-                            {(provided) => (
-                                <Box className={claseModeloVehiculo} fontStyle={{gridTemplateRows: 'repeat('+tamanoAciento+', 50px)'}}
-                                {...provided.droppableProps} 
-                                ref={provided.innerRef} >
-                                    {asientos.map((asiento, index) => (
-                                        <Draggable key={asiento.id} draggableId={asiento.id} index={index} isDragDisabled={asiento.esCondutor} >
-                                            {(provided) => (
-                                                <Box
-                                                    {...provided.draggableProps}
-                                                    ref={provided.innerRef}
-                                                    {...provided.dragHandleProps}
-                                                    className={asiento.clase}
-                                                    >
-                                                    <p>{asiento.contenido}</p>
-                                                </Box>
-                                            )}
+                    <Box className='distribucionPuesto'>  
+                        <DragDropContext onDragEnd={handleDragEnd}>
+                            <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            {Object.keys(dataPuesto).map((listId) => (
+                                <Droppable key={listId} droppableId={listId}>
+                                {(provided) => (
+                                    <Box
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    >
+                                    {dataPuesto[listId].map((item, index) => (
+                                        <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={item.esCondutor}>
+                                        { (provided) => (
+                                            <Box
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            className={item.clase}>
+                                            <p>{item.contenido}</p>
+                                            </Box>
+                                        )}
                                         </Draggable>
                                     ))}
                                     {provided.placeholder}
-                                </Box>
-                            )}
-                            </Droppable>
+                                    </Box>
+                                )}
+                                </Droppable>
+                            ))}
+                            </Box>
                         </DragDropContext>
                     </Box>
                 </Grid>
+
+               {
+                /*
+
+
+            <Grid item xl={12} md={12} sm={12} xs={12}>
+                <Box class="distribucionPuesto">
+                    
+
+                    <Box class="modeloGeneral">
+                        <Box class="conductor"></Box>
+                        <Box class="pasillo">2</Box>
+                        <Box class="pasillo"></Box>
+                        <Box class="pasillo"></Box>
+                        <Box class="pasillo"></Box>
+                    </Box>
+
+                    <Box class="modeloGeneral">
+                        <Box class="asiento">1</Box>
+                        <Box class="asiento">2</Box>
+                        <Box class="pasillo"></Box>
+                        <Box class="asiento">3</Box>
+                        <Box class="asiento">4</Box>
+                    </Box>
+
+                    <Box class="modeloGeneral">
+                        <Box class="asiento"><p>5</p></Box>
+                        <Box class="asiento"><p>6</p></Box>
+                        <Box class="pasillo"></Box>
+                        <Box class="asiento"><p>7</p></Box>
+                        <Box class="asiento"><p>8</p></Box>
+                    </Box>
+
+                    <Box class="modeloGeneral">
+                        <Box class="asiento"><p>7</p></Box>
+                        <Box class="asiento"><p>8</p></Box>
+                        <Box class="pasillo"></Box>
+                        <Box class="asiento"><p>9</p></Box>
+                        <Box class="asiento"><p>10</p></Box>
+                    </Box>
+                </Box>
+            </Grid> */
+               }
+
+
             </Grid>
             <Grid container direction="row" justifyContent="right">
                 <Stack direction="row" spacing={2}>

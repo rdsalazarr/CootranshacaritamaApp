@@ -63,6 +63,7 @@ use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
 use App\Http\Controllers\Admin\Conductor\ConductorController;
 use App\Http\Controllers\Admin\Vehiculos\SuspenderController;
 use App\Http\Controllers\Admin\Vehiculos\AsignarVehiculoController;
+use App\Http\Controllers\Admin\Vehiculos\DistribucionVehiculosController;
 
 use App\Http\Controllers\Admin\Cartera\LineaCreditoController;
 use App\Http\Controllers\Admin\Cartera\SolicitudCreditoController;
@@ -410,6 +411,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/poliza/salve', [AsignarVehiculoController::class, 'salvePoliza']);
             Route::post('/listar/tarjeta/operacion', [AsignarVehiculoController::class, 'listTarjetaOperacion']);
             Route::post('/tarjeta/operacion/salve', [AsignarVehiculoController::class, 'salveTarjetaOperacion']);
+
+            Route::get('/list/tipos/vehiculos', [DistribucionVehiculosController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::post('/salve/distribucion/vehiculo', [DistribucionVehiculosController::class, 'salve']);//security:admin/direccion/transporte/distribucionVehiculos 
         });
 
         Route::prefix('/cartera')->group(function(){
