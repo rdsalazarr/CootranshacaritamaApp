@@ -1,8 +1,8 @@
 import React, {useState, useEffect, Fragment } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import {ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import showSimpleSnackbar from '../../../../../layout/snackBar';
 import {Button, Grid, Stack, Box, MenuItem, Typography, Card } from '@mui/material';
+import showSimpleSnackbar from '../../../../../layout/snackBar';
 import {LoaderModal} from "../../../../../layout/loader";
 import instance from '../../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
@@ -25,17 +25,15 @@ const initialData = {
 };
 
 export default function Distribucion(){
-
-  const [tipo, setTipo] = useState(false);
+  
   const [loader, setLoader] = useState(false);
   const [habilitado, setHabilitado] = useState(true);
+  const [dataPuestos, setDataPuestos] = useState([]);
   const [tipoVehiculos, setTipoVehiculos] = useState([]);
-  const [dataPuesto, setDataPuesto] = useState(initialData);
+  const [mostrarDatos, setMostrarDatos] = useState(false);
+  const [existenDatos, setExistenDatos] = useState(false);
+  const [adicionarClase, setAdicionarClase] = useState(false);
   const [formData, setFormData] = useState({tipoVehiculo: ''});
-
-  const handleChange = (e) =>{
-    setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-}
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -44,21 +42,21 @@ export default function Distribucion(){
 
     if (source.droppableId === destination.droppableId) {
       const items = reorder(
-        dataPuesto[source.droppableId],
+        dataPuestos[source.droppableId],
         source.index,
         destination.index
       );
 
-      setDataPuesto({ ...dataPuesto, [source.droppableId]: items });
+      setDataPuestos({ ...dataPuestos, [source.droppableId]: items });
     } else {
-      const sourceItems = [...dataPuesto[source.droppableId]];
-      const destItems = [...dataPuesto[destination.droppableId]];
+      const sourceItems = [...dataPuestos[source.droppableId]];
+      const destItems = [...dataPuestos[destination.droppableId]];
 
       const [movedItem] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, movedItem);
 
-      setDataPuesto({
-        ...dataPuesto,
+      setDataPuestos({
+        ...dataPuestos,
         [source.droppableId]: sourceItems,
         [destination.droppableId]: destItems,
       });
@@ -66,95 +64,132 @@ export default function Distribucion(){
   }
 
   const handleSubmit = () =>{
-    /*// setLoader(true);
-     let formData = {...asientos};
-     formData.tpVehiculo = data.tipvehid;
-     instance.post('/admin/direccion/transporte/tipo/distribucion/salve', formData).then(res=>{
-         let icono = (res.success) ? 'success' : 'error';
-         showSimpleSnackbar(res.message, icono);
-         (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
-         setLoader(false);
-    })*/
- }
+    let puestosVehiculo = [];
+    Object.keys(dataPuestos).forEach((clave) => {
+      const filas = dataPuestos[clave];
+      filas.forEach((elemento) => {
+        puestosVehiculo.push({
+          puestoId:  elemento.id,
+          idPuesto:  elemento.idPuesto,
+          contenido: elemento.contenido
+        });
+      });
+    });
 
-  /*const consultarDistribucion = (e) =>{
-    let newFormData          = {...formData}
-    let tipoVehiculo         = (e.target.name === 'tipoVehiculo' ) ? e.target.value : formData.tipoVehiculo;
-    const resultTipoVehiculo = tipoVehiculos.filter((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
-    const numeroColumnas     = resultTipoVehiculo[0].tipvenumerocolumnas;
-    const numeroFilas        = resultTipoVehiculo[0].tipvenumerofilas;
-    let dataFilas            = [];
-    let dataPuestos          = [];
+    // setLoader(true);
+     let newFormData = {...formData};
+     newFormData.puestosVehiculo = puestosVehiculo;
+     instance.post('/admin/direccion/transporte/salve/distribucion/vehiculo', newFormData).then(res=>{
+        let icono = (res.success) ? 'success' : 'error';
+        showSimpleSnackbar(res.message, icono);
+        (res.success) ? setHabilitado(false) : null;
+        setLoader(false);
+    })
+ }  
 
-    console.log(resultTipoVehiculo);
+const consultarDistribucion = (e) => {
+  setLoader(true);
+  setHabilitado(true)
+  setMostrarDatos(false); 
+  let newFormData = { ...formData };
+  let tipoVehiculo = e.target.name === 'tipoVehiculo' ? e.target.value : formData.tipoVehiculo;
+  instance.post('/admin/direccion/transporte/list/distribucion/vehiculo', {codigo:e.target.value }).then(res => {
+    const distribucionVehiculo       = res.tipoVehiculoDistribuciones;
+    const resultTipoVehiculo         = tipoVehiculos.find((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
+    const numeroColumnas             = resultTipoVehiculo.tipvenumerocolumnas;
+    const numeroFilas                = resultTipoVehiculo.tipvenumerofilas;
+    const numeroTotalPuestos         = resultTipoVehiculo.tipvecapacidad;
 
-    for(let i = 1; i <= numeroFilas; i++){
-      let identificador = 'list'+i;
-      dataFilas.push({ identificador:[{id: i, contenido: i, clase:'asiento', esCondutor: false}] }); 
+    setAdicionarClase("{width:'10%'}");
+    setExistenDatos((distribucionVehiculo.length > 0) ? true : false);
+    setMostrarDatos(true);
+    
+    let dataFilas = [];
+    let numeroPuesto = 0;
+    for (let i = 0; i < numeroFilas; i++) {
+      let dataColumnas = [];
+
+      for (let j = 0; j < numeroColumnas; j++) {
+        numeroPuesto++;
+        let contenido = '';
+        let clase     = '';
+        let idPuesto = '0';
+        const puestoInfo = distribucionVehiculo.find(info => parseInt(info.tivediid) === numeroPuesto);        
+        let id = i * numeroColumnas + j;
+        if (puestoInfo) {
+          contenido = puestoInfo.tivedinumero;
+          id        = puestoInfo.tivediid;
+          idPuesto  = puestoInfo.tivediid;
+          clase     = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : 'asiento' );
+        } else {
+          if (numeroPuesto === 1) {
+            contenido = 'C';
+            clase     = 'conductor';
+          } else if (numeroPuesto <= numeroTotalPuestos + 1) {
+            contenido = numeroPuesto - 1;
+            clase     = 'asiento';
+          } else {
+            contenido = 'P';
+            clase     = 'pasillo';
+          }
+        }
+        const esCondutor = clase === 'conductor';
+        dataColumnas.push({ id: id.toString(), idPuesto:idPuesto, contenido, clase, esCondutor });
+      }
+      dataFilas.push(dataColumnas);
     }
-
-    console.log(dataFilas);
-
-
-
-
+    
+    setDataPuestos(dataFilas);
     newFormData.tipoVehiculo = tipoVehiculo;
     setFormData(newFormData);
-  }*/
+    setLoader(false);    
+  })
+  //
+}
 
-  const consultarDistribucion = (e) => {
+
+/*
+ const consultarDistribucion = (e) => {
     let newFormData = { ...formData };
     let tipoVehiculo = e.target.name === 'tipoVehiculo' ? e.target.value : formData.tipoVehiculo;
     const resultTipoVehiculo = tipoVehiculos.find((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
     const numeroColumnas = resultTipoVehiculo.tipvenumerocolumnas;
-    const numeroFilas    = resultTipoVehiculo.tipvenumerofilas;
-    const numeroTotalPuestos  = resultTipoVehiculo.tipvecapacidad;
+    const numeroFilas = resultTipoVehiculo.tipvenumerofilas;
+    const numeroTotalPuestos = resultTipoVehiculo.tipvecapacidad;
     let dataFilas = [];
     let numeroPuesto = 0;
-
-    let dataColumnas = [];
-    for (let k = 90; k < 90 + numeroColumnas; k++) {
-      let id = k;
-      let contenido = ''; 
-      let clase = (k === 90) ? 'conductor': 'pasillo'; 
-      let esCondutor = false;
-      dataColumnas.push({ id: id.toString(), contenido, clase, esCondutor });
-    }
-    dataFilas.push(dataColumnas);
-
-    for (let i = 0; i < numeroFilas - 1; i++) {
+  
+    for (let i = 0; i < numeroFilas; i++) {
       let dataColumnas = [];
-      let puestoAsignado = 0;
-      let contenido = ''; 
-      let clase = '';
       for (let j = 0; j < numeroColumnas; j++) {
-        puestoAsignado ++;
+        numeroPuesto++;
+  
+        let contenido = '';
+        let clase = '';
 
-        if(puestoAsignado === 3 && numeroColumnas !== 3) {
-          puestoAsignado = 0 ;
+        if (numeroPuesto === 1) {
+          contenido = '';
+          clase = 'conductor';
+        } else if (numeroPuesto <= numeroTotalPuestos + 1) {
+          contenido = numeroPuesto - 1;
+          clase = 'asiento';
+        } else {
           contenido = '';
           clase = 'pasillo';
-        }else{
-          numeroPuesto ++;
-          contenido = numeroPuesto; 
-          clase = 'asiento';
-        }        
-        
+        }
+  
         const id = i * numeroColumnas + j;
-        const esCondutor = false;
+        const esCondutor = clase === 'conductor';
         dataColumnas.push({ id: id.toString(), contenido, clase, esCondutor });
 
-        if(numeroPuesto === numeroTotalPuestos){
-          console.log("entrando");
-          break;
-        }
       }
       dataFilas.push(dataColumnas);
     }
-    setDataPuesto(dataFilas);  
+  
+    setDataPuestos(dataFilas);
     newFormData.tipoVehiculo = tipoVehiculo;
     setFormData(newFormData);
-  }
+  }*/
 
   const inicio = () =>{
     setLoader(true);
@@ -193,7 +228,7 @@ export default function Distribucion(){
               >
                 <MenuItem value={""}>Seleccione</MenuItem>
                 {tipoVehiculos.map(res=>{
-                    return <MenuItem value={res.tipvehid} key={res.tipvehid}>{res.tipvehnombre} {res.tipvehreferencia} Filas ({res.tipvenumerofilas})  Columnas ({res.tipvenumerocolumnas}) Puesto ({res.tipvecapacidad}) </MenuItem>
+                    return <MenuItem value={res.tipvehid} key={res.tipvehid}>{res.tipvehnombre} {res.tipvehreferencia} Filas ({res.tipvenumerofilas})  Columnas ({res.tipvenumerocolumnas}) Puestos ({res.tipvecapacidad}) </MenuItem>
                 })}
               </SelectValidator>
             </Grid>
@@ -201,58 +236,56 @@ export default function Distribucion(){
         </Card>
       </Box>
 
-      <Fragment>
-
-      <Card style={{marginTop: '1em'}}>
-        <Grid container spacing={2}>  
-          <Grid item xl={12} md={12} sm={12} xs={12}>
-            <p>Para poder definir la distribución de los puestos del tipo de vehículo por favor organícelos según el numero de puesto y luego proceda a guardar el registro.</p>
+      {(mostrarDatos) ? 
+        <Card style={{marginTop: '1em', padding: '1em'}}>
+          <Grid container spacing={2}>  
+            <Grid item xl={12} md={12} sm={12} xs={12}>
+              <p>Para poder definir la distribución de los puestos del tipo de vehículo por favor organícelos según el numero de puesto y luego proceda a guardar el registro.</p>
+            </Grid>
+            <Grid item xl={12} md={12} sm={12} xs={12}>
+              <Box className='distribucionPuesto' >
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {Object.keys(dataPuestos).map((listId) => (
+                      <Droppable key={listId} droppableId={listId}>
+                        {(provided) => (
+                          <Box
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                          >
+                            {dataPuestos[listId].map((item, index) => (
+                              <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={item.esCondutor}>
+                                { (provided) => (
+                                  <Box
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={item.clase}>
+                                    <p>{item.contenido}</p>
+                                  </Box>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </Box>
+                        )}
+                      </Droppable>
+                    ))}
+                  </Box>
+                </DragDropContext>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xl={12} md={12} sm={12} xs={12}>
-            <Box className='distribucionPuesto'>  
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  {Object.keys(dataPuesto).map((listId) => (
-                    <Droppable key={listId} droppableId={listId}>
-                      {(provided) => (
-                        <Box
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                        >
-                          {dataPuesto[listId].map((item, index) => (
-                            <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={item.esCondutor}>
-                              { (provided) => (
-                                <Box
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={item.clase}>
-                                  <p>{item.contenido}</p>
-                                </Box>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </Box>
-                      )}
-                    </Droppable>
-                  ))}
-                </Box>
-              </DragDropContext>
-            </Box>
+
+          <Grid container direction="row" justifyContent="right">
+            <Stack direction="row" spacing={2}>
+              <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
+                  startIcon={<SaveIcon />}> {(!existenDatos) ? "Guardar" : "Actualizar"}
+              </Button>
+            </Stack>
           </Grid>
-        </Grid>
-
-        <Grid container direction="row" justifyContent="right">
-          <Stack direction="row" spacing={2}>
-            <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
-                startIcon={<SaveIcon />}> {(tipo) ? "Guardar" : "Actualizar"}
-            </Button>
-          </Stack>
-        </Grid>  
-      </Card>   
-
-      </Fragment>
+        </Card>
+      : null}
 
     </ValidatorForm>
   )

@@ -413,6 +413,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/tarjeta/operacion/salve', [AsignarVehiculoController::class, 'salveTarjetaOperacion']);
 
             Route::get('/list/tipos/vehiculos', [DistribucionVehiculosController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::post('/list/distribucion/vehiculo', [DistribucionVehiculosController::class, 'datos']);
             Route::post('/salve/distribucion/vehiculo', [DistribucionVehiculosController::class, 'salve']);//security:admin/direccion/transporte/distribucionVehiculos 
         });
 

@@ -18,26 +18,32 @@ class DistribucionVehiculosController extends Controller
         return response()->json(["tipoVehiculos" => $tipoVehiculos]);
     }
 
+    public function datos(Request $request)
+	{
+		$this->validate(request(),['codigo' => 'required']);
+
+        $tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid','tipvehid','tivedinumero')
+                                    ->where('tipvehid', $request->codigo)->orderBy('tivediid')->get();
+
+        return response()->json(["tipoVehiculoDistribuciones" => $tipoVehiculoDistribuciones]);
+    }
 
     public function salve(Request $request)
 	{
-		dd($request->tpVehiculo);
-
 	    $this->validate(request(),[
-	   	        'tpVehiculo'  => 'required|string', 
-				'ubicaciones' => 'required|array|min:1',
+	   	        'tipoVehiculo'  => 'required|string', 
+				'puestosVehiculo' => 'required|array|min:1',
 	        ]);
-
+ 
 		DB::beginTransaction();
-        try {
-			//TipoVehiculoDistribucion::findOrFail($tivediid);
-			foreach($request->ubicaciones as $ubicacion){
-				$tipovehiculodistribucion               = new TipoVehiculoDistribucion();
-				$tipovehiculodistribucion->tipvehid     = $request->tpVehiculo;
-				$tipovehiculodistribucion->tivedinumero = $ubicacion['numero']; 
+        try {	
+			foreach($request->puestosVehiculo as $ubicacion){
+				$idPuesto                               = $ubicacion['idPuesto'];
+				$tipovehiculodistribucion               = ($idPuesto !== '0') ? TipoVehiculoDistribucion::findOrFail($idPuesto) : new TipoVehiculoDistribucion();
+				$tipovehiculodistribucion->tipvehid     = $request->tipoVehiculo;
+				$tipovehiculodistribucion->tivedinumero = $ubicacion['contenido']; 
 				$tipovehiculodistribucion->save();
 			}
-            
 			DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){

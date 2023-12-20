@@ -488,6 +488,15 @@ body{
   margin: auto;
   border: 3px solid #e2e2e2;
   border-radius: 10px;
+  .taxi{
+    width: 10% !important;
+    margin: auto;
+    border: 3px solid #e2e2e2;
+    border-radius: 10px;
+  }
+  .microBus{
+    width: 20%;
+  }
   .asiento {
     width: 60px;
     height: 60px;
@@ -512,6 +521,10 @@ body{
     height: 60px;
     background-color: #f6f6f6;
     margin: 10px;
+    color: #f6f6f6;
+    p{
+      visibility: hidden;
+    }
   }
   .conductor{
     width: 60px;
@@ -521,6 +534,9 @@ body{
     background-repeat: no-repeat;
     background-position: center center;
     margin: 10px;
+    p{
+      visibility: hidden;
+    }
   }
 }
 
