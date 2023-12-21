@@ -54,6 +54,7 @@ import Vehiculo from "../admin/vehiculos/automovil/list";
 import Conductor from "../admin/vehiculos/conductor/list";
 import AsignarVehiculo from "../admin/vehiculos/asignar/search";
 import SuspenderVehiculo from "../admin/vehiculos/suspender/search";
+import DistribucionVehiculo from "../admin/vehiculos/tipos/vehiculo/distribucion";
 
 import LineaCredito from "../admin/cartera/lineaCredito/list";
 import SolicitudCredito from "../admin/cartera/solicitudCredito/search";
@@ -224,7 +225,7 @@ const menuComponente = [
     {id:42,componente : <Encomiendas />},
     {id:43,componente : <Tiquetes />},
     {id:44,componente : <RecibirPlanillas />},
-    {id:45,componente : <Rutas2 />},
+    {id:45,componente : <DistribucionVehiculo />},
     
     {id:47,componente : <ServicoEspecial />},
     {id:48,componente : <EnConstruccion />},

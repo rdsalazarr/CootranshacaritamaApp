@@ -112,3 +112,41 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (45, 1, 45),
 (46, 1, 46);
+
+ALTER TABLE `tipovehiculo` ADD `tipveclasecss` VARCHAR(50) NOT NULL DEFAULT 'distribucionPuestoGeneral' AFTER `tipvenumerocolumnas`;
+
+ALTER TABLE `tipovehiculodistribucion` ADD `tivedicontenido` VARCHAR(3) NOT NULL AFTER `tivedinumero`;
+
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoTaxi' WHERE tipvehid = 1;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoBus' WHERE tipvehid = 2;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoBus' WHERE tipvehid = 3;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoBus' WHERE tipvehid = 4;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoBus' WHERE tipvehid = 5;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoBus' WHERE tipvehid = 6;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoGeneral' WHERE tipvehid = 7;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoGeneral' WHERE tipvehid = 8;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoGeneral' WHERE tipvehid = 9;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoGeneral' WHERE tipvehid = 10;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoGeneral' WHERE tipvehid = 11;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoGeneral' WHERE tipvehid = 12;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 13;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoTaxi' WHERE tipvehid = 14;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 15;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 16;
+
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 17;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 18;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 19;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 20;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 21;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 22;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 23;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 24;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 25;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 26;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 27;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 28;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 29;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBusDos' WHERE tipvehid = 30;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoMicroBus' WHERE tipvehid = 31;
+UPDATE tipovehiculo SET tipveclasecss = 'distribucionPuestoTaxi' WHERE tipvehid = 32;

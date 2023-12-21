@@ -483,62 +483,86 @@ body{
   visibility: hidden !important;
 }
 
-.distribucionPuesto{
+.distribucionPuestoGeneral{
   width: 60%;
   margin: auto;
   border: 3px solid #e2e2e2;
   border-radius: 10px;
-  .taxi{
-    width: 10% !important;
-    margin: auto;
-    border: 3px solid #e2e2e2;
-    border-radius: 10px;
-  }
-  .microBus{
-    width: 20%;
-  }
-  .asiento {
-    width: 60px;
-    height: 60px;
-    color: #1c1a1a;
-    font-weight: bold;
+}
+
+.distribucionPuestoTaxi{
+  width: 10%;
+  margin: auto;
+  border: 3px solid #e2e2e2;
+  border-radius: 10px;
+}
+
+.distribucionPuestoMicroBus{
+  width: 20%;
+  margin: auto;
+  border: 3px solid #e2e2e2;
+  border-radius: 10px;
+}
+
+.distribucionPuestoMicroBusDos{
+  width: 31%;
+  margin: auto;
+  border: 3px solid #e2e2e2;
+  border-radius: 10px;
+}
+
+.distribucionPuestoBus{
+  width: 42%;
+  margin: auto;
+  border: 3px solid #e2e2e2;
+  border-radius: 10px;
+}
+
+.asiento {
+  width: 60px;
+  height: 60px;
+  color: #1c1a1a;
+  font-weight: bold;
+  background-image: url('../images/puestoVehiculo.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin: 10px;
+  cursor: move !important;
+  p{
+    padding-top: 0.7em;
+    padding-left: 0.3em;
+    color: #a70505;
     font-size: 1.2em;
-    background-image: url('../images/puestoVehiculo.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    margin: 10px;
-    cursor: move;
-    p{
-      padding-top: 0.6em;
-      padding-left: 0.2em;
-      color: #a70505;
-      font-size: 1.2em;
-    }
-  }
-  .pasillo{
-    width: 60px;
-    height: 60px;
-    background-color: #f6f6f6;
-    margin: 10px;
-    color: #f6f6f6;
-    p{
-      visibility: hidden;
-    }
-  }
-  .conductor{
-    width: 60px;
-    height: 60px;
-    background-image: url('../images/conductor.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-    margin: 10px;
-    p{
-      visibility: hidden;
-    }
   }
 }
+.pasillo{
+  width: 60px;
+  height: 60px;
+  background-color: #f6f6f6;
+  margin: 10px;
+  color: #f6f6f6;
+  cursor: move !important;
+  p{
+    visibility: hidden;
+    font-size: 1.2em;
+  }
+}
+.conductor{
+  width: 60px;
+  height: 60px;
+  background-image: url('../images/conductor.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin: 10px;
+  cursor: move !important;
+  p{
+    visibility: hidden;
+    font-size: 1.2em;
+  }
+}
+
 
 /*
 .distribucionPuesto {

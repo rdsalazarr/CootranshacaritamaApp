@@ -34,6 +34,7 @@ export default function Distribucion(){
   const [existenDatos, setExistenDatos] = useState(false);
   const [adicionarClase, setAdicionarClase] = useState(false);
   const [formData, setFormData] = useState({tipoVehiculo: ''});
+  const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral');
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -64,6 +65,9 @@ export default function Distribucion(){
   }
 
   const handleSubmit = () =>{
+
+    console.log(dataPuestos);
+
     let puestosVehiculo = [];
     Object.keys(dataPuestos).forEach((clave) => {
       const filas = dataPuestos[clave];
@@ -99,8 +103,7 @@ const consultarDistribucion = (e) => {
     const numeroColumnas             = resultTipoVehiculo.tipvenumerocolumnas;
     const numeroFilas                = resultTipoVehiculo.tipvenumerofilas;
     const numeroTotalPuestos         = resultTipoVehiculo.tipvecapacidad;
-
-    setAdicionarClase("{width:'10%'}");
+    setClaseDistribucionPuesto(resultTipoVehiculo.tipveclasecss);
     setExistenDatos((distribucionVehiculo.length > 0) ? true : false);
     setMostrarDatos(true);
     
@@ -117,8 +120,8 @@ const consultarDistribucion = (e) => {
         const puestoInfo = distribucionVehiculo.find(info => parseInt(info.tivediid) === numeroPuesto);        
         let id = i * numeroColumnas + j;
         if (puestoInfo) {
-          contenido = puestoInfo.tivedinumero;
-          id        = puestoInfo.tivediid;
+          contenido = puestoInfo.tivedicontenido;
+         // id        = puestoInfo.tivediid;
           idPuesto  = puestoInfo.tivediid;
           clase     = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : 'asiento' );
         } else {
@@ -137,12 +140,13 @@ const consultarDistribucion = (e) => {
         dataColumnas.push({ id: id.toString(), idPuesto:idPuesto, contenido, clase, esCondutor });
       }
       dataFilas.push(dataColumnas);
+      console.log(dataFilas);
     }
     
     setDataPuestos(dataFilas);
     newFormData.tipoVehiculo = tipoVehiculo;
     setFormData(newFormData);
-    setLoader(false);    
+    setLoader(false);
   })
   //
 }
@@ -243,7 +247,7 @@ const consultarDistribucion = (e) => {
               <p>Para poder definir la distribución de los puestos del tipo de vehículo por favor organícelos según el numero de puesto y luego proceda a guardar el registro.</p>
             </Grid>
             <Grid item xl={12} md={12} sm={12} xs={12}>
-              <Box className='distribucionPuesto' >
+              <Box className={claseDistribucionPuesto} >
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
                     {Object.keys(dataPuestos).map((listId) => (

@@ -11,5 +11,5 @@ class TipoVehiculoDistribucion extends Model
 
     protected $table      = 'tipovehiculodistribucion';
     protected $primaryKey = 'tivediid';
-    protected $fillable   = ['tipvehid','tivedinumero'];
+    protected $fillable   = ['tipvehid','tivedinumero', 'tivedicontenido'];
 }
