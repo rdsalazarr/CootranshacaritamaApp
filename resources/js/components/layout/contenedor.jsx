@@ -161,7 +161,7 @@ const componenteMenu = [
             {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
             {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},*/
             {ruta : 'admin/despacho/otros',             menu: 'Cuadricula',            icono : 'card_travel_icon',   componente : <CuadriculaArrastrable />},
-            {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas1 />},
+            {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'local_car_wash_icon',        componente : <Rutas1 />},
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas2 />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas3 />},
         ]
@@ -213,6 +213,9 @@ const menuComponente = [
     {id:30,componente : <Vehiculo />},
     {id:31,componente : <Conductor />},
     {id:32,componente : <AsignarVehiculo />},
+
+    {id:45,componente : <DistribucionVehiculo />},
+
     {id:33,componente : <SuspenderVehiculo />},
     {id:34,componente : <LineaCredito />},
     {id:35,componente : <SolicitudCredito />},
@@ -224,10 +227,9 @@ const menuComponente = [
     {id:41,componente : <Planillas />},
     {id:42,componente : <Encomiendas />},
     {id:43,componente : <Tiquetes />},
-    {id:44,componente : <RecibirPlanillas />},
-    {id:45,componente : <DistribucionVehiculo />},
-    
-    {id:47,componente : <ServicoEspecial />},
+    {id:44,componente : <RecibirPlanillas />}, 
+    {id:46,componente : <ServicoEspecial />},
+
     {id:48,componente : <EnConstruccion />},
     {id:49,componente : <EnConstruccion />},
     {id:50,componente : <Rutas1 />},

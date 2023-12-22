@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('tipovehiculodistribucion', function (Blueprint $table) {
             $table->bigIncrements('tivediid')->unsigned()->comment('Identificador de la tabla tipo vehículo distribución');
             $table->smallInteger('tipvehid')->unsigned()->comment('Identificador del tipo de vehículo');
-            $table->string('tivedinumero', 3)->comment('Número de ubicación del tipo de vehículo');
-            $table->string('tivedicontenido', 3)->comment('Contenido del número de ubicación del tipo de vehículo');
+            $table->decimal('tivedicolumna', 3, 0)->comment('Columna de distribución de tipo de vehículo');
+            $table->decimal('tivedifila', 3, 0)->comment('Fila de distribución de tipo de vehículo');
+            $table->decimal('tivedipuesto', 3, 0)->comment('Contenido del número de ubicación del tipo de vehículo');
             $table->timestamps();
             $table->foreign('tipvehid')->references('tipvehid')->on('tipovehiculo')->onUpdate('cascade')->index('fk_tipvehtivedi');
         });

@@ -25,9 +25,10 @@ class DistribucionVehiculosController extends Controller
 	{
 		$this->validate(request(),['codigo' => 'required']);
 
-        $tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid','tipvehid','tivedinumero','tivedicontenido')
+        //'tivediid','tipvehid','tivedinumero','tivedicontenido'
+        $tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid','tipvehid','tivedicolumna', 'tivedifila', 'tivedipuesto')
                                     ->where('tipvehid', $request->codigo)
-                                    ->orderBy('tipvehid')->orderBy('tivedinumero')->get();
+                                    ->orderBy('tivediid')->get();
 
         return response()->json(["tipoVehiculoDistribuciones" => $tipoVehiculoDistribuciones]);
     }
@@ -80,10 +81,11 @@ class DistribucionVehiculosController extends Controller
                 }else{
                     $tipovehiculodistribucion   =  new TipoVehiculoDistribucion();
                 }*/
-                
-				$tipovehiculodistribucion->tipvehid        = $request->tipoVehiculo;
-				$tipovehiculodistribucion->tivedinumero    = $ubicacion['puestoNumero']; 
-                $tipovehiculodistribucion->tivedicontenido = $ubicacion['contenido']; 
+
+				$tipovehiculodistribucion->tipvehid      = $request->tipoVehiculo;
+				$tipovehiculodistribucion->tivedicolumna = $ubicacion['columna'];
+                $tipovehiculodistribucion->tivedifila    = $ubicacion['fila'];
+                $tipovehiculodistribucion->tivedipuesto  = $ubicacion['puesto']; 
 				$tipovehiculodistribucion->save();
 			}
 			DB::commit();

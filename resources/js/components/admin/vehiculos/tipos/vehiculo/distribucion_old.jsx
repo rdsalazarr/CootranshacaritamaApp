@@ -51,7 +51,7 @@ export default function Distribucion(){
             [destination.droppableId]: destItems,
         });
         }
-    }
+    } 
 
     const handleSubmit = () =>{
         let puestosVehiculo = [];
@@ -60,8 +60,8 @@ export default function Distribucion(){
             const filas = dataPuestos[clave];
             filas.forEach((elemento) => {
                 puestosVehiculo.push({
-                    fila:     j,
-                    columna:  elemento.puestoNumero,
+                    fila: j,
+                    columna: elemento.puestoNumero,
                     puestoId: elemento.puestoId,
                     puesto:   elemento.contenido
                 });
@@ -79,6 +79,81 @@ export default function Distribucion(){
         })
     }
 
+    const consultarDistribucionB = (e) => {
+        setLoader(true);
+        setHabilitado(true)
+        setMostrarDatos(false);
+        let newFormData = { ...formData };
+        let tipoVehiculo = e.target.name === 'tipoVehiculo' ? e.target.value : formData.tipoVehiculo;
+    
+        instance.post('/admin/direccion/transporte/list/distribucion/vehiculo', { codigo: e.target.value })
+            .then(res => {
+                const distribucionVehiculo = res.tipoVehiculoDistribuciones;
+                const resultTipoVehiculo = tipoVehiculos.find((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
+                const numeroColumnas = resultTipoVehiculo.tipvenumerocolumnas;
+                const numeroFilas = resultTipoVehiculo.tipvenumerofilas;
+                const numeroTotalPuestos = resultTipoVehiculo.tipvecapacidad;
+    
+                setClaseDistribucionPuesto(resultTipoVehiculo.tipveclasecss);
+                setExistenDatos((distribucionVehiculo.length > 0) ? true : false);
+                setMostrarDatos(true);
+    
+                let dataFilas = [];
+    
+                for (let i = 0; i < numeroFilas; i++) {
+                    let dataColumnas = [];
+    
+                    for (let j = 0; j < numeroColumnas; j++) {
+                        const puestoInfo = distribucionVehiculo.find(info => parseInt(info.tivedinumero) === (i * numeroColumnas + j + 1));
+    
+                        let contenido = '';
+                        let clase = '';
+                        let puestoId = '0';
+    
+                        if (puestoInfo) {
+                            puestoId = puestoInfo.tivediid;
+                            contenido = puestoInfo.tivedicontenido;
+                            clase = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : 'asiento');
+                        } else {
+                            if (i * numeroColumnas + j === 0) {
+                                contenido = 'C';
+                                clase = 'conductor';
+                            } else if (i * numeroColumnas + j < numeroTotalPuestos + 1) {
+                                contenido = i * numeroColumnas + j;
+                                clase = 'asiento';
+                            } else {
+                                contenido = 'P';
+                                clase = 'pasillo';
+                            }
+                        }
+    
+                        const esCondutor = clase === 'conductor';
+                        dataColumnas.push({ puestoNumero: (i * numeroColumnas + j + 1).toString(), puestoId: puestoId, contenido, clase, esCondutor });
+                    }
+                    dataFilas.push(dataColumnas);
+                }
+    
+                setDataPuestos(dataFilas);
+                newFormData.tipoVehiculo = tipoVehiculo;
+                setFormData(newFormData);
+                setLoader(false);
+            });
+
+            
+            /*const puestoInfo1 = distribucionVehiculo.find(info => parseInt(info.tivediid) === 1);
+            let puestoInfo2 = distribucionVehiculo.sort((a, b) => parseInt(a.tivediid) - parseInt(b.tivediid))
+            let    puestoInfo3 = puestoInfo2.find(info => parseInt(info.tivedinumero) === 1)
+
+            console.log(puestoInfo1, puestoInfo2, puestoInfo3);
+
+            return;*/
+
+            
+                    /*const puestoInfo = distribucionVehiculo
+                                                .sort((a, b) => parseInt(a.tivedinumero) - parseInt(b.tivedinumero))
+                                                .find(info => parseInt(info.tivedinumero) === parseInt(numeroPuesto));*/
+    }   
+
     const consultarDistribucion = (e) => {
         setLoader(true);
         setHabilitado(true);
@@ -93,7 +168,7 @@ export default function Distribucion(){
             const numeroTotalPuestos         = resultTipoVehiculo.tipvecapacidad;
             setClaseDistribucionPuesto(resultTipoVehiculo.tipveclasecss);
             setExistenDatos((distribucionVehiculo.length > 0) ? true : false);
-            setMostrarDatos(true);
+            setMostrarDatos(true);        
 
             let dataFilas    = [];
             let numeroPuesto = 0;
@@ -104,8 +179,7 @@ export default function Distribucion(){
                     let contenido    = '';
                     let clase        = '';
                     let puestoId     = '0';
-                    let id = i * numeroColumnas + j;
-                    
+                  
                     if (numeroPuesto === 1) {
                         contenido = 'C';
                         clase     = 'conductor';
@@ -116,7 +190,7 @@ export default function Distribucion(){
                         contenido = 'P';
                         clase     = 'pasillo';
                     }
-
+                    
                     const esCondutor = clase === 'conductor';
                     dataColumnas.push({ puestoNumero: id.toString(), puestoId:puestoId, contenido, clase, esCondutor });
                 }
