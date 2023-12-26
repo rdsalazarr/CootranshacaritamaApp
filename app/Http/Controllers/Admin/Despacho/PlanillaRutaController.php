@@ -23,7 +23,7 @@ class PlanillaRutaController extends Controller
                     'pr.plarutfechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaHoraSalida',
                     'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
                     DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                    DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
+                    DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo) as numeroPlanilla"),
                     DB::raw("CONCAT(p.persprimernombre,' ',  p.persprimerapellido) as nombreConductor"),
                     DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
                     DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos) as usuarioDespacha"))
@@ -131,7 +131,7 @@ class PlanillaRutaController extends Controller
                         ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida',
                         DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
                         DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                        DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo) as numeroPlanilla"),
+                        DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo) as numeroPlanilla"),
                         DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                                     p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
                         DB::raw('(SELECT COUNT(encoid) AS encoid FROM encomienda WHERE plarutid = pr.plarutid) AS totalEncomiendas'),
@@ -187,7 +187,7 @@ class PlanillaRutaController extends Controller
                             DB::raw("CONCAT('$ ', FORMAT(t.tiquvalordescuento, 0)) as valorDescuento"),
                             DB::raw("CONCAT('$ ', FORMAT(t.tiquvalorfondoreposicion, 0)) as valorValorfondoReposicion"),
                             DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortotal, 0)) as valorTotalTiquete"),
-                            DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                             'mde.muninombre as municipioDestino', 'a.agennombre as nombreAgencia', 
                             DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
                                         ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente"))
@@ -297,7 +297,7 @@ class PlanillaRutaController extends Controller
                             ->where('pr.plarutid', $request->codigo)->first();
 
             $tiquetes  = DB::table('tiquete as t')
-                            ->select('t.tiquvalortiquete as totalTiquete', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            ->select('t.tiquvalortiquete as totalTiquete', DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                             'tp.tiqpuenumeropuesto as numeroPuesto', 'mde.muninombre as municipioDestino', 
                             DB::raw("CONCAT(ps.perserprimernombre,' ', ps.perserprimerapellido) as nombreCliente"))
                             ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')

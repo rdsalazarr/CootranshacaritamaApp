@@ -11,13 +11,15 @@ class DistribucionVehiculosController extends Controller
 {
     public function index()
     {
-        $tipoVehiculos = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia','tipvecapacidad','tipvenumerofilas','tipvenumerocolumnas','tipveclasecss'
-                                    
-                                    )
+        $tipoVehiculos = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia','tipvecapacidad',
+										'tipvenumerofilas','tipvenumerocolumnas','tipveclasecss',
+										DB::raw("CONCAT(tipvehnombre,' ', if(tipvehreferencia is null ,'', tipvehreferencia) ) as nombreVehiculo"),	
+										DB::raw("CONCAT('Filas (',tipvenumerofilas, ') Columnas (',tipvenumerocolumnas, ') Puestos (', tipvecapacidad,') ') as filasColumnaPuesto"))
                                     ->where('tipvehactivo', true)
                                     ->whereNotIn('tipvehid', [32])
                                     ->where('tipvecapacidad', '<=', 8)
                                     ->orderBy('tipvehnombre')->get();
+
         return response()->json(["tipoVehiculos" => $tipoVehiculos]);
     }
 
@@ -25,68 +27,45 @@ class DistribucionVehiculosController extends Controller
 	{
 		$this->validate(request(),['codigo' => 'required']);
 
-        //'tivediid','tipvehid','tivedinumero','tivedicontenido'
-        $tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid','tipvehid','tivedicolumna', 'tivedifila', 'tivedipuesto')
+        $tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid','tipvehid','tivedicolumna', 'tivedifila', 'tivedipuesto',
+									DB::raw('(SELECT COUNT(DISTINCT(tivedifila)) FROM tipovehiculodistribucion as tvd WHERE tvd.tivediid = tivediid and tvd.tipvehid = tipvehid) AS totalFilas'))
                                     ->where('tipvehid', $request->codigo)
-                                    ->orderBy('tivediid')->get();
+                                    ->orderBy('tipvehid')->orderBy('tivediid')->get();
 
         return response()->json(["tipoVehiculoDistribuciones" => $tipoVehiculoDistribuciones]);
-    }
-
-    /*public function salve(Request $request)
-	{
-	    $this->validate(request(),[
-	   	        'tipoVehiculo'  => 'required|string', 
-				'puestosVehiculo' => 'required|array|min:1',
-	        ]);
- 
-		DB::beginTransaction();
-        try {	
-			foreach($request->puestosVehiculo as $ubicacion){
-				$puestoId                                  = $ubicacion['puestoId'];
-				$tipovehiculodistribucion                  = ($puestoId !== '0') ? TipoVehiculoDistribucion::findOrFail($puestoId) : new TipoVehiculoDistribucion();
-				$tipovehiculodistribucion->tipvehid        = $request->tipoVehiculo;
-				$tipovehiculodistribucion->tivedinumero    = $ubicacion['puestoNumero'];
-                $tipovehiculodistribucion->tivedicontenido = $ubicacion['contenido']; 
-				$tipovehiculodistribucion->save();
-			}
-			DB::commit();
-        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
-		} catch (Exception $error){
-			DB::rollback();
-			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
-		}
-	}*/
+    }   
 
     public function salve(Request $request)
 	{
 	    $this->validate(request(),[
-	   	        'tipoVehiculo'  => 'required|string', 
+	   	        'tipoVehiculo'    => 'required|string', 
 				'puestosVehiculo' => 'required|array|min:1',
 	        ]);
- 
-       // dd($request->puestosVehiculo);
 
 		DB::beginTransaction();
-        try {	
-			foreach($request->puestosVehiculo as $ubicacion){
-				$idPuesto                               = $ubicacion['puestoId'];
-				$tipovehiculodistribucion               = ($idPuesto !== '0') ? TipoVehiculoDistribucion::findOrFail($idPuesto) : new TipoVehiculoDistribucion();
+        try {
 
-                /*if($idPuesto !== '0'){
-                    $tipovehiculodistribucionBD = DB::table('tipovehiculodistribucion')->select('tivediid')
-                                                ->where('tipvehid', $request->tipoVehiculo)
-                                                ->where('tivedinumero', $ubicacion['puestoId'])->first();
-                    $tipovehiculodistribucion   = TipoVehiculoDistribucion::findOrFail($tipovehiculodistribucionBD->tivediid);
-                }else{
-                    $tipovehiculodistribucion   =  new TipoVehiculoDistribucion();
-                }*/
-
-				$tipovehiculodistribucion->tipvehid      = $request->tipoVehiculo;
-				$tipovehiculodistribucion->tivedicolumna = $ubicacion['columna'];
-                $tipovehiculodistribucion->tivedifila    = $ubicacion['fila'];
-                $tipovehiculodistribucion->tivedipuesto  = $ubicacion['puesto']; 
-				$tipovehiculodistribucion->save();
+			if($request->existenDatos === 'S'){
+				$tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid')->where('tipvehid', $request->tipoVehiculo)->orderBy('tivediid')->get();
+				$ubicaciones                = $request->puestosVehiculo;
+				foreach ($tipoVehiculoDistribuciones as $index => $tipoVehiculoDistribucion) {
+					$tipovehiculodistribucion = TipoVehiculoDistribucion::findOrFail($tipoVehiculoDistribucion->tivediid);
+					$ubicacion = $ubicaciones[$index];
+					$tipovehiculodistribucion->tipvehid = $request->tipoVehiculo;
+					$tipovehiculodistribucion->tivedicolumna = $ubicacion['columna'];
+					$tipovehiculodistribucion->tivedifila = $ubicacion['fila'];
+					$tipovehiculodistribucion->tivedipuesto = $ubicacion['puesto'];
+					$tipovehiculodistribucion->save();
+				}
+			}else{
+				foreach($request->puestosVehiculo as $ubicacion){
+					$tipovehiculodistribucion                = new TipoVehiculoDistribucion();
+					$tipovehiculodistribucion->tipvehid      = $request->tipoVehiculo;
+					$tipovehiculodistribucion->tivedicolumna = $ubicacion['columna'];
+					$tipovehiculodistribucion->tivedifila    = $ubicacion['fila'];
+					$tipovehiculodistribucion->tivedipuesto  = $ubicacion['puesto']; 
+					$tipovehiculodistribucion->save();
+				}
 			}
 			DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

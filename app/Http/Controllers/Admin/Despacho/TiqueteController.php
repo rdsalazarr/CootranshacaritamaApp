@@ -25,7 +25,7 @@ class TiqueteController extends Controller
                         ->select('t.tiquid','pr.rutaid', 't.tiqufechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaSalida',
                         'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
                         DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                        DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                        DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                         DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
                                 ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente") )
                         ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
@@ -69,7 +69,7 @@ class TiqueteController extends Controller
 
         $planillaRutas        = DB::table('planillaruta as pr')
                                 ->select('pr.rutaid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
-                                DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
+                                DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                 ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                 ->join('municipio as mo', function($join)
                                 {
@@ -231,7 +231,7 @@ class TiqueteController extends Controller
 
         $tiquete  = DB::table('tiquete as t')
                     ->select('t.tiquid', 't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
-                    DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'), '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"),
+                    DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"),
                     'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino', 'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
                     'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular',
                     'ti.tipidenombre as tipoIdentificacion')
@@ -272,7 +272,7 @@ class TiqueteController extends Controller
 
     public function generarFacturaPdf($tiquid, $metodo = 'S'){
         $tiquete  = DB::table('tiquete as t')
-                            ->select('t.tiqufechahoraregistro', DB::raw("CONCAT('1', LPAD(pr.agenid, 2, '0'),t.tiquanio,'',t.tiquconsecutivo) as numeroTiquete"),
+                            ->select('t.tiqufechahoraregistro', DB::raw("CONCAT(pr.agenid,t.tiquanio,'',t.tiquconsecutivo) as numeroTiquete"),
                             't.tiquvalortiquete', 't.tiquvalordescuento','t.tiquvalortotal',
                             DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
                            'mor.muninombre as municipioOrigen',  'mde.muninombre as municipioDestino',
