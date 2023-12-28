@@ -536,17 +536,20 @@ body{
     font-size: 1.2em;
   }
 }
+
 .pasillo{
   width: 60px;
   height: 60px;
   background-color: #f6f6f6;
   margin: 10px;
   cursor: move !important;
+  border-radius: 8px;
   p{
     visibility: hidden;
     font-size: 1.2em;
   }
 }
+
 .conductor{
   width: 60px;
   height: 60px;
@@ -555,7 +558,7 @@ body{
   background-repeat: no-repeat;
   background-position: center center;
   margin: 10px;
-  cursor: move !important;
+  cursor: no-drop !important;
   p{
     visibility: hidden;
     font-size: 1.2em;
@@ -573,6 +576,34 @@ body{
   .containerSmall{
     width: 94%;
   }
+  .asiento, .pasillo, .conductor {
+    width: 40px;
+    height: 40px;
+    margin: 3px;
+    p{
+      font-size: 0.8em;
+    }
+  }
+  .distribucionPuestoGeneral{
+    width: 100%;
+    margin-bottom: 1em;
+  }
+  .distribucionPuestoTaxi{
+    width: 30%;
+    margin-bottom: 1em;
+  } 
+  .distribucionPuestoMicroBus{
+    width: 40%;
+    margin-bottom: 1em;
+  }
+  .distribucionPuestoMicroBusDos{
+    width: 65%;
+    margin-bottom: 1em;
+  }
+  .distribucionPuestoBus{
+    width: 65%;
+    margin-bottom: 1em;
+  } 
 }
 
 /*xs*/
@@ -589,5 +620,33 @@ body{
   }  
   .containerSmall{
     width: 120%;
+  }
+  .asiento, .pasillo, .conductor {
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    p{
+      font-size: 0.6em;
+    }
+  }
+  .distribucionPuestoGeneral{
+    width: 100%;
+    margin-bottom: 1em;
+  }
+  .distribucionPuestoTaxi{
+    width: 60%;
+    margin-bottom: 1em;
+  } 
+  .distribucionPuestoMicroBus{
+    width: 80%;
+    margin-bottom: 1em;
+  }
+  .distribucionPuestoMicroBusDos{
+    width: 100%;
+    margin-bottom: 1em;
+  }
+  .distribucionPuestoBus{
+    width: 100%;
+    margin-bottom: 1em;
   }
 }

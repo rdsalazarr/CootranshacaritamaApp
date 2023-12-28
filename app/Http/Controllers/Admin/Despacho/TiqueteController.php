@@ -17,7 +17,7 @@ class TiqueteController extends Controller
     public function index(Request $request)
     {
 		$this->validate(request(),['estado' => 'required']);
-        $rutaDespachada  = ($request->tipo === 'REGISTRADO') ? false : true;   
+        $rutaDespachada  = ($request->tipo === 'REGISTRADO') ? false : true;
         $fechaHoraActual = Carbon::now();
         $fechaInicial    = $fechaHoraActual->subMonths(6)->format('Y-m-d');
 
@@ -68,21 +68,27 @@ class TiqueteController extends Controller
                                     ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')->get();
 
         $planillaRutas        = DB::table('planillaruta as pr')
-                                ->select('pr.rutaid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
-                                DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
-                                ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                                ->join('municipio as mo', function($join)
-                                {
-                                    $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                    $join->on('mo.muniid', '=', 'r.muniidorigen');
-                                })
-                                ->join('municipio as md', function($join)
-                                {
-                                    $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                    $join->on('md.muniid', '=', 'r.muniiddestino');
-                                })
-                                ->where('pr.plarutdespachada', false)
-                                ->get();
+                                    ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                    DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
+                                    ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                                    ->join('municipio as mo', function($join)
+                                    {
+                                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                        $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                    })
+                                    ->join('municipio as md', function($join)
+                                    {
+                                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                        $join->on('md.muniid', '=', 'r.muniiddestino');
+                                    })
+                                    ->where('pr.plarutdespachada', false)
+                                    ->get();
+
+        $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
+                                    ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','v.vehiid',
+                                    DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
+                                    ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
+                                    ->orderBy('tvd.tivediid')->get();
 
         $tiquete = [];
         if($request->tipo === 'U'){
@@ -95,8 +101,8 @@ class TiqueteController extends Controller
                                 ->where('t.tiquid', $request->codigo)->first();
         }
 
-        return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas" => $planillaRutas, "tarifaTiquetes" => $tarifaTiquetes,
-                                  "municipios"           => $municipios,           "tiquete"    => $tiquete]);
+        return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"         => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
+                                  "municipios"           => $municipios,           "distribucionVehiculos" => $distribucionVehiculos, "tiquete"        => $tiquete         ]);
     }
 
     public function consultarPersona(Request $request)
@@ -294,12 +300,12 @@ class TiqueteController extends Controller
                             {
                                 $join->on('md.munidepaid', '=', 'r.depaiddestino');
                                 $join->on('md.muniid', '=', 'r.muniiddestino');
-                            })               
+                            })
                             ->join('municipio as mor', function($join)
                             {
                                 $join->on('mor.munidepaid', '=', 't.depaidorigen');
                                 $join->on('mor.muniid', '=', 't.muniidorigen');
-                            })                          
+                            })
                             ->join('municipio as mde', function($join)
                             {
                                 $join->on('mde.munidepaid', '=', 't.depaiddestino');

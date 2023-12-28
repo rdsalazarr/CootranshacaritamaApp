@@ -17,7 +17,6 @@ class DistribucionVehiculosController extends Controller
 										DB::raw("CONCAT('Filas (',tipvenumerofilas, ') Columnas (',tipvenumerocolumnas, ') Puestos (', tipvecapacidad,') ') as filasColumnaPuesto"))
                                     ->where('tipvehactivo', true)
                                     ->whereNotIn('tipvehid', [32])
-                                    ->where('tipvecapacidad', '<=', 8)
                                     ->orderBy('tipvehnombre')->get();
 
         return response()->json(["tipoVehiculos" => $tipoVehiculos]);
@@ -27,13 +26,15 @@ class DistribucionVehiculosController extends Controller
 	{
 		$this->validate(request(),['codigo' => 'required']);
 
-        $tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid','tipvehid','tivedicolumna', 'tivedifila', 'tivedipuesto',
-									DB::raw('(SELECT COUNT(DISTINCT(tivedifila)) FROM tipovehiculodistribucion as tvd WHERE tvd.tivediid = tivediid and tvd.tipvehid = tipvehid) AS totalFilas'))
-                                    ->where('tipvehid', $request->codigo)
-                                    ->orderBy('tipvehid')->orderBy('tivediid')->get();
+		$tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion as tvd')
+										->select('tvd.tivediid', 'tvd.tipvehid', 'tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto',
+											DB::raw('(SELECT count(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
+										->where('tvd.tipvehid', $request->codigo)
+										->orderBy('tvd.tivediid')
+										->get();
 
         return response()->json(["tipoVehiculoDistribuciones" => $tipoVehiculoDistribuciones]);
-    }   
+    }
 
     public function salve(Request $request)
 	{
@@ -49,12 +50,12 @@ class DistribucionVehiculosController extends Controller
 				$tipoVehiculoDistribuciones = DB::table('tipovehiculodistribucion')->select('tivediid')->where('tipvehid', $request->tipoVehiculo)->orderBy('tivediid')->get();
 				$ubicaciones                = $request->puestosVehiculo;
 				foreach ($tipoVehiculoDistribuciones as $index => $tipoVehiculoDistribucion) {
-					$tipovehiculodistribucion = TipoVehiculoDistribucion::findOrFail($tipoVehiculoDistribucion->tivediid);
-					$ubicacion = $ubicaciones[$index];
-					$tipovehiculodistribucion->tipvehid = $request->tipoVehiculo;
+					$tipovehiculodistribucion                = TipoVehiculoDistribucion::findOrFail($tipoVehiculoDistribucion->tivediid);
+					$ubicacion                               = $ubicaciones[$index];
+					$tipovehiculodistribucion->tipvehid      = $request->tipoVehiculo;
 					$tipovehiculodistribucion->tivedicolumna = $ubicacion['columna'];
-					$tipovehiculodistribucion->tivedifila = $ubicacion['fila'];
-					$tipovehiculodistribucion->tivedipuesto = $ubicacion['puesto'];
+					$tipovehiculodistribucion->tivedifila    = $ubicacion['fila'];
+					$tipovehiculodistribucion->tivedipuesto  = $ubicacion['puesto'];
 					$tipovehiculodistribucion->save();
 				}
 			}else{

@@ -276,7 +276,7 @@ class PlanillaRutaController extends Controller
                             DB::raw('(SELECT SUM(tiquvalortiquete) AS tiquvalortiquete FROM tiquete WHERE plarutid = pr.plarutid) AS subTotalTiquete'),
                             DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS valorFondoReposicion'),
                             DB::raw('(SELECT SUM(tiquvalortotal) AS tiquvalortotal FROM tiquete WHERE plarutid = pr.plarutid) AS valorTotalTiquete'),
-                            DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))                            
+                            DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))
                             ->join('conductor as c', 'c.condid', '=', 'pr.condid')
                             ->join('persona as p', 'p.persid', '=', 'c.persid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
@@ -290,7 +290,7 @@ class PlanillaRutaController extends Controller
                             {
                                 $join->on('md.munidepaid', '=', 'r.depaiddestino');
                                 $join->on('md.muniid', '=', 'r.muniiddestino');
-                            })                            
+                            })
                             ->join('agencia as a', 'a.agenid', '=', 'pr.agenid')
                             ->join('usuario as ur', 'ur.usuaid', '=', 'pr.usuaidregistra')
                             ->leftJoin('usuario as urd', 'urd.usuaid', '=', 'pr.usuaiddespacha')
@@ -358,8 +358,8 @@ class PlanillaRutaController extends Controller
         $consecutivoPlanilla = DB::table('planillaruta')->select('plarutconsecutivo as consecutivo')
                                                         ->where('plarutanio', $anioActual)
                                                         ->where('agenid', auth()->user()->agenid)
-                                                        ->orderBy('tiquid', 'Desc')->orderBy('plarutid', 'desc')->first();
+                                                        ->orderBy('plarutid', 'desc')->first();
         $consecutivo = ($consecutivoPlanilla === null) ? 1 : $consecutivoPlanilla->consecutivo + 1;
-        return str_pad($consecutivo,  6, "0", STR_PAD_LEFT);
+        return str_pad($consecutivo,  4, "0", STR_PAD_LEFT);
     }
 }

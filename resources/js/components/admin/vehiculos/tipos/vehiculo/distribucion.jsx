@@ -197,7 +197,7 @@ export default function Distribucion(){
                 <Card style={{marginTop: '1em', padding: '1em'}}>
                     <Grid container spacing={2}>  
                         <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <p>Para configurar la distribución de los asientos del tipo de vehículo, por favor, ordénelos según su número correspondiente y luego proceda a guardar la disposición.</p>
+                            <p style={{textAlign: 'justify'}}>Para configurar la distribución de los asientos del tipo de vehículo, por favor, ordénelos según su número correspondiente y luego proceda a guardar la disposición.</p>
                         </Grid>
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className={claseDistribucionPuesto} >

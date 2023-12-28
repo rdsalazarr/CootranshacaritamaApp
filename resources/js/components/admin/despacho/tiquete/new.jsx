@@ -17,19 +17,24 @@ export default function New({data, tipo}){
                                               departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planilla:'',
                                               valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
                                               valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '', tipo:tipo});
-
+    
+    const [distribucionVehiculos, setDistribucionVehiculos] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
     const [enviarTiquete, setEnviarTiquete] = useState(false);
     const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
-    const [planillaRutas, setPlanillaRutas] = useState([]);
+    const [planillaRutas, setPlanillaRutas] = useState([]);  
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
+    const [dataPuestos, setDataPuestos] = useState([]);
     const [esEmpresa, setEsEmpresa] = useState(false);
-    const [municipios, setMunicipios] = useState([]);
+    const [municipios, setMunicipios] = useState([]);    
     const [idTiquete , setIdTiquete] = useState(0);
     const [loader, setLoader] = useState(false); 
  
+    const [selectedPuestos, setSelectedPuestos] = useState([]);
+
+
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -106,6 +111,7 @@ export default function New({data, tipo}){
         let fondoTeposicion           = 0;
         const planillaRutasFiltradas  = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
         let rutaId                    = planillaRutasFiltradas[0].rutaid;
+        let vehiculoId                = planillaRutasFiltradas[0].vehiid;
         let depaIdOrigen              = planillaRutasFiltradas[0].depaidorigen;
         let muniIdOrigen              = planillaRutasFiltradas[0].muniidorigen;
         let municipioOrigen           = planillaRutasFiltradas[0].municipioOrigen;
@@ -121,6 +127,9 @@ export default function New({data, tipo}){
             setFormData(newFormData);
             return;
         }
+
+        const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
+        distribucionVehiculo(distribucionVehiculosFiltrados);
 
         newFormData.planilla                    = e.target.value;
         newFormData.municipioOrigen             = muniIdOrigen;
@@ -156,6 +165,27 @@ export default function New({data, tipo}){
 
         setFormData(newFormData);
         setMunicipiosDestino(municipiosDestino);
+    }
+
+    const distribucionVehiculo= (distribucionVehiculo) => {
+        let totalFilas = distribucionVehiculo[0].totalFilas;
+        let dataFilas  = [];
+        let idColumna  = 0;
+        for (let i = 0; i < totalFilas; i++) {
+            let dataColumnas = [];
+            distribucionVehiculo.map((res, j)=>{
+                if(parseInt(res.tivedifila) === i){
+                    let contenido    = res.tivedipuesto;
+                    let clase        = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : 'asiento');
+                    const esCondutor = clase === 'conductor';
+                    dataColumnas.push({  puestoColumna: idColumna.toString(), contenido, clase, esCondutor });
+                    idColumna ++;
+                }
+            });
+            dataFilas.push(dataColumnas);
+        }
+       setDataPuestos(dataFilas);
+       console.log(dataFilas);
     }
 
     const formatearNumero = (numero) =>{
@@ -197,6 +227,7 @@ export default function New({data, tipo}){
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/despacho/tiquete/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
+            setDistribucionVehiculos(res.distribucionVehiculos);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTarifaTiquetes(res.tarifaTiquetes);
             setPlanillaRutas(res.planillaRutas);
@@ -259,6 +290,44 @@ export default function New({data, tipo}){
             setLoader(false);
         })
     }, []);
+
+
+    const handleDragEnd = (result) => {
+        // ... (tu lógica existente)
+        
+        // Obtén el id del puesto seleccionado
+        const selectedPuestoId = result.draggableId;
+        
+        // Verifica si ya está seleccionado y agrega o quita del estado
+        setSelectedPuestos((prevSelected) => {
+            if (prevSelected.includes(selectedPuestoId)) {
+                // Quitar del estado si ya está seleccionado
+                return prevSelected.filter((id) => id !== selectedPuestoId);
+            } else {
+                // Agregar al estado si no está seleccionado
+                return [...prevSelected, selectedPuestoId];
+            }
+        });
+    };
+
+
+    /*const getPuestoClass = (isSelected) => {
+        return isSelected ? 'selectedPuesto' : 'regularPuesto';
+    };*/
+
+
+    const claseDistribucionPuesto = 'distribucionPuestoTaxi'; // Reemplaza con tu clase real
+
+    const handleCheckboxChange = (puestoId) => {
+      setSelectedPuestos((prevSelected) =>
+        prevSelected.includes(puestoId)
+          ? prevSelected.filter((id) => id !== puestoId)
+          : [...prevSelected, puestoId]
+      );
+    };
+  
+    const getPuestoClass = (isSelected) => (isSelected ? 'selectedPuesto' : 'regularPuesto');
+
 
     if(loader){
         return <LoaderModal />
@@ -340,7 +409,30 @@ export default function New({data, tipo}){
                 <Grid container spacing={2}>
                     <Grid item xl={9} md={9} sm={12} xs={12}>
                         <Grid container spacing={2}>
-
+                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                                {(dataPuestos.length > 0)?
+                                    <Box className={claseDistribucionPuesto}>
+                                        {Object.keys(dataPuestos).map((listId) => (
+                                            <Box key={listId}style={{ display: 'flex', justifyContent: 'space-between' }}>                                 
+                                                {dataPuestos[listId].map((item, index) => (
+                                                    <Box key={item.puestoColumna} >
+                                                        <input
+                                                        type="checkbox"
+                                                        checked={selectedPuestos.includes(item.puestoColumna)}
+                                                        onChange={() => handleCheckboxChange(item.puestoColumna)}
+                                                        />
+                                                        <Box
+                                                        className={item.clase}
+                                                        >
+                                                        <p>{item.contenido}</p>
+                                                        </Box>
+                                                    </Box>
+                                                ))}
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                : null }
+                            </Grid>
                         </Grid>
                     </Grid>
 
