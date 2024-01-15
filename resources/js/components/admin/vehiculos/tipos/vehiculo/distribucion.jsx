@@ -204,29 +204,29 @@ export default function Distribucion(){
                                 <DragDropContext onDragEnd={handleDragEnd}>
                                     <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         {Object.keys(dataPuestos).map((listId) => (
-                                        <Droppable key={listId} droppableId={listId}>
-                                            {(provided) => (
-                                                <Box
-                                                    ref={provided.innerRef}
-                                                    {...provided.droppableProps}
-                                                >
-                                                    {dataPuestos[listId].map((item, index) => (
-                                                    <Draggable key={item.puestoColumna} draggableId={item.puestoColumna} index={index} isDragDisabled={item.esCondutor}>
-                                                        { (provided) => (
-                                                        <Box
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className={item.clase}>
-                                                            <p>{item.contenido}</p>
-                                                        </Box>
-                                                        )}
-                                                    </Draggable>
-                                                    ))}
-                                                    {provided.placeholder}
-                                                </Box>
-                                            )}
-                                        </Droppable>
+                                            <Droppable key={listId} droppableId={listId}>
+                                                {(provided) => (
+                                                    <Box
+                                                        ref={provided.innerRef}
+                                                        {...provided.droppableProps}
+                                                    >
+                                                        {dataPuestos[listId].map((item, index) => (
+                                                        <Draggable key={item.puestoColumna} draggableId={item.puestoColumna} index={index} isDragDisabled={item.esCondutor}>
+                                                            { (provided) => (
+                                                            <Box
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className={item.clase}>
+                                                                <p>{item.contenido}</p>
+                                                            </Box>
+                                                            )}
+                                                        </Draggable>
+                                                        ))}
+                                                        {provided.placeholder}
+                                                    </Box>
+                                                )}
+                                            </Droppable>
                                         ))}
                                     </Box>
                                 </DragDropContext>

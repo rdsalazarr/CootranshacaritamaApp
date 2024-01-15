@@ -185,7 +185,6 @@ export default function New({data, tipo}){
             dataFilas.push(dataColumnas);
         }
        setDataPuestos(dataFilas);
-       console.log(dataFilas);
     }
 
     const formatearNumero = (numero) =>{
@@ -202,8 +201,8 @@ export default function New({data, tipo}){
         const tarifaTiquetesFiltradas           = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.depaiddestino === depaIdDestino && tt.muniiddestino === muniIdDestino);
         let  valorTiquete                       = tarifaTiquetesFiltradas[0].tartiqvalor;
         valorTiquete                            = valorTiquete * e.target.value;
-        let fondoTeposicion                     = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
-        let valorFondoReposicion                = (valorTiquete * fondoTeposicion) / 100;
+        let fondoReposicion                     = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+        let valorFondoReposicion                = (valorTiquete * fondoReposicion) / 100;
         newFormData.valorTiquete                = valorTiquete;
         newFormData.valorFondoReposicion        = valorFondoReposicion;
         newFormData.valorTotal                  = valorTiquete;
@@ -324,6 +323,8 @@ export default function New({data, tipo}){
           ? prevSelected.filter((id) => id !== puestoId)
           : [...prevSelected, puestoId]
       );
+
+      console.log(selectedPuestos);
     };
   
     const getPuestoClass = (isSelected) => (isSelected ? 'selectedPuesto' : 'regularPuesto');
@@ -409,27 +410,37 @@ export default function New({data, tipo}){
                 <Grid container spacing={2}>
                     <Grid item xl={9} md={9} sm={12} xs={12}>
                         <Grid container spacing={2}>
-                            <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Grid item xl={12} md={12} sm={12} xs={12} style={{marginTop:'1em'}}>
                                 {(dataPuestos.length > 0)?
                                     <Box className={claseDistribucionPuesto}>
-                                        {Object.keys(dataPuestos).map((listId) => (
-                                            <Box key={listId}style={{ display: 'flex', justifyContent: 'space-between' }}>                                 
-                                                {dataPuestos[listId].map((item, index) => (
-                                                    <Box key={item.puestoColumna} >
-                                                        <input
-                                                        type="checkbox"
-                                                        checked={selectedPuestos.includes(item.puestoColumna)}
-                                                        onChange={() => handleCheckboxChange(item.puestoColumna)}
-                                                        />
-                                                        <Box
-                                                        className={item.clase}
-                                                        >
-                                                        <p>{item.contenido}</p>
+                                        <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            {Object.keys(dataPuestos).map((listId) => (
+                                                <Box key={listId} >
+                                                    {dataPuestos[listId].map((item, index) => (
+                                                        <Box key={item.puestoColumna} >
+                                                            {(item.clase === 'asiento') ?
+                                                                <Box >
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="checkbox-asiento" 
+                                                                        checked={selectedPuestos.includes(item.puestoColumna)}
+                                                                        onChange={() => handleCheckboxChange(item.puestoColumna)}
+                                                                    />
+                                                                    <label for="asiento1"><p>{item.contenido}</p></label>
+                                                                </Box>
+                                                            :  
+                                                                <Box
+                                                                className={item.clase}
+                                                                >
+                                                                <p>{item.contenido}</p>
+                                                                </Box>
+                                                            }
                                                         </Box>
-                                                    </Box>
-                                                ))}
-                                            </Box>
-                                        ))}
+                                                    ))}
+                                                </Box>
+                                            ))}
+                                        </Box>
+
                                     </Box>
                                 : null }
                             </Grid>
