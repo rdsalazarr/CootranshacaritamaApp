@@ -469,6 +469,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::post('/tiquete/list', [TiqueteController::class, 'index'])->middleware('security:admin/despacho/tiquetes');
             Route::post('/tiquete/listar/datos', [TiqueteController::class, 'datos']);
+            Route::post('/tiquete/consultar/ventas/realizadas', [TiqueteController::class, 'consultarVenta']);
             Route::post('/tiquete/consultar/datos/persona', [TiqueteController::class, 'consultarPersona']);
             Route::post('/tiquete/salve', [TiqueteController::class, 'salve']);
             Route::post('/tiquete/show/general', [TiqueteController::class, 'show']);

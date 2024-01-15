@@ -51,7 +51,7 @@ export default function List(){
                 <TablaGeneral
                     datos={data}
                     titulo={['Nombre','Referencia','Capacidad pasajeros', 'Número de filas', 'Número de columna','Activo','Actualizar','Eliminar']}
-                    ver={["tipvehnombre","tipvehreferencia","tipvecapacidad","tipvenumerofilas","tipvenumerocolumnas","estado"]}
+                    ver={["tipvehnombre","tipvehreferencia","tipvehcapacidad","tipvehnumerofilas","tipvehnumerocolumnas","estado"]}
                     accion={[
                         {tipo: 'T', icono : 'add',                  color: 'green',  funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',                 color: 'orange', funcion : (data)=>{edit(data,1)} },

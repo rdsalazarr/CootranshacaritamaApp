@@ -11,10 +11,10 @@ class DistribucionVehiculosController extends Controller
 {
     public function index()
     {
-        $tipoVehiculos = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia','tipvecapacidad',
-										'tipvenumerofilas','tipvenumerocolumnas','tipveclasecss',
+        $tipoVehiculos = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia','tipvehcapacidad',
+										'tipvehnumerofilas','tipvehnumerocolumnas','tipvehclasecss',
 										DB::raw("CONCAT(tipvehnombre,' ', if(tipvehreferencia is null ,'', tipvehreferencia) ) as nombreVehiculo"),	
-										DB::raw("CONCAT('Filas (',tipvenumerofilas, ') Columnas (',tipvenumerocolumnas, ') Puestos (', tipvecapacidad,') ') as filasColumnaPuesto"))
+										DB::raw("CONCAT('Filas (',tipvehnumerofilas, ') Columnas (',tipvehnumerocolumnas, ') Puestos (', tipvehcapacidad,') ') as filasColumnaPuesto"))
                                     ->where('tipvehactivo', true)
                                     ->whereNotIn('tipvehid', [32])
                                     ->orderBy('tipvehnombre')->get();

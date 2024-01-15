@@ -12,7 +12,7 @@ class TipoVehiculoController extends Controller
 {
     public function index()
     {
-        $data = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia','tipvecapacidad','tipvenumerofilas','tipvenumerocolumnas','tipvehactivo',
+        $data = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia','tipvehcapacidad','tipvehnumerofilas','tipvehnumerocolumnas','tipvehactivo',
                                     DB::raw("if(tipvehactivo = 1 ,'Sí', 'No') as estado"))
                                     ->orderBy('tipvehnombre')->get();
         return response()->json(["data" => $data]);
@@ -35,9 +35,9 @@ class TipoVehiculoController extends Controller
         try {
             $tipovehiculo->tipvehnombre        = mb_strtoupper($request->nombre,'UTF-8');
             $tipovehiculo->tipvehreferencia    = mb_strtoupper($request->referencia,'UTF-8');
-            $tipovehiculo->tipvecapacidad      = $request->capacidadPasajero;
-            $tipovehiculo->tipvenumerofilas    = $request->numeroFilas;
-            $tipovehiculo->tipvenumerocolumnas = $request->numeroColumnas;
+            $tipovehiculo->tipvehcapacidad      = $request->capacidadPasajero;
+            $tipovehiculo->tipvehnumerofilas    = $request->numeroFilas;
+            $tipovehiculo->tipvehnumerocolumnas = $request->numeroColumnas;
             $tipovehiculo->tipvehactivo        = $request->estado;
             $tipovehiculo->save();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->dateTime('tiqufechahoraregistro')->comment('Fecha y hora actual en el que se registra el tiquete');
             $table->decimal('tiqucantidad', 4)->comment('Cantidad de puesto en el tiquete');
             $table->decimal('tiquvalortiquete', 10, 0)->comment('Valor del tiquete');
-            $table->decimal('tiquvalordescuento', 10, 0)->comment('Valor de descuento del tiquete');
+            $table->decimal('tiquvalordescuento', 10, 0)->nullable()->comment('Valor de descuento del tiquete');
             $table->decimal('tiquvalorfondoreposicion', 10, 0)->comment('Valor del fondo de reposición del tiquete');
             $table->decimal('tiquvalortotal', 10, 0)->comment('Valor total del tiquete');
             $table->timestamps();

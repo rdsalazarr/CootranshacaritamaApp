@@ -85,24 +85,43 @@ class TiqueteController extends Controller
                                     ->get();
 
         $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
-                                    ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','v.vehiid',
+                                    ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
                                     DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
                                     ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
+                                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                                     ->orderBy('tvd.tivediid')->get();
-
-        $tiquete = [];
+                                    
+        $tiquete        = [];
+        $tiquetePuestos = [];
         if($request->tipo === 'U'){
             $tiquete  = DB::table('tiquete as t')
-                                ->select('t.tiquid','plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino',
+                                ->select('t.tiquid','t.plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino',
                                 't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
                                 'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
-                                'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular')
+                                'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'pr.vehiid')
                                 ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                                ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
                                 ->where('t.tiquid', $request->codigo)->first();
+
+           $tiquetePuestos  = DB::table('tiquetepuesto')->select('tiqpueid','tiqpuenumeropuesto')
+                                ->where('tiquid', $request->codigo)->get();
         }
 
         return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"         => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
-                                  "municipios"           => $municipios,           "distribucionVehiculos" => $distribucionVehiculos, "tiquete"        => $tiquete         ]);
+                                  "municipios"           => $municipios,           "distribucionVehiculos" => $distribucionVehiculos, "tiquete"        => $tiquete,  
+                                  "tiquetePuestos"        => $tiquetePuestos  ]);
+    }
+
+    public function consultarVenta(Request $request)
+	{
+        $this->validate(request(),['rutaId' => 'required|numeric']);
+
+        $data  = DB::table('tiquete as t')
+                    ->select('tp.tiqpueid','tp.tiqpuenumeropuesto')
+                    ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 'tp.tiquid')
+                    ->where('t.plarutid', $request->rutaId)->get();
+
+        return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data]);
     }
 
     public function consultarPersona(Request $request)
@@ -141,10 +160,11 @@ class TiqueteController extends Controller
                 'municipioDestino'     => 'required|numeric',
                 'planilla'             => 'required|numeric',
                 'valorTiquete'         => 'required|numeric|between:1,99999999',
-                'valorDescuento'       => 'required|numeric|between:1,99999999',
+                'valorDescuento'       => 'nullable|numeric|between:1,99999999',
                 'valorFondoReposicion' => 'nullable|numeric|between:1,99999999',
-                'valorTotal'           => 'nullable|numeric|between:1,99999999'
-	        ]);
+                'valorTotal'           => 'nullable|numeric|between:1,99999999',
+                'puestosVendidos'      => 'required|array|min:1',
+	        ]);           
 
         DB::beginTransaction();
         try {
@@ -183,7 +203,7 @@ class TiqueteController extends Controller
 			$tiquete->muniidorigen             = $request->municipioOrigen;
 			$tiquete->depaiddestino            = $request->departamentoDestino;
             $tiquete->muniiddestino            = $request->municipioDestino;
-            $tiquete->tiqucantidad             = 2;
+            $tiquete->tiqucantidad             = $request->cantidadPuesto;
             $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
             $tiquete->tiquvalorfondoreposicion = $request->valorFondoReposicion;
@@ -194,16 +214,13 @@ class TiqueteController extends Controller
 				//Consulto el ultimo identificador de la tiquete
 				$tiqueteConsecutivo = Tiquete::latest('tiquid')->first();
 				$tiquid             = $tiqueteConsecutivo->tiquid;
-
-                $tiquetepuesto 		               = new TiquetePuesto();
-                $tiquetepuesto->tiquid             = $tiquid;
-                $tiquetepuesto->tiqpuenumeropuesto = 1;
-                $tiquetepuesto->save();
-
-                $tiquetepuesto 		               = new TiquetePuesto();
-                $tiquetepuesto->tiquid             = $tiquid;
-                $tiquetepuesto->tiqpuenumeropuesto = 2;
-                $tiquetepuesto->save();
+                foreach ($request->puestosVendidos as $puestoVendido)
+                {
+                    $tiquetepuesto 		               = new TiquetePuesto();
+                    $tiquetepuesto->tiquid             = $tiquid;
+                    $tiquetepuesto->tiqpuenumeropuesto = $puestoVendido['tivedipuesto'];
+                    $tiquetepuesto->save();
+                }
 			}
 
             if($request->enviarTiquete && $request->correo !== ''){//Notifico al correo

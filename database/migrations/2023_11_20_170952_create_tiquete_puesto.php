@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('tiquid')->unsigned()->comment('Identificador del tiquete');
             $table->string('tiqpuenumeropuesto', 3)->comment('Número de puesto en el tiquete');
             $table->timestamps();
+            $table->unique(['tiquid','tiqpuenumeropuesto'],'uk_tiquetepuesto');
             $table->foreign('tiquid')->references('tiquid')->on('tiquete')->onUpdate('cascade')->index('fk_tiqutiqpue');
         });
     }

@@ -49,24 +49,22 @@ export default function List(){
 
     return (
         <Box>
-            <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar rutas</Typography>
-                </Box>
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Departamento origen','Municipio origen','Departamento destino', 'Municipio destino','Activa','Actualizar','Tiquete','Eliminar']}
-                        ver={["nombreDeptoOrigen","nombreMunicipioOrigen","nombreDeptoDestino","nombreMunicipioDestino","estado"]}
-                        accion={[
-                            {tipo: 'T', icono : 'add',                    color: 'green',  funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',                   color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'currency_exchange_icon', color: 'green',  funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'delete',                 color: 'red',    funcion : (data)=>{edit(data,3)} },
-                        ]}
-                        funciones={{orderBy: true,search: true, pagination:true}}
-                    />
-                </Box>
-            </Card>
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar rutas</Typography>
+            </Box>
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Departamento origen','Municipio origen','Departamento destino', 'Municipio destino','Activa','Actualizar','Tiquete','Eliminar']}
+                    ver={["nombreDeptoOrigen","nombreMunicipioOrigen","nombreDeptoDestino","nombreMunicipioDestino","estado"]}
+                    accion={[
+                        {tipo: 'T', icono : 'add',                    color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',                   color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'currency_exchange_icon', color: 'green',  funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'delete',                 color: 'red',    funcion : (data)=>{edit(data,3)} },
+                    ]}
+                    funciones={{orderBy: true,search: true, pagination:true}}
+                />
+            </Box>
 
             <ModalDefaultAuto
                 title={modal.titulo}

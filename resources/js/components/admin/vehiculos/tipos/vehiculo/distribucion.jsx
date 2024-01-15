@@ -85,10 +85,10 @@ export default function Distribucion(){
         instance.post('/admin/direccion/transporte/list/distribucion/vehiculo', {codigo:tipoVehiculo}).then(res => {
             const tipoVehiculoDistribuciones = res.tipoVehiculoDistribuciones;
             const resultTipoVehiculo         = tipoVehiculos.find((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
-            const numeroColumnas             = resultTipoVehiculo.tipvenumerocolumnas;
-            const numeroFilas                = resultTipoVehiculo.tipvenumerofilas;
-            const numeroTotalPuestos         = resultTipoVehiculo.tipvecapacidad;
-            setClaseDistribucionPuesto(resultTipoVehiculo.tipveclasecss);
+            const numeroColumnas             = resultTipoVehiculo.tipvehnumerocolumnas;
+            const numeroFilas                = resultTipoVehiculo.tipvehnumerofilas;
+            const numeroTotalPuestos         = resultTipoVehiculo.tipvehcapacidad;
+            setClaseDistribucionPuesto(resultTipoVehiculo.tipvehclasecss);
             setExistenDatos((tipoVehiculoDistribuciones.length > 0) ? true : false);
             (tipoVehiculoDistribuciones.length > 0) ? distribucionUpdate(tipoVehiculoDistribuciones) : distribucionInicial(numeroFilas, numeroColumnas, numeroTotalPuestos);
             newFormData.existenDatos = (tipoVehiculoDistribuciones.length > 0) ? 'S' : 'N';

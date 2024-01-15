@@ -9,8 +9,8 @@ import SaveIcon from '@mui/icons-material/Save';
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo: data.tipvehid, nombre: data.tipvehnombre, referencia: data.tipvehreferencia, capacidadPasajero: data.tipvecapacidad,
-                                        numeroFilas: data.tipvenumerofilas, numeroColumnas: data.tipvenumerocolumnas,  estado: data.tipvehactivo, tipo:tipo 
+                    (tipo !== 'I') ? {codigo: data.tipvehid, nombre: data.tipvehnombre, referencia: data.tipvehreferencia, capacidadPasajero: data.tipvehcapacidad,
+                                        numeroFilas: data.tipvehnumerofilas, numeroColumnas: data.tipvehnumerocolumnas,  estado: data.tipvehactivo, tipo:tipo 
                                     } : {codigo:'000', nombre: '', referencia:'', capacidadPasajero:'', numeroFilas:'', numeroColumnas:'', estado: '1', tipo:tipo
                                 });
 

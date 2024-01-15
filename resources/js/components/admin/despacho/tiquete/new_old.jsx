@@ -9,14 +9,17 @@ import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import VisualizarPdf from './visualizarPdf';
 
-import puestoVehiculoSeleccionado from "../../../../../images/iconoPuestoVehiculoSeleccionado.png";
-import puestoVehiculoVendido from "../../../../../images/iconoPuestoVehiculoVendido.png";
+
+import puestoVehiculoVendido from "../../../../../images/puestoVehiculoVendido.png";
 import puestoVehiculo from "../../../../../images/puestoVehiculo.png";
+
+
 
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+
 
 
 
@@ -29,21 +32,24 @@ export default function New({data, tipo}){
                                               valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
                                               valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '', tipo:tipo});
     
-    const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral');
     const [distribucionVehiculos, setDistribucionVehiculos] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
     const [enviarTiquete, setEnviarTiquete] = useState(false);
     const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
-    const [formDataPuesto, setFormDataPuesto] = useState([]);
-    const [planillaRutas, setPlanillaRutas] = useState([]);
+    const [planillaRutas, setPlanillaRutas] = useState([]);  
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [dataPuestos, setDataPuestos] = useState([]);
     const [esEmpresa, setEsEmpresa] = useState(false);
-    const [municipios, setMunicipios] = useState([]);
+    const [municipios, setMunicipios] = useState([]);    
     const [idTiquete , setIdTiquete] = useState(0);
     const [loader, setLoader] = useState(false); 
+ 
+    const [selectedPuestos, setSelectedPuestos] = useState([]);
+
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -57,43 +63,10 @@ export default function New({data, tipo}){
         setEnviarTiquete(e.target.checked);
     }
 
-    const handleChangePuesto = (e) =>{
-        let newFormDataPuesto = [...formDataPuesto];
-        if(e.target.checked){
-            newFormDataPuesto.push({tivedipuesto: parseInt(e.target.value)});
-        }else{
-            //Elimino la posicion
-            newFormDataPuesto = formDataPuesto.filter((item) => item.tivedipuesto !== parseInt(e.target.value));
-        }
-        setFormDataPuesto(newFormDataPuesto);
-        calcularValorTiquete(newFormDataPuesto.length);
-    }
-
-    const calcularValorTiquete = (cantidadPuesto) =>{
-        let newFormData                         = {...formData}
-        const planillaRutasFiltradas            = planillaRutas.filter(planilla => planilla.plarutid === newFormData.planilla);
-        let rutaId                              = planillaRutasFiltradas[0].rutaid;
-        let depaIdDestino                       = planillaRutasFiltradas[0].depaiddestino;
-        let muniIdDestino                       = planillaRutasFiltradas[0].muniiddestino;
-        const tarifaTiquetesFiltradas           = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.depaiddestino === depaIdDestino && tt.muniiddestino === muniIdDestino);
-        let valorTiquete                        = tarifaTiquetesFiltradas[0].tartiqvalor;
-            valorTiquete                        = valorTiquete * cantidadPuesto;
-        let fondoReposicion                     = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
-        let valorFondoReposicion                = (valorTiquete * fondoReposicion) / 100;
-        newFormData.valorTiquete                = valorTiquete;
-        newFormData.valorFondoReposicion        = valorFondoReposicion;
-        newFormData.valorTotal                  = valorTiquete;
-        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
-        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
-        newFormData.valorTotalTiquete           = formatearNumero(valorTiquete);
-        newFormData.cantidadPuesto              = cantidadPuesto;
-        setFormData(newFormData);
-    }
-
     const handleSubmit = () =>{
         let newFormData             = {...formData}
         newFormData.enviarTiquete   = enviarTiquete;
-        newFormData.puestosVendidos = formDataPuesto;
+        newFormData.puestosVendidos = formDataPuesto; 
         setLoader(true);
         instance.post('/admin/despacho/tiquete/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -105,10 +78,9 @@ export default function New({data, tipo}){
                             correo:'',               telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
                             departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planilla:'',
                             valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
-                            valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: 0, tipo:tipo});
+                            valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  tipo:tipo});
                 setIdTiquete(res.tiqueteId);
                 setAbrirModal(true)
-                setDataPuestos([]);
             }
             setLoader(false);
         })
@@ -150,7 +122,7 @@ export default function New({data, tipo}){
         setFormData(newFormData);
     }
 
-    const consultarNodoDestino = (e) =>{
+    const consultarMunicipioOrigen = (e) =>{
         let newFormData               = {...formData}
         let valorTiquete              = 0;
         let fondoTeposicion           = 0;
@@ -173,48 +145,46 @@ export default function New({data, tipo}){
             return;
         }
 
-        setLoader(true);
-        instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {rutaId:rutaId}).then(res=>{
-            const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
-            distribucionVehiculo(distribucionVehiculosFiltrados, res.data);
+        const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
+        distribucionVehiculo(distribucionVehiculosFiltrados);
 
-            newFormData.planilla                    = e.target.value;
-            newFormData.municipioOrigen             = muniIdOrigen;
-            newFormData.departamentoOrigen          = depaIdOrigen;
-            newFormData.departamentoDestino         = depaIdDestino;
-            newFormData.municipioDestino            = muniIdDestino;
-            valorTiquete                            = tarifaTiquetesFiltradas[0].tartiqvalor;
-            fondoTeposicion                         = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
-            let valorFondoReposicion                = (valorTiquete * fondoTeposicion) / 100;
-            newFormData.valorTiquete                = valorTiquete;
-            newFormData.valorFondoReposicion        = valorFondoReposicion;
-            newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
-            newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
-  
-            let municipiosDestino = [];
-            municipios.forEach(function(muni){ 
-                if(muni.munidepaid === depaIdDestino){
-                    municipiosDestino.push({
-                        muniid:     muni.muniid,
-                        munidepaid: muni.munidepaid,
-                        muninombre: muni.muninombre
-                    });
-                }
-            });
+        newFormData.planilla                    = e.target.value;
+        newFormData.municipioOrigen             = muniIdOrigen;
+        newFormData.departamentoOrigen          = depaIdOrigen; 
+        newFormData.departamentoDestino         = depaIdDestino;
+        newFormData.municipioDestino            = muniIdDestino; 
+        valorTiquete                            = tarifaTiquetesFiltradas[0].tartiqvalor;
+        fondoTeposicion                         = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+        let valorFondoReposicion                = (valorTiquete * fondoTeposicion) / 100;
+        newFormData.valorTiquete                = valorTiquete;
+        newFormData.valorFondoReposicion        = valorFondoReposicion;
+        newFormData.valorTotal                  = valorTiquete;
+        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
+        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+        newFormData.valorTotalTiquete           = formatearNumero(valorTiquete);
 
-            municipiosDestino.push({
-                muniid:     muniIdDestino,
-                munidepaid: depaIdDestino,
-                muninombre: municipioDestino
-            }); 
+        let municipiosDestino = [];
+        municipios.forEach(function(muni){ 
+            if(muni.munidepaid === depaIdDestino){
+                municipiosDestino.push({
+                    muniid:     muni.muniid,
+                    munidepaid: muni.munidepaid,
+                    muninombre: muni.muninombre
+                });
+            }
+        });
 
-            setFormData(newFormData);
-            setMunicipiosDestino(municipiosDestino);
-            setLoader(false);
-        })
+        municipiosDestino.push({
+            muniid:     muniIdDestino,
+            munidepaid: depaIdDestino,
+            muninombre: municipioDestino
+        }); 
+
+        setFormData(newFormData);
+        setMunicipiosDestino(municipiosDestino);
     }
 
-    const distribucionVehiculo= (distribucionVehiculo, puestosVendidos) => {
+    const distribucionVehiculo= (distribucionVehiculo) => {
         let totalFilas = distribucionVehiculo[0].totalFilas;
         let dataFilas  = [];
         let idColumna  = 0;
@@ -222,18 +192,16 @@ export default function New({data, tipo}){
             let dataColumnas = [];
             distribucionVehiculo.map((res, j)=>{
                 if(parseInt(res.tivedifila) === i){
-                    let contenido       = res.tivedipuesto;
-                    const puestoVendido = puestosVendidos.some(puesto => puesto.tiqpuenumeropuesto === contenido);
-                    let clase           = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : ((puestoVendido) ? 'asientoVendido' : 'asiento'));
-                    const esCondutor    = clase === 'conductor';
-                    dataColumnas.push({puestoVendido:puestoVendido,  puestoColumna: idColumna.toString(), contenido, clase, esCondutor });
+                    let contenido    = res.tivedipuesto;
+                    let clase        = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : 'asiento');
+                    const esCondutor = clase === 'conductor';
+                    dataColumnas.push({idDistribucion:res.tivedipuesto,  puestoColumna: idColumna.toString(), contenido, clase, esCondutor });
                     idColumna ++;
                 }
             });
             dataFilas.push(dataColumnas);
         }
        setDataPuestos(dataFilas);
-       setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss);
     }
 
     const formatearNumero = (numero) =>{
@@ -277,7 +245,7 @@ export default function New({data, tipo}){
                 newFormData.departamentoDestino         = tiquete.depaiddestino;
                 newFormData.municipioDestino            = tiquete.muniiddestino;
                 newFormData.planilla                    = tiquete.plarutid;
-                newFormData.cantidadPuesto              = tiquete.tiqucantidad;
+                newFormData.cantidadPuesto              = tiquete.tiqucantidad;///
                 newFormData.valorTiquete                = tiquete.tiquvalortiquete;
                 newFormData.valorDescuento              = tiquete.tiquvalordescuento;
                 newFormData.valorFondoReposicion        = tiquete.tiquvalorfondoreposicion;
@@ -311,16 +279,89 @@ export default function New({data, tipo}){
 
                 setMunicipiosDestino(municipiosDestino);
                 setEsEmpresa((tiquete.tipideid === 5) ? true : false);
-
-                //Dibujamos el vehiculo
-                const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === tiquete.vehiid);
-                distribucionVehiculo(distribucionVehiculosFiltrados, res.tiquetePuestos);
             }
 
             setFormData(newFormData);
             setLoader(false);
         })
     }, []);
+
+
+    const handleDragEnd = (result) => {
+        // ... (tu lógica existente)
+        
+        // Obtén el id del puesto seleccionado
+        const selectedPuestoId = result.draggableId;
+        
+        // Verifica si ya está seleccionado y agrega o quita del estado
+        setSelectedPuestos((prevSelected) => {
+            if (prevSelected.includes(selectedPuestoId)) {
+                // Quitar del estado si ya está seleccionado
+                return prevSelected.filter((id) => id !== selectedPuestoId);
+            } else {
+                // Agregar al estado si no está seleccionado
+                return [...prevSelected, selectedPuestoId];
+            }
+        });
+    };
+
+
+    /*const getPuestoClass = (isSelected) => {
+        return isSelected ? 'selectedPuesto' : 'regularPuesto';
+    };*/
+
+
+    const claseDistribucionPuesto = 'distribucionPuestoTaxi'; // Reemplaza con tu clase real
+
+    const handleCheckboxChange = (puestoId) => {
+      setSelectedPuestos((prevSelected) =>
+        prevSelected.includes(puestoId)
+          ? prevSelected.filter((id) => id !== puestoId)
+          : [...prevSelected, puestoId]
+      );
+
+      console.log(selectedPuestos);
+    };
+  
+    const getPuestoClass = (isSelected) => (isSelected ? 'selectedPuesto' : 'regularPuesto');
+
+
+    const [formDataPuesto, setFormDataPuesto] = useState([]); 
+
+    const handleChangePuesto = (e) =>{
+        let newFormDataPuesto = [...formDataPuesto];
+        if(e.target.checked){
+            newFormDataPuesto.push({tivedipuesto: parseInt(e.target.value)});
+        }else{
+            //Elimino la posicion
+            newFormDataPuesto = formDataPuesto.filter((item) => item.tivedipuesto !== parseInt(e.target.value));
+        }
+        setFormDataPuesto(newFormDataPuesto);
+        calcularValorTiquete(newFormDataPuesto.length);
+    }
+
+
+    const calcularValorTiquete = (cantidadPuesto) =>{
+        let newFormData                         = {...formData}
+        const planillaRutasFiltradas            = planillaRutas.filter(planilla => planilla.plarutid === newFormData.planilla);
+        let rutaId                              = planillaRutasFiltradas[0].rutaid;
+        let depaIdDestino                       = planillaRutasFiltradas[0].depaiddestino;
+        let muniIdDestino                       = planillaRutasFiltradas[0].muniiddestino;
+        const tarifaTiquetesFiltradas           = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.depaiddestino === depaIdDestino && tt.muniiddestino === muniIdDestino);
+        let  valorTiquete                       = tarifaTiquetesFiltradas[0].tartiqvalor;
+        valorTiquete                            = valorTiquete * cantidadPuesto;
+        let fondoReposicion                     = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+        let valorFondoReposicion                = (valorTiquete * fondoReposicion) / 100;
+        newFormData.valorTiquete                = valorTiquete;
+        newFormData.valorFondoReposicion        = valorFondoReposicion;
+        newFormData.valorTotal                  = valorTiquete;
+        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
+        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+        newFormData.valorTotalTiquete           = formatearNumero(valorTiquete);
+        newFormData.cantidadPuesto              = cantidadPuesto;
+        setFormData(newFormData);
+    }
+
 
     if(loader){
         return <LoaderModal />
@@ -347,11 +388,11 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={consultarNodoDestino}
+                            onChange={consultarMunicipioOrigen}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {planillaRutas.map(res=>{
-                                return <MenuItem value={res.plarutid} key={res.plarutid}> {res.nombreRuta}</MenuItem>
+                                return <MenuItem value={res.plarutid} key={res.plarutid}> {res.plarutid} {res.nombreRuta}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
@@ -370,7 +411,7 @@ export default function New({data, tipo}){
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosDestino.map(res=>{
-                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
@@ -386,23 +427,38 @@ export default function New({data, tipo}){
                         <Grid container spacing={2}>
                             <Grid item xl={12} md={12} sm={12} xs={12} style={{marginTop:'1em'}}>
                                 {(dataPuestos.length > 0)?
-                                    <Box className={claseDistribucionPuesto} style={{padding: '2px'}}>
+                                    <Box className={claseDistribucionPuesto}>
                                         <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             {Object.keys(dataPuestos).map((listId) => (
                                                 <Box key={listId} >
                                                     {dataPuestos[listId].map((item, index) => (
                                                         <Box key={item.puestoColumna} >
-                                                            {(item.clase === 'asiento' && !item.puestoVendido) ?
+                                                            {(item.clase === 'asiento') ?
+                                                                <Box >
+
+                                                                    {/*<FormGroup row name={"menus"} 
+                                                                        value={item.puestoColumna}
+                                                                        checked={selectedPuestos.includes(item.puestoColumna)}
+                                                                        onChange={() => handleCheckboxChange(item.puestoColumna)}                                                                       
+                                                                    >
+                                                                         <FormControlLabel value={item.puestoColumna} 
+                                                                         label={<p>{item.contenido}</p>}
+                                                                         control={<Checkbox  className="checkbox-asiento"   />} />
+
+                                                    </FormGroup>*/}
+
+
                                                                 <FormGroup row name={"menus"} 
                                                                     value={formDataPuesto.tivedipuesto}
                                                                     onChange={handleChangePuesto}>
-                                                                    <FormControlLabel value={item.contenido} label={item.contenido} 
+                                                                    <FormControlLabel value={item.idDistribucion} label={item.contenido} 
                                                                         control={ <Checkbox
-                                                                                    icon={<img src={puestoVehiculoSeleccionado} />}
-                                                                                    checkedIcon={<img src={puestoVehiculoVendido } />}
+                                                                                    icon={<img src={puestoVehiculo} width={'100%'} />}
+                                                                                    checkedIcon={<img src={puestoVehiculoVendido }  width={'100%'}/>}
                                                                                 />
                                                                     } />
-                                                                </FormGroup>                                                         
+                                                                </FormGroup>
+                                                                </Box>
                                                             :  
                                                                 <Box
                                                                 className={item.clase}

@@ -9,8 +9,8 @@ import SaveIcon from '@mui/icons-material/Save';
 
 export default function Distribucion({data, tipo}){
 
-    let totalPuesto        = data.tipvenumerofilas * data.tipvenumerocolumnas - 1;
-    let capacidadPasajero  = data.tipvecapacidad;
+    let totalPuesto        = data.tipvehnumerofilas * data.tipvehnumerocolumnas - 1;
+    let capacidadPasajero  = data.tipvehcapacidad;
     //const [claseModeloVehiculo, setClaseModeloVehiculo] = useState((capacidadPasajero <= 4) ? 'modeloTaxi' : 'modeloGeneral');
     const [claseModeloVehiculo, setClaseModeloVehiculo] = useState('modeloGeneral');
     const [tamanoAciento, setTamanoAciento] = useState(Math.ceil(capacidadPasajero / 8));

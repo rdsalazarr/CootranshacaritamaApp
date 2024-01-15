@@ -537,6 +537,24 @@ body{
   }
 }
 
+.asientoVendido {
+  width: 60px;
+  height: 60px;
+  color: #1c1a1a;
+  font-weight: bold;
+  background-image: url('../images/puestoVehiculoVendido.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin: 10px;
+  p{
+    padding-top: 0.7em;
+    padding-left: 0.3em;
+    color: #fdfdfd;
+    font-size: 1.2em;
+  }
+}
+
 .pasillo{
   width: 60px;
   height: 60px;
@@ -568,10 +586,10 @@ body{
 
 /* Estilos para el checkbox */
 .checkbox-asiento {
-  /*display: none; /* Ocultar el checkbox nativo */
+  display: none; /* Ocultar el checkbox nativo */
 }
 
-.checkbox-asiento + label {
+.checkbox-asiento  {
   width: 60px;
   height: 60px;
   color: #1c1a1a;
@@ -597,7 +615,7 @@ body{
   display: inline-block;
 }
 
-.checkbox-asiento:checked + label {
+.checkbox-asiento:checked {
   /* Estilos cuando el checkbox está seleccionado */
   /*background-color: #bcd456;*/
 
@@ -605,12 +623,14 @@ body{
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
+  
+  background-color: #f6f6f6;
 
   /* Otros estilos específicos cuando está seleccionado */
 }
 
 /* Estilos para el contenido dentro del label */
-.checkbox-asiento + label p {
+.checkbox-asiento + p {
   padding-top: 0.7em;
   padding-left: 0.3em;
   color: #a70505;
@@ -618,7 +638,7 @@ body{
 }
 
 /* Ocultar el indicador de selección nativo del checkbox */
-.checkbox-asiento + label::before {
+.checkbox-asiento::before {
   content: '';
   display: none;
 }

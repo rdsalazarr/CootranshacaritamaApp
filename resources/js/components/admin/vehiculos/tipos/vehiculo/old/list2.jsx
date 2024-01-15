@@ -100,10 +100,10 @@ const consultarDistribucion = (e) => {
   instance.post('/admin/direccion/transporte/list/distribucion/vehiculo', {codigo:e.target.value }).then(res => {
     const distribucionVehiculo       = res.tipoVehiculoDistribuciones;
     const resultTipoVehiculo         = tipoVehiculos.find((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
-    const numeroColumnas             = resultTipoVehiculo.tipvenumerocolumnas;
-    const numeroFilas                = resultTipoVehiculo.tipvenumerofilas;
-    const numeroTotalPuestos         = resultTipoVehiculo.tipvecapacidad;
-    setClaseDistribucionPuesto(resultTipoVehiculo.tipveclasecss);
+    const numeroColumnas             = resultTipoVehiculo.tipvehnumerocolumnas;
+    const numeroFilas                = resultTipoVehiculo.tipvehnumerofilas;
+    const numeroTotalPuestos         = resultTipoVehiculo.tipvehcapacidad;
+    setClaseDistribucionPuesto(resultTipoVehiculo.tipvehclasecss);
     setExistenDatos((distribucionVehiculo.length > 0) ? true : false);
     setMostrarDatos(true);
     
@@ -157,9 +157,9 @@ const consultarDistribucion = (e) => {
     let newFormData = { ...formData };
     let tipoVehiculo = e.target.name === 'tipoVehiculo' ? e.target.value : formData.tipoVehiculo;
     const resultTipoVehiculo = tipoVehiculos.find((tpVehiculo) => tpVehiculo.tipvehid == tipoVehiculo);
-    const numeroColumnas = resultTipoVehiculo.tipvenumerocolumnas;
-    const numeroFilas = resultTipoVehiculo.tipvenumerofilas;
-    const numeroTotalPuestos = resultTipoVehiculo.tipvecapacidad;
+    const numeroColumnas = resultTipoVehiculo.tipvehnumerocolumnas;
+    const numeroFilas = resultTipoVehiculo.tipvehnumerofilas;
+    const numeroTotalPuestos = resultTipoVehiculo.tipvehcapacidad;
     let dataFilas = [];
     let numeroPuesto = 0;
   
@@ -232,7 +232,7 @@ const consultarDistribucion = (e) => {
               >
                 <MenuItem value={""}>Seleccione</MenuItem>
                 {tipoVehiculos.map(res=>{
-                    return <MenuItem value={res.tipvehid} key={res.tipvehid}>{res.tipvehnombre} {res.tipvehreferencia} Filas ({res.tipvenumerofilas})  Columnas ({res.tipvenumerocolumnas}) Puestos ({res.tipvecapacidad}) </MenuItem>
+                    return <MenuItem value={res.tipvehid} key={res.tipvehid}>{res.tipvehnombre} {res.tipvehreferencia} Filas ({res.tipvehnumerofilas})  Columnas ({res.tipvehnumerocolumnas}) Puestos ({res.tipvehcapacidad}) </MenuItem>
                 })}
               </SelectValidator>
             </Grid>

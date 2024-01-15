@@ -34,7 +34,7 @@ class generarPlanilla
 		$numeroContrato = $contratoServicioEspecial->coseesconsecutivo;
 
 		$contratoVehiculos   = DB::table('contratoservicioespecialvehi as csev')
-								->select('csev.coseevid','csev.coseevextractoanio', 'csev.coseevextractoconsecutivo','v.vehiplaca','v.vehimodelo','v.vehinumerointerno', 'tmv.timavenombre', 'tv.tipvehnombre', 'tv.tipvecapacidad','vto.vetaopnumero')
+								->select('csev.coseevid','csev.coseevextractoanio', 'csev.coseevextractoconsecutivo','v.vehiplaca','v.vehimodelo','v.vehinumerointerno', 'tmv.timavenombre', 'tv.tipvehnombre', 'tv.tipvehcapacidad','vto.vetaopnumero')
 								->join('vehiculo as v', 'v.vehiid', '=', 'csev.vehiid')
 								->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
 								->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
@@ -48,7 +48,7 @@ class generarPlanilla
 		$capacidadVehiculo = '';
 		foreach($contratoVehiculos as $contratoVehiculo){
 			$numerosInternos .= $contratoVehiculo->vehinumerointerno.', ';
-			$capacidadVehiculo .= $contratoVehiculo->tipvecapacidad.', ';
+			$capacidadVehiculo .= $contratoVehiculo->tipvehcapacidad.', ';
 			$contador ++;
 		}
 

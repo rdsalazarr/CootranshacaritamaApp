@@ -11,5 +11,5 @@ class TipoVehiculo extends Model
 
     protected $table      = 'tipovehiculo';
     protected $primaryKey = 'tipvehid';
-    protected $fillable   = ['tipvehnombre','tipvehreferencia','tipvecapacidad','tipvenumerofilas','tipvenumerocolumnas','tipveclasecss','tipvehactivo'];
+    protected $fillable   = ['tipvehnombre','tipvehreferencia','tipvehcapacidad','tipvehnumerofilas','tipvehnumerocolumnas','tipvehclasecss','tipvehactivo'];
 }

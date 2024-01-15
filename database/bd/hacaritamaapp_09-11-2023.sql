@@ -3390,9 +3390,9 @@ CREATE TABLE `tipovehiculo` (
   `tipvehid` smallint(5) UNSIGNED NOT NULL COMMENT 'Identificador de la tabla tipo vehículo',
   `tipvehnombre` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nombre del tipo vehículo',
   `tipvehreferencia` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Referencia del tipo vehículo',
-  `tipvecapacidad` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Capacidad del tipo de vehículo',
-  `tipvenumerofilas` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Número de filas del tipo de vehículo',
-  `tipvenumerocolumnas` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Número de columnas del tipo de vehículo',
+  `tipvehcapacidad` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Capacidad del tipo de vehículo',
+  `tipvehnumerofilas` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Número de filas del tipo de vehículo',
+  `tipvehnumerocolumnas` tinyint(3) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Número de columnas del tipo de vehículo',
   `tipvehactivo` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Determina si el tipo vehículo se encuentra activo',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -3402,7 +3402,7 @@ CREATE TABLE `tipovehiculo` (
 -- Volcado de datos para la tabla `tipovehiculo`
 --
 
-INSERT INTO `tipovehiculo` (`tipvehid`, `tipvehnombre`, `tipvehreferencia`, `tipvecapacidad`, `tipvenumerofilas`, `tipvenumerocolumnas`, `tipvehactivo`, `created_at`, `updated_at`) VALUES
+INSERT INTO `tipovehiculo` (`tipvehid`, `tipvehnombre`, `tipvehreferencia`, `tipvehcapacidad`, `tipvehnumerofilas`, `tipvehnumerocolumnas`, `tipvehactivo`, `created_at`, `updated_at`) VALUES
 (1, 'AUTOMÓVIL', NULL, 4, 2, 3, 1, '2023-11-09 09:30:34', '2023-11-09 09:30:34'),
 (2, 'MICROBUS', 'URVAN', 9, 4, 3, 0, '2023-11-09 09:30:34', '2023-11-09 09:30:34'),
 (3, 'MICROBUS', '15P', 15, 5, 4, 1, '2023-11-09 09:30:34', '2023-11-09 09:30:34'),
