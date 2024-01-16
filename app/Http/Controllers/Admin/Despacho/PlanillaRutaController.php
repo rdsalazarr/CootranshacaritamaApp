@@ -297,7 +297,7 @@ class PlanillaRutaController extends Controller
                             ->where('pr.plarutid', $request->codigo)->first();
 
             $tiquetes  = DB::table('tiquete as t')
-                            ->select('t.tiquvalortiquete as totalTiquete', DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            ->select('t.tiquvalortotal as totalTiquete', DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                             'tp.tiqpuenumeropuesto as numeroPuesto', 'mde.muninombre as municipioDestino', 
                             DB::raw("CONCAT(ps.perserprimernombre,' ', ps.perserprimerapellido) as nombreCliente"))
                             ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')

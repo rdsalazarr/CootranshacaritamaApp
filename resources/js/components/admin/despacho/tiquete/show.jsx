@@ -11,13 +11,37 @@ export default function Show({data}){
                                              valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         cantidadPuesto: '',
                                              valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:''  });
 
-  
+    const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral' + 'Venta');
+    const [dataPuestos, setDataPuestos] = useState([]);
     const [esEmpresa, setEsEmpresa] = useState(false);
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState(false);    
 
     const formatearNumero = (numero) =>{
         const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
         return Number(numero).toLocaleString('es-CO', opciones);
+    }
+
+    const distribucionVehiculo = (distribucionVehiculo, puestosVendidos) => {
+        let totalFilas = distribucionVehiculo[0].totalFilas;
+        let dataFilas  = [];
+        let idColumna  = 0;
+        for (let i = 0; i < totalFilas; i++) {
+            let dataColumnas = [];
+            distribucionVehiculo.map((res, j)=>{
+                if(parseInt(res.tivedifila) === i){
+                    const contenido        = res.tivedipuesto;
+                    const puestoDespachado = puestosVendidos.some(puesto => puesto.tiqpuenumeropuesto === contenido);
+                    const puestoVendido    = (puestoDespachado) ? true : false;
+                    const clase            = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : ((puestoVendido) ? 'asientoVendido' : 'asiento'));
+                    const esCondutor       = clase === 'conductor';
+                    dataColumnas.push({puestoVendido:puestoVendido,  puestoColumna: idColumna.toString(), contenido, clase, esCondutor });
+                    idColumna ++;
+                }
+            });
+            dataFilas.push(dataColumnas);
+        }
+       setDataPuestos(dataFilas);
+       setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss + 'Venta');
     }
 
     useEffect(()=>{
@@ -46,6 +70,7 @@ export default function Show({data}){
             newFormData.valorTotalTiquete           = formatearNumero(tiquete.tiquvalortotal);
             setEsEmpresa((tiquete.tipideid === 5) ? true : false);
             setFormData(newFormData);
+            distribucionVehiculo(res.distribucionVehiculo, res.tiquetePuestos);
             setLoader(false);
         })
     }, []);
@@ -79,16 +104,33 @@ export default function Show({data}){
                 </Grid>
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
-                    <Box className='frmTexto'>
-                        <label>Cantidad de puestos</label>
-                        <span>{formData.cantidadPuesto}</span>
-                    </Box>
                 </Grid>
             </Grid>
 
             <Grid container spacing={2}>
                 <Grid item xl={9} md={9} sm={12} xs={12}>
                     <Grid container spacing={2}>
+                        <Grid item xl={12} md={12} sm={12} xs={12} style={{marginTop:'1em'}}>
+                            {(dataPuestos.length > 0)?
+                                <Box className={claseDistribucionPuesto} style={{padding: '2px'}}>
+                                    <Box style={{ display: 'flex', justifyContent: 'space-between', padding: '2px' }}>
+                                        {Object.keys(dataPuestos).map((listId) => (
+                                            <Box key={listId}>
+                                                {dataPuestos[listId].map((item) => {
+                                                    return (
+                                                        <Box key={item.puestoColumna}>
+                                                            <Box className={item.clase}>
+                                                                <p>{item.contenido}</p>
+                                                            </Box>
+                                                        </Box>
+                                                    );
+                                                })}
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            : null }
+                        </Grid>
 
                     </Grid>
                 </Grid>
@@ -98,28 +140,35 @@ export default function Show({data}){
 
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className='frmTextoColor'>
-                                <label>Valor tiquete $</label>
+                                <label>Cantidad de puestos: </label>
+                                <span className='textoRojo'>{'\u00A0'+ formData.cantidadPuesto}</span>
+                            </Box>
+                        </Grid>
+
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Valor tiquete: $</label>
                                 <span className='textoRojo'>{'\u00A0'+ formData.valorTiqueteMostrar}</span>
                             </Box>
                         </Grid>
 
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className='frmTextoColor'>
-                                <label>Valor descuento $</label>
+                                <label>Valor descuento: $</label>
                                 <span className='textoRojo'>{'\u00A0'+formData.valorDescuento}</span>
                             </Box>
                         </Grid>
 
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className='frmTextoColor'>
-                                <label>Fondo de reposición $ </label>
+                                <label>Fondo de reposición: $ </label>
                                 <span className='textoRojo'>{'\u00A0'+ formData.valorFondoReposicionMostrar}</span>
                             </Box>
                         </Grid>
 
                         <Grid item xl={12} md={12} sm={12} xs={12}>
                             <Box className='frmTextoColor'>
-                                <label>Total $ </label>
+                                <label>Total: $ </label>
                                 <span className='textoRojo'> {'\u00A0'+ formData.valorTotalTiquete}</span>
                             </Box>
                         </Grid>
@@ -198,7 +247,6 @@ export default function Show({data}){
                         <span>{formData.telefonoCelular}</span>
                     </Box>
                 </Grid>
-                 
 
             </Grid>
         </Box>
