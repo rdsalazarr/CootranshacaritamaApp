@@ -582,6 +582,7 @@ body{
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
+  cursor: no-drop !important;
   margin: 10px;
   p{
     padding-top: 0.7em;
@@ -617,66 +618,6 @@ body{
     visibility: hidden;
     font-size: 1.2em;
   }
-}
-
-
-/* Estilos para el checkbox */
-.checkbox-asiento {
-  display: none; /* Ocultar el checkbox nativo */
-}
-
-.checkbox-asiento  {
-  width: 60px;
-  height: 60px;
-  color: #1c1a1a;
-  font-weight: bold;
-  background-image: url('../images/puestoVehiculo.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  margin: 10px;
-  display: inline-block;
-}
-
-.checkbox-asiento-vendido + label {
-  width: 60px;
-  height: 60px;
-  color: #1c1a1a;
-  font-weight: bold;
-  background-image: url('../images/puestoVehiculoVendido.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  margin: 10px;
-  display: inline-block;
-}
-
-.checkbox-asiento:checked {
-  /* Estilos cuando el checkbox está seleccionado */
-  /*background-color: #bcd456;*/
-
-  background-image: url('../images/puestoVehiculoSeleccionado.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  
-  background-color: #f6f6f6;
-
-  /* Otros estilos específicos cuando está seleccionado */
-}
-
-/* Estilos para el contenido dentro del label */
-.checkbox-asiento + p {
-  padding-top: 0.7em;
-  padding-left: 0.3em;
-  color: #a70505;
-  font-size: 1.2em;
-}
-
-/* Ocultar el indicador de selección nativo del checkbox */
-.checkbox-asiento::before {
-  content: '';
-  display: none;
 }
 
 /*md*/

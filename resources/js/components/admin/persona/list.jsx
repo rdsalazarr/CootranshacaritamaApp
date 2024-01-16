@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../layout/tablaGeneral';
 import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
+import { Box, Typography} from '@mui/material';
 import Eliminar from '../../layout/modalFijas';
 import instance from '../../layout/instance';
 import Procesar from './procesar';
@@ -50,26 +50,24 @@ export default function List(){
     }
 
     return (
-        <Box >
-            <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar personas</Typography>
-                </Box>
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Tipo de persona', 'Activo','Actualizar','Eliminar','Ver','Procesar']}
-                        ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico", "tipoPersona","estado"]}
-                        accion={[
-                            {tipo: 'T', icono : 'add',           color: 'green',  funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',          color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete',        color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility',    color: 'green',  funcion : (data)=>{edit(data,3)} },
-                            {tipo: 'B', icono : 'add_task_Icon', color: 'red',    funcion : (data)=>{edit(data,4)} },
-                        ]}
-                        funciones={{orderBy: true,search: true, pagination:true}}
-                    />
-                </Box>
-            </Card>
+        <Box >   
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar personas</Typography>
+            </Box>
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Tipo de persona', 'Activo','Actualizar','Eliminar','Ver','Procesar']}
+                    ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico", "tipoPersona","estado"]}
+                    accion={[
+                        {tipo: 'T', icono : 'add',           color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',          color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',        color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility',    color: 'green',  funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'B', icono : 'add_task_Icon', color: 'red',    funcion : (data)=>{edit(data,4)} },
+                    ]}
+                    funciones={{orderBy: true,search: true, pagination:true}}
+                />
+            </Box>
 
             <ModalDefaultAuto
                 title={modal.titulo}

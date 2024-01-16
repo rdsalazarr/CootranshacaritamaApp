@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
-import { Box, Card, Typography} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
+import { Box, Typography} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
@@ -47,31 +47,29 @@ export default function List(){
 
     return (
         <Box className={'containerMedium'}>
-            <Card className={'cardContainer'}>
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar líneas de créditos</Typography>
-                </Box>
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Nombre','Tasa nominal','Monto mínimo','Monto máximo','Plazo máximo', 'Activo','Actualizar','Eliminar']}
-                        ver={["lincrenombre","tasaNominal","montoMinimo","montoMaximo","plazoMaximo", "estado"]}
-                        accion={[
-                            {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete', color: 'red',    funcion : (data)=>{edit(data,2)} },
-                        ]}
-                        funciones={{orderBy: true,search: true, pagination:true}}
-                    />
-                </Box>
-
-                <ModalDefaultAuto
-                    title={modal.titulo}
-                    content={modales[modal.vista]}
-                    close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
-                    tam = {modal.tamano}
-                    abrir ={modal.open}
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar líneas de créditos</Typography>
+            </Box>
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Nombre','Tasa nominal','Monto mínimo','Monto máximo','Plazo máximo', 'Activo','Actualizar','Eliminar']}
+                    ver={["lincrenombre","tasaNominal","montoMinimo","montoMaximo","plazoMaximo", "estado"]}
+                    accion={[
+                        {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete', color: 'red',    funcion : (data)=>{edit(data,2)} },
+                    ]}
+                    funciones={{orderBy: true,search: true, pagination:true}}
                 />
-            </Card>
+            </Box>
+
+            <ModalDefaultAuto
+                title={modal.titulo}
+                content={modales[modal.vista]}
+                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                tam = {modal.tamano}
+                abrir ={modal.open}
+            />
         </Box>
     )
 }

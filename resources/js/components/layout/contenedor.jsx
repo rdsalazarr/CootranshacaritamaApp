@@ -70,13 +70,8 @@ import Encomiendas from "../admin/despacho/encomienda/list";
 import Tiquetes from "../admin/despacho/tiquete/list";
 import RecibirPlanillas from "../admin/despacho/recibirPlanilla/list";
 
-import Rutas1 from "../admin/vehiculos/tipos/vehiculo/old/list1";
-import Rutas2 from "../admin/vehiculos/tipos/vehiculo/old/list2";
-import Rutas3 from "../admin/vehiculos/tipos/vehiculo/old/ruta3";
 
-import CuadriculaArrastrable from "../admin/vehiculos/tipos/vehiculo/old/cuadriculaArrastrable";
-
-//clean_hands_icon
+//
 const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
@@ -160,22 +155,22 @@ const componenteMenu = [
             {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas1 /> },
             {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
             {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},*/
-            {ruta : 'admin/despacho/otros',             menu: 'Cuadricula',            icono : 'card_travel_icon',   componente : <CuadriculaArrastrable />},
-            {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'local_car_wash_icon',        componente : <Rutas1 />},
-            {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas2 />},
-            {ruta : 'admin/despacho/otros3',            menu: 'Otros',            icono : 'traffic_icon',        componente : <Rutas3 />},
+            {ruta : 'admin/despacho/otros',             menu: 'Cuadricula',            icono : 'card_travel_icon',   componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'local_car_wash_icon',        componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
         ]
     },
     {   nombre: 'Caja',
         icono : 'attach_money_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'checklist_rtl_icon',   componente : <Tiquetes />},
+            {ruta : 'admin/despacho/otros',             menu: 'Procesar',            icono : 'checklist_rtl_icon',   componente : <EnConstruccion />},
         ]
     },
     {   nombre: 'Informes',
         icono : 'assessment_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <Tiquetes />},
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <EnConstruccion />},
         ]
     }
 ];
@@ -230,9 +225,9 @@ const menuComponente = [
 
     {id:48,componente : <EnConstruccion />},
     {id:49,componente : <EnConstruccion />},
-    {id:50,componente : <Rutas1 />},
-    {id:51,componente : <Rutas2 />},
-    {id:52,componente : <Rutas3 />},
+    {id:50,componente : <EnConstruccion />},
+    {id:51,componente : <EnConstruccion />},
+    {id:52,componente : <EnConstruccion />},
     {id:53,componente : <EnConstruccion />},
     {id:54,componente : <EnConstruccion />},
     {id:55,componente : <EnConstruccion />},

@@ -3,8 +3,8 @@ import {TomarDecisionSolicitudCredito} from '../../../../layout/modalFijas';
 import { ModalDefaultAuto } from '../../../../layout/modal';
 import TablaGeneral from '../../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../../layout/loader";
-import { Box, Card, Typography} from '@mui/material';
 import instance from '../../../../layout/instance';
+import { Box, Typography} from '@mui/material';
 import Show from '../../show/show';
 
 export default function List(){
@@ -46,30 +46,28 @@ export default function List(){
 
     return (
         <Box >
-            <Card className={'cardContainer'}>
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Aprobar solicitud de créditos</Typography>
-                </Box>
-                <Box style={{ paddingTop: "1em"}}  sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Fecha','Línea crédito', 'Asociado','Destino', 'Valor solicitado','Plazo', 'Decidir','Visualizar']}
-                        ver={["solcrefechasolicitud","lineaCredito","nombreAsociado","solcredescripcion","valorSolicitado", "solcrenumerocuota"]}
-                        accion={[
-                            {tipo: 'B', icono : 'done_all_icon', color: 'red',   funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'visibility',    color: 'green', funcion : (data)=>{edit(data,1)} },
-                        ]}
-                        funciones={{orderBy: true, search: false, pagination:true}}
-                    />
-                </Box>
-
-                <ModalDefaultAuto
-                    title={modal.titulo}
-                    content={modales[modal.vista]}
-                    close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
-                    tam = {modal.tamano}
-                    abrir ={modal.open}
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Aprobar solicitud de créditos</Typography>
+            </Box>
+            <Box style={{ paddingTop: "1em"}}  sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Fecha','Línea crédito', 'Asociado','Destino', 'Valor solicitado','Plazo', 'Decidir','Visualizar']}
+                    ver={["solcrefechasolicitud","lineaCredito","nombreAsociado","solcredescripcion","valorSolicitado", "solcrenumerocuota"]}
+                    accion={[
+                        {tipo: 'B', icono : 'done_all_icon', color: 'red',   funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'visibility',    color: 'green', funcion : (data)=>{edit(data,1)} },
+                    ]}
+                    funciones={{orderBy: true, search: false, pagination:true}}
                 />
-            </Card>
+            </Box>
+
+            <ModalDefaultAuto
+                title={modal.titulo}
+                content={modales[modal.vista]}
+                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                tam = {modal.tamano}
+                abrir ={modal.open}
+            />
         </Box>
     )
 }

@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
-import { Box, Card, Typography} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
+import { Box, Typography} from '@mui/material';
 import VisualizarPdf from './visualizarPdf';
 import NewEdit from './new';
 import Show from './show';
@@ -51,33 +51,31 @@ export default function List(){
 
     return (
         <Box>
-            <Card className={'cardContainer'} >  
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar información general del contenido de los PDF</Typography>
-                </Box>
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Nombre', 'Título','Actualizar','Eliminar','Ver', 'PDF']}
-                        ver={["ingpdfnombre","ingpdftitulo"]}
-                        accion={[
-                            {tipo: 'T', icono : 'add',            color: 'green',  funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',           color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete',         color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility',     color: 'green',  funcion : (data)=>{edit(data,3)} },
-                            {tipo: 'B', icono : 'picture_as_pdf', color: 'orange', funcion : (data)=>{edit(data,4)} },
-                        ]}
-                        funciones={{orderBy: true,search: true, pagination:true}}
-                    />
-                </Box>
-
-                <ModalDefaultAuto
-                    title   ={modal.titulo}
-                    content ={modales[modal.vista]}
-                    close   ={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista < 3) ? inicio() : null;}}
-                    tam     ={modal.tamano}
-                    abrir   ={modal.open}
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar información general del contenido de los PDF</Typography>
+            </Box>
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Nombre', 'Título','Actualizar','Eliminar','Ver', 'PDF']}
+                    ver={["ingpdfnombre","ingpdftitulo"]}
+                    accion={[
+                        {tipo: 'T', icono : 'add',            color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',           color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',         color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility',     color: 'green',  funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'B', icono : 'picture_as_pdf', color: 'orange', funcion : (data)=>{edit(data,4)} },
+                    ]}
+                    funciones={{orderBy: true,search: true, pagination:true}}
                 />
-            </Card>
+            </Box>
+
+            <ModalDefaultAuto
+                title   ={modal.titulo}
+                content ={modales[modal.vista]}
+                close   ={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista < 3) ? inicio() : null;}}
+                tam     ={modal.tamano}
+                abrir   ={modal.open}
+            />
         </Box>
     )
 }

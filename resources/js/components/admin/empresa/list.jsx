@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../layout/tablaGeneral';
-import { ModalDefaultAuto  } from '../../layout/modal';
+import { ModalDefaultAuto} from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
+import { Box, Typography} from '@mui/material';
 import instance from '../../layout/instance';
 import NewEdit from './new';
 
@@ -35,22 +35,19 @@ export default function List(){
 
     return (
         <Box>
-            <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar información de la empresa</Typography>
-                </Box>
-
-                <Box style={{ paddingTop: "1em"}} sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Nombre','Sigla','Lema','Dirección','Teléfono','Correo', 'Actualizar']}
-                        ver={["emprnombre","emprsigla","emprlema","telefonos","emprdireccion","emprcorreo"]}
-                        accion={[
-                            {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,0)} },
-                        ]}
-                        funciones={{orderBy: false,search: false, pagination:false}}
-                    />
-                </Box>
-            </Card>
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar información de la empresa</Typography>
+            </Box>
+            <Box style={{ paddingTop: "1em"}} sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Nombre','Sigla','Lema','Dirección','Teléfono','Correo', 'Actualizar']}
+                    ver={["emprnombre","emprsigla","emprlema","telefonos","emprdireccion","emprcorreo"]}
+                    accion={[
+                        {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,0)} },
+                    ]}
+                    funciones={{orderBy: false,search: false, pagination:false}}
+                />
+            </Box>
 
             <ModalDefaultAuto
                 title={modal.titulo}

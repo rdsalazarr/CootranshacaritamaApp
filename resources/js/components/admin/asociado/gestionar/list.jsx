@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Typography, Card} from '@mui/material';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
+import { Box, Typography} from '@mui/material';
 import Show from '../../persona/show';
 import Frm from '../../persona/new';
 
@@ -48,26 +48,24 @@ export default function List(){
     }
 
     return (
-        <Box >
-            <Card className={'cardContainer'} >
-                <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar asociados</Typography>
-                </Box>
-                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                    <TablaGeneral
-                        datos={data}
-                        titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Estado','Actualizar','Eliminar','Ver']}
-                        ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico","estado"]}
-                        accion={[
-                            {tipo: 'T', icono : 'add',        color: 'green',   funcion : (data)=>{edit(data,0)} },
-                            {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
-                            {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
-                            {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
-                        ]}
-                        funciones={{orderBy: true,search: true, pagination:true}}
-                    />
-                </Box>
-            </Card>
-
+        <Box>
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar asociados</Typography>
+            </Box>
+            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                <TablaGeneral
+                    datos={data}
+                    titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Estado','Actualizar','Eliminar','Ver']}
+                    ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico","estado"]}
+                    accion={[
+                        {tipo: 'T', icono : 'add',        color: 'green',   funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',       color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',     color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility', color: 'green',  funcion : (data)=>{edit(data,3)} },
+                    ]}
+                    funciones={{orderBy: true,search: true, pagination:true}}
+                />
+            </Box>
+ 
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}

@@ -113,7 +113,7 @@ class PlanillaRutaController extends Controller
 			$planillaruta->vehiid                  = $request->vehiculo;
 			$planillaruta->condid                  = $request->conductor;
             $planillaruta->plarutfechahorasalida   = $request->fechaHoraSalida;
-           	$planillaruta->save();    
+           	$planillaruta->save();
 
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
@@ -200,7 +200,7 @@ class PlanillaRutaController extends Controller
                             })
                             ->join('agencia as a', 'a.agenid', '=', 't.agenid')
                             ->where('pr.plarutid', $request->codigo)->get();
-            }            
+            }
 
         return response()->json(["planillaRuta" => $planillaRuta, "encomiendas" => $encomiendas, "tiquetes" => $tiquetes]);    
     }
@@ -261,12 +261,12 @@ class PlanillaRutaController extends Controller
             $planillaruta  = DB::table('planillaruta as pr')
                             ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida','v.vehiplaca','v.vehinumerointerno','p.persdocumento',
                             'p.persnumerocelular','a.agennombre', 'a.agendireccion',
-                            DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),         
-                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),                            
+                            DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),
+                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
                             DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
                             p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
                             DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
-                            DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),                            
+                            DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),
                             DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"),
                             DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'PLANILLA') AS mensajePlanilla"),
                             DB::raw('(SELECT SUM(encovalorenvio) AS encovalorenvio FROM encomienda WHERE plarutid = pr.plarutid) AS valorEnvio'),
@@ -320,7 +320,7 @@ class PlanillaRutaController extends Controller
             $arrayDatos = [
                             "fechaPlanilla"        => $planillaruta->plarutfechahoraregistro,
                             "numeroPlanilla"       => $planillaruta->consecutivoPlanilla,
-                            "fechaSalida"          => substr($planillaruta->plarutfechahorasalida, 0, -9),        
+                            "fechaSalida"          => substr($planillaruta->plarutfechahorasalida, 0, -9),
                             "horaSalida"           => substr($planillaruta->plarutfechahorasalida, -8, 10),
                             "nombreRuta"           => $planillaruta->nombreRuta,
                             "numeroVehiculo"       => $planillaruta->vehinumerointerno,

@@ -264,7 +264,7 @@ class EncomiendaController extends Controller
                 $encomiendacambioestado->save();
 			}
 
-            if($request->enviarEncomienda && $request->correoRemitente !== ''){//Notifico al correo
+            if($request->enviarEncomienda === true && $request->correoRemitente !== ''){//Notifico al correo
                 $arrayPdf   = [];
 			    array_push($arrayPdf, $this->generarFacturaPdf($encoid, 'F')); 
                 $empresa            = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();
