@@ -24,7 +24,7 @@ return new class extends Migration
             $table->year('tiquanio', 4)->comment('Año en el cual se registra el tiquete');
             $table->string('tiquconsecutivo', 5)->comment('Consecutivo del tiquete asignado por cada año');
             $table->dateTime('tiqufechahoraregistro')->comment('Fecha y hora actual en el que se registra el tiquete');
-            $table->decimal('tiqucantidad', 4)->comment('Cantidad de puesto en el tiquete');
+            $table->decimal('tiqucantidad', 4, 0)->comment('Cantidad de puesto en el tiquete');
             $table->decimal('tiquvalortiquete', 10, 0)->comment('Valor del tiquete');
             $table->decimal('tiquvalordescuento', 10, 0)->nullable()->comment('Valor de descuento del tiquete');
             $table->decimal('tiquvalorfondoreposicion', 10, 0)->comment('Valor del fondo de reposición del tiquete');

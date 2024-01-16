@@ -13,11 +13,11 @@ export default function New({data, tipo}){
                                     } : {codigo:'000', nombre: '', funcionalidades: '',  estado: '1', tipo:tipo
                                 });
 
-    const [loader, setLoader] = useState(false); 
+    const [menus, setMenus] = useState([]);
+    const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
-    const [menus, setMenus] = useState([]); 
-    const [formDataMenu, setFormDataMenu] = useState([]); 
-    const [menuMarcado, setMenuMarcado] = useState([]); 
+    const [menuMarcado, setMenuMarcado] = useState([]);
+    const [formDataMenu, setFormDataMenu] = useState([]);  
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -25,12 +25,8 @@ export default function New({data, tipo}){
 
     const handleChangeMenu = (e) =>{
         let newFormDataMenu = [...formDataMenu];
-        if(e.target.checked){
-            newFormDataMenu.push({funcid: parseInt(e.target.value)});
-        }else{
-            //Elimino la posicion
-            newFormDataMenu = formDataMenu.filter((item) => item.funcid !== parseInt(e.target.value));
-        }
+        (e.target.checked) ? newFormDataMenu.push({funcid: parseInt(e.target.value)}) :
+                             newFormDataMenu = formDataMenu.filter((item) => item.funcid !== parseInt(e.target.value));
         setFormDataMenu(newFormDataMenu);
     }
 
@@ -128,11 +124,11 @@ export default function New({data, tipo}){
                             const checkbox = (marcado !== undefined) ? <Checkbox color="secondary" defaultChecked /> : <Checkbox color="secondary"  />;  
                           
                             const frmCheckbox = <Grid item md={4} xl={4} sm={6} key={res.titulo} >
-                                                    <FormControlLabel value={res.funcid} label={res.titulo}  control={checkbox} />
+                                                    <FormControlLabel value={res.funcid} label={res.titulo} control={checkbox} />
                                                 </Grid>
                             return frmCheckbox;
                         })}
-                    </FormGroup>  
+                    </FormGroup>
                 </Grid>
                 
             </Grid>

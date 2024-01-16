@@ -1,6 +1,8 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import {TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {Button, Grid, MenuItem, Stack, Box, FormControlLabel, Switch, FormGroup, Checkbox} from '@mui/material';
+import puestoVehiculoSeleccionado from "../../../../../images/iconoPuestoVehiculoSeleccionado.png";
+import puestoVehiculo from "../../../../../images/iconoPuestoVehiculo.png";
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {ModalDefaultAuto } from '../../../layout/modal';
@@ -8,17 +10,6 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import VisualizarPdf from './visualizarPdf';
-
-import puestoVehiculoSeleccionado from "../../../../../images/iconoPuestoVehiculoSeleccionado.png";
-import puestoVehiculoVendido from "../../../../../images/iconoPuestoVehiculoVendido.png";
-import puestoVehiculo from "../../../../../images/puestoVehiculo.png";
-
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import Favorite from '@mui/icons-material/Favorite';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-
-
 
 export default function New({data, tipo}){
     let tiquid        = (tipo === 'U') ? data.tiquid : '000';
@@ -29,7 +20,7 @@ export default function New({data, tipo}){
                                               valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
                                               valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '', tipo:tipo});
     
-    const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral');
+    const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral' + 'Venta');
     const [distribucionVehiculos, setDistribucionVehiculos] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
@@ -37,13 +28,14 @@ export default function New({data, tipo}){
     const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
     const [formDataPuesto, setFormDataPuesto] = useState([]);
     const [planillaRutas, setPlanillaRutas] = useState([]);
+    const [puestoMarcado, setPuestoMarcado] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [dataPuestos, setDataPuestos] = useState([]);
     const [esEmpresa, setEsEmpresa] = useState(false);
     const [municipios, setMunicipios] = useState([]);
     const [idTiquete , setIdTiquete] = useState(0);
-    const [loader, setLoader] = useState(false); 
+    const [loader, setLoader] = useState(false);    
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -59,12 +51,8 @@ export default function New({data, tipo}){
 
     const handleChangePuesto = (e) =>{
         let newFormDataPuesto = [...formDataPuesto];
-        if(e.target.checked){
-            newFormDataPuesto.push({tivedipuesto: parseInt(e.target.value)});
-        }else{
-            //Elimino la posicion
-            newFormDataPuesto = formDataPuesto.filter((item) => item.tivedipuesto !== parseInt(e.target.value));
-        }
+        (e.target.checked) ? newFormDataPuesto.push({tivedipuesto: parseInt(e.target.value)}) :
+                            newFormDataPuesto = formDataPuesto.filter((item) => item.tivedipuesto !== parseInt(e.target.value));
         setFormDataPuesto(newFormDataPuesto);
         calcularValorTiquete(newFormDataPuesto.length);
     }
@@ -222,10 +210,11 @@ export default function New({data, tipo}){
             let dataColumnas = [];
             distribucionVehiculo.map((res, j)=>{
                 if(parseInt(res.tivedifila) === i){
-                    let contenido       = res.tivedipuesto;
-                    const puestoVendido = puestosVendidos.some(puesto => puesto.tiqpuenumeropuesto === contenido);
-                    let clase           = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : ((puestoVendido) ? 'asientoVendido' : 'asiento'));
-                    const esCondutor    = clase === 'conductor';
+                    const contenido        = res.tivedipuesto;
+                    const puestoDespachado = puestosVendidos.some(puesto => puesto.tiqpuenumeropuesto === contenido);
+                    const puestoVendido    = (puestoDespachado && tipo === 'I') ? true : false;
+                    const clase            = (contenido === 'C') ? 'conductor' : ((contenido === 'P') ? 'pasillo' : ((puestoVendido) ? 'asientoVendido' : 'asiento'));
+                    const esCondutor       = clase === 'conductor';
                     dataColumnas.push({puestoVendido:puestoVendido,  puestoColumna: idColumna.toString(), contenido, clase, esCondutor });
                     idColumna ++;
                 }
@@ -233,7 +222,7 @@ export default function New({data, tipo}){
             dataFilas.push(dataColumnas);
         }
        setDataPuestos(dataFilas);
-       setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss);
+       setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss + 'Venta');
     }
 
     const formatearNumero = (numero) =>{
@@ -252,13 +241,15 @@ export default function New({data, tipo}){
 
     useEffect(()=>{
         setLoader(true);
-        let newFormData = {...formData}
+        let newFormData       = {...formData}
+        let newFormDataPuesto = [...formDataPuesto];
         instance.post('/admin/despacho/tiquete/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
             setDistribucionVehiculos(res.distribucionVehiculos);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTarifaTiquetes(res.tarifaTiquetes);
             setPlanillaRutas(res.planillaRutas);
             setMunicipios(res.municipios);
+            setPuestoMarcado(res.tiquetePuestos);
 
             if(tipo === 'U'){
                 let tiquete                             = res.tiquete;
@@ -307,13 +298,21 @@ export default function New({data, tipo}){
                     muniid:     muniIdDestino,
                     munidepaid: depaIdDestino,
                     muninombre: municipioDestino
-                }); 
+                });
 
+                res.tiquetePuestos.forEach(function(tiq){
+                    newFormDataPuesto.push({
+                        tivedipuesto: tiq.tiqpuenumeropuesto
+                    });
+                });
+
+                setFormDataPuesto(newFormDataPuesto);
                 setMunicipiosDestino(municipiosDestino);
                 setEsEmpresa((tiquete.tipideid === 5) ? true : false);
 
                 //Dibujamos el vehiculo
-                const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === tiquete.vehiid);
+                const distribucionVehiculos          = res.distribucionVehiculos;
+                const distribucionVehiculosFiltrados = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === tiquete.vehiid);
                 distribucionVehiculo(distribucionVehiculosFiltrados, res.tiquetePuestos);
             }
 
@@ -376,7 +375,6 @@ export default function New({data, tipo}){
                     </Grid>
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
-
                     </Grid>
 
                 </Grid>
@@ -387,35 +385,40 @@ export default function New({data, tipo}){
                             <Grid item xl={12} md={12} sm={12} xs={12} style={{marginTop:'1em'}}>
                                 {(dataPuestos.length > 0)?
                                     <Box className={claseDistribucionPuesto} style={{padding: '2px'}}>
-                                        <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <Box style={{ display: 'flex', justifyContent: 'space-between', padding: '2px' }}>
                                             {Object.keys(dataPuestos).map((listId) => (
-                                                <Box key={listId} >
-                                                    {dataPuestos[listId].map((item, index) => (
-                                                        <Box key={item.puestoColumna} >
-                                                            {(item.clase === 'asiento' && !item.puestoVendido) ?
-                                                                <FormGroup row name={"menus"} 
-                                                                    value={formDataPuesto.tivedipuesto}
-                                                                    onChange={handleChangePuesto}>
-                                                                    <FormControlLabel value={item.contenido} label={item.contenido} 
-                                                                        control={ <Checkbox
-                                                                                    icon={<img src={puestoVehiculoSeleccionado} />}
-                                                                                    checkedIcon={<img src={puestoVehiculoVendido } />}
-                                                                                />
-                                                                    } />
-                                                                </FormGroup>                                                         
-                                                            :  
-                                                                <Box
-                                                                className={item.clase}
-                                                                >
-                                                                <p>{item.contenido}</p>
-                                                                </Box>
-                                                            }
-                                                        </Box>
-                                                    ))}
+                                                <Box key={listId}>
+                                                    {dataPuestos[listId].map((item, index) => {
+                                                        const marcado = puestoMarcado.find(resul => resul.tiqpuenumeropuesto === item.contenido);
+                                                        console.log(marcado);
+
+                                                        return (
+                                                            <Box key={item.puestoColumna}>
+                                                                {console.log(index)}
+                                                                {(item.clase === 'asiento' && !item.puestoVendido) ?
+                                                                    <FormGroup row name={"puestos"} 
+                                                                        value={formDataPuesto.tivedipuesto}
+                                                                        onChange={handleChangePuesto}>
+                                                                        <FormControlLabel value={item.contenido} label={item.contenido} 
+                                                                            control={<Checkbox
+                                                                                        icon={<img src={puestoVehiculo} />}
+                                                                                        checkedIcon={<img src={puestoVehiculoSeleccionado} />}
+                                                                                        checked={marcado ? true : false}
+                                                                                    />
+                                                                            }
+                                                                        />
+                                                                    </FormGroup>
+                                                                :  
+                                                                    <Box className={item.clase}>
+                                                                        <p>{item.contenido}</p>
+                                                                    </Box>
+                                                                }
+                                                            </Box>
+                                                        );
+                                                    })}
                                                 </Box>
                                             ))}
                                         </Box>
-
                                     </Box>
                                 : null }
                             </Grid>

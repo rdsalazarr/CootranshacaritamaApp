@@ -164,7 +164,7 @@ class TiqueteController extends Controller
                 'valorFondoReposicion' => 'nullable|numeric|between:1,99999999',
                 'valorTotal'           => 'nullable|numeric|between:1,99999999',
                 'puestosVendidos'      => 'required|array|min:1',
-	        ]);           
+	        ]);
 
         DB::beginTransaction();
         try {
@@ -223,7 +223,7 @@ class TiqueteController extends Controller
                 }
 			}
 
-            if($request->enviarTiquete && $request->correo !== ''){//Notifico al correo
+            if($request->enviarTiquete === true && $request->correo !== ''){//Notifico al correo
                 $arrayPdf   = [];
 			    array_push($arrayPdf, $this->generarFacturaPdf($tiquid, 'F')); 
                 $empresa            = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();		
