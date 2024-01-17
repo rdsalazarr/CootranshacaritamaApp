@@ -80,6 +80,10 @@ use App\Http\Controllers\Admin\Despacho\PlanillaRutaController;
 use App\Http\Controllers\Admin\Despacho\RecibirPlanillaRutaController;
 use App\Http\Controllers\Admin\Despacho\ContratoServicioEspecialController;
 
+use App\Http\Controllers\Admin\Caja\CuentaContableController;
+use App\Http\Controllers\Admin\Caja\ProcesarMovimientoController;
+use App\Http\Controllers\Admin\Caja\CerrarMovimientoController;
+
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
@@ -112,8 +116,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
         Route::get('/admin/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/caja/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/despacho/{id}', [DashboardController::class, 'index']);
-        Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
@@ -228,6 +233,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/gestionar/festivos');
         Route::post('/festivo/salve', [FestivoController::class, 'salve']);
+        
+        Route::get('/cuenta/contable/list', [CuentaContableController::class, 'index'])->middleware('security:admin/gestionar/cuentaContable');
+        Route::post('/cuenta/contable/salve', [CuentaContableController::class, 'salve']);
+        Route::post('/cuenta/contable/destroy', [CuentaContableController::class, 'destroy']);
 
         Route::get('/agencia/list', [AgenciaController::class, 'index'])->middleware('security:admin/gestionar/agencia');
         Route::get('/agencia/listar/datos', [AgenciaController::class, 'datos']);
@@ -486,7 +495,19 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/servicio/especial/salve', [ContratoServicioEspecialController::class, 'salve']);
             Route::post('/servicio/especial/visualizar/PDF', [ContratoServicioEspecialController::class, 'verPlanilla']);
         });
-        
+
+        Route::prefix('/caja')->group(function(){
+            Route::get('/procesar/movimiento', [ProcesarMovimientoController::class, 'index'])->middleware('security:admin/caja/procesar');
+            Route::post('/registrar/mensualidad/salve', [ProcesarMovimientoController::class, 'salveMensualidad']);
+
+            Route::post('/registrar/pagoCredito/salve', [ProcesarMovimientoController::class, 'salvePagoCredito']);
+
+            Route::post('/registrar/sancion/salve', [ProcesarMovimientoController::class, 'salveSancion']);
+
+            Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
+            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
+        });
+
     });
 
 }); 

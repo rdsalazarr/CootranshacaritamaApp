@@ -68,6 +68,9 @@ php artisan make:migration create_archivo_historico_digitalizado
 
 php artisan make:migration create_informacion_general_pdf
 php artisan make:migration create_agencia
+php artisan make:migration create_caja
+php artisan make:migration create_caja_usuario
+
 php artisan make:migration create_tipo_vehiculo
 php artisan make:migration create_tipo_vehiculo_distribucion
 php artisan make:migration create_tipo_marca_vehiculo
@@ -136,6 +139,9 @@ php artisan make:migration create_tiquete
 php artisan make:migration create_tiquete_puesto
 
 php artisan make:migration create_tipo_sancion
+
+php artisan make:migration create_abrir_caja
+php artisan make:migration create_cuenta_contable
 
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
@@ -215,6 +221,11 @@ php artisan make:model Vehiculos\TipoVehiculoDistribucion
 php artisan make:model Vehiculos\VehiculoResponsabilidad
 php artisan make:model Vehiculos\VehiculoSuspendido
 
+php artisan make:model Usuario\CajaUsuario
+php artisan make:model Caja\AbrirCaja
+php artisan make:model Caja\CuentaContable
+
+
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
 php artisan make:model Asociado\AsociadoSancion
@@ -290,6 +301,7 @@ php artisan make:seeder TipoContratoServicioEspecialSeeder
 php artisan make:seeder TipoEncomiendaSeeder
 php artisan make:seeder TipoEstadoEncomiendaSeeder
 php artisan make:seeder ConfiguracionEncomiendaSeeder
+php artisan make:seeder CajaSeeder
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -358,6 +370,12 @@ php artisan make:controller Admin\Despacho\EncomiendaController
 php artisan make:controller Admin\Despacho\PlanillaRutaController
 php artisan make:controller Admin\Despacho\TiqueteController
 php artisan make:controller Admin\DependenciaController
+
+php artisan make:controller Admin\Caja\ProcesarMovimientoController
+php artisan make:controller Admin\Caja\CerrarMovimientoController
+
+php artisan make:controller Admin\Caja\CuentaContableController
+
 
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware

@@ -152,5 +152,18 @@ UPDATE tipovehiculo SET tipvehclasecss = 'distribucionPuestoMicroBus' WHERE tipv
 UPDATE tipovehiculo SET tipvehclasecss = 'distribucionPuestoTaxi' WHERE tipvehid = 32;
 
 
-
 ALTER TABLE `tipovehiculo` CHANGE `tipvecapacidad` `tipvehcapacidad` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Capacidad del tipo de vehículo', CHANGE `tipvenumerofilas` `tipvehnumerofilas` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Número de filas del tipo de vehículo', CHANGE `tipvenumerocolumnas` `tipvehnumerocolumnas` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Número de columnas del tipo de vehículo', CHANGE `tipveclasecss` `tipvehclasecss` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'distribucionPuestoGeneral' COMMENT 'Clase en CSS para poder visualizar el vehículo con su puesto';
+
+
+ALTER TABLE `usuario` ADD `cajaid` TINYINT(3) NULL AFTER `agenid`;
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(47, 10, 'Procesar', 'Procesar movimientos de caja', 'admin/caja/procesar', 'currency_exchange_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(48, 10, 'Cerrar', 'Cerrar moviemiento de caja', 'admin/caja/cerrar', 'close_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(49, 2, 'Cuenta contable', 'Gestionar cuentas contables', 'admin/gestionar/cuentaContable', 'repeat_one_icon', 8, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(47, 1, 47),
+(48, 1, 48),
+(49, 1, 49);

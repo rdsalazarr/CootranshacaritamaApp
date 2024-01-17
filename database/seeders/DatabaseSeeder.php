@@ -43,17 +43,17 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoCombustibleVehiculoSeeder::class);
         $this->call(TipoEstadoVehiculoSeeder::class);
         $this->call(TipoEstadoAsociadoSeeder::class);
-        $this->call(TipoEstadoSolicitudCreditoSeeder::class);     
+        $this->call(TipoEstadoSolicitudCreditoSeeder::class);
         $this->call(TipoEstadoConductorSeeder::class);
         $this->call(TipoCategoriaLicenciaSeeder::class);
         $this->call(TipoConductorSeeder::class);
         $this->call(TipoEstadoColocacionSeeder::class);
         $this->call(TipoServicioVehiculoSeeder::class);
         $this->call(TipoContratoServicioEspecialSeeder::class);
-        $this->call(TipoConvenioServicioEspecialSeeder::class);        
+        $this->call(TipoConvenioServicioEspecialSeeder::class);
         $this->call(TipoEncomiendaSeeder::class);
         $this->call(TipoEstadoEncomiendaSeeder::class);
-        $this->call(ConfiguracionEncomiendaSeeder::class);       
-        
+        $this->call(ConfiguracionEncomiendaSeeder::class);
+        $this->call(CajaSeeder::class);
     }
 }

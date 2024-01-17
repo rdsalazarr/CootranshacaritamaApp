@@ -70,8 +70,11 @@ import Encomiendas from "../admin/despacho/encomienda/list";
 import Tiquetes from "../admin/despacho/tiquete/list";
 import RecibirPlanillas from "../admin/despacho/recibirPlanilla/list";
 
+import CuentaContable from "../admin/caja/cuentaContable/list";
+import MovimientoCaja from "../admin/caja/movimiento/list";
+import CerrarCaja from "../admin/caja/cerrar/closed";
 
-//
+
 const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
@@ -148,13 +151,13 @@ const ItemMenu = ({route, text, icon}) => {
 };
 
 const componenteMenu = [    
-    {   nombre: 'Otros',
+   /* {   nombre: 'Otros',
         icono : 'send_time_extension_icon',
         itemMenu: [
-           /* {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <Rutas /> },
-            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <Rutas1 /> },
-            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <Rutas1 />}, 
-            {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <Rutas2 />},*/
+           {ruta : 'admin/despacho/rutas',             menu: 'Rutas',            icono : 'directions_icon',     componente : <EnConstruccion /> },
+            {ruta : 'admin/despacho/servicioEspecial',  menu: 'Servico especial', icono : 'taxi_alert_icon',     componente : <EnConstruccion /> },
+            {ruta : 'admin/despacho/planillas',         menu: 'Planillas',        icono : 'no_crash_icon',       componente : <EnConstruccion />}, 
+            {ruta : 'admin/despacho/encomiendas',       menu: 'Encomiendas',      icono : 'local_shipping_icon', componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros',             menu: 'Cuadricula',            icono : 'card_travel_icon',   componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros1',            menu: 'Otros',            icono : 'local_car_wash_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
@@ -164,16 +167,21 @@ const componenteMenu = [
     {   nombre: 'Caja',
         icono : 'attach_money_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/otros',             menu: 'Procesar',            icono : 'checklist_rtl_icon',   componente : <EnConstruccion />},
+            {ruta : 'admin/caja/procesar',             menu: 'Procesar',          icono : 'currency_exchange_icon',   componente : <MovimientoCaja />},
+            {ruta : 'admin/caja/cerrar',             menu: 'Cerrar',            icono : 'close_icon',   componente : <CerrarCaja />},
         ]
-    },
+    },*/
     {   nombre: 'Informes',
         icono : 'assessment_icon',
         itemMenu: [
             {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'repeat_one_icon',        componente : <EnConstruccion />},
+             
         ]
     }
 ];
+
 
 const menuComponente = [
     {id:1,componente : <Menu />},
@@ -222,15 +230,22 @@ const menuComponente = [
     {id:44,componente : <Tiquetes />},
     {id:45,componente : <RecibirPlanillas />},
     {id:46,componente : <ServicoEspecial />},
+    {id:47,componente : <MovimientoCaja />},
+    {id:48,componente : <CerrarCaja />},
 
-    {id:48,componente : <EnConstruccion />},
-    {id:49,componente : <EnConstruccion />},
+    {id:49,componente : <CuentaContable />},
+
     {id:50,componente : <EnConstruccion />},
     {id:51,componente : <EnConstruccion />},
     {id:52,componente : <EnConstruccion />},
     {id:53,componente : <EnConstruccion />},
     {id:54,componente : <EnConstruccion />},
     {id:55,componente : <EnConstruccion />},
+    {id:56,componente : <EnConstruccion />},
+    {id:57,componente : <EnConstruccion />},
+    {id:58,componente : <EnConstruccion />},
+    {id:59,componente : <EnConstruccion />},
+    {id:60,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {
