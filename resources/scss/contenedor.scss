@@ -204,6 +204,12 @@ body{
   text-shadow: -0.03px 0.03px #1a1a19, -1px 1px #282625;
 }
 
+.labelRadio{
+  font-weight: 700 !important;
+  color: #6e6e6d !important;
+  line-height: 18px !important;
+}
+
 .frmTexto {
   width: 100%;
   color: #666262;
@@ -618,6 +624,12 @@ body{
     visibility: hidden;
     font-size: 1.2em;
   }
+}
+
+.cardContainer{
+  margin-left: 1em;
+  padding: 1em;
+  margin-right: 2em;
 }
 
 /*md*/

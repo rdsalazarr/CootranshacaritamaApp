@@ -76,7 +76,7 @@ export default function Anexos({data, eliminar, cantidadAdjunto}){
                                         </TableCell>
 
                                         {(eliminar) ?  <TableCell className='cellCenter'>
-                                            <DeleteForeverIcon onClick={() => {eliminarAdjuntoSeleccionado(a, anexos['id'], anexos['rutaArchivo'], anexos['anio'] );}} className={'iconoDownload'}/>                                        
+                                            <DeleteForeverIcon onClick={() => {eliminarAdjuntoSeleccionado(a, anexos['id'], anexos['rutaArchivo'], anexos['anio'] );}} className={'iconoDownload'}/>
                                             </TableCell> : null}
                                     </TableRow> 
                                 );

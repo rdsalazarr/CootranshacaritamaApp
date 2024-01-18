@@ -33,7 +33,7 @@ class CuentaContableController extends Controller
         try {
             $cuentacontable->cueconnombre     = mb_strtoupper($request->nombre,'UTF-8');
             $cuentacontable->cueconnaturaleza = $request->naturaleza;
-            $cuentacontable->cueconcodigo     = $request->codigoContable;       
+            $cuentacontable->cueconcodigo     = $request->codigoContable;
             $cuentacontable->cueconactiva     = $request->estado;
             $cuentacontable->save();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

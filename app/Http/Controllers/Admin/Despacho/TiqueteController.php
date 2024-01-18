@@ -120,12 +120,13 @@ class TiqueteController extends Controller
 
     public function consultarVenta(Request $request)
 	{
-        $this->validate(request(),['rutaId' => 'required|numeric']);
+        $this->validate(request(),['palnillaId' => 'required|numeric']);
 
         $data  = DB::table('tiquete as t')
                     ->select('tp.tiqpueid','tp.tiqpuenumeropuesto')
                     ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 'tp.tiquid')
-                    ->where('t.plarutid', $request->rutaId)->get();
+                    ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                    ->where('t.plarutid', $request->palnillaId)->get();
 
         return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data]);
     }

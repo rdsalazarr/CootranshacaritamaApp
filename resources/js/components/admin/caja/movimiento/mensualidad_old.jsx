@@ -1,36 +1,28 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Icon, Autocomplete, createFilterOptions, Box, Typography, Card} from '@mui/material';
+import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
+import { Button, Grid, MenuItem, Stack, Icon, Autocomplete, createFilterOptions, Box, Card} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../layout/modal';
+import TablaGeneral from '../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../layout/loader";
-import SaveIcon from '@mui/icons-material/Save';
+import PagarMensualidad from "./pagarMensualidad";
 import instance from '../../../layout/instance';
 
-export default function Sancion(){
+export default function Mensualidad(){
 
-    const [formData, setFormData] = useState({codigo:'000', vehiculoId:'', naturaleza: '', codigoContable: '', estado:'1' }); 
+    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    const [vehiculoResponsabilidadesFiltrados, setVehiculosResponsabilidadesFiltrados] = useState([]);
+    const [vehiculoResponsabilidades, setVehiculosResponsabilidades] = useState([]);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [habilitado, setHabilitado] = useState(true);
+    const [formData, setFormData] = useState({vehiculoId:''});
     const [vehiculos, setVehiculos] = useState([]);
     const [loader, setLoader] = useState(false);    
 
-    const handleChange = (e) =>{
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-    }
+    const modales     = [<PagarMensualidad data={vehiculoResponsabilidadesFiltrados}  />];
+    const tituloModal = ['Pagar mensualidad'];
 
-    const handleChangeUpperCase = (e) => {
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
-    }
-
-    const handleSubmit = () =>{
-        setLoader(true);
-        instance.post('/admin/caja/registrar/mensualidad/salve', formData).then(res=>{
-            let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.message, icono);
-            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo}) : null;
-            setLoader(false);
-        })
+    const edit = (data, tipo) =>{
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'mediumFlot'});
     }
 
     const consultarVehiculo = () =>{
@@ -39,21 +31,21 @@ export default function Sancion(){
             showSimpleSnackbar("Debe seleccionar un vehículo", 'error');
             return;
         }
-        setLoader(true);
-        /*setInterval(() => {recargarPagina(); }, 400)
-        setDatosEncontrados(true);*/
+        const vehiculoResponsabilidadesFiltrados  = vehiculoResponsabilidades.filter(vehiculo => vehiculo.vehiid === formData.vehiculoId);
+        (vehiculoResponsabilidadesFiltrados.length > 0) ? setDatosEncontrados(true) : showSimpleSnackbar('No se encuentra registro para este vehículo', 'error');
+        setVehiculosResponsabilidadesFiltrados(vehiculoResponsabilidadesFiltrados);
     }
 
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/caja/listar/vehiculos').then(res=>{
+            setVehiculosResponsabilidades(res.vehiculoResponsabilidades);
             setVehiculos(res.data); 
             setLoader(false);
         })
     }
 
     useEffect(()=>{inicio();}, []);
-
 
     if(loader){
         return <LoaderModal />
@@ -99,6 +91,31 @@ export default function Sancion(){
                     </Card>
                 </Box>
             </ValidatorForm>
+
+            {(datosEncontrados) ?
+                <Box style={{marginTop: '2em'}}>
+                    <Grid container spacing={2} style={{margin: 'auto', width:'70%'}}>
+                        <Grid item md={12} xl={12} sm={12} xs={12} >
+                            <TablaGeneral 
+                                datos={vehiculoResponsabilidadesFiltrados}
+                                titulo={['Fecha compromiso','Valor','Pagar']}
+                                ver={[ "vehresfechacompromiso", "valorResponsabilidad"]}
+                                accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'red', funcion : (data)=>{edit(data, 0)} }]}
+                                funciones={{orderBy: false, search: false, pagination:false}}
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <ModalDefaultAuto
+                        title={modal.titulo}
+                        content={modales[modal.vista]}
+                        close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''});}}
+                        tam = {modal.tamano}
+                        abrir ={modal.open}
+                    />
+                    
+                </Box>
+            : null }
         </Fragment>
     )
 }

@@ -13,7 +13,7 @@ import VisualizarPdf from './visualizarPdf';
 
 export default function New({data, tipo}){
     let tiquid        = (tipo === 'U') ? data.tiquid : '000';
-    let plarutid      = (tipo === 'U') ? data.plarutid : '000';    
+    let plarutid      = (tipo === 'U') ? data.plarutid : '000';
     const [formData, setFormData] = useState({codigo:tiquid,           tipoIdentificacion:'',          documento:'',          primerNombre:'',
                                               segundoNombre:'',        primerApellido:'',              segundoApellido:'',    direccion:'',
                                               correo:'',               telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
@@ -170,7 +170,7 @@ export default function New({data, tipo}){
         }
 
         setLoader(true);
-        instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {rutaId:rutaId}).then(res=>{
+        instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {palnillaId: e.target.value}).then(res=>{
             const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
             distribucionVehiculo(distribucionVehiculosFiltrados, res.data);
 
@@ -210,7 +210,7 @@ export default function New({data, tipo}){
         })
     }
 
-    const distribucionVehiculo= (distribucionVehiculo, puestosVendidos, puestosVendidosGeneral = []) => {
+    const distribucionVehiculo = (distribucionVehiculo, puestosVendidos, puestosVendidosGeneral = []) => {
         let totalFilas = distribucionVehiculo[0].totalFilas;
         let dataFilas  = [];
         let idColumna  = 0;
@@ -360,7 +360,7 @@ export default function New({data, tipo}){
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {planillaRutas.map(res=>{
-                                return <MenuItem value={res.plarutid} key={res.plarutid}> {res.nombreRuta}</MenuItem>
+                                return <MenuItem value={res.plarutid} key={res.plarutid}> {res.plarutid} {res.nombreRuta}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>

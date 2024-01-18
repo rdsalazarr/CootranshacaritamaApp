@@ -71,7 +71,7 @@ import Tiquetes from "../admin/despacho/tiquete/list";
 import RecibirPlanillas from "../admin/despacho/recibirPlanilla/list";
 
 import CuentaContable from "../admin/caja/cuentaContable/list";
-import MovimientoCaja from "../admin/caja/movimiento/list";
+import MovimientoCaja from "../admin/caja/movimiento/verificar";
 import CerrarCaja from "../admin/caja/cerrar/closed";
 
 

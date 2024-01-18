@@ -498,11 +498,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::prefix('/caja')->group(function(){
             Route::get('/procesar/movimiento', [ProcesarMovimientoController::class, 'index'])->middleware('security:admin/caja/procesar');
-            Route::post('/registrar/mensualidad/salve', [ProcesarMovimientoController::class, 'salveMensualidad']);
+            Route::post('/abrir/dia', [ProcesarMovimientoController::class, 'abrirDia']);
+            Route::get('/listar/vehiculos', [ProcesarMovimientoController::class, 'listVehiculos']);
+            Route::post('/consultar/vehiculo', [ProcesarMovimientoController::class, 'consultarVehiculo']);
+            Route::post('/registrar/mensualidad', [ProcesarMovimientoController::class, 'salveMensualidad']);
 
-            Route::post('/registrar/pagoCredito/salve', [ProcesarMovimientoController::class, 'salvePagoCredito']);
+            Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos']);
+            Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
 
-            Route::post('/registrar/sancion/salve', [ProcesarMovimientoController::class, 'salveSancion']);
+            Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);
 
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
             Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);

@@ -15,11 +15,11 @@ import Crt from './crt';
 
 export default function Search(){
 
-    const [formData, setFormData] = useState({vehiculoId:''})
-    const [loader, setLoader] = useState(false);
-    const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [vehiculos, setVehiculos] = useState([]);
     const [variantTab, setVariantTab] = useState((window.innerWidth <= 768) ? 'scrollable' : 'fullWidth');
+    const [datosEncontrados, setDatosEncontrados] = useState(false);
+    const [formData, setFormData] = useState({vehiculoId:''})
+    const [vehiculos, setVehiculos] = useState([]);
+    const [loader, setLoader] = useState(false); 
     const [value, setValue] = useState(0); 
 
     const handleChangeTab = (event, newValue) => {

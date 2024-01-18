@@ -373,7 +373,7 @@ export default function New({data, tipo}){
                             return (
                                 <FormControlLabel key={res.cajaid} value={res.cajaid} control={<Radio color="success"/>} label={res.cajanumero} /> 
                             )
-                        })}                        
+                        })}
                         </RadioGroup>
                     </FormControl>
                 </Grid>

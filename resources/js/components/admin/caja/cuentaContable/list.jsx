@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import { ModalDefaultAuto } from '../../../layout/modal';
-import { Box, Typography} from '@mui/material';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
+import { Box, Typography} from '@mui/material';
 import NewEdit from './new';
 
 export default function List(){
-
-    const [loader, setLoader] = useState(true);
+   
     const [data, setData] = useState([]);
     const [tipo, setTipo] = useState(0);
+    const [loader, setLoader] = useState(true);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{

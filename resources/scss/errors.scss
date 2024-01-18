@@ -11,6 +11,11 @@ $grisOscuro : var(--grisOscuro);
         font-size: 5em;
         text-shadow: 1px 1px #575a51, 1.2px 1.2px #575a51;
     }
+    h6{
+        color: $grisOscuro;
+        font-size: 2em;
+        text-align: center;
+    }
     img{
         width: 70%;
         cursor: pointer;
@@ -38,6 +43,9 @@ $grisOscuro : var(--grisOscuro);
         h1{
             font-size: 4em;
         }
+        h6{
+            font-size: 1.5em;
+        }
         img{
             width: 98%;
         }
@@ -55,6 +63,9 @@ $grisOscuro : var(--grisOscuro);
     .paginaError{       
         h1{
             font-size: 3em;
+        }
+        h6{
+            font-size: 1em;
         }
     }
 }
