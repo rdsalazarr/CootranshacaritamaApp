@@ -52,8 +52,8 @@ export default function List(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Documento','Nombre','Apellidos','Usuario', 'Correo','Bloqueado','¿Cambiar contraseña?','Activo','Actualizar','Eliminar']}
-                    ver={["tipoDocumento","usuanombre","usuaapellidos","usuanick", "usuaemail","bloqueado","cambiarpassword","estado"]}
+                    titulo={['Documento','Nombre','Apellidos','Usuario', 'Correo','Bloqueado','¿Cambiar contraseña?','N° caja','Activo','Actualizar','Eliminar']}
+                    ver={["tipoDocumento","usuanombre","usuaapellidos","usuanick", "usuaemail","bloqueado","cambiarpassword","cajanumero", "estado"]}
                     accion={[
                         {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

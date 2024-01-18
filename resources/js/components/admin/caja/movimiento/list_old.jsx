@@ -1,11 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../layout/general';
 import Mensualidad from "./mensualidad";
 import PagoCredito from "./pagoCredito";
 import Sancion from "./sancion";
-
-import instance from '../../../layout/instance';
 
 export default function List(){
 
@@ -15,19 +13,6 @@ export default function List(){
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
     };
-
-    const [data, setData] = useState([]);
-
-    const inicio = () =>{
-        //setLoader(true);
-        instance.get('/admin/caja/procesar/movimiento').then(res=>{
-            console.log(res.cajaId);
-            setData(res.data);
-          //  setLoader(false);
-        }) 
-    }
-
-    useEffect(()=>{inicio();}, []);
 
     return (
         <Box>

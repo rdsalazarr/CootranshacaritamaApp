@@ -16,13 +16,14 @@ class UsuarioController extends Controller
 	{
         $data = DB::table('usuario as u')
                     ->select('u.usuaid','u.persid','p.tipideid','p.persdocumento','u.usuanombre','u.usuaapellidos','u.usuaalias',
-                            'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword', 'u.agenid',
+                            'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword', 'u.agenid','u.cajaid','c.cajanumero',
                             DB::raw("CONCAT(ti.tipidesigla,'-', p.persdocumento ) as tipoDocumento"),
                             DB::raw("if(u.usuaactivo = 1,'Sí', 'No') as estado"),
                             DB::raw("if(u.usuabloqueado = 1,'Sí', 'No') as bloqueado"),
                             DB::raw("if(u.usuacambiarpassword = 1,'Sí', 'No') as cambiarpassword"))
                     ->join('persona as p', 'p.persid', '=', 'u.persid')
 					->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
+					->leftJoin('caja as c', 'c.cajaid', '=', 'u.cajaid')
 					->whereNotIn('u.usuaid', [1])
                     ->orderBy('u.usuanombre')->orderBy('u.usuaapellidos')->get();
 
@@ -35,6 +36,7 @@ class UsuarioController extends Controller
 
 		$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
 		$roles                = DB::table('rol')->select('rolid','rolnombre')->orderBy('rolnombre')->get();
+		$cajas                = DB::table('caja')->select('cajaid','cajanumero')->orderBy('cajaid')->get();
 		$agencias             = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
 		$usuariosRoles        = [];
 		if($request->tipo === 'U'){
@@ -43,7 +45,7 @@ class UsuarioController extends Controller
 									->where('ur.usurolusuaid', $request->codigo)->get();
 		}
 
-        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles'    => $roles, 
+        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles'    => $roles,   'cajas' => $cajas,
 													'usuariosRoles'       => $usuariosRoles,        'agencias' => $agencias ]);
 	}
 
@@ -73,6 +75,7 @@ class UsuarioController extends Controller
             'tipoIdentificacion'=> 'required',
             'documento'         => 'required|string|min:6|max:15',
 			'agencia'           => 'required',
+			'caja'              => 'required',
 			'persona'           => 'required|numeric',
             'nombre'            => 'required|string|min:5|max:50',
             'apellido'          => 'required|string|min:5|max:50',
@@ -99,6 +102,7 @@ class UsuarioController extends Controller
 			$usuario->usuaemail           = $request->correo;
 			$usuario->usuacambiarpassword = $request->cambiarPassword;
 			$usuario->usuabloqueado       = $request->bloqueado;
+			$usuario->cajaid              = ($request->caja !== '99') ? $request->caja : null;
 			$usuario->usuaactivo          = $request->estado;
             ($request->tipo  === 'I' ) ? $usuario->password = bcrypt($request->documento): '';
             $usuario->save();

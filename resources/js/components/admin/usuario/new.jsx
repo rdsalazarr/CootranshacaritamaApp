@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Icon,Table, TableHead, TableBody, TableRow, TableCell, Box } from '@mui/material';
+import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
 import showSimpleSnackbar from '../../layout/snackBar';
 import {LoaderModal} from "../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
@@ -12,18 +13,21 @@ export default function New({data, tipo}){
     const [formData, setFormData] = useState( 
                     (tipo !== 'I') ? {codigo:data.usuaid, tipoIdentificacion: data.tipideid, persona:data.persid, documento: data.persdocumento, nombre: data.usuanombre, 
                                      alias:data.usuaalias, apellido: data.usuaapellidos, correo: data.usuaemail,usuario: data.usuanick, cambiarPassword: data.usuacambiarpassword,
-                                      bloqueado: data.usuabloqueado, agencia: data.agenid, estado: data.usuaactivo, tipo:tipo 
+                                      bloqueado: data.usuabloqueado, agencia: data.agenid, estado: data.usuaactivo, caja: data.cajaid, tipo:tipo 
                                     } : {codigo:'000', tipoIdentificacion:'',documento:'', persona:'', nombre: '', apellido: '', correo: '', usuario:'', alias:'',
-                                        cambiarPassword:'1',bloqueado:'0', agencia: '', estado: '1', tipo:tipo
+                                        cambiarPassword:'1',bloqueado:'0', agencia: '', caja:'', estado: '1', tipo:tipo
                                 });
 
+    const numeroCaja = (tipo === 'I') ? '99' : ((data.cajaid === null) ? '99' : data.cajaid);
     const [formDataAdicionar, setFormDataAdicionar] = useState({rol: ''});
     const [tipoIdentificacion, setTipoIdentificacion] = useState([]);
+    const [cajaAgencia, setCajaAgencia] = useState(numeroCaja);
     const [rolesUsuario, setRolesUsuario] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
     const [agencias, setAgencias] = useState([]);
     const [loader, setLoader] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [cajas, setCajas] = useState([]);
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -37,6 +41,10 @@ export default function New({data, tipo}){
         setFormDataAdicionar(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
+    const handleChangeRadio = (event) => {
+        setCajaAgencia(event.target.value); 
+    }
+
     const handleSubmit = () =>{
         if(rolesUsuario.length === 0){
             showSimpleSnackbar('Debe adicionar como mínimo un rol al usuario', 'error');
@@ -45,7 +53,7 @@ export default function New({data, tipo}){
 
         let newFormData   = {...formData}
         newFormData.roles = rolesUsuario;
-
+        newFormData.caja  = cajaAgencia;
         setLoader(true); 
         instance.post('/admin/usuario/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -144,6 +152,7 @@ export default function New({data, tipo}){
             setTipoIdentificacion(res.tipoIdentificaciones);
             setAgencias(res.agencias);
             setRoles(res.roles);
+            setCajas(res.cajas);
 
             if(tipo === 'U'){
                 let newRolesUsuario = [];
@@ -348,6 +357,25 @@ export default function New({data, tipo}){
                         <MenuItem value={"1"} >Sí</MenuItem>
                         <MenuItem value={"0"}>No</MenuItem>
                     </SelectValidator>
+                </Grid>
+
+                <Grid item xl={9} md={9} sm={12} xs={12}>
+                    <FormControl>
+                        <FormLabel>Número de caja en la agencia</FormLabel>
+                        <RadioGroup
+                            row
+                            name="caja"
+                            value={cajaAgencia}
+                            onChange={handleChangeRadio}
+                        >
+                        <FormControlLabel value="99" control={<Radio color="success"/>} label="NINGUNA" />
+                        {cajas.map(res=>{
+                            return (
+                                <FormControlLabel key={res.cajaid} value={res.cajaid} control={<Radio color="success"/>} label={res.cajanumero} /> 
+                            )
+                        })}                        
+                        </RadioGroup>
+                    </FormControl>
                 </Grid>
 
                 <Grid item md={12} xl={12} sm={12} xs={12}>
