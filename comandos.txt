@@ -143,6 +143,13 @@ php artisan make:migration create_tipo_sancion
 php artisan make:migration create_abrir_caja
 php artisan make:migration create_cuenta_contable
 
+php artisan make:migration create_movimiento_caja
+php artisan make:migration create_movimiento_caja_detallado
+php artisan make:migration create_comprobante_contable
+php artisan make:migration create_comprobante_contable_detalle
+
+
+
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
 php artisan make:model IngresoSistema
@@ -226,6 +233,11 @@ php artisan make:model Caja\AbrirCaja
 php artisan make:model Caja\CuentaContable
 
 
+php artisan make:model Caja\ComprobanteContableDetalle
+php artisan make:model Caja\ComprobanteContable
+php artisan make:model Caja\MovimientoCaja
+
+
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
 php artisan make:model Asociado\AsociadoSancion
@@ -302,6 +314,8 @@ php artisan make:seeder TipoEncomiendaSeeder
 php artisan make:seeder TipoEstadoEncomiendaSeeder
 php artisan make:seeder ConfiguracionEncomiendaSeeder
 php artisan make:seeder CajaSeeder
+php artisan make:seeder CuentaContableSeeder
+
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -381,8 +395,40 @@ php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 
 php artisan db:seed
+
+
+
 npm install react-beautiful-dnd
-responsabilidad
+
+
+
+INSERT INTO `cuenta` VALUES 
+(1,'CAJA','D',1,1),
+(2,'TIQUETES A CREDITO','D',1,1),
+(3,'TIQUETES','C',1,1),
+(4,'FONDO DE REPOSICION','C',1,1),
+(5,'ENCOMIENDAS A CREDITO','D',1,1),
+(6,'ENCOMIENDAS','C',1,1),
+(7,'SEGURO ENCOMIENDA','C',1,1),
+(8,'COMISION EMPRESA','C',1,1),
+(9,'COMISION AGENCIA','C',1,1),
+(10,'DOMICILIO','C',1,1),
+(11,'ESTAMPILLAS','C',1,1),
+(12,'CREDITOS','D',1,1),
+(13,'CXP CREDITOS','C',1,1),
+(14,'CXC MENSUALIDADES','D',1,1),
+(15,'CXP MENSUALIDADES','C',1,1),
+(16,'INTERESES','C',1,1),
+(17,'RECARGO X MORA','C',1,1),
+(18,'PRONTO PAGO','C',1,1),
+(19,'DESEMBOLSOS','D',1,1),
+(20,'HOSPEDAJE','C',1,1),
+(21,'EL BANCO','C',1,1),
+(22,'AGUACHICA','C',1,1),
+(23,'CUOTA ADMINISTRATIVA','C',1,1),
+(24,'POLIZAS RCC','C',1,1);
+
+
 
 <select name="credito[tipo_credito_id]" required="">
     <option value="">SELECCION</option>

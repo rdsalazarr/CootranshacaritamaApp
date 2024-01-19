@@ -3,7 +3,7 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import NoTieneCaja from "../abrir/noTieneCaja";
 import AbrirCaja from "../abrir/abrirCaja";
-import RegistrarMovimientos from "./list";
+import RegistrarMovimientos from "./list_old";
 import { Box} from '@mui/material';
 
 export default function Verificar(){

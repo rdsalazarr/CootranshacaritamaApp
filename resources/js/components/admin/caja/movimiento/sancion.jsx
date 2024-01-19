@@ -1,36 +1,22 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Icon, Autocomplete, createFilterOptions, Box, Typography, Card} from '@mui/material';
+import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
+import { Button, Grid, Stack, Icon, Autocomplete, createFilterOptions, Box, Card} from '@mui/material';
+import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
-import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
+import SaveIcon from '@mui/icons-material/Save';
 
-export default function Sancion(){
+export default function Mensualidad(){
 
-    const [formData, setFormData] = useState({codigo:'000', vehiculoId:'', naturaleza: '', codigoContable: '', estado:'1' }); 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [habilitado, setHabilitado] = useState(true);
+    const [formData, setFormData] = useState({vehiculoId:'', fechaCompromiso:'', valorAPagar:'', interesMora:'', descuentoAnticipado:'', totalAPagar:''});
+    const [pagoTotal, setPagoTotal] = useState('N');
     const [vehiculos, setVehiculos] = useState([]);
     const [loader, setLoader] = useState(false);    
 
-    const handleChange = (e) =>{
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-    }
-
-    const handleChangeUpperCase = (e) => {
-        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
-    }
-
-    const handleSubmit = () =>{
-        setLoader(true);
-        instance.post('/admin/caja/registrar/mensualidad/salve', formData).then(res=>{
-            let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.message, icono);
-            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo}) : null;
-            setLoader(false);
-        })
+    const handleChangeRadio = (event) => {
+        setPagoTotal(event.target.value); 
     }
 
     const consultarVehiculo = () =>{
@@ -39,21 +25,25 @@ export default function Sancion(){
             showSimpleSnackbar("Debe seleccionar un vehículo", 'error');
             return;
         }
-        setLoader(true);
-        /*setInterval(() => {recargarPagina(); }, 400)
-        setDatosEncontrados(true);*/
+
+        setLoader(true); 
+        instance.post('/admin/caja/consultar/vehiculo', {vehiculoId: formData.vehiculoId}).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            ( res.success) ? setDatosEncontrados(true) : null; 
+            setLoader(false);
+        })
     }
 
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/caja/listar/vehiculos').then(res=>{
-            setVehiculos(res.data); 
+            setVehiculos(res.vehiculos); 
             setLoader(false);
         })
     }
 
     useEffect(()=>{inicio();}, []);
-
 
     if(loader){
         return <LoaderModal />
@@ -99,6 +89,74 @@ export default function Sancion(){
                     </Card>
                 </Box>
             </ValidatorForm>
+
+            {(datosEncontrados) ?
+                <Box style={{marginTop: '2em'}}>
+                    <Card style={{margin: 'auto', width:'70%', padding: '5px'}}>
+                        <Grid container spacing={2} >
+
+                           <Grid item md={3} xl={3} sm={6} xs={12} >
+                                <FormControl>
+                                    <FormLabel className='labelRadio'>Pago total</FormLabel>
+                                        <RadioGroup
+                                            row
+                                            name="pagoTotal"
+                                            value={pagoTotal}
+                                            onChange={handleChangeRadio}
+                                        >
+                                        <FormControlLabel value="N" control={<Radio color="success"/>} label="No" />
+                                        <FormControlLabel value="S" control={<Radio color="success"/>} label="Sí" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item md={3} xl={3} sm={6} xs={12} >
+                                <Box className='frmTexto'>
+                                    <label>Fecha compromiso: </label>
+                                    <span >{'\u00A0'+ formData.fechaCompromiso}</span>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                    <label>Valor a pagar</label>
+                                    <span className='textoRojo' >{formData.valorAPagar}</span>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                    <label>Interés mora</label>
+                                    <span >{formData.interesMora}</span>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                    <label>Descuento anticipado</label>
+                                    <span >{formData.descuentoAnticipado}</span>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                    <label>Total a pagar</label>
+                                    <span className='textoRojo'>{formData.totalAPagar}</span>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Stack direction="row" spacing={2}>
+                                    <Button type={"submit"} className={'modalBtn'} 
+                                        startIcon={<SaveIcon />}> Guardar
+                                    </Button>
+                                </Stack>
+                            </Grid>
+
+                        </Grid> 
+                    </Card>
+                </Box>
+            : null }
         </Fragment>
     )
 }

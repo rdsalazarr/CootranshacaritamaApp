@@ -372,4 +372,43 @@ class generales
         return $fechasNotificacion;
     }
 
+	function calcularMensualidadVehiculo($fechaCompromiso, $cuotaSostenimiento, $valorDescuento, $valorMora) {
+        $fechaActual     = Carbon::now();
+        $fechaCompromiso = Carbon::parse($fechaCompromiso);
+        if ($fechaActual->lt($fechaCompromiso)) {
+            // Si la fecha actual es menor a la fecha de compromiso
+            $diasFaltantes        = $fechaActual->diffInDays($fechaCompromiso);
+            $diasAplicarDescuento = min(30, $diasFaltantes);
+            $porcentaje           = ($cuotaSostenimiento * $valorDescuento ) / 100 ;
+            $porcentajeXDia       = $porcentaje / 30;
+            $descuentoTotal       = $diasAplicarDescuento * $porcentajeXDia;
+            $totalPagar           = $cuotaSostenimiento - $descuentoTotal;    
+            return [
+                'mora'       => 0,
+                'descuento'  => $descuentoTotal,
+                'totalPagar' => $totalPagar,
+            ];
+        } elseif ($fechaActual->gt($fechaCompromiso)) {
+            // Si la fecha actual es mayor a la fecha de compromiso
+            $diasSobrantes   = $fechaCompromiso->diffInDays($fechaActual);
+            $diasAplicarMora = min(30, $diasSobrantes);
+            $porcentaje      = ($cuotaSostenimiento * $valorMora ) / 100 ;
+            $porcentajeXDia  = $porcentaje / 30;    
+            $moraTotal       = $diasAplicarMora * $porcentajeXDia;
+            $totalPagar      = $cuotaSostenimiento + $moraTotal;
+            return [
+                'descuento'  => 0,
+                'mora'       => $moraTotal,
+                'totalPagar' => $totalPagar,
+            ];
+        } else {
+            // Si la fecha actual es igual a la fecha de compromiso
+            return [
+                'descuento'  => 0,
+                'mora'       => 0,
+                'totalPagar' => $cuotaSostenimiento,
+            ];
+        }
+    }
+
 }

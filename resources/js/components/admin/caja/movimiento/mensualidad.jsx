@@ -10,13 +10,34 @@ import SaveIcon from '@mui/icons-material/Save';
 export default function Mensualidad(){
 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [formData, setFormData] = useState({vehiculoId:'', fechaCompromiso:'', valorAPagar:'', interesMora:'', descuentoAnticipado:'', totalAPagar:''});
+    const [formData, setFormData] = useState({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMora:'', descuentoAnticipado:'', totalAPagar:''});
+    const [pagoMensualidad, setPagoMensualidad] = useState([]);
+    const [pagoGeneral, setPagoGeneral] = useState([]);
     const [pagoTotal, setPagoTotal] = useState('N');
     const [vehiculos, setVehiculos] = useState([]);
-    const [loader, setLoader] = useState(false);    
+    const [loader, setLoader] = useState(false); 
 
     const handleChangeRadio = (event) => {
         setPagoTotal(event.target.value); 
+        let newFormData = {...formData};
+
+        if(event.target.value === 'S'){
+            newFormData.idResponsabilidad   = pagoGeneral.idResponsabilidad;
+            newFormData.fechaCompromiso     = pagoGeneral.fechaCompromiso;
+            newFormData.valorAPagar         = pagoGeneral.valorAPagar;
+            newFormData.interesMora         = pagoGeneral.interesMora;
+            newFormData.descuentoAnticipado = pagoGeneral.descuentoAnticipado;
+            newFormData.totalAPagarMostrar  = pagoGeneral.totalAPagar;
+        }else{
+            newFormData.idResponsabilidad   = pagoMensualidad.idResponsabilidad;
+            newFormData.fechaCompromiso     = pagoMensualidad.fechaCompromiso;
+            newFormData.valorAPagar         = pagoMensualidad.valorAPagar;
+            newFormData.interesMora         = pagoMensualidad.interesMora;
+            newFormData.descuentoAnticipado = pagoMensualidad.descuentoAnticipado;
+            newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
+            newFormData.totalAPagar         = pagoMensualidad.totalAPagar;
+        }
+        setFormData(newFormData);
     }
 
     const consultarVehiculo = () =>{
@@ -27,10 +48,38 @@ export default function Mensualidad(){
         }
 
         setLoader(true); 
+        let newFormData = {...formData};
         instance.post('/admin/caja/consultar/vehiculo', {vehiculoId: formData.vehiculoId}).then(res=>{
+            if(!res.success){
+                showSimpleSnackbar('', 'error');
+            }else{
+                setPagoGeneral(res.pagoTotal[0]);
+                setPagoMensualidad(res.pagoMensualidad[0]);
+                setDatosEncontrados(true);
+                let pagoMensualidad             = res.pagoMensualidad[0];
+                newFormData.idResponsabilidad   = pagoMensualidad.idResponsabilidad;
+                newFormData.fechaCompromiso     = pagoMensualidad.fechaCompromiso;
+                newFormData.valorAPagar         = pagoMensualidad.valorAPagar;
+                newFormData.interesMora         = pagoMensualidad.interesMora;
+                newFormData.descuentoAnticipado = pagoMensualidad.descuentoAnticipado;
+                newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
+                newFormData.totalAPagar         = pagoMensualidad.totalAPagar;                
+                setFormData(newFormData);
+                setPagoTotal('N');
+            }
+            setLoader(false);
+        })
+    }
+
+    const registrarPago = () =>{
+        setLoader(true);
+        let newFormData       = {...formData}
+        newFormData.pagoTotal = pagoTotal;
+        instance.post('/admin/caja/registrar/mensualidad', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            ( res.success) ? setDatosEncontrados(true) : null; 
+            (res.success) ? setDatosEncontrados(false) : null;
+            (res.success) ? setFormData({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMora:'', descuentoAnticipado:'', totalAPagar:''}) : null;
             setLoader(false);
         })
     }
@@ -120,34 +169,34 @@ export default function Mensualidad(){
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Box className='frmTexto'>
                                     <label>Valor a pagar</label>
-                                    <span className='textoRojo' >{formData.valorAPagar}</span>
+                                    <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorAPagar}</span>
                                 </Box>
                             </Grid>
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Box className='frmTexto'>
-                                    <label>Interés mora</label>
-                                    <span >{formData.interesMora}</span>
+                                    <label>Interés mora </label>
+                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMora}</span>
                                 </Box>
                             </Grid>
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Box className='frmTexto'>
                                     <label>Descuento anticipado</label>
-                                    <span >{formData.descuentoAnticipado}</span>
+                                    <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipado}</span>
                                 </Box>
                             </Grid>
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Box className='frmTexto'>
                                     <label>Total a pagar</label>
-                                    <span className='textoRojo'>{formData.totalAPagar}</span>
+                                     <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
                                 </Box>
                             </Grid>
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Stack direction="row" spacing={2}>
-                                    <Button type={"submit"} className={'modalBtn'} 
+                                    <Button type={"button"} className={'modalBtn'}  onClick={registrarPago}
                                         startIcon={<SaveIcon />}> Guardar
                                     </Button>
                                 </Stack>
