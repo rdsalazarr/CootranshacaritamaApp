@@ -44,7 +44,7 @@ class CuentaContableController extends Controller
 
     public function destroy(Request $request)
 	{
-		$movimientoCaja = DB::table('cuentacontable')->select('cueconid')->where('cueconid', $request->codigo)->first();
+		$movimientoCaja = DB::table('comprobantecontabledetalle')->select('cueconid')->where('cueconid', $request->codigo)->first();
 		if($movimientoCaja){
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un moviemiento de caja del sistema']);
 		}else{

@@ -185,7 +185,7 @@ class ProcesarMovimientoController extends Controller
             $agenciaId          = auth()->user()->agenid;
             $usuarioId          = Auth::id();
             $totalAPagar        = $totalAPagarMensual;
-            $cuentaContableId   = 1;
+            $cuentaContableId   = 3;
 
             if($request->pagoTotal === 'N'){
                 $vehiculoresponsabilidad                    = VehiculoResponsabilidad::findOrFail($request->idResponsabilidad);
@@ -195,7 +195,7 @@ class ProcesarMovimientoController extends Controller
                 $vehiculoresponsabilidad->usuaid            = $usuarioId;
                 $vehiculoresponsabilidad->save();
             }else{
-                $cuentaContableId = 2;
+                $cuentaContableId = 4;
                 $totalAPagar      = 0;
                 $vehiculo         = DB::table('vehiculo as v')
                                         ->select('tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora')
@@ -237,6 +237,13 @@ class ProcesarMovimientoController extends Controller
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobantecontable->comconid;
             $comprobantecontabledetalle->cueconid        = $cuentaContableId;
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
+            $comprobantecontabledetalle->save();
+
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobantecontable->comconid;
+            $comprobantecontabledetalle->cueconid        = 1;//Caja
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
             $comprobantecontabledetalle->save();

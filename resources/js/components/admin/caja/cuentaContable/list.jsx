@@ -21,7 +21,7 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.persid : null} ruta={'/admin/cuenta/contable/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.cueconid : null} ruta={'/admin/cuenta/contable/destroy'} cerrarModal={cerrarModal} />
                     ];
 
     const tituloModal = ['Nueva cuenta contable','Editar ceunta contable',''];
