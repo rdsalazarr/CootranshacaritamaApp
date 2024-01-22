@@ -42,7 +42,7 @@ $rojoOscuro : var(--rojoOscuro);
     width: 100%;
     border-radius: 5px;
     position: relative;
-    border: #80C900;
+    border: $verdeClaro;
     h3 {
       color: $verdeOscuro;
       text-align: left;   
@@ -88,7 +88,7 @@ $rojoOscuro : var(--rojoOscuro);
     text-shadow: 0px -2px 2px rgba(150, 150, 150, 1);
     transition: all .5s ease-in-out;
     &:hover{
-      background: #80C900;
+      background: $verdeClaro;
       transition: all .5s ease-in-out;
       color: #ccc;
     }
@@ -109,9 +109,37 @@ $rojoOscuro : var(--rojoOscuro);
   }
 }
 
+.modalBtnBuscar {
+  margin-top: 1em;
+  background-color: $verdeOscuro;
+  text-shadow: 0px -2px 2px rgba(150, 150, 150, 1);
+  transition: all 0.5s ease-in-out;
+  &:hover {
+    background: $verdeClaro;
+    transition: all 0.5s ease-in-out;
+    color: #ccc;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 100%;
+    background-color: #a5a2a2; 
+    /*z-index: 1;*/
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  .icono{
+    z-index: 99;
+    padding-left: 10px
+  }
+}
+
 /*
 .css-1ps6pg7-MuiPaper-root {
-  color: #80C900 !important;
+  color: $verdeClaro !important;
 }*/
 
 @media (max-width: 992px) { 

@@ -18,7 +18,7 @@ export default function IniciarSesion(){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
     };
 
-    const handleSubmit =() =>{  
+    const handleSubmit =() =>{
         setLoader(true);
         window.axios.post('/login', formData
             ,{ headers : { crsfToken : document.querySelector('meta[name="csrf-token"]').content } } )
@@ -29,7 +29,7 @@ export default function IniciarSesion(){
             setLoader(false);
             if(res.success){
                 location.replace(res.ruta);
-            } 
+            }
         }).catch(error => {
             showSimpleSnackbar(error.response.data.message, 'error');
             setLoader(false); 
