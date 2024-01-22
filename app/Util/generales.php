@@ -385,8 +385,8 @@ class generales
             $totalPagar           = $cuotaSostenimiento - $descuentoTotal;    
             return [
                 'mora'       => 0,
-                'descuento'  => $descuentoTotal,
-                'totalPagar' => $totalPagar,
+                'descuento'  => $this->redonderarCienMasCercano($descuentoTotal),
+                'totalPagar' => $this->redonderarCienMasCercano($totalPagar),
             ];
         } elseif ($fechaActual->gt($fechaCompromiso)) {
             // Si la fecha actual es mayor a la fecha de compromiso
@@ -398,8 +398,8 @@ class generales
             $totalPagar      = $cuotaSostenimiento + $moraTotal;
             return [
                 'descuento'  => 0,
-                'mora'       => $moraTotal,
-                'totalPagar' => $totalPagar,
+                'mora'       => $this->redonderarCienMasCercano($moraTotal),
+                'totalPagar' => $this->redonderarCienMasCercano($totalPagar),
             ];
         } else {
             // Si la fecha actual es igual a la fecha de compromiso

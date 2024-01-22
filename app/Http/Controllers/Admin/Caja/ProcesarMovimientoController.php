@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
 use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
+use App\Util\generarPdf;
 use App\Util\generales;
 use Carbon\Carbon;
 
@@ -131,7 +132,7 @@ class ProcesarMovimientoController extends Controller
         $mensajeError           = 'No se ha encontrado información de liquidación de mensualidad para el vehículo seleccionado. ';
         $mensajeError           .= 'Por favor, asegúrese de que la información esté disponible o consulte con el administrador del sistema';
 
-        if(count($vehiculoResponsabilidades) > 0){        
+        if(count($vehiculoResponsabilidades) > 0){
             foreach($vehiculoResponsabilidades as $key => $vehiculoResponsabilidad){ 
                 $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
                 $recargoMora          = $vehiculo->timoverecargomora;
@@ -141,20 +142,22 @@ class ProcesarMovimientoController extends Controller
                 $valorMora            += $resultadoMensualidad['mora'];
                 $valorDesAnticipado   += $resultadoMensualidad['descuento'];
                 $totalAPagar          += $resultadoMensualidad['totalPagar'];
-        
+
                 if($key === 0)  {
                     $fechaCompromisoInicial   = $fechaCompromiso;
                     $mensualiad = [
                         'idResponsabilidad'   => $vehiculoResponsabilidad->vehresid,
                         'fechaCompromiso'     => $vehiculoResponsabilidad->vehresfechacompromiso,
-                        'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
-                        'interesMora'         => number_format($valorMora,0,',','.'),
+                        'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),                        
+                        'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
                         'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
                         'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
+                        'valorDesAnticipado'  => $valorDesAnticipado,
+                        'interesMora'         => $valorMora,
                         'totalAPagar'         => $totalAPagar
                     ];
-                array_push($pagoMensualidad, $mensualiad);
-                }            
+                    array_push($pagoMensualidad, $mensualiad);
+                }
             }
 
             $totalizado = [
@@ -163,7 +166,10 @@ class ProcesarMovimientoController extends Controller
                 'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
                 'interesMora'         => number_format($valorMora,0,',','.'),
                 'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
-                'totalAPagar'         => number_format($totalAPagar,0,',','.')
+                'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
+                'valorDesAnticipado'  => $valorDesAnticipado,
+                'interesMora'         => $valorMora,
+                'totalAPagar'         => $totalAPagar
             ];
             array_push($pagoTotal, $totalizado);
         }
@@ -175,6 +181,8 @@ class ProcesarMovimientoController extends Controller
     public function salveMensualidad(Request $request)
 	{
         $this->validate(request(),['vehiculoId' => 'required|numeric', 'pagoTotal' => 'required']); 
+        
+        dd($request->interesMora,$request->valorDesAnticipado, $request->valorAPagar );
 
         DB::beginTransaction();
         try {
@@ -236,20 +244,55 @@ class ProcesarMovimientoController extends Controller
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobantecontable->comconid;
-            $comprobantecontabledetalle->cueconid        = $cuentaContableId;
+            $comprobantecontabledetalle->cueconid        = 1;//Caja
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
             $comprobantecontabledetalle->save();
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobantecontable->comconid;
-            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cueconid        = $cuentaContableId;
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
             $comprobantecontabledetalle->save();
 
+            $vehiculocontrato  = DB::table('vehiculocontrato as vc')
+                                    ->select('p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
+                                    'p.persdireccion', 'p.persnumerocelular')
+                                    ->join('asociado as a', 'a.asocid', '=', 'vc.asocid')
+                                    ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                    ->where('vc.vehiid', $request->vehiculoId)->first();
+
+            $agencia    = DB::table('agencia as a')
+                                    ->select(DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 'a.agennombre', 'a.agendireccion',
+                                    DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"))
+                                    ->join('usuario as u', 'u.agenid', '=', 'a.agenid')
+                                    ->where('a.agenid', $agenciaId)->first();
+
+            $arrayDatos   = [
+                "fechaPago"         => $fechaHoraActual,
+                "valorPago"         => number_format($request->valorAPagar, 0,',','.'),
+                "descuentoPago"     => number_format($request->valorDesAnticipado, 0,',','.'),
+                "interesMora"       => number_format($request->interesMora, 0,',','.'),
+                "valorTotalPago"    => number_format($totalAPagar, 0,',','.'),
+                "documentoCliente"  => $vehiculocontrato->persdocumento,
+                "nombreCliente"     => $vehiculocontrato->nombreAsociado,
+                "direccionCliente"  => $vehiculocontrato->persdireccion,
+                "telefonoCliente"   => $vehiculocontrato->persnumerocelular,
+                "usuarioElabora"    => $agencia->nombreUsuario,
+                "nombreAgencia"     => $agencia->agennombre,
+                "direccionAgencia"  => $agencia->agendireccion,
+                "telefonoAgencia"   => $agencia->telefonoAgencia,
+                "mensajePlanilla"   => 'Gracias por su pago',
+                "metodo"            => 'S'
+            ];
+
+            $generarPdf  = new generarPdf();
+            $dataFactura = $generarPdf->facturaPagoMensualidad($arrayDatos);
+
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito' ]);
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', "dataFactura" => $dataFactura ]);
         } catch (Exception $error){
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
@@ -264,8 +307,7 @@ class ProcesarMovimientoController extends Controller
     } 
 
 
-    
-    
+
 
 
     public function obtenerConsecutivo($anioActual)

@@ -3,19 +3,24 @@ import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 import { Button, Grid, Stack, Icon, Autocomplete, createFilterOptions, Box, Card} from '@mui/material';
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
+import VisualizarPdf from './visualizarPdf';
 
 export default function Mensualidad(){
 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [formData, setFormData] = useState({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMora:'', descuentoAnticipado:'', totalAPagar:''});
+    const [formData, setFormData] = useState({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMoraMostrar:'', 
+                                            descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:''});
     const [pagoMensualidad, setPagoMensualidad] = useState([]);
+    const [abrirModal, setAbrirModal] = useState(false);
     const [pagoGeneral, setPagoGeneral] = useState([]);
+    const [dataFactura, setDataFactura] = useState('');
     const [pagoTotal, setPagoTotal] = useState('N');
     const [vehiculos, setVehiculos] = useState([]);
-    const [loader, setLoader] = useState(false); 
+    const [loader, setLoader] = useState(false);    
 
     const handleChangeRadio = (event) => {
         setPagoTotal(event.target.value); 
@@ -25,17 +30,21 @@ export default function Mensualidad(){
             newFormData.idResponsabilidad   = pagoGeneral.idResponsabilidad;
             newFormData.fechaCompromiso     = pagoGeneral.fechaCompromiso;
             newFormData.valorAPagar         = pagoGeneral.valorAPagar;
-            newFormData.interesMora         = pagoGeneral.interesMora;
+            newFormData.interesMoraMostrar  = pagoGeneral.interesMoraMostrar;
             newFormData.descuentoAnticipado = pagoGeneral.descuentoAnticipado;
-            newFormData.totalAPagarMostrar  = pagoGeneral.totalAPagar;
+            newFormData.valorDesAnticipado  = pagoGeneral.valorDesAnticipado;
+            newFormData.totalAPagarMostrar  = pagoGeneral.totalAPagarMostrar;
+            newFormData.interesMora         = pagoGeneral.interesMora;
         }else{
             newFormData.idResponsabilidad   = pagoMensualidad.idResponsabilidad;
             newFormData.fechaCompromiso     = pagoMensualidad.fechaCompromiso;
             newFormData.valorAPagar         = pagoMensualidad.valorAPagar;
-            newFormData.interesMora         = pagoMensualidad.interesMora;
+            newFormData.interesMoraMostrar  = pagoMensualidad.interesMoraMostrar;
             newFormData.descuentoAnticipado = pagoMensualidad.descuentoAnticipado;
             newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
+            newFormData.valorDesAnticipado  = pagoMensualidad.valorDesAnticipado;
             newFormData.totalAPagar         = pagoMensualidad.totalAPagar;
+            newFormData.interesMora         = pagoMensualidad.interesMora;
         }
         setFormData(newFormData);
     }
@@ -60,10 +69,12 @@ export default function Mensualidad(){
                 newFormData.idResponsabilidad   = pagoMensualidad.idResponsabilidad;
                 newFormData.fechaCompromiso     = pagoMensualidad.fechaCompromiso;
                 newFormData.valorAPagar         = pagoMensualidad.valorAPagar;
-                newFormData.interesMora         = pagoMensualidad.interesMora;
+                newFormData.interesMoraMostrar  = pagoMensualidad.interesMoraMostrar;
                 newFormData.descuentoAnticipado = pagoMensualidad.descuentoAnticipado;
                 newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
-                newFormData.totalAPagar         = pagoMensualidad.totalAPagar;                
+                newFormData.valorDesAnticipado  = pagoMensualidad.valorDesAnticipado;
+                newFormData.interesMora         = pagoMensualidad.interesMora;
+                newFormData.totalAPagar         = pagoMensualidad.totalAPagar;
                 setFormData(newFormData);
                 setPagoTotal('N');
             }
@@ -79,7 +90,10 @@ export default function Mensualidad(){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setDatosEncontrados(false) : null;
-            (res.success) ? setFormData({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMora:'', descuentoAnticipado:'', totalAPagar:''}) : null;
+            (res.success) ? setFormData({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMoraMostrar:'', 
+                                        descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:''}) : null;
+            (res.success) ? setDataFactura(res.dataFactura) : null;
+            (res.success) ? setAbrirModal(true) : null;
             setLoader(false);
         })
     }
@@ -176,7 +190,7 @@ export default function Mensualidad(){
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Box className='frmTexto'>
                                     <label>Interés mora </label>
-                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMora}</span>
+                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
                                 </Box>
                             </Grid>
 
@@ -202,10 +216,19 @@ export default function Mensualidad(){
                                 </Stack>
                             </Grid>
 
-                        </Grid> 
+                        </Grid>
                     </Card>
                 </Box>
             : null }
+
+            <ModalDefaultAuto
+                title   = {'Visualizar factura en PDF de la mensualidad'} 
+                content = {<VisualizarPdf dataFactura={dataFactura} />} 
+                close   = {() =>{setAbrirModal(false);}} 
+                tam     = 'smallFlot'
+                abrir   = {abrirModal}
+            />
+
         </Fragment>
     )
 }
