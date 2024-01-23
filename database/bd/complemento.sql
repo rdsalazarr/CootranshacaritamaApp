@@ -167,3 +167,6 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 (47, 1, 47),
 (48, 1, 48),
 (49, 1, 49);
+
+
+ALTER TABLE `vehiculoresponsabilidad` ADD `vehresdescuento` DECIMAL(8,0) NULL AFTER `vehresvalorpagado`, ADD `vehresinteresmora` DECIMAL(8,0) NULL AFTER `vehresdescuento`;

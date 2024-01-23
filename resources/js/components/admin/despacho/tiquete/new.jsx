@@ -87,6 +87,7 @@ export default function New({data, tipo}){
 
         if(formDataPuesto.length === 0){
             showSimpleSnackbar('Por favor, seleccione al menos un puesto del vehículo', 'error');
+            return;
         }
 
         setLoader(true);

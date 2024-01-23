@@ -33,6 +33,7 @@ class SancionarController extends Controller
 		DB::beginTransaction();
         $estado          = 'S';
         $fechaHoraActual = Carbon::now();
+        $fechaActual     = $fechaHoraActual->format('Y-m-d');
 		try {
 
             $vehiculos = DB::table('vehiculo')
@@ -52,9 +53,9 @@ class SancionarController extends Controller
                 $asociadosancion->asosanvalorsancion    = $request->valorSancion;
                 $asociadosancion->save();
 
-                $asociado                   = Asociado::findOrFail($asociadoId);
-                $asociado->tiesasid         = $estado;
-                $asociado->asocfecharetiro  = $fechaActual;
+                $asociado                               = Asociado::findOrFail($asociadoId);
+                $asociado->tiesasid                     = $estado;
+                $asociado->asocfecharetiro              = $fechaActual;
                 $asociado->save();
 
                 $asociadocambioestado 					 = new AsociadoCambioEstado();

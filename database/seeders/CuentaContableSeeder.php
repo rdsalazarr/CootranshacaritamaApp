@@ -16,7 +16,7 @@ class CuentaContableSeeder extends Seeder
     {
         $fechaHoraActual = Carbon::now();
 
-        DB::table('cuentacontable')->insert([
+        /*DB::table('cuentacontable')->insert([
             'cueconid'         => '1',
             'cueconnombre'     => 'CAJA',
             'cueconnaturaleza' => 'D',
@@ -48,6 +48,33 @@ class CuentaContableSeeder extends Seeder
             'cueconnombre'     => 'CXP MENSUALIDADES TOTAL',
             'cueconnaturaleza' => 'C',
             'cueconcodigo'     => '120001',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);*/
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '5',
+            'cueconnombre'     => 'CXP PAGO CUOTA CRÉDITO',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120005',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '6',
+            'cueconnombre'     => 'CXP PAGO CUOTA CRÉDITO TOTAL',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120002',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '7',
+            'cueconnombre'     => 'CXP PAGO SANCIÓN',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120005',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);

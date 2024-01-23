@@ -3077,6 +3077,7 @@ EOD;
 		$direccionAgencia   = $arrayDatos['direccionAgencia'];
 		$telefonoAgencia    = $arrayDatos['telefonoAgencia'];
 		$mensajePlanilla    = $arrayDatos['mensajePlanilla'];
+		$tituloFactura      = $arrayDatos['tituloFactura'];		
 		$metodo             = $arrayDatos['metodo'];
 
 		$linea              = str_pad('', 66, "-", STR_PAD_LEFT);
@@ -3109,7 +3110,7 @@ EOD;
         PDF::Ln(3);
 		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
 		PDF::Ln(2);
-		PDF::Cell(56, 2,"FACTURA DE PAGO MENSUALIDAD", 0, 0,'C');
+		PDF::Cell(56, 2, $tituloFactura, 0, 0,'C');
 		PDF::Ln(2);
 		PDF::Cell(56, 2, $linea, 0, 0,'L'); 
 		PDF::SetFont('helvetica','',6);
@@ -3117,19 +3118,25 @@ EOD;
 
 		PDF::Cell(18, 3,"Fecha:", 0, 0,'L');
 		PDF::Cell(38, 3,$fechaPago, 0, 0,'L');
-		PDF::Ln(3);	
-
-		PDF::Cell(18, 3,"Valor:", 0, 0,'L');
-		PDF::Cell(38, 3,'$ '.$valorPago, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Descuento:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$descuentoPago, 0, 0,'L');
-		PDF::Ln(3);
+		if($valorPago !== ''){
+			PDF::Cell(18, 3,"Valor:", 0, 0,'L');
+			PDF::Cell(38, 3,'$ '.$valorPago, 0, 0,'L'); 
+			PDF::Ln(3);
+		}
 
-		PDF::Cell(18, 3,"Mora:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$interesMora, 0, 0,'L');
-		PDF::Ln(3);
+		if($descuentoPago !== ''){
+			PDF::Cell(18, 3,"Descuento:", 0, 0,'L'); 
+			PDF::Cell(38, 3,'$ '.$descuentoPago, 0, 0,'L');
+			PDF::Ln(3);
+		}
+
+		if($interesMora !== ''){
+			PDF::Cell(18, 3,"Mora:", 0, 0,'L'); 
+			PDF::Cell(38, 3,'$ '.$interesMora, 0, 0,'L');
+			PDF::Ln(3);
+		}
 
 		PDF::Cell(18, 3,"Valor total:", 0, 0,'L'); 
 		PDF::Cell(38, 3,'$ '.$valorTotalPago, 0, 0,'L');

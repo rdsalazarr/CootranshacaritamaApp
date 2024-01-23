@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Caja;
 use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Caja\ComprobanteContable;
+use App\Models\Asociado\AsociadoSancion;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
 use Exception, Auth, DB, URL;
@@ -84,7 +85,7 @@ class ProcesarMovimientoController extends Controller
             $comprobantecontable->cajaid            = auth()->user()->cajaid;
             $comprobantecontable->agenid            = auth()->user()->agenid;
             $comprobantecontable->comconanio        = $anioActual;
-            $comprobantecontable->comconconsecutivo = $this->obtenerConsecutivo($anioActual);
+            $comprobantecontable->comconconsecutivo = ComprobanteContable::obtenerConsecutivo($anioActual);
             $comprobantecontable->comconfechahora   = $fechaHoraActual;
             $comprobantecontable->comcondescripcion = $descripcionComprobante;
             $comprobantecontable->save();
@@ -181,8 +182,6 @@ class ProcesarMovimientoController extends Controller
     public function salveMensualidad(Request $request)
 	{
         $this->validate(request(),['vehiculoId' => 'required|numeric', 'pagoTotal' => 'required']); 
-        
-        dd($request->interesMora,$request->valorDesAnticipado, $request->valorAPagar );
 
         DB::beginTransaction();
         try {
@@ -199,6 +198,8 @@ class ProcesarMovimientoController extends Controller
                 $vehiculoresponsabilidad                    = VehiculoResponsabilidad::findOrFail($request->idResponsabilidad);
                 $vehiculoresponsabilidad->vehresfechapagado = $fechaHoraActual;
                 $vehiculoresponsabilidad->vehresvalorpagado = $totalAPagarMensual;
+                $vehiculoresponsabilidad->vehresdescuento   = $request->valorDesAnticipado;
+                $vehiculoresponsabilidad->vehresinteresmora = $request->interesMora;
                 $vehiculoresponsabilidad->agenid            = $agenciaId;
                 $vehiculoresponsabilidad->usuaid            = $usuarioId;
                 $vehiculoresponsabilidad->save();
@@ -226,6 +227,8 @@ class ProcesarMovimientoController extends Controller
                     $vehiculoresponsabilidad                    = VehiculoResponsabilidad::findOrFail($vehiculoResponsabilidad->vehresid);
                     $vehiculoresponsabilidad->vehresfechapagado = $fechaHoraActual;
                     $vehiculoresponsabilidad->vehresvalorpagado = $resultadoMensualidad['totalPagar'];
+                    $vehiculoresponsabilidad->vehresdescuento   = $resultadoMensualidad['descuento'];
+                    $vehiculoresponsabilidad->vehresinteresmora = $resultadoMensualidad['mora'];
                     $vehiculoresponsabilidad->agenid            = $agenciaId;
                     $vehiculoresponsabilidad->usuaid            = $usuarioId;
                     $vehiculoresponsabilidad->save();
@@ -233,24 +236,16 @@ class ProcesarMovimientoController extends Controller
             }
 
             //Se realiza la contabilizacion
-            $comprobantecontable    = DB::table('comprobantecontable')->select('comconid')
-                                            ->whereDate('comconfechahora', $fechaActual)
-                                            ->where('cajaid', auth()->user()->cajaid)
-                                            ->where('agenid', auth()->user()->agenid)
-                                            ->where('usuaid', Auth::id())
-                                            ->where('comconestado', 'A')
-                                            ->orderBy('comconid', 'Desc')
-                                            ->first();
-
+            $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-            $comprobantecontabledetalle->comconid        = $comprobantecontable->comconid;
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
             $comprobantecontabledetalle->cueconid        = 1;//Caja
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
             $comprobantecontabledetalle->save();
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-            $comprobantecontabledetalle->comconid        = $comprobantecontable->comconid;
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
             $comprobantecontabledetalle->cueconid        = $cuentaContableId;
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
@@ -285,6 +280,105 @@ class ProcesarMovimientoController extends Controller
                 "direccionAgencia"  => $agencia->agendireccion,
                 "telefonoAgencia"   => $agencia->telefonoAgencia,
                 "mensajePlanilla"   => 'Gracias por su pago',
+                "tituloFactura"     => 'FACTURA DE PAGO MENSUALIDAD',
+                "metodo"            => 'S'
+            ];
+
+            $generarPdf  = new generarPdf();
+            $dataFactura = $generarPdf->facturaPagoMensualidad($arrayDatos);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', "dataFactura" => $dataFactura ]);
+        } catch (Exception $error){
+            DB::rollback();
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+        }
+    }
+
+    public function consultarSancionAsociado(Request $request)
+	{
+        $this->validate(request(),['vehiculoId' => 'required|numeric']);
+
+        $mensajeError      = 'No se ha encontrado sanción por procesar para el vehículo seleccionado';
+        $sancionesAsociado = DB::table('asociadosancion as as')
+                                    ->select('as.asosanid','ts.tipsannombre','as.asosanfechahora','as.asosanfechamaximapago','as.asosanmotivo','as.asosanvalorsancion',
+                                    DB::raw("DATE(as.asosanfechahora) as fechaSancion"),
+                                    DB::raw("CONCAT('$ ', FORMAT(as.asosanvalorsancion, 0)) as valorSancion"))
+                                    ->join('tiposancion as ts', 'ts.tipsanid', '=', 'ts.tipsanid')
+                                    ->join('vehiculo as v', 'v.asocid', '=', 'as.asocid')
+                                    ->where('as.asosanprocesada', false)
+                                    ->where('v.vehiid', $request->vehiculoId)->get();
+
+        return response()->json(['success'           => (count($sancionesAsociado) > 0) ? true : false, 'message' => $mensajeError,
+                                 "sancionesAsociado" => $sancionesAsociado]);
+    }
+
+    public function salveSancion(Request $request)
+	{
+        $this->validate(request(),['vehiculoId' => 'required|numeric', 'totalAPagar' => 'required', 'sancionesAsociado' => 'required|array|min:1',]); 
+
+        DB::beginTransaction();
+        try {
+            $generales          = new generales();
+            $fechaHoraActual    = Carbon::now();
+            $fechaActual        = $fechaHoraActual->format('Y-m-d');
+            $agenciaId          = auth()->user()->agenid;
+            $usuarioId          = Auth::id();
+            $totalAPagar        = $request->totalAPagar;
+            $cuentaContableId   = 7;
+
+            foreach($request->sancionesAsociado as $sancionAsociado){
+                $asociadosancion                  = AsociadoSancion::findOrFail($sancionAsociado['asosanid']);
+                $asociadosancion->asosanprocesada = true;
+                $asociadosancion->save();
+            }
+
+            //Se realiza la contabilizacion
+            $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
+            $comprobantecontabledetalle->save();
+
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = $cuentaContableId;
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
+            $comprobantecontabledetalle->save();
+
+            $vehiculocontrato  = DB::table('vehiculocontrato as vc')
+                                    ->select('p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
+                                    'p.persdireccion', 'p.persnumerocelular')
+                                    ->join('asociado as a', 'a.asocid', '=', 'vc.asocid')
+                                    ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                    ->where('vc.vehiid', $request->vehiculoId)->first();
+
+            $agencia    = DB::table('agencia as a')
+                                    ->select(DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 'a.agennombre', 'a.agendireccion',
+                                    DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"))
+                                    ->join('usuario as u', 'u.agenid', '=', 'a.agenid')
+                                    ->where('a.agenid', $agenciaId)->first();
+
+            $arrayDatos   = [
+                "fechaPago"         => $fechaHoraActual,
+                "valorPago"         => '',
+                "descuentoPago"     => '',
+                "interesMora"       => '',
+                "valorTotalPago"    => number_format($totalAPagar, 0,',','.'),
+                "documentoCliente"  => $vehiculocontrato->persdocumento,
+                "nombreCliente"     => $vehiculocontrato->nombreAsociado,
+                "direccionCliente"  => $vehiculocontrato->persdireccion,
+                "telefonoCliente"   => $vehiculocontrato->persnumerocelular,
+                "usuarioElabora"    => $agencia->nombreUsuario,
+                "nombreAgencia"     => $agencia->agennombre,
+                "direccionAgencia"  => $agencia->agendireccion,
+                "telefonoAgencia"   => $agencia->telefonoAgencia,
+                "mensajePlanilla"   => 'Gracias por su pago',
+                "tituloFactura"     => 'FACTURA DE PAGO SANCIÓN',
                 "metodo"            => 'S'
             ];
 
@@ -305,19 +399,6 @@ class ProcesarMovimientoController extends Controller
 
         return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
     } 
-
-
-
-
-
-    public function obtenerConsecutivo($anioActual)
-	{
-        $consecutivoComprobanteContable = DB::table('comprobantecontable')->select('comconconsecutivo as consecutivo')
-                                                        ->where('comconanio', $anioActual)
-                                                        ->where('agenid', auth()->user()->agenid)
-                                                        ->orderBy('comconid', 'Desc')->first();
-        $consecutivo = ($consecutivoComprobanteContable === null) ? 1 : $consecutivoComprobanteContable->consecutivo + 1;
-        return str_pad($consecutivo,  5, "0", STR_PAD_LEFT);
-    }
+   
     
 }

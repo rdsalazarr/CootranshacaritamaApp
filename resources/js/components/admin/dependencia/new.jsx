@@ -379,11 +379,11 @@ export default function New({data, tipo}){
                                         return(
                                             <TableRow key={'rowD-' +a} className={(subSerie['estado'] == 'D')? 'tachado': null}>
                                                 <TableCell>
-                                                    <p>{subSerie['nombreSerie']}</p>
+                                                    {subSerie['nombreSerie']}
                                                 </TableCell> 
 
                                                 <TableCell>
-                                                    <p>{subSerie['nombreSubSerie']}</p>
+                                                    {subSerie['nombreSubSerie']}
                                                 </TableCell>
                                                 
                                                 <TableCell className='cellCenter'>

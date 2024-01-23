@@ -11,6 +11,6 @@ class VehiculoResponsabilidad extends Model
 
     protected $table      = 'vehiculoresponsabilidad';
     protected $primaryKey = 'vehresid';
-    protected $fillable   = ['vehiid','vehresfechacompromiso','vehresvalorresponsabilidad','vehresfechapagado', 'vehresvalorpagado',
-                             'agenid', 'usuaid'];
+    protected $fillable   = ['vehiid','vehresfechacompromiso','vehresvalorresponsabilidad','vehresfechapagado', 
+                             'vehresdescuento','vehresinteresmora','vehresvalorpagado', 'agenid', 'usuaid'];
 }

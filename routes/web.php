@@ -506,6 +506,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos']);
             Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
 
+
+            Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);       
             Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);
 
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
