@@ -13,7 +13,7 @@ export default function Show({data}){
                                               municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
                                               cantidad:'',               valorDeclarado :'',             valorEnvio:'',                valorDomicilio:'',
                                               contenido:'',              observaciones: '',              ruta:'',                      valorSeguro:'',                 
-                                              valorTotal:''});
+                                              valorTotal:'',             pagoContraEntrega: '' });
 
     const [cambiosEstadoEncomienda, setCambiosEstadoEncomienda] = useState([]);
     const [esEmpresaRemitente, setEsEmpresaRemitente] = useState(false);
@@ -63,9 +63,11 @@ export default function Show({data}){
             newFormData.ruta                        = encomienda.nombreRuta;
             newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
             newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal); 
-            setFormData(newFormData);        
+            newFormData.pagoContraEntrega           = encomienda.pagoContraEntrega;
+
             setEsEmpresaRemitente((encomienda.tipideid === 5) ? true : false);
             setEsEmpresaDestino((encomienda.tipideidDestino === 5) ? true : false);
+            setFormData(newFormData);
             setLoader(false);
         })
     }, []);
@@ -166,6 +168,13 @@ export default function Show({data}){
                     <span>$ {formData.valorTotal}</span>
                 </Box>
             </Grid>
+
+            <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Box className='frmTexto'>
+                    <label>Pago contraentrega</label>
+                    <span> {formData.pagoContraEntrega}</span>
+                </Box>
+            </Grid>            
 
             <Grid item xl={12} md={12} sm={12} xs={12}>
                 <Box className='frmTexto'>

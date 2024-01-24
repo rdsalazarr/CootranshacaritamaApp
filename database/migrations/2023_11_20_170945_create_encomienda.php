@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('encoconsecutivo', 4)->comment('Consecutivo de la encomienda asignado por cada año');
             $table->dateTime('encofechahoraregistro')->comment('Fecha y hora actual en el que se registra la encomienda');
             $table->string('encocontenido', 1000)->comment('Descripción del contenido de la encomienda');
-            $table->decimal('encocantidad', 4)->comment('Cantidad de elemento en la encomienda');
+            $table->decimal('encocantidad', 4, 0)->comment('Cantidad de elemento en la encomienda');
             $table->decimal('encovalordeclarado', 10, 0)->comment('Valor declarado en la encomienda');
             $table->decimal('encovalorenvio', 10, 0)->comment('Valor del envío de la encomienda');
             $table->decimal('encovalordomicilio', 10, 0)->nullable()->comment('Valor del domicilio de la encomienda');
@@ -39,7 +39,8 @@ return new class extends Migration
             $table->decimal('encovalortotal', 10, 0)->comment('Valor total de la encomienda');
             $table->string('encoobservacion', 500)->nullable()->comment('Observacion de la encomienda');
             $table->date('encofecharecibido')->nullable()->comment('Fecha de recibido de la encomienda');
-            $table->boolean('encopagada')->default(false)->comment('Determina si la encomienda fue pagada');
+            $table->boolean('encopagocontraentrega')->default(false)->comment('Determina si la encomienda debe ser pagada contraentrega');
+            $table->boolean('encocontabilizada')->default(false)->comment('Determina si la encomienda fue contabilizada');
             $table->timestamps();
             $table->unique(['agenid','encoanio','encoconsecutivo'],'uk_encomienda');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenenco');

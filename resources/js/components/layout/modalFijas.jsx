@@ -17,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 import showSimpleSnackbar from './snackBar';
+import {ModalDefaultAuto } from './modal';
 import RelojDigital from './relojDigital';
 import {LoaderModal} from "./loader";
 import instance from './instance';
@@ -969,13 +970,15 @@ export function TomarDecisionSolicitudCredito({id, cerrarModal}){
 export function EntregarEncomienda({id, cerrarModal}){
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
+    const [abrirModal, setAbrirModal] = useState(false);
+    const [dataFactura , setDataFactura] = useState('');
 
     const continuar = () =>{
         setLoader(true);
         instance.post('/admin/despacho/entregar/encomienda/salve', {codigo: id}).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? setHabilitado(false) : null;
+            (res.success) ? (setHabilitado(false), setDataFactura(res.dataFactura)) : null;
             setLoader(false);
         })
     }
@@ -1016,6 +1019,24 @@ export function EntregarEncomienda({id, cerrarModal}){
                 </Button>
             </Grid> 
 
+            <ModalDefaultAuto
+                title   = {'Visualizar factura en PDF de encomienda'} 
+                content = {VisualizarPdf(dataFactura)}
+                close   = {() =>{setAbrirModal(false);}} 
+                tam     = 'smallFlot'
+                abrir   = {abrirModal}
+            />
+
         </Grid>
     )
+}
+
+export function VisualizarPdf({dataFactura}){
+    const [pdf, setPdf] = useState('data:application/pdf;base64,'+dataFactura); 
+    return (
+        <Grid item xl={12} md={12} sm={12} xs={12}>
+            <iframe style={{width: '100%', height: '22em', border: 'none'}} 
+            src={pdf} />
+        </Grid>
+     );
 }

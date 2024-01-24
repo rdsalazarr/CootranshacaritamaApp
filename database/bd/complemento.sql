@@ -170,3 +170,6 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 
 
 ALTER TABLE `vehiculoresponsabilidad` ADD `vehresdescuento` DECIMAL(8,0) NULL AFTER `vehresvalorpagado`, ADD `vehresinteresmora` DECIMAL(8,0) NULL AFTER `vehresdescuento`;
+ALTER TABLE `encomienda` CHANGE `encopagada` `encopagocontraentrega` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la encomienda fue pagada';
+ALTER TABLE `encomienda` ADD `encocontabilizada` TINYINT(1) NOT NULL DEFAULT '0' AFTER `encopagocontraentrega`;
+ALTER TABLE `personaservicio` ADD `perserpermitenotificacion` TINYINT(1) NOT NULL DEFAULT '0' AFTER `persernumerocelular`;

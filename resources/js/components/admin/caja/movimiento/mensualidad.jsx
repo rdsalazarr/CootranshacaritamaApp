@@ -60,7 +60,7 @@ export default function Mensualidad(){
         let newFormData = {...formData};
         instance.post('/admin/caja/consultar/vehiculo', {vehiculoId: formData.vehiculoId}).then(res=>{
             if(!res.success){
-                showSimpleSnackbar('', 'error');
+                showSimpleSnackbar(res.message, 'error');
             }else{
                 setPagoGeneral(res.pagoTotal[0]);
                 setPagoMensualidad(res.pagoMensualidad[0]);

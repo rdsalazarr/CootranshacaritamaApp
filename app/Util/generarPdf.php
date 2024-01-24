@@ -2636,7 +2636,7 @@ EOD;
 		PDF::Cell(34, 3, '-$ 0', 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Valor total:', 0, 0,'L');
-		PDF::Cell(34, 3, '-$ '.number_format($valorTotalTiquete,0,',','.'), 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($valorTotalTiquete,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'Nro. pasajeros:', 0, 0,'L');
 		PDF::Cell(34, 3, $cantidadPasajeros, 0, 0,'R');
@@ -2652,16 +2652,16 @@ EOD;
 		PDF::Ln(3);
 
 		PDF::Cell(22, 3, 'V. Encomiendas:', 0, 0,'L');
-		PDF::Cell(34, 3, $valorEncomienda, 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($valorEncomienda,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'V. Domicilio:', 0, 0,'L');
-		PDF::Cell(34, 3, $valorDomicilio, 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($valorDomicilio,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'V. Comisión:', 0, 0,'L');
-		PDF::Cell(34, 3, $valorComision , 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($valorComision,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 		PDF::Cell(22, 3, 'V. Total:', 0, 0,'L');
-		PDF::Cell(34, 3, $valorTotal , 0, 0,'R');
+		PDF::Cell(34, 3, '$ '.number_format($valorTotal,0,',','.'), 0, 0,'R');
 		PDF::Ln(3);
 
 		PDF::SetFont('helvetica','',7);
@@ -2730,6 +2730,7 @@ EOD;
 		$tipoEncomienda        = $arrayDatos['tipoEncomienda'];
 		$origenEncomienda      = $arrayDatos['origenEncomienda'];
 		$destinoEncomienda     = $arrayDatos['destinoEncomienda'];
+		$pagoContraentrega     = $arrayDatos['pagoContraentrega'];		
 		$valorDeclarado        = $arrayDatos['valorDeclarado'];
 		$valorEnvio            = $arrayDatos['valorEnvio'];
 		$valorDomicilio        = $arrayDatos['valorDomicilio'];
@@ -2762,7 +2763,7 @@ EOD;
 		PDF::SetKeywords('Formato, planilla, servicio público, encomienda, '. $numeroEncomienda);
         PDF::SetTitle("Formato encomienda número ".$numeroEncomienda);
 
-		PDF::AddPage('P', array(60,130));
+		PDF::AddPage('P', array(60,136));
 		PDF::SetMargins(2, 4 , 2);
 		PDF::SetPrintHeader(false);
 		PDF::SetPrintFooter(false);
@@ -2784,46 +2785,50 @@ EOD;
 		PDF::SetFont('helvetica','',6);
 		PDF::Ln(3);
 		
-		PDF::Cell(18, 3,"Fecha:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$fechaEncomienda, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Fecha:", 0, 0,'L'); 
+		PDF::Cell(36, 3,$fechaEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
-		PDF::Cell(18, 3,"Número:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$numeroEncomienda, 0, 0,'L'); 
-		PDF::Ln(3);
-
-		PDF::Cell(18, 3,"Ruta:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$rutaEncomienda, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Número:", 0, 0,'L'); 
+		PDF::Cell(36, 3,$numeroEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Tipo encomienda:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$tipoEncomienda, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Ruta:", 0, 0,'L'); 
+		PDF::Cell(36, 3,$rutaEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Origen:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$origenEncomienda, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Tipo encomienda:", 0, 0,'L'); 
+		PDF::Cell(36, 3,$tipoEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Destino:", 0, 0,'L'); 
-		PDF::Cell(38, 3,$destinoEncomienda, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Origen:", 0, 0,'L'); 
+		PDF::Cell(36, 3,$origenEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Valor declarado:", 0, 0,'L');
-		PDF::Cell(38, 3,'$ '.$valorDeclarado, 0, 0,'L'); 
-		PDF::Ln(3);
-		PDF::Cell(18, 3,"Valor envío:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$valorEnvio, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Destino:", 0, 0,'L'); 
+		PDF::Cell(36, 3,$destinoEncomienda, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Valor domicilio:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$valorDomicilio, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Valor declarado:", 0, 0,'L');
+		PDF::Cell(36, 3,'$ '.$valorDeclarado, 0, 0,'L'); 
+		PDF::Ln(3);
+		PDF::Cell(20, 3,"Valor envío:", 0, 0,'L'); 
+		PDF::Cell(36, 3,'$ '.$valorEnvio, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Valor Seguro:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$valorSeguro, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Valor domicilio:", 0, 0,'L'); 
+		PDF::Cell(36, 3,'$ '.$valorDomicilio, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Valor Total:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$valorTotal, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Valor seguro:", 0, 0,'L'); 
+		PDF::Cell(36, 3,'$ '.$valorSeguro, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(20, 3,"Valor total:", 0, 0,'L'); 
+		PDF::Cell(36, 3,'$ '.$valorTotal, 0, 0,'L'); 
+		PDF::Ln(3);
+
+		PDF::Cell(20, 3,"Pago contraentrega:", 0, 0,'L'); 
+		PDF::Cell(36, 3, $pagoContraentrega, 0, 0,'L'); 
 		PDF::Ln(3);
 
 		PDF::SetFont('helvetica','',7);

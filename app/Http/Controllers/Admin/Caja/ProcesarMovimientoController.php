@@ -76,7 +76,7 @@ class ProcesarMovimientoController extends Controller
             $movimientocaja->movcajsaldoinicial      = $request->saldoInicial;
             $movimientocaja->save();
 
-            $movimientoCajaConsecutivo              = movimientocaja::latest('movcajid')->first();
+            $movimientoCajaConsecutivo              = MovimientoCaja::latest('movcajid')->first();
 			$movcajid                               = $movimientoCajaConsecutivo->movcajid;
 
             $comprobantecontable                    = new ComprobanteContable();
@@ -165,7 +165,7 @@ class ProcesarMovimientoController extends Controller
                 'idResponsabilidad'   => '',
                 'fechaCompromiso'     => $fechaCompromisoInicial,
                 'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
-                'interesMora'         => number_format($valorMora,0,',','.'),
+                'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
                 'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
                 'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
                 'valorDesAnticipado'  => $valorDesAnticipado,

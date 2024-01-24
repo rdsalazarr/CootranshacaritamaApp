@@ -8,12 +8,12 @@ import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 import VisualizarPdf from './visualizarPdf';
 
-export default function Mensualidad(){
+export default function Sancion(){
 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [formData, setFormData] = useState({vehiculoId:'',  totalAPagar:'', totalSancion:''});
-    const [sancionesAsociado, setSancionesAsociado] = useState([]);    
-    const [formDataSancion, setFormDataSancion] = useState([]);    
+    const [sancionesAsociado, setSancionesAsociado] = useState([]);
+    const [formDataSancion, setFormDataSancion] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
     const [dataFactura, setDataFactura] = useState('');
     const [vehiculos, setVehiculos] = useState([]);
@@ -24,7 +24,7 @@ export default function Mensualidad(){
         let newFormDataSancion = [...formDataSancion];
         let totalSancion       = 0;
         (e.target.checked) ? newFormDataSancion.push({asosanid: parseInt(e.target.value)}) :
-                            newFormDataSancion = formDataSancion.filter((item) => item.asosanid !== parseInt(e.target.value));     
+                            newFormDataSancion = formDataSancion.filter((item) => item.asosanid !== parseInt(e.target.value));
 
         sancionesAsociado.map((sancion) => {
             newFormDataSancion.map((frmSancion) => {
@@ -77,7 +77,7 @@ export default function Mensualidad(){
         let newFormDataSancion = [...formDataSancion];
         instance.post('/admin/caja/consultar/sancion/asociado', {vehiculoId: formData.vehiculoId}).then(res=>{
             if(!res.success){
-                showSimpleSnackbar('', 'error');
+                showSimpleSnackbar(res.message, 'error');
             }else{
                 let sancionesAsociado = res.sancionesAsociado;
                 let totalSancion      = 0;
@@ -176,7 +176,7 @@ export default function Mensualidad(){
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                    
+
                                         { sancionesAsociado.map((sancion, a) => {
                                             const sancionChequeada = formDataSancion.find(resul => resul.asosanid === parseInt(sancion['asosanid']));
                                             const marcarCheckbox   = (sancionChequeada !== undefined) ? true : false;
@@ -190,7 +190,7 @@ export default function Mensualidad(){
 
                                                     <TableCell>
                                                         {sancion['tipsannombre']}
-                                                    </TableCell> 
+                                                    </TableCell>
 
                                                     <TableCell>
                                                         {sancion['fechaSancion']}
@@ -226,7 +226,7 @@ export default function Mensualidad(){
                                     <label>Valor a pagar: $ </label>
                                     <span  className='textoRojo'>{'\u00A0'+ formData.totalSancion}</span>
                                 </Box>
-                            </Grid>                         
+                            </Grid>
 
                             <Grid item xl={4} md={4} sm={6} xs={12}>
                                 <Stack direction="row" spacing={2} style={{float:'right'}}>

@@ -204,6 +204,19 @@ body{
   text-shadow: -0.03px 0.03px #1a1a19, -1px 1px #282625;
 }
 
+.frmMensajeError{
+  width: 70%;
+  margin: auto;
+  background-color: #e91414;
+  color: #fdfdfd;
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 1em;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-top: 1em;
+}
+
 .labelRadio{
   font-weight: 700 !important;
   color: #6e6e6d !important;

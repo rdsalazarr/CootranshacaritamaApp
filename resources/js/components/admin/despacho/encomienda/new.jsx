@@ -20,22 +20,26 @@ export default function New({data, tipo}){
                                               municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
                                               cantidad:'',               valorDeclarado :'',             valorEnvio:'',                valorDomicilio:'',
                                               contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',
-                                              ruta:'',                   valorSeguro:'',                 valorTotal:'',                tipo:tipo});
+                                              ruta:'',                   valorSeguro:'',                 valorTotal:'',                contabilizado:false,   tipo:tipo});
 
     const [configuracionEncomienda, setConfiguracionEncomienda] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [esEmpresaRemitente, setEsEmpresaRemitente] = useState(false);
+    const [pagoContraEntrega, setPagoContraEntrega] = useState(false);
     const [esEmpresaDestino, setEsEmpresaDestino] = useState(false);
     const [enviarEncomienda, setEnviarEncomienda] = useState(false);
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
     const [tiposEncomiendas, setTiposEncomiendas] = useState([]);
-    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);    
+    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
     const [planillaRutas, setPlanillaRutas] = useState([]);
-    const [idEncomienda , setIdEncomienda] = useState(0); 
+    const [cajaAbierta, setCajaAbierta] = useState(false);
+    const [idEncomienda , setIdEncomienda] = useState(0);
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
+    const [mensajeCaja, setMensajeCaja] = useState('');
     const [municipios, setMunicipios] = useState([]);
     const [loader, setLoader] = useState(false);
+    const [msjCaja, setMsjCaja] = useState('');
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -49,9 +53,17 @@ export default function New({data, tipo}){
         setEnviarEncomienda(e.target.checked);
     }
 
+    const handleChangePagoContraEntrega = (e) => {
+        setPagoContraEntrega(e.target.checked);
+       (e.target.checked && tipo === 'I') ? (setMsjCaja(mensajeCaja), setMensajeCaja('')) : setMensajeCaja(msjCaja); 
+       (e.target.checked && tipo === 'I') ? setHabilitado(true) : ( (cajaAbierta) ? setHabilitado(true) : setHabilitado(false));
+    }
+
     const handleSubmit = () =>{
-        let newFormData             = {...formData}
-        newFormData.enviarEncomienda = enviarEncomienda;
+        let newFormData               = {...formData}
+        newFormData.enviarEncomienda  = (enviarEncomienda) ? 'SI' : 'NO';
+        newFormData.pagoContraEntrega = (pagoContraEntrega) ? 'SI' : 'NO';
+        newFormData.contabilizado     = (formData.contabilizado) ? 'SI' : 'NO';
         setLoader(true);
         instance.post('/admin/despacho/encomienda/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
@@ -66,7 +78,7 @@ export default function New({data, tipo}){
                             municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
                             cantidad:'',               valorDeclarado :'',             valorEnvio:'',                valorDomicilio:'',
                             contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',
-                            ruta:'',                   valorSeguro:'',                 valorTotal:'',                tipo:tipo });
+                            ruta:'',                   valorSeguro:'',                 valorTotal:'',                contabilizado:false, tipo:tipo });
 
                 setIdEncomienda(res.encomiendaId);
                 setAbrirModal(true)
@@ -94,6 +106,7 @@ export default function New({data, tipo}){
                     newFormData.direccionRemitente       = (personaservicio.perserdireccion !== undefined) ? personaservicio.perserdireccion : '';
                     newFormData.correoRemitente          = (personaservicio.persercorreoelectronico !== undefined) ? personaservicio.persercorreoelectronico : '';
                     newFormData.telefonoCelularRemitente = (personaservicio.persernumerocelular !== undefined) ? personaservicio.persernumerocelular : '';
+                    setEnviarEncomienda((personaservicio.perserpermitenotificacion) ? true : false);
                 }else{
                     newFormData.personaIdRemitente       = '000';
                     newFormData.primerNombreRemitente    = '';
@@ -103,6 +116,7 @@ export default function New({data, tipo}){
                     newFormData.direccionRemitente       = '';
                     newFormData.correoRemitente          = '';
                     newFormData.telefonoCelularRemitente = '';
+                    setEnviarEncomienda(false);
                 }
                 setLoader(false); 
             })
@@ -256,6 +270,7 @@ export default function New({data, tipo}){
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/despacho/encomienda/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
+            (tipo === 'I' && !res.cajaAbierta) ? (showSimpleSnackbar(res.mensajeCaja, 'warning'), setHabilitado(false)): null;
             let valorEnvio             =  res.configuracionEncomienda.conencvalorminimoenvio
             let valorDeclarado         = res.configuracionEncomienda.conencvalorminimodeclarado;
             let valorSeguro            = (valorDeclarado * res.configuracionEncomienda.conencporcentajeseguro) / 100;
@@ -269,6 +284,8 @@ export default function New({data, tipo}){
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTiposEncomiendas(res.tiposEncomiendas);
             setPlanillaRutas(res.planillaRutas);
+            setCajaAbierta(res.cajaAbierta);
+            setMensajeCaja(res.mensajeCaja);
             setMunicipios(res.municipios);
 
             if(tipo === 'U'){
@@ -305,34 +322,46 @@ export default function New({data, tipo}){
                 newFormData.contenido                   = encomienda.encocontenido;
                 newFormData.observaciones               = encomienda.encoobservacion;
                 newFormData.ruta                        = encomienda.plarutid;
+                newFormData.contabilizado               = encomienda.encocontabilizada;
+                newFormData.pagoContraEntrega           = encomienda.encopagocontraentrega;
                 newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
                 newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal);
 
-                let municipiosOrigen = [];
-                let deptoOrigen      = encomienda.depaidorigen;
-                res.municipios.forEach(function(muni){ 
-                    if(muni.munidepaid === deptoOrigen){
-                        municipiosOrigen.push({
-                            muniid:     muni.muniid,
-                            muninombre: muni.muninombre
-                        });
-                    }
-                });
-                setMunicipiosOrigen(municipiosOrigen);
+                let municipiosOrigen         = [];
+                let municipiosDestino        = [];
+                const planillaRutasFiltradas = res.planillaRutas.filter(planilla => planilla.plarutid === encomienda.plarutid);
+                let depaIdOrigen             = planillaRutasFiltradas[0].depaidorigen;
+                let muniIdOrigen             = planillaRutasFiltradas[0].muniidorigen;
+                let municipioOrigen          = planillaRutasFiltradas[0].municipioOrigen;
+                let depaIdDestino            = planillaRutasFiltradas[0].depaiddestino;
+                let muniIdDestino            = planillaRutasFiltradas[0].muniiddestino;
+                let municipioDestino         = planillaRutasFiltradas[0].municipioDestino;
 
-                let municipiosDestino = [];
-                let deptoDestino      = encomienda.depaiddestino;
-                res.municipios.forEach(function(muni){ 
-                    if(muni.munidepaid === deptoDestino){
-                        municipiosDestino.push({
-                            muniid:     muni.muniid,
-                            muninombre: muni.muninombre
-                        });
-                    }
+                municipiosOrigen.push({
+                    muniid:     muniIdOrigen,
+                    munidepaid: depaIdOrigen,
+                    muninombre: municipioOrigen
                 });
+
+                municipiosDestino.push({
+                    muniid:     muniIdDestino,
+                    munidepaid: depaIdDestino,
+                    muninombre: municipioDestino
+                });
+
+                res.municipiosNodoDestino.forEach(function(muni){
+                    municipiosDestino.push({
+                        muniid:     muni.muniid,
+                        muninombre: muni.muninombre
+                    });
+                });
+
+                setMunicipiosOrigen(municipiosOrigen);
                 setMunicipiosDestino(municipiosDestino);
+                setEnviarEncomienda((encomienda.perserpermitenotificacion) ? true : false);
                 setEsEmpresaRemitente((encomienda.tipideid === 5) ? true : false);
                 setEsEmpresaDestino((encomienda.tipideidDestino === 5) ? true : false);
+                setPagoContraEntrega((encomienda.encopagocontraentrega) ? true : false);
             }
 
             setFormData(newFormData);
@@ -348,7 +377,6 @@ export default function New({data, tipo}){
         <Box>
             <ValidatorForm onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
-
                     <Grid item md={12} xl={12} sm={12} xs={12}>
                         <Box className='frmDivision'>
                             Información de la encomienda
@@ -499,6 +527,15 @@ export default function New({data, tipo}){
                         </Box>
                     </Grid>
 
+                    <Grid item md={3} xl={3} sm={6} xs={12}>
+                        <FormControlLabel
+                            control={<Switch name={'pagoContraEntrega' } 
+                            value={pagoContraEntrega} onChange={handleChangePagoContraEntrega} 
+                            color="secondary" checked={(pagoContraEntrega) ? true : false} />} 
+                            label="Pago contraentrega"
+                        />
+                    </Grid>
+
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <TextValidator
                             multiline
@@ -528,6 +565,14 @@ export default function New({data, tipo}){
                             onChange={handleChangeUpperCase}
                         />
                     </Grid>
+
+                    {(tipo === 'I' && mensajeCaja !== '' )? 
+                        <Grid item md={12} xl={12} sm={12} xs={12}>
+                            <Box className='frmMensajeError'>
+                                {mensajeCaja}
+                            </Box>
+                        </Grid>
+                    : null}
 
                     <Grid item md={12} xl={12} sm={12} xs={12}>
                         <Box className='frmDivision'>
@@ -673,7 +718,7 @@ export default function New({data, tipo}){
                         <FormControlLabel
                             control={<Switch name={'notificar'} 
                             value={enviarEncomienda} onChange={handleChangeEnviarEncomienda} 
-                            color="secondary"/>} 
+                            color="secondary" checked={(enviarEncomienda) ? true : false} />} 
                             label="Enviar copia de la factura de la encomienda al correo"
                         />
                     </Grid>

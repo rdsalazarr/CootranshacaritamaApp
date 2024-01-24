@@ -12,5 +12,5 @@ class PersonaServicio extends Model
     protected $table      = 'personaservicio';
     protected $primaryKey = 'perserid';
     protected $fillable   = ['tipideid','perserdocumento','perserprimernombre','persersegundonombre','perserprimerapellido',
-                            'persersegundoapellido','perserdireccion','persercorreoelectronico','persernumerocelular'];
+                            'persersegundoapellido','perserdireccion','persercorreoelectronico','persernumerocelular','perserpermitenotificacion'];
 }

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('perserdireccion',100)->comment('Dirección de la persona que un servicio de la cooperativa (pasaje o encomienda)');
             $table->string('persercorreoelectronico', 80)->nullable()->comment('Correo electrónico de la persona que un servicio de la cooperativa (pasaje o encomienda)');
             $table->string('persernumerocelular', 20)->nullable()->comment('Número de teléfono fijo de la persona que un servicio de la cooperativa (pasaje o encomienda)');
+            $table->boolean('perserpermitenotificacion')->default(false)->comment('Determina si la persona requiere notificar al correo');
             $table->unique(['tipideid','perserdocumento'],'uk_personaservicio');
             $table->timestamps();
             $table->foreign('tipideid')->references('tipideid')->on('tipoidentificacion')->onUpdate('cascade')->index('fk_tipideperser');

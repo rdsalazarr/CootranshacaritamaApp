@@ -78,7 +78,24 @@ class CuentaContableSeeder extends Seeder
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);
-
+        
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '8',
+            'cueconnombre'     => 'CXP PAGO ENCOMIENDA',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120006',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+        
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '9',
+            'cueconnombre'     => 'CXP PAGO ENCOMIENDA CONTRAENTREGA',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120007',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
 
     }
 }

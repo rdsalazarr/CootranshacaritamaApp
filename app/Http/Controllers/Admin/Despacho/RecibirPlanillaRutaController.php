@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin\Despacho;
 
 use App\Models\Despacho\EncomiendaCambioEstado;
+use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Caja\ComprobanteContable;
 use App\Models\Despacho\PlanillaRuta;
 use App\Http\Controllers\Controller;
+use App\Models\Caja\MovimientoCaja;
 use App\Models\Despacho\Encomienda;
 use Illuminate\Http\Request;
 use Exception, DB, Auth;
@@ -75,7 +78,7 @@ class RecibirPlanillaRutaController extends Controller
         $message   = 'La búsqueda con los criterios proporcionados no arrojó resultados. Es posible que la encomienda no esté disponible en el terminal de destino';
         $consulta  = DB::table('encomienda as e')
                         ->select('e.encoid','e.tiesenid','e.encofechahoraregistro as fechaHoraRegistro', 'te.tipencnombre as tipoEncomienda',
-                        DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"),
+                        DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"), DB::raw("if(e.encopagocontraentrega = 1 ,'SÍ', 'NO') as pagoContraEntrega"),
                         DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mor.muninombre,' - ', mdr.muninombre) as nombreRuta"),
                         DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
                             ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaRemitente"),
@@ -120,20 +123,29 @@ class RecibirPlanillaRutaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required|numeric']);
 
-        $consecutivo = str_pad($request->consecutivo,  4, "0", STR_PAD_LEFT);
-        $encomienda  = DB::table('encomienda')->select('encoid')
+        $consecutivo                = str_pad($request->consecutivo,  4, "0", STR_PAD_LEFT);
+        $encomiendaTerminalDestino  = DB::table('encomienda')->select('encoid','encopagocontraentrega')
                                             ->where('encoid', $request->codigo)
                                             ->where('tiesenid', 'D')->first();
-        if(!$encomienda){
+        if(!$encomiendaTerminalDestino){
             return response()->json(['success' => false, 'message'=> 'Los datos proporcionados no coinciden. Favor de verificar la información nuevamente']); 
+        }
+
+        //Verifico que tenga una caja abierta
+        $cajaAbierta = MovimientoCaja::verificarCajaAbierta();
+        if($encomiendaTerminalDestino->encopagocontraentrega && !$cajaAbierta){
+            return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible entregar una encomienda contraentrega, sin antes haber abierto la caja para el día de hoy']); 
         }
 
         DB::beginTransaction();
         try {
 
-            $fechaHoraActual      = Carbon::now();
-            $encomienda           = Encomienda::findOrFail($encomienda->encoid);
-            $encomienda->tiesenid = 'E';
+            $dataFactura                   = '';
+            $fechaHoraActual               = Carbon::now();
+            $fechaActual                   = $fechaHoraActual->format('Y-m-d');
+            $encomienda                    = Encomienda::findOrFail($encomienda->encoid);
+            $encomienda->tiesenid          = 'E';
+            $encomienda->encocontabilizada = true;
             $encomienda->save();
 
             $encomiendacambioestado 				   = new EncomiendaCambioEstado();
@@ -144,8 +156,28 @@ class RecibirPlanillaRutaController extends Controller
             $encomiendacambioestado->encaesobservacion = 'La encomienda ha sido entregada. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
             $encomiendacambioestado->save();
 
+            if($encomienda->encopagocontraentrega){
+                //Se realiza la contabilizacion
+                $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = 1;//Caja
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $encomienda->encovalortotal;
+                $comprobantecontabledetalle->save();
+
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = 9; //CXP PAGO ENCOMIENDA CONTRAENTREGA
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $encomienda->encovalortotal;
+                $comprobantecontabledetalle->save();
+
+                $dataFactura = Encomienda::generarFacturaPdf($encomienda->encoid, 'S');
+            }
+
             DB::commit();
-        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+        	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', 'dataFactura' => $dataFactura]);
 		} catch (Exception $error){
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

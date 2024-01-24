@@ -5,9 +5,9 @@ import { EntregarEncomienda } from '../../../layout/modalFijas';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
+import SearchIcon from '@mui/icons-material/Search';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import SaveIcon from '@mui/icons-material/Save';
 
 export default function Encomienda(){
 
@@ -115,7 +115,7 @@ export default function Encomienda(){
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Button type={"submit"} className={'modalBtn'}
-                                    startIcon={<SaveIcon />}>Consultar
+                                    startIcon={<SearchIcon />}>Consultar
                                 </Button>
                             </Grid>
 
@@ -125,19 +125,17 @@ export default function Encomienda(){
             </ValidatorForm>
 
             {(listaPersonas.length > 0) ?
-                <Card className={'cardContainer'}>
-                    <Grid container spacing={2}>
-                        <Grid item xl={12} md={12} sm={12} xs={12}>
-                            <TablaGeneral
-                                datos={listaPersonas}
-                                titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario', 'Entregar']}
-                                ver={["fechaHoraRegistro","tipoEncomienda","nombreRuta", "destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino"]}
-                                accion={[ {tipo: 'B', icono : 'local_shipping_icon', color: 'red', funcion : (data)=>{edit(data, 0)} }]}
-                                funciones={{orderBy: false, search: false, pagination:false }}
-                            />
-                        </Grid>
+                <Grid container spacing={2} style={{marginTop:'1em'}}>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <TablaGeneral
+                            datos={listaPersonas}
+                            titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario', 'Pago contraentrega', 'Entregar']}
+                            ver={["fechaHoraRegistro","tipoEncomienda","nombreRuta", "destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino","pagoContraEntrega"]}
+                            accion={[ {tipo: 'B', icono : 'local_shipping_icon', color: 'red', funcion : (data)=>{edit(data, 0)} }]}
+                            funciones={{orderBy: false, search: false, pagination:false }}
+                        />
                     </Grid>
-                </Card>
+                </Grid>               
             : null }
 
             <ModalDefaultAuto
