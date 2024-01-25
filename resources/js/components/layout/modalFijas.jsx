@@ -17,7 +17,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 import showSimpleSnackbar from './snackBar';
-import {ModalDefaultAuto } from './modal';
 import RelojDigital from './relojDigital';
 import {LoaderModal} from "./loader";
 import instance from './instance';
@@ -967,18 +966,16 @@ export function TomarDecisionSolicitudCredito({id, cerrarModal}){
     )
 }
 
-export function EntregarEncomienda({id, cerrarModal}){
+export function EntregarEncomienda({data, cerrarModal}){
     const [loader, setLoader] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
-    const [abrirModal, setAbrirModal] = useState(false);
-    const [dataFactura , setDataFactura] = useState('');
 
     const continuar = () =>{
         setLoader(true);
-        instance.post('/admin/despacho/entregar/encomienda/salve', {codigo: id}).then(res=>{
+        instance.post('/admin/despacho/entregar/encomienda/salve', {codigo: data.encoid}).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? (setHabilitado(false), setDataFactura(res.dataFactura)) : null;
+            (res.success) ? (setHabilitado(false)) : null;
             setLoader(false);
         })
     }
@@ -997,15 +994,36 @@ export function EntregarEncomienda({id, cerrarModal}){
                 </Grid>
             </Box>
 
-            <Grid item xl={12} md={12} sm={12} xs={12}>
-                <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
-                Antes de proceder con la entrega de la encomienda, asegúrese de tenerla en sus manos y lista para ser entregada al cliente.
-                </p>
+            {(data.pagoContraEntrega === 'NO') ? 
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                        Antes de proceder con la entrega de la encomienda, asegúrese de tenerla en sus manos y lista para ser entregada al cliente.
+                    </p>
 
-                <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.5em', textAlign: 'center'}}>
-                    ¿Desea continuar con la entrega de la encomienda?
-                </p>
-            </Grid>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.5em', textAlign: 'center'}}>
+                        ¿Desea continuar con la entrega de la encomienda?
+                    </p>
+                </Grid>
+            :  
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                        Hemos identificado que la encomienda está marcada como <b>"Pago contra entrega"</b>. 
+                        Para proceder con la entrega, le solicitamos asegurarse de tener físicamente la encomienda en sus manos, 
+                        además de verificar que su caja esté abierta. También, recuerde que deberá recibir el valor correspondiente 
+                        a $ <b>{data.valorTotalEncomienda}</b> por el costo total, por parte del cliente.
+                    </p>
+
+                    <Grid container spacing={2} style={{margin:'auto', width:'30%'}}>
+                        <Grid item xl={12} md={3} sm={12} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Valor encomienda $ </label>
+                                <span className='textoRojo'>{'\u00A0'+ data.valorTotalEncomienda}</span>
+                            </Box>
+                        </Grid>
+                    </Grid>
+
+                </Grid> 
+            }
 
             <Grid item xl={6} md={6} sm={6} xs={6}>
                 <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
@@ -1017,26 +1035,8 @@ export function EntregarEncomienda({id, cerrarModal}){
                 <Button onClick={continuar} className='modalBtn' disabled={(habilitado) ? false : true}
                     startIcon={<SaveIcon />}> Continuar
                 </Button>
-            </Grid> 
-
-            <ModalDefaultAuto
-                title   = {'Visualizar factura en PDF de encomienda'} 
-                content = {VisualizarPdf(dataFactura)}
-                close   = {() =>{setAbrirModal(false);}} 
-                tam     = 'smallFlot'
-                abrir   = {abrirModal}
-            />
+            </Grid>      
 
         </Grid>
     )
-}
-
-export function VisualizarPdf({dataFactura}){
-    const [pdf, setPdf] = useState('data:application/pdf;base64,'+dataFactura); 
-    return (
-        <Grid item xl={12} md={12} sm={12} xs={12}>
-            <iframe style={{width: '100%', height: '22em', border: 'none'}} 
-            src={pdf} />
-        </Grid>
-     );
 }

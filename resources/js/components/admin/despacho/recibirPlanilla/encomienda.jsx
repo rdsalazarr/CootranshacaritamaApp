@@ -140,7 +140,7 @@ export default function Encomienda(){
 
             <ModalDefaultAuto
                 title   = {'Entregar encomienda'}
-                content = {<EntregarEncomienda id={modal.data.encoid} cerrarModal={cerrarModal}/>}
+                content = {<EntregarEncomienda data={modal.data} cerrarModal={cerrarModal}/>}
                 close   = {() =>{setModal({open : false, data:{}}); limpiar();}}
                 tam     = {'smallFlot'}
                 abrir   = {modal.open}

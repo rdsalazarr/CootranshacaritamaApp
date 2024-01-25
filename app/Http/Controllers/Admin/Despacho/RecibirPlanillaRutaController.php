@@ -78,6 +78,7 @@ class RecibirPlanillaRutaController extends Controller
         $message   = 'La búsqueda con los criterios proporcionados no arrojó resultados. Es posible que la encomienda no esté disponible en el terminal de destino';
         $consulta  = DB::table('encomienda as e')
                         ->select('e.encoid','e.tiesenid','e.encofechahoraregistro as fechaHoraRegistro', 'te.tipencnombre as tipoEncomienda',
+                        DB::raw("CONCAT(FORMAT(sc.encovalortotal, 0)) as valorTotalEncomienda"),
                         DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"), DB::raw("if(e.encopagocontraentrega = 1 ,'SÍ', 'NO') as pagoContraEntrega"),
                         DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mor.muninombre,' - ', mdr.muninombre) as nombreRuta"),
                         DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
@@ -87,7 +88,7 @@ class RecibirPlanillaRutaController extends Controller
                         ->join('personaservicio as ps', 'ps.perserid', '=', 'e.perseridremitente')
                         ->join('personaservicio as ps1', 'ps1.perserid', '=', 'e.perseriddestino')
                         ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
-                        ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino')
+                        ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino') 
                         ->join('municipio as md', function($join)
                         {
                             $join->on('md.munidepaid', '=', 'e.depaiddestino');
