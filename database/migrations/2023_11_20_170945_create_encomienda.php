@@ -39,7 +39,7 @@ return new class extends Migration
             $table->decimal('encovalortotal', 10, 0)->comment('Valor total de la encomienda');
             $table->string('encoobservacion', 500)->nullable()->comment('Observacion de la encomienda');
             $table->date('encofecharecibido')->nullable()->comment('Fecha de recibido de la encomienda');
-            $table->boolean('encopagocontraentrega')->default(false)->comment('Determina si la encomienda debe ser pagada contraentrega');
+            $table->boolean('encopagocontraentrega')->default(false)->comment('Determina si la encomienda debe ser pagada contra entrega');
             $table->boolean('encocontabilizada')->default(false)->comment('Determina si la encomienda fue contabilizada');
             $table->timestamps();
             $table->unique(['agenid','encoanio','encoconsecutivo'],'uk_encomienda');

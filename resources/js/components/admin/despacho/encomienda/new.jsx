@@ -532,7 +532,7 @@ export default function New({data, tipo}){
                             control={<Switch name={'pagoContraEntrega' } 
                             value={pagoContraEntrega} onChange={handleChangePagoContraEntrega} 
                             color="secondary" checked={(pagoContraEntrega) ? true : false} />} 
-                            label="Pago contraentrega"
+                            label="Pago contra entrega"
                         />
                     </Grid>
 

@@ -1,6 +1,7 @@
 
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator} from 'react-material-ui-form-validator';
+import {Box, Grid, Button, Avatar, MenuItem, Card, Typography} from "@mui/material";
 import errorTotalizarFirmas from "../../../images/modal/errorTotalizarFirmas.png";
 import suspenderConductor from "../../../images/modal/suspenderConductor.png";
 import entregarEncomienda from "../../../images/modal/entregarEncomienda.png";
@@ -12,7 +13,7 @@ import firmarDocumento from "../../../images/modal/firmarDocumento.png";
 import solicitudFirma from "../../../images/modal/solicitudFirma.png";
 import enviarRadicado from "../../../images/modal/enviarRadicado.png";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import {Box, Grid, Button, Avatar, MenuItem} from "@mui/material";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
@@ -982,7 +983,7 @@ export function EntregarEncomienda({data, cerrarModal}){
 
     if(loader){
         return <LoaderModal />
-    }    
+    }
 
     return (
         <Grid container spacing={2}>
@@ -1007,18 +1008,21 @@ export function EntregarEncomienda({data, cerrarModal}){
             :  
                 <Grid item xl={12} md={12} sm={12} xs={12}>
                     <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
-                        Hemos identificado que la encomienda está marcada como <b>"Pago contra entrega"</b>. 
+                        Hemos identificado que la encomienda está marcada como "Pago contra entrega". 
                         Para proceder con la entrega, le solicitamos asegurarse de tener físicamente la encomienda en sus manos, 
                         además de verificar que su caja esté abierta. También, recuerde que deberá recibir el valor correspondiente 
-                        a $ <b>{data.valorTotalEncomienda}</b> por el costo total, por parte del cliente.
+                        a $ {data.valorTotalEncomienda} por el costo total, por parte del cliente.
                     </p>
 
-                    <Grid container spacing={2} style={{margin:'auto', width:'30%'}}>
-                        <Grid item xl={12} md={3} sm={12} xs={12}>
-                            <Box className='frmTextoColor'>
-                                <label>Valor encomienda $ </label>
-                                <span className='textoRojo'>{'\u00A0'+ data.valorTotalEncomienda}</span>
-                            </Box>
+                    <Grid container spacing={2} style={{margin:'auto', width:'70%'}}>
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <Card className='cardNotificacion'>
+                                <Typography component={'h5'} >Valor encomienda</Typography>
+                                <Box className='cardBox'>
+                                    <AttachMoneyIcon className='cardIcono'></AttachMoneyIcon>
+                                    <Typography component={'h4'} >{data.valorTotalEncomienda}</Typography>
+                                </Box>
+                            </Card>
                         </Grid>
                     </Grid>
 
@@ -1035,7 +1039,7 @@ export function EntregarEncomienda({data, cerrarModal}){
                 <Button onClick={continuar} className='modalBtn' disabled={(habilitado) ? false : true}
                     startIcon={<SaveIcon />}> Continuar
                 </Button>
-            </Grid>      
+            </Grid>
 
         </Grid>
     )

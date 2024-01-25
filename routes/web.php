@@ -105,6 +105,7 @@ Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosControl
 
 Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class, 'exportarCarteraVencida']);
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);
+Route::post('/admin/exportar/datos/movimiento/diarios', [RegistrosController::class, 'exportarMovimientoDiarios']);
 
 // verifySource
 Route::middleware(['revalidate','auth'])->group(function () {

@@ -129,7 +129,7 @@ export default function Encomienda(){
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <TablaGeneral
                             datos={listaPersonas}
-                            titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario', 'Pago contraentrega', 'Entregar']}
+                            titulo={['Fecha registo','Tipo encomienda','Ruta','Destino', 'Remitente','Destinatario', 'Pago contra entrega', 'Entregar']}
                             ver={["fechaHoraRegistro","tipoEncomienda","nombreRuta", "destinoEncomienda","nombrePersonaRemitente","nombrePersonaDestino","pagoContraEntrega"]}
                             accion={[ {tipo: 'B', icono : 'local_shipping_icon', color: 'red', funcion : (data)=>{edit(data, 0)} }]}
                             funciones={{orderBy: false, search: false, pagination:false }}

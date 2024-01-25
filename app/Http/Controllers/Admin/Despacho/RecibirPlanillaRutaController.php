@@ -78,7 +78,7 @@ class RecibirPlanillaRutaController extends Controller
         $message   = 'La búsqueda con los criterios proporcionados no arrojó resultados. Es posible que la encomienda no esté disponible en el terminal de destino';
         $consulta  = DB::table('encomienda as e')
                         ->select('e.encoid','e.tiesenid','e.encofechahoraregistro as fechaHoraRegistro', 'te.tipencnombre as tipoEncomienda',
-                        DB::raw("CONCAT(FORMAT(sc.encovalortotal, 0)) as valorTotalEncomienda"),
+                        DB::raw("CONCAT(FORMAT(e.encovalortotal, 0)) as valorTotalEncomienda"),
                         DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"), DB::raw("if(e.encopagocontraentrega = 1 ,'SÍ', 'NO') as pagoContraEntrega"),
                         DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mor.muninombre,' - ', mdr.muninombre) as nombreRuta"),
                         DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
@@ -144,9 +144,9 @@ class RecibirPlanillaRutaController extends Controller
             $dataFactura                   = '';
             $fechaHoraActual               = Carbon::now();
             $fechaActual                   = $fechaHoraActual->format('Y-m-d');
-            $encomienda                    = Encomienda::findOrFail($encomienda->encoid);
+            $encomienda                    = Encomienda::findOrFail($request->codigo);
             $encomienda->tiesenid          = 'E';
-            $encomienda->encocontabilizada = true;
+            ($encomienda->encopagocontraentrega) ? $encomienda->encocontabilizada = true : '';
             $encomienda->save();
 
             $encomiendacambioestado 				   = new EncomiendaCambioEstado();
@@ -173,8 +173,6 @@ class RecibirPlanillaRutaController extends Controller
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $encomienda->encovalortotal;
                 $comprobantecontabledetalle->save();
-
-                $dataFactura = Encomienda::generarFacturaPdf($encomienda->encoid, 'S');
             }
 
             DB::commit();

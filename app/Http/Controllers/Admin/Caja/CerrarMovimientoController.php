@@ -12,6 +12,40 @@ class CerrarMovimientoController extends Controller
 {
     public function index()
     {
+        $fechaHoraActual = Carbon::now();
+        $fechaActual     = $fechaHoraActual->format('Y-m-d');
+        $idUsuario       = Auth::id();
+        $agenciaId       = auth()->user()->agenid;
+        $cajaId          = auth()->user()->cajaid;        
+
+/*
+
+SELECT FORMAT(SUM(ccd.cocodemonto), 0)
+FROM comprobantecontabledetalle as ccd
+INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
+INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
+INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
+WHERE cc.cueconnaturaleza ='D'
+and mc.usuaid = '2'
+AND mc.cajaid = '1'
+AND cct.agenid = '101'
+AND DATE(mc.movcajfechahoraapertura) = '2024-01-25';
+
+
+SELECT SUM(ccd.cocodemonto)
+FROM comprobantecontabledetalle as ccd
+INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
+INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
+INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
+WHERE cc.cueconnaturaleza ='D'
+and mc.usuaid = '2'
+AND mc.cajaid = '1'
+AND cct.agenid = '101'
+AND DATE(mc.movcajfechahoraapertura) = '2024-01-25';
+
+*/
+
+
 
         /* Schema::create('cuentacontable', function (Blueprint $table) {
             $table->increments('cueconid')->unsigned()->comment('Identificador de la tabla cuenta contable');
@@ -34,7 +68,7 @@ class CerrarMovimientoController extends Controller
             $table->foreign('cueconid')->references('cueconid')->on('cuentacontable')->onUpdate('cascade')->index('fk_cueconcocode');
         });
 
-            Schema::create('comprobantecontable', function (Blueprint $table) {
+      Schema::create('comprobantecontable', function (Blueprint $table) {
             $table->bigIncrements('comconid')->unsigned()->comment('Identificador de la tabla comprobante contable');
             $table->bigInteger('movcajid')->unsigned()->comment('Identificador del movimiento caja');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario');
@@ -66,29 +100,133 @@ class CerrarMovimientoController extends Controller
             $table->timestamps();
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuamovcaj');
             $table->foreign('cajaid')->references('cajaid')->on('caja')->onUpdate('cascade')->index('fk_cajamovcaj');
-        });
-
-     
-
-
-        SELECT SUM(ccd.cocodemonto) FROM comprobantecontabledetalle as ccd
-        INNER JOIN cuentacontable as cc on cc.cueconid = ccd.cueconid
-        INNER JOIN comprobantecontable as cct on cct.cueconid = ccd.comconid
-        INNER JOIN movimientocaja as mc on mc.movcajid = cct.movcajid
-        WHERE mc.usuaid = '' AND mc.cajaid = '' AND mc.movcajfechahoraapertura = ''
-        
-
+        });  
 
         */
 
-        //DB::raw('(SELECT SUM(encovalorenvio) AS encovalorenvio FROM encomienda WHERE plarutid = pr.plarutid) AS valorEnvio'),
+        //DB::raw('(SELECT SUM(encovalorenvio) AS encovalorenvio FROM encomienda WHERE plarutid = pr.plarutid) AS valorDebito'),
 
-        $data = DB::table('cuentacontable')->select('cueconid','cueconnombre','cueconnaturaleza','cueconcodigo','cueconactiva',
-									DB::raw("if(cueconnaturaleza = 'C' ,'Crédito', 'Debito') as naturaleza"),
-                                    DB::raw("if(cueconactiva = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('cueconid')->get();
+        //'cc.cueconnaturaleza',
+        /* and mc.usuaid = '$idUsuario'
+                                    AND mc.cajaid = '$cajaId'
+                                    AND cct.agenid = '$idUsuario'
+                                    AND cc1.cueconid = cc.cueconid
+                                    AND DATE(mc.movcajfechahoraapertura) = '$fechaActual'*/
 
-        return response()->json(["data" => $data]);
+        /*$movimientosContables = DB::table('cuentacontable as cc')->select('cc.cueconid','cc.cueconnombre','cc.cueconcodigo',        
+                                    DB::raw("(SELECT FORMAT(SUM(ccd.cocodemonto), 0)
+                                            FROM comprobantecontabledetalle as ccd
+                                            INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
+                                            INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
+                                            INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
+                                            WHERE cc1.cueconnaturaleza = 'D'
+                                            AND cc1.cueconid = cc.cueconid
+                                            AND mc1.cajaid = mc.cajaid
+                                            AND cct1.agenid = cct.agenid
+                                            AND mc1.usuaid = mc.usuaid
+                                            AND DATE(mc1.movcajfechahoraapertura) = DATE(mc.movcajfechahoraapertura)
+                                        ) AS valorDebito"),
+                                        DB::raw("(SELECT FORMAT(SUM(ccd.cocodemonto), 0)
+                                            FROM comprobantecontabledetalle as ccd
+                                            INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
+                                            INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
+                                            INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct.movcajid
+                                            WHERE cc1.cueconnaturaleza = 'C'
+                                            AND cc1.cueconid = cc.cueconid
+                                            AND mc1.cajaid = mc.cajaid
+                                            AND cct1.agenid = cct.agenid
+                                            AND mc1.usuaid = mc.usuaid
+                                            AND DATE(mc1.movcajfechahoraapertura) = DATE(mc.movcajfechahoraapertura)
+                                        ) AS valorCredito") )
+                                    ->join('comprobantecontabledetalle as mcd', 'mcd.cueconid', '=', 'cc.cueconid')
+                                    ->join('comprobantecontable as cct', 'cct.comconid', '=', 'mcd.comconid')
+                                    ->join('movimientocaja as mc', function($join)
+                                    {
+                                        $join->on('mc.movcajid', '=', 'cct.movcajid');
+                                        $join->on('mc.usuaid', '=', 'cct.usuaid');
+                                    })
+                                    ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
+                                    ->where('mc.usuaid', $idUsuario)
+                                    ->where('cct.agenid', $agenciaId)
+                                    ->where('mc.cajaid', $cajaId)
+                                    ->groupBy('cc.cueconid', 'cc.cueconnombre', 'cc.cueconcodigo')
+                                    ->orderBy('cc.cueconid')->get();*/
+
+                                    //->join('comprobantecontable as cc', 'cc.movcajid', '=', 'mc.movcajid')
+
+
+        $movimientosContables = DB::table('cuentacontable as cc')
+                                ->select(DB::raw('DATE(ccd.cocodefechahora) as fechaMovimiento'), 'cc.cueconid','cc.cueconnombre', 'cc.cueconcodigo','mc.cajaid', 'cct.agenid', 'mc.usuaid',
+                                    DB::raw("CONCAT('$ ', (SELECT COALESCE(FORMAT(SUM(ccd.cocodemonto), 0), 0)
+                                        FROM comprobantecontabledetalle as ccd
+                                        INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
+                                        INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
+                                        INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
+                                        WHERE cc1.cueconnaturaleza = 'D'
+                                        AND cc1.cueconid = cc.cueconid
+                                        AND mc1.cajaid = mc.cajaid
+                                        AND cct1.agenid = cct.agenid
+                                        AND mc1.usuaid = mc.usuaid
+                                        AND DATE(mc1.movcajfechahoraapertura) =  '$fechaActual'
+                                    )) AS valorDebito"),
+                                    DB::raw("CONCAT('$ ', (SELECT COALESCE(FORMAT(SUM(ccd.cocodemonto), 0), 0)
+                                        FROM comprobantecontabledetalle as ccd
+                                        INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
+                                        INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
+                                        INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
+                                        WHERE cc1.cueconnaturaleza = 'C'
+                                        AND cc1.cueconid = cc.cueconid
+                                        AND mc1.cajaid = mc.cajaid
+                                        AND cct1.agenid = cct.agenid
+                                        AND mc1.usuaid = mc.usuaid
+                                        AND DATE(mc1.movcajfechahoraapertura) =  '$fechaActual'
+                                    )) AS valorCredito")
+                                )
+                                ->join('comprobantecontabledetalle as ccd', 'ccd.cueconid', '=', 'cc.cueconid')
+                                ->join('comprobantecontable as cct', 'cct.comconid', '=', 'ccd.comconid')
+                                ->join('movimientocaja as mc', function ($join) {
+                                    $join->on('mc.movcajid', '=', 'cct.movcajid');
+                                    $join->on('mc.usuaid', '=', 'cct.usuaid');
+                                })
+                                ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
+                                ->where('mc.usuaid', $idUsuario)
+                                ->where('cct.agenid', $agenciaId)
+                                ->where('mc.cajaid', $cajaId)
+                                ->groupBy(DB::raw('DATE(ccd.cocodefechahora)'), 'cc.cueconid', 'cc.cueconnombre', 'cc.cueconcodigo', 'mc.cajaid', 'cct.agenid', 'mc.usuaid')
+                                ->orderBy('cc.cueconid')
+                                ->get();
+
+        $movimientoCaja = DB::table('movimientocaja as mc')
+                                    ->select('mc.movcajsaldoinicial', DB::raw("FORMAT(mc.movcajsaldoinicial, 0) as saldoInicial"),
+                                    DB::raw("(SELECT SUM(ccd.cocodemonto)
+                                            FROM comprobantecontabledetalle as ccd
+                                            INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
+                                            INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
+                                            INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
+                                            WHERE cc.cueconnaturaleza ='D'
+                                            AND mc.usuaid = '$idUsuario'
+                                            AND mc.cajaid = '$cajaId'
+                                            AND cct.agenid = '$agenciaId'
+                                            AND DATE(mc.movcajfechahoraapertura) = '$fechaActual'
+                                        ) AS valorDebito"),
+                                    DB::raw("(SELECT SUM(ccd.cocodemonto)
+                                            FROM comprobantecontabledetalle as ccd
+                                            INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
+                                            INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
+                                            INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
+                                            WHERE cc.cueconnaturaleza ='C'
+                                            AND mc.usuaid = '$idUsuario'
+                                            AND mc.cajaid = '$cajaId'
+                                            AND cct.agenid = '$agenciaId'
+                                            AND DATE(mc.movcajfechahoraapertura) = '$fechaActual'
+                                        ) AS valorCredito") )
+                                    ->join('comprobantecontable as cc', 'cc.movcajid', '=', 'mc.movcajid')
+                                    ->whereDate('movcajfechahoraapertura', $fechaActual)
+                                    ->where('mc.usuaid', $idUsuario)
+                                    ->where('cc.agenid', $agenciaId)
+                                    ->where('mc.cajaid', $cajaId)->first();
+
+        return response()->json(["data" => $movimientosContables, "movimientoCaja" => $movimientoCaja]);
     }
   
 }

@@ -171,7 +171,7 @@ export default function Show({data}){
 
             <Grid item xl={3} md={3} sm={6} xs={12}>
                 <Box className='frmTexto'>
-                    <label>Pago contraentrega</label>
+                    <label>Pago contra entrega</label>
                     <span> {formData.pagoContraEntrega}</span>
                 </Box>
             </Grid>            

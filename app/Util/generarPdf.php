@@ -2827,7 +2827,7 @@ EOD;
 		PDF::Cell(36, 3,'$ '.$valorTotal, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(20, 3,"Pago contraentrega:", 0, 0,'L'); 
+		PDF::Cell(20, 3,"Pago contra entrega:", 0, 0,'L'); 
 		PDF::Cell(36, 3, $pagoContraentrega, 0, 0,'L'); 
 		PDF::Ln(3);
 
