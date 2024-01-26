@@ -4,7 +4,7 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import { Button, Box, Grid, Stack, Card } from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
-import RegistrarMovimientos from "../movimiento/list_old";
+import RegistrarMovimientos from "../movimiento/list";
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
