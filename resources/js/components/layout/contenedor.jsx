@@ -177,9 +177,10 @@ const componenteMenu = [
             {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'repeat_one_icon',        componente : <EnConstruccion />},
-             
+            {ruta : 'admin/despacho/otros3',            menu: 'Consignar',            icono : 'account_balance_icon',        componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros3',            menu: 'Consignar2',            icono : 'price_check_icon',        componente : <EnConstruccion />},             
         ]
-    }
+    } 
 ];
 
 

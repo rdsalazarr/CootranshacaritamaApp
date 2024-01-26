@@ -24,12 +24,13 @@ class ProcesarMovimientoController extends Controller
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
         $caja            = DB::table('caja')->select('cajanumero')->where('cajaid', $cajaId)->first();
         $cajaNumero      = ($caja) ? $caja->cajanumero : '';
-        $data            = DB::table('movimientocaja')->select('movcajsaldofinal')
+        $data            = DB::table('movimientocaja')->select(DB::raw('COALESCE(movcajsaldofinal, 0) as movcajsaldofinal'))
+                                    ->whereNull('movcajsaldofinal')
                                     ->whereDate('movcajfechahoraapertura', $fechaActual)
                                     ->where('usuaid', Auth::id())
                                     ->where('cajaid', $cajaId)->first();
 
-        $ultimoSaldo     = DB::table('movimientocaja')->select('movcajsaldofinal')
+        $ultimoSaldo     = DB::table('movimientocaja')->select(DB::raw('CAST(COALESCE(movcajsaldofinal, 0) AS UNSIGNED) as movcajsaldofinal'))
                                     ->where('usuaid', Auth::id())
                                     ->where('cajaid', $cajaId)
                                     ->orderBy('movcajid', 'desc')

@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\Tipos\SaludoController;
 use App\Http\Controllers\Admin\Tipos\SancionController;
 use App\Http\Controllers\Admin\Tipos\DespedidaController;
 use App\Http\Controllers\Admin\Tipos\CargoLaboralController;
+use App\Http\Controllers\Admin\Tipos\EntidadFinancieraController;
 use App\Http\Controllers\Admin\Tipos\EstanteArchivadorController;
 use App\Http\Controllers\Admin\Tipos\DocumentalController;
 use App\Http\Controllers\Admin\Tipos\PersonaDocumentalController;
@@ -177,10 +178,14 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/tipoDespedida/list', [DespedidaController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/tipoDespedida/salve', [DespedidaController::class, 'salve']);
         Route::post('/tipoDespedida/destroy', [DespedidaController::class, 'destroy']);
-        
+
         Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/cargoLaboral/salve', [CargoLaboralController::class, 'salve']);
         Route::post('/cargoLaboral/destroy', [CargoLaboralController::class, 'destroy']);
+
+        Route::get('/entidadFinanciera/list', [EntidadFinancieraController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::post('/entidadFinanciera/salve', [EntidadFinancieraController::class, 'salve']);
+        Route::post('/entidadFinanciera/destroy', [EntidadFinancieraController::class, 'destroy']);
 
         Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index'])->middleware('security:admin/gestionar/tipos');
         Route::post('/tipoEstante/salve', [EstanteArchivadorController::class, 'salve']);
@@ -512,7 +517,6 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
             Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
-            Route::post('/comprobante/contable/visualizar/PDF', [CerrarMovimientoController::class, 'imprimir']);
         });
 
     });

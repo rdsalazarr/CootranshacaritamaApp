@@ -148,6 +148,8 @@ php artisan make:migration create_movimiento_caja_detallado
 php artisan make:migration create_comprobante_contable
 php artisan make:migration create_comprobante_contable_detalle
 
+php artisan make:migration create_entidad_financiera
+
 
 
 php artisan make:model Festivo
@@ -270,6 +272,8 @@ php artisan make:model Despacho\EncomiendaCambioEstado
 php artisan make:model Despacho\Tiquete
 php artisan make:model Despacho\TiquetePuesto
 
+php artisan make:model Tipos\EntidadFinanciera
+
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
 php artisan make:seeder UsuarioSeeder
@@ -346,6 +350,7 @@ php artisan make:controller Admin\AgenciaController
 php artisan make:controller Admin\ProducionDocumental\OficioController
 
 php artisan make:controller Admin\Tipos\SancionController
+php artisan make:controller Admin\Tipos\EntidadFinancieraController
 
 php artisan make:controller Admin\Radicacion\DocumentoEntranteController
 php artisan make:controller Admin\Radicacion\ShowDocumentoEntranteController

@@ -4,21 +4,27 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import { Button, Box, Grid, Stack, Card } from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import RegistrarMovimientos from "../movimiento/list";
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
-import SaveIcon from '@mui/icons-material/Save';
 
 export default function AbrirCaja({saldoAnterior, usuario, caja}){
+    const [formData, setFormData] = useState({saldoInicial: (saldoAnterior !== null) ? saldoAnterior.toString() : ''});
 
-    const [formData, setFormData] = useState({saldoInicial: (saldoAnterior !== null) ? saldoAnterior : ''});
-    const [cajaAbierta, setCajaAbierta] = useState(false);
+    const formatearNumero = (numero) =>{
+        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
+        return Number(numero).toLocaleString('es-CO', opciones);
+    }
+
+    const [valorSaldoAnterior, setValorSaldoAnterior] = useState(formatearNumero(saldoAnterior));
+    const [cajaAbierta, setCajaAbierta] = useState(false);  
     const [continuar, setContinuar] = useState(false);
     const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-    }
+    } 
 
     const handleSubmit = () =>{
         setLoader(true);
@@ -60,8 +66,8 @@ export default function AbrirCaja({saldoAnterior, usuario, caja}){
                                 <Grid container spacing={2}>
                                     <Grid item xl={3} md={3} sm={6} xs={12}>
                                         <Box className='frmTextoColor'>
-                                            <label>Saldo anterior: </label>
-                                            <span className='textoRojo'>{'\u00A0'+ (saldoAnterior !== null) ? saldoAnterior : 0}</span>
+                                            <label>Saldo anterior: $  </label>
+                                            <span className='textoRojo'>{'\u00A0'+ (saldoAnterior !== null) ? valorSaldoAnterior : 0}</span>
                                         </Box>
                                     </Grid>
 
@@ -79,8 +85,8 @@ export default function AbrirCaja({saldoAnterior, usuario, caja}){
                                             label={"Saldo inicial"}
                                             value={formData.saldoInicial}
                                             type={'numeric'}
-                                            require={['required', 'maxStringLength:8']}
-                                            error={['Campo obligatorio','Número máximo permitido es el 99999999']}
+                                            require={['required', 'maxStringLength:9']}
+                                            error={['Campo obligatorio','Número máximo permitido es el 999999999']}
                                             onChange={handleChange}
                                         />
                                     </Grid>
@@ -88,7 +94,7 @@ export default function AbrirCaja({saldoAnterior, usuario, caja}){
                                     <Grid item xl={3} md={3} sm={6} xs={12}>
                                         <Stack direction="row" spacing={2}>
                                             <Button type={"submit"} className={'modalBtn'} 
-                                                startIcon={<SaveIcon />}> Abrir caja
+                                                startIcon={<LockOpenIcon />}> Abrir caja
                                             </Button>
                                         </Stack>
                                     </Grid>

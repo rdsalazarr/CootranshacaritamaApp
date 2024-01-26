@@ -173,3 +173,10 @@ ALTER TABLE `vehiculoresponsabilidad` ADD `vehresdescuento` DECIMAL(8,0) NULL AF
 ALTER TABLE `encomienda` CHANGE `encopagada` `encopagocontraentrega` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la encomienda fue pagada';
 ALTER TABLE `encomienda` ADD `encocontabilizada` TINYINT(1) NOT NULL DEFAULT '0' AFTER `encopagocontraentrega`;
 ALTER TABLE `personaservicio` ADD `perserpermitenotificacion` TINYINT(1) NOT NULL DEFAULT '0' AFTER `persernumerocelular`;
+
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(50, 10, 'Consignar', 'Consignar en bancos', 'admin/caja/consigarBanco', 'price_check_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(50, 1, 50);

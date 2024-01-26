@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import PersonaDocumental from "./personaDocumental/list";
+import EntidadFinaciera from "./entidadFinaciera/list";
 import { TabPanel } from '../../layout/general';
 import CargoLaboral from "./cargoLaboral/list";
 import EstanteArchivador from "./estante/list";
@@ -34,6 +35,7 @@ export default function List(){
                 <Tab label="Estantes archivador" />
                 <Tab label="Documental" />
                 <Tab label="Sanción" />
+                <Tab label="Entidad finacieras" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -63,6 +65,10 @@ export default function List(){
             <TabPanel value={value} index={6}>
                 <Sancion />
             </TabPanel>
+
+            <TabPanel value={value} index={7}>
+                <EntidadFinaciera />
+            </TabPanel>            
 
           </Box>
     )

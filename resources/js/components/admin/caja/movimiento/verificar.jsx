@@ -13,7 +13,7 @@ export default function Verificar(){
     const [loader, setLoader] = useState(true);
     const [cajaNumero, setCajaNumero] = useState(''); 
     const [nombreUsuario, setNombreUsuario] = useState('');
-    const [saldoAnterior, setSaldoAnterior] = useState('');
+    const [saldoAnterior, setSaldoAnterior] = useState(0);
 
     const inicio = () =>{
         setLoader(true);

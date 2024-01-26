@@ -85,6 +85,212 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {
+        
+        $generarPdf = new generarPdf();
+        $empresa              = $generarPdf->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;
+        
+        $conceptoComprobante = 'Documento de preuba';
+
+       
+
+
+        $fechaHoraActual = Carbon::now();
+        $fechaActual     = $fechaHoraActual->format('Y-m-d');
+        $idUsuario       = Auth::id();
+        $agenciaId       = auth()->user()->agenid;
+        $cajaId          = auth()->user()->cajaid;
+
+        $fechaActual     = '2024-01-24';
+        $agenciaId       = 101;
+        $cajaId          = 1;
+        $idUsuario       = 2;
+
+        $nombreUsuario      = 'RAMÓN DAVID SALAZAR RINCON';
+        $nuemeroComprobante = '20240001';
+        $fechaComprobante   = '2024-01-24';
+        $nombreAgencia      = 'PRINCIPAL';
+        $numeroCaja         = '01';
+        $titulo             = 'Comprobante contable número '.$nuemeroComprobante;
+
+
+        /*Schema::create('comprobantecontable', function (Blueprint $table) {
+            $table->bigIncrements('comconid')->unsigned()->comment('Identificador de la tabla comprobante contable');
+            $table->bigInteger('movcajid')->unsigned()->comment('Identificador del movimiento caja');
+            $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario');
+            $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia');
+            $table->tinyInteger('cajaid')->unsigned()->comment('Identificador de la caja');
+            $table->year('comconanio', 4)->comment('Año en el cual se registra el comprobante contable');
+            $table->string('comconconsecutivo', 5)->comment('Consecutivo del comprobante contable asignado por cada año');
+            $table->dateTime('comconfechahora')->comment('Fecha y hora en la cual se crea el comprobante contable');
+            $table->string('comcondescripcion', 1000)->comment('Descripción del comprobante contable');
+            $table->dateTime('comconfechahoracierre')->nullable()->comment('Fecha y hora en la cual se cierra el comprobante contable');
+            $table->string('comconestado', 1)->default('A')->comment('Estado del comprobante contable');*/
+
+        $comprobantecontable = DB::table('comprobantecontable as cc')
+                            ->select(DB::raw('DATE(cc.comconfechahora) as fechaComprobante'), 
+                            DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),
+                            'cc.comcondescripcion', 'a.agennombre', 'c.cajanumero')
+                            ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
+                            ->join('caja as c', 'c.cajaid', '=', 'cc.cajaid')
+                            ->whereDate('cc.comconfechahora', $fechaActual)
+                            ->where('cc.usuaid', $idUsuario)
+                            ->where('cc.agenid', $agenciaId)
+                            ->where('cc.cajaid', $cajaId)
+                            ->first();
+
+
+
+        $moviemientosContables = DB::table('cuentacontable as cc')
+        ->select(DB::raw('DATE(ccd.cocodefechahora) as fechaMovimiento'), 'cc.cueconid','cc.cueconnombre', 'cc.cueconcodigo','mc.cajaid', 'cct.agenid', 'mc.usuaid',
+            DB::raw("(SELECT COALESCE(SUM(ccd.cocodemonto), 0)
+                FROM comprobantecontabledetalle as ccd
+                INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
+                INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
+                INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
+                WHERE cc1.cueconnaturaleza = 'D'
+                AND cc1.cueconid = cc.cueconid
+                AND mc1.cajaid = mc.cajaid
+                AND cct1.agenid = cct.agenid
+                AND mc1.usuaid = mc.usuaid
+                AND DATE(mc1.movcajfechahoraapertura) =  '$fechaActual'
+            ) AS valorDebito"),
+            DB::raw("(SELECT COALESCE(SUM(ccd.cocodemonto), 0)
+                FROM comprobantecontabledetalle as ccd
+                INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
+                INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
+                INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
+                WHERE cc1.cueconnaturaleza = 'C'
+                AND cc1.cueconid = cc.cueconid
+                AND mc1.cajaid = mc.cajaid
+                AND cct1.agenid = cct.agenid
+                AND mc1.usuaid = mc.usuaid
+                AND DATE(mc1.movcajfechahoraapertura) =  '$fechaActual'
+            ) AS valorCredito")
+        )
+        ->join('comprobantecontabledetalle as ccd', 'ccd.cueconid', '=', 'cc.cueconid')
+        ->join('comprobantecontable as cct', 'cct.comconid', '=', 'ccd.comconid')
+        ->join('movimientocaja as mc', function ($join) {
+            $join->on('mc.movcajid', '=', 'cct.movcajid');
+            $join->on('mc.usuaid', '=', 'cct.usuaid');
+        })
+        ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
+        ->where('mc.usuaid', $idUsuario)
+        ->where('cct.agenid', $agenciaId)
+        ->where('mc.cajaid', $cajaId)
+        ->groupBy(DB::raw('DATE(ccd.cocodefechahora)'), 'cc.cueconid', 'cc.cueconnombre', 'cc.cueconcodigo', 'mc.cajaid', 'cct.agenid', 'mc.usuaid')
+        ->orderBy('cc.cueconid')
+        ->get();
+
+        $arrayDatos = [ 
+            "nombreUsuario"       => 'RAMÓN DAVID SALAZAR RINCON',
+            "nuemeroComprobante"  => $comprobantecontable->numeroComprobante,
+            "fechaComprobante"    => $comprobantecontable->fechaComprobante,
+            "nombreAgencia"       => $comprobantecontable->agennombre,
+            "numeroCaja"          => $comprobantecontable->cajanumero,
+            "conceptoComprobante" => $comprobantecontable->comcondescripcion,
+            "mensajeImpresion"    => 'Documento impreso el dia '.$fechaHoraActual,
+            "metodo"              => 'I'
+        ];
+
+
+        $generarPdf->generarComprobanteContable($arrayDatos, $moviemientosContables);
+
+
+
+/*        
+
+        $generarPdf->headerDocumentoHorizontal($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$generarPdf->footerDocumentoHorizontal($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $fechaActual);
+
+        PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator('ERP '.$siglaEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Certificado, documento,'.$siglaEmpresa.', '.$titulo);
+        PDF::SetTitle($titulo);
+
+        PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 30 , 20);
+		PDF::AddPage('L', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(20); 
+		PDF::SetFont('helvetica','B',12);
+		PDF::Ln(16);
+		PDF::Cell(254,5,'COMPROBANTE CONTABLE',0,0,'L'); 
+		PDF::Ln(8);
+        PDF::SetFont('helvetica','',10);
+		PDF::Cell(38,4,'Número comprobante: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(52,4,$nuemeroComprobante,0,0,'L'); 
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(15,4,'Fecha: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(45,4,$fechaComprobante,0,0,'L');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(18,4,'Agencia: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(68,4,$nombreAgencia,0,0,'L');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(12,4,'Caja: ',0,0,'L');        
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(8,4,$numeroCaja,0,0,'L');
+        PDF::Ln(4);
+        PDF::SetFont('helvetica','',10); 
+        PDF::Cell(38,5,'Concepto: ',0,0,'L'); 
+        PDF::MultiCell(216, 0, $conceptoComprobante."\n", 0, 'J', 0);        
+		PDF::SetFont('helvetica','',12); 
+		PDF::Ln(8);
+        PDF::Cell(30,4,'Código ','RB',0,'L');
+        PDF::Cell(166,4,'Cuenta ','RB',0,'L');
+        PDF::Cell(30,4,'Débito ','RB',0,'C');
+        PDF::Cell(30,4,'Crédito ','RB',0,'C');
+        PDF::Ln(5);
+
+        $valorTotalDebito  = 0;
+        $valorTotalCredito = 0;
+        foreach($arrayDatos as $datos){
+            $valorTotalDebito  += $datos->valorDebito;
+            $valorTotalCredito += $datos->valorCredito;
+            PDF::Cell(30,4,$datos->cueconcodigo,'R',0,'L');
+            PDF::Cell(166,4,substr(mb_strtolower($datos->cueconnombre,'UTF-8') , 0, 83) ,'R',0,'L');
+            PDF::Cell(30,4,'$'.number_format($datos->valorDebito,0,',','.'),'R',0,'R');
+            PDF::Cell(30,4,'$'.number_format($datos->valorCredito,0,',','.'),'R',0,'R');
+            PDF::Ln(5);
+        }
+
+        PDF::Ln(5);
+        PDF::Cell(196,4,"Totales: ",0,0,'R');
+        PDF::Cell(30,4,'$'.number_format($valorTotalDebito,0,',','.'),'TR',0,'R');
+        PDF::Cell(30,4,'$'.number_format($valorTotalCredito,0,',','.'),'T',0,'R');
+
+        PDF::Ln(24);
+        PDF::Cell(80,4,$nombreUsuario,0,0,'L');
+        PDF::Ln(6);
+        PDF::Cell(80,4,"Preparó ",'T',0,'L');
+        PDF::Cell(7,4,"",0,0,'C');
+        PDF::Cell(80,4,"Revisó ",'T',0,'L');
+        PDF::Cell(7,4,"",0,0,'R');
+        PDF::Cell(80,4,"Aprobó ",'T',0,'L');
+
+
+
+        PDF::output($titulo.'.pdf', 'I');
+
+
+/*
         $generales  = new generales();  
         $generarPdf = new generarPdf();
         $arrayDatos = [ 

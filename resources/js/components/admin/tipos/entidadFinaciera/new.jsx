@@ -9,8 +9,8 @@ import instance from '../../../layout/instance';
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo: data.carlabid, nombre: data.carlabnombre, estado: data.carlabactivo, tipo:tipo 
-                                    } : {codigo:'000', nombre: '', estado: '1', tipo:tipo
+                    (tipo !== 'I') ? {codigo: data.entfinid, nombre: data.entfinnombre, numeroCuenta:data.entfinnumerocuenta, estado: data.entfinactiva, tipo:tipo 
+                                    } : {codigo:'000', nombre: '', numeroCuenta: '', estado: '1', tipo:tipo
                                 });
 
     const [loader, setLoader] = useState(false); 
@@ -20,9 +20,13 @@ export default function New({data, tipo}){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
+    const handleChangeUpperCase = (e) => {
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
+    }
+
     const handleSubmit = () =>{
         setLoader(true);
-        instance.post('/admin/cargoLaboral/salve', formData).then(res=>{
+        instance.post('/admin/entidadFinanciera/salve', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
@@ -40,7 +44,7 @@ export default function New({data, tipo}){
         <ValidatorForm onSubmit={handleSubmit} >
             
             <Grid container spacing={2}>
-                <Grid item xl={10} md={10} sm={12} xs={12}>
+                <Grid item xl={7} md={7} sm={8} xs={12}>
                     <TextValidator 
                         name={'nombre'}
                         value={formData.nombre}
@@ -50,6 +54,18 @@ export default function New({data, tipo}){
                         inputProps={{autoComplete: 'off', maxLength: 100}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
+                        onChange={handleChangeUpperCase}
+                    />
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={4} xs={12}>
+                    <TextValidator 
+                        name={'numeroCuenta'}
+                        value={formData.numeroCuenta}
+                        label={'Número de cuenta'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 20}}
                         onChange={handleChange}
                     />
                 </Grid>

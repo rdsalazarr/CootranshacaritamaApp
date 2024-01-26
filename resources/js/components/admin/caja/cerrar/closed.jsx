@@ -14,7 +14,8 @@ import CajaNoAbierta from "./cajaNoAbierta";
 
 export default function Closed(){
 
-    const [movimientoCaja, setMovimientoCaja] = useState({saldoInicial:'',valorDebito:'',valorCredito:'', saldoCerrar:''});
+    const [movimientoCaja, setMovimientoCaja] = useState({saldoInicial:'',valorDebito:'',valorCredito:'', saldoCerrar:'', saldoCerrarFormateado:''});
+    const [deshabilitarBoton, setDeshabilitarBoton] = useState(true);
     const [nombreUsuario, setNombreUsuario] = useState('');
     const [cajaAbierta, setCajaAbierta] = useState(true);
     const [abrirModal, setAbrirModal] = useState(false);
@@ -31,7 +32,7 @@ export default function Closed(){
 
     const cerrarCaja = () =>{
         setLoader(true);   
-        instance.post('/admin/caja/cerrar/movimiento/salve').then(res=>{
+        instance.post('/admin/caja/cerrar/movimiento/salve', {idValor: movimientoCaja.saldoCerrar}).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setDataFactura(res.dataFactura) : null;
@@ -42,7 +43,7 @@ export default function Closed(){
 
     const buttons = [
             <Button key="1" startIcon={<FileDownloadIcon />} onClick={() => {descargarFile()}}>Descargar excel</Button>,
-            <Button key="2" startIcon={<CloseIcon onClick={() => {cerrarCaja()}}/>} style={{marginTop: '1em'}}>Cerrar caja</Button>
+            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {cerrarCaja()}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
         ];
 
     const inicio = () =>{
@@ -50,11 +51,12 @@ export default function Closed(){
         let newMovimientoCaja = {...movimientoCaja}
         instance.get('/admin/caja/cerrar/movimiento').then(res=>{
             if(res.success){
-                let movimientocaja             = res.movimientoCaja;
-                newMovimientoCaja.saldoInicial = movimientocaja.saldoInicial;
-                newMovimientoCaja.valorDebito  = formatearNumero(movimientocaja.valorDebito);
-                newMovimientoCaja.valorCredito = formatearNumero(movimientocaja.valorCredito);
-                newMovimientoCaja.saldoCerrar  = formatearNumero(parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito));
+                let movimientocaja                      = res.movimientoCaja;
+                newMovimientoCaja.saldoInicial          = movimientocaja.saldoInicial;
+                newMovimientoCaja.valorDebito           = formatearNumero(movimientocaja.valorDebito);
+                newMovimientoCaja.valorCredito          = formatearNumero(movimientocaja.valorCredito);
+                newMovimientoCaja.saldoCerrarFormateado = formatearNumero(parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito));
+                newMovimientoCaja.saldoCerrar           = parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito);
                 setMovimientoCaja(newMovimientoCaja);
                 setData(res.data);
             }else{
@@ -63,7 +65,7 @@ export default function Closed(){
             setNombreUsuario(res.nombreUsuario);
             setCajaAbierta(res.success);
             setLoader(false);
-        }) 
+        })
     }
 
     const formatearNumero = (numero) =>{
@@ -130,7 +132,7 @@ export default function Closed(){
                                         <Typography component={'h5'} >Saldo a cerrar</Typography>
                                         <Box className='cardBox'>
                                             <AttachMoneyIcon className='cardIcono'></AttachMoneyIcon>
-                                            <Typography component={'h4'} >{movimientoCaja.saldoCerrar}</Typography>
+                                            <Typography component={'h4'} >{movimientoCaja.saldoCerrarFormateado}</Typography>
                                         </Box>
                                     </Card>
                                 </Grid>
@@ -150,8 +152,8 @@ export default function Closed(){
                     <ModalDefaultAuto
                         title   = {'Visualizar comprobante contable en PDF'} 
                         content = {<VisualizarPdf dataFactura={dataFactura} />} 
-                        close   = {() =>{setAbrirModal(false);}} 
-                        tam     = 'smallFlot'
+                        close   = {() =>{(setAbrirModal(false), setDeshabilitarBoton(false))}} 
+                        tam     = 'mediumFlot'
                         abrir   = {abrirModal}
                     />
               </Fragment>

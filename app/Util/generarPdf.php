@@ -802,7 +802,7 @@ class generarPdf
 		    PDF::Cell(144,4,$nit,0,0,'C');
 			PDF::SetFont('helvetica','I',12);
 		    PDF::Ln(1);
-			PDF::SetX(24);	
+			PDF::SetX(24);
 		    PDF::Cell(170,4,$linea,'0',0,'C');
 		    PDF::Ln(6);
 		    PDF::SetFont('helvetica','I',9);
@@ -885,6 +885,63 @@ class generarPdf
 			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'RB', 0, 'L');
 		});
     }
+
+	function headerDocumentoHorizontal($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa){
+		PDF::setHeaderCallback(function($pdf) use ($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa){
+			$linea = str_pad('',  106, "_", STR_PAD_LEFT); //Diibuja la linea
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,24,4,26,24);
+			PDF::SetY(8);
+            PDF::SetX(46);
+			PDF::SetFont('helvetica','',13);
+		    PDF::Cell(204,5,$nombreEmpresa,0,0,'C');
+			PDF::SetFont('helvetica','B',14);
+		    PDF::Ln(6);
+		    PDF::SetX(46);
+		    PDF::Cell(204,4,$siglaEmpresa,0,0,'C');
+			PDF::SetFont('helvetica','I',9);
+			PDF::Ln(6);
+		    PDF::SetX(46);
+		    PDF::Cell(204,4,$personeriaJuridica,0,0,'C');
+			PDF::Ln(4);
+		    PDF::SetX(46);
+		    PDF::Cell(204,4,$nit,0,0,'C');
+			PDF::SetFont('helvetica','I',12);
+		    PDF::Ln(1);
+			PDF::SetX(24);
+		    PDF::Cell(250,4,$linea,0,0,'C');
+		    PDF::Ln(3);
+		    PDF::SetFont('helvetica','I',9);
+        	PDF::SetX(272);
+			PDF::Cell(4, 10, 'Pag. ' . PDF::getAliasNumPage() . '(' . PDF::getAliasNbPages() . ')', 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		});
+	}
+
+	function footerDocumentoHorizontal($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $mensajeImpresion = ''){
+		PDF::setFooterCallback(function($pdf) use ($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $mensajeImpresion){	
+			$linea = str_pad('',  106, "_", STR_PAD_LEFT); //Diibuja la linea
+			PDF::Ln(2);
+			if($mensajeImpresion !== ''){
+				PDF::SetY('184');
+				PDF::SetX(20);
+				PDF::SetFont('helvetica','',6); 
+				PDF::Cell(252,2,$mensajeImpresion,0,0,'R');
+				PDF::Ln(1);
+			}
+            PDF::SetFont('helvetica','I',12);
+            PDF::SetY('182');
+			PDF::SetX(20);
+			PDF::Cell(254,1,$linea,0,0,'C');
+			PDF::Ln(5);
+			PDF::SetX(20);
+			PDF::Cell(254,4,$direccionEmpresa.' | '.$barrioEmpresa,0,0,'C');
+			PDF::Ln(5);
+			PDF::SetX(20);
+			PDF::Cell(254,4,'Teléfono: '.$telefonoEmpresa.' | Celular: '.$celularEmpresa.'',0,0,'C'); 
+			PDF::Ln(5);
+			PDF::SetX(20);
+			PDF::Cell(254,4,$urlEmpresa,0,0,'C');
+		});
+	}
 
 	function mensajeFirmarCentro(){
 		PDF::SetFont('helvetica', 'B', 12);
@@ -3209,5 +3266,118 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
-	
+
+	function generarComprobanteContable($arrayDatos, $moviemientosContables){
+		$nombreUsuario       = $arrayDatos['nombreUsuario'];
+		$nuemeroComprobante  = $arrayDatos['nuemeroComprobante'];
+		$fechaComprobante    = $arrayDatos['fechaComprobante'];
+		$nombreAgencia       = $arrayDatos['nombreAgencia'];
+		$numeroCaja          = $arrayDatos['numeroCaja'];
+		$conceptoComprobante = $arrayDatos['conceptoComprobante']; 
+		$mensajeImpresion    = $arrayDatos['mensajeImpresion']; 
+		$metodo              = $arrayDatos['metodo'];
+        $titulo              = 'Comprobante contable número '.$nuemeroComprobante;
+		$tituloPdf           = 'Comprobante_contable_numero_'.$nuemeroComprobante;
+
+		$empresa              = $this->consultarEmpresa();
+		$direccionEmpresa 	  = $empresa->emprdireccion;
+		$ciudadEmpresa    	  = $empresa->muninombre;
+		$barrioEmpresa    	  = $empresa->emprbarrio;
+		$telefonoEmpresa  	  = $empresa->emprtelefonofijo;
+		$celularEmpresa   	  = $empresa->emprtelefonocelular;
+		$urlEmpresa       	  = $empresa->emprurl;
+		$nombreEmpresa        = $empresa->emprnombre;
+		$lemaEmpresa          = $empresa->emprlema;
+		$siglaEmpresa         = $empresa->emprsigla;
+		$nit                  = $empresa->nit;
+		$personeriaJuridica   = $empresa->emprpersoneriajuridica;
+		$logoEmpresa          = $empresa->emprlogo;	
+
+        PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator('ERP '.$siglaEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Certificado, documento, '.$siglaEmpresa.', '.$titulo);
+        PDF::SetTitle($titulo);	
+
+		$this->headerDocumentoHorizontal($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
+		$this->footerDocumentoHorizontal($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $mensajeImpresion);
+
+        PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+		PDF::SetMargins(20, 35 , 20);
+		PDF::AddPage('L', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(20); 
+		PDF::SetFont('helvetica','B',12);
+		PDF::Ln(16);
+		PDF::Cell(254,5,'COMPROBANTE CONTABLE',0,0,'L'); 
+		PDF::Ln(8);
+        PDF::SetFont('helvetica','',10);
+		PDF::Cell(38,4,'Número comprobante: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(52,4,$nuemeroComprobante,0,0,'L'); 
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(15,4,'Fecha: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(45,4,$fechaComprobante,0,0,'L');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(18,4,'Agencia: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(68,4,$nombreAgencia,0,0,'L');
+        PDF::SetFont('helvetica','',10);
+        PDF::Cell(10,4,'Caja: ',0,0,'L');
+        PDF::SetFont('helvetica','B',10);
+        PDF::Cell(8,4,$numeroCaja,0,0,'L');
+        PDF::Ln(6);
+        PDF::SetFont('helvetica','',10); 
+        PDF::Cell(38,5,'Concepto: ',0,0,'L'); 
+        PDF::MultiCell(216, 0, $conceptoComprobante."\n", 0, 'J', 0);
+		PDF::SetFont('helvetica','',12); 
+		PDF::Ln(8);
+        PDF::Cell(30,4,'Código ','RB',0,'L');
+        PDF::Cell(166,4,'Cuenta ','RB',0,'L');
+        PDF::Cell(30,4,'Débito ','RB',0,'C');
+        PDF::Cell(30,4,'Crédito ','RB',0,'C');
+        PDF::Ln(5);
+
+        $valorTotalDebito  = 0;
+        $valorTotalCredito = 0;
+        foreach($moviemientosContables as $datos){
+            $valorTotalDebito  += $datos->valorDebito;
+            $valorTotalCredito += $datos->valorCredito;
+
+            PDF::Cell(30,4,$datos->cueconcodigo,'R',0,'L');
+            PDF::Cell(166,4,substr(mb_strtolower($datos->cueconnombre,'UTF-8') , 0, 83) ,'R',0,'L');
+            PDF::Cell(30,4,'$'.number_format($datos->valorDebito,0,',','.'),'R',0,'R');
+            PDF::Cell(30,4,'$'.number_format($datos->valorCredito,0,',','.'),'R',0,'R');
+            PDF::Ln(5);
+        }
+
+        PDF::Ln(5);
+        PDF::Cell(196,4,"Totales: ",0,0,'R');
+        PDF::Cell(30,4,'$'.number_format($valorTotalDebito,0,',','.'),'TR',0,'R');
+        PDF::Cell(30,4,'$'.number_format($valorTotalCredito,0,',','.'),'T',0,'R');
+
+        PDF::Ln(24);
+        PDF::Cell(80,4,$nombreUsuario,0,0,'L');
+        PDF::Ln(6);
+        PDF::Cell(80,4,"Preparó ",'T',0,'L');
+        PDF::Cell(7,4,"",0,0,'C');
+        PDF::Cell(80,4,"Revisó ",'T',0,'L');
+        PDF::Cell(7,4,"",0,0,'R');
+        PDF::Cell(80,4,"Aprobó ",'T',0,'L');
+
+		$tituloPdf = $tituloPdf.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en temporal
+			$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
+			fopen($rutaCarpeta, "w+");
+			PDF::output($rutaCarpeta, 'F');
+			return $rutaCarpeta;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}	
 }

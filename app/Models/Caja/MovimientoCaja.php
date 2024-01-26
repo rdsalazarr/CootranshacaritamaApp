@@ -20,6 +20,7 @@ class MovimientoCaja extends Model
     {
         $movimientocaja  = DB::table('movimientocaja')->select('movcajsaldofinal')
                                     ->whereDate('movcajfechahoraapertura', Carbon::now()->format('Y-m-d'))
+                                    ->whereNull('movcajsaldofinal')
                                     ->where('usuaid', Auth::id())
                                     ->where('cajaid', auth()->user()->cajaid)
                                     ->first();
