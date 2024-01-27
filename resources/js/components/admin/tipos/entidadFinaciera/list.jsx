@@ -24,7 +24,7 @@ export default function List(){
                         <Eliminar id={(tipo === 2) ? modal.data.entfinid : null} ruta={'/admin/entidadFinanciera/destroy'} cerrarModal={cerrarModal} />
                     ];
 
-    const tituloModal = ['Nueva entidad finaciea','Editar entidad finaciea',''];
+    const tituloModal = ['Nueva entidad financiera','Editar entidad financiera',''];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);

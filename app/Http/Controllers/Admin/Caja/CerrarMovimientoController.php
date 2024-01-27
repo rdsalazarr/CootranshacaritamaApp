@@ -6,9 +6,9 @@ use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Caja\ComprobanteContable;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
-use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
+use Exception, Auth, DB;
 use App\Util\notificar;
 use Carbon\Carbon;
 

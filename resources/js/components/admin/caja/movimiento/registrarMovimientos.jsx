@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../layout/general';
+import Consignacion from "./consignacion/list";
 import Mensualidad from "./mensualidad";
 import PagoCredito from "./pagoCredito";
 import Sancion from "./sancion";
 
-export default function List(){
+export default function RegistrarMovimientos(){
 
     const [variantTab, setVariantTab] = useState((window.innerWidth <= 768) ? 'scrollable' : 'fullWidth');
     const [value, setValue] = useState(0); 
@@ -27,6 +28,7 @@ export default function List(){
                 <Tab label="Mensualidad" />
                 <Tab label="Pago crédito" />
                 <Tab label="Sanción" />
+                <Tab label="Consignación" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -39,6 +41,10 @@ export default function List(){
 
             <TabPanel value={value} index={2}>
                 <Sancion />
+            </TabPanel>
+
+            <TabPanel value={value} index={3}>
+                <Consignacion />
             </TabPanel>
 
         </Box>

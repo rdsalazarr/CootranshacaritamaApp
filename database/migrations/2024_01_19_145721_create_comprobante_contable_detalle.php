@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('comconid')->unsigned()->comment('Identificador del comprobante contable');
             $table->integer('cueconid')->unsigned()->comment('Identificador de la cuenta contable');
             $table->dateTime('cocodefechahora')->comment('Fecha y hora en la cual se realiza el registro');
-            $table->decimal('cocodemonto', 12, 2)->nullable()->comment('Monto del movimiento de caja detallado');
+            $table->double('cocodemonto', 12, 2)->comment('Monto del movimiento de caja detallado');
             $table->boolean('cocodecontabilizado')->default(false)->comment('Determina si el movimiento fue contabilizado');
             $table->timestamps();
             $table->foreign('comconid')->references('comconid')->on('comprobantecontable')->onUpdate('cascade')->index('fk_comconcocode');

@@ -149,6 +149,7 @@ php artisan make:migration create_comprobante_contable
 php artisan make:migration create_comprobante_contable_detalle
 
 php artisan make:migration create_entidad_financiera
+php artisan make:migration create_consignacion_bancaria
 
 
 
@@ -233,6 +234,7 @@ php artisan make:model Vehiculos\VehiculoSuspendido
 php artisan make:model Usuario\CajaUsuario
 php artisan make:model Caja\AbrirCaja
 php artisan make:model Caja\CuentaContable
+php artisan make:model Caja\ConsignacionBancaria
 
 
 php artisan make:model Caja\ComprobanteContableDetalle
@@ -394,6 +396,7 @@ php artisan make:controller Admin\Caja\ProcesarMovimientoController
 php artisan make:controller Admin\Caja\CerrarMovimientoController
 
 php artisan make:controller Admin\Caja\CuentaContableController
+php artisan make:controller Admin\Caja\ConsignacionBancariaController
 
 
 php artisan make:middleware SecurityMiddleware

@@ -55,7 +55,7 @@ export default function Closed(){
                 newMovimientoCaja.saldoInicial          = movimientocaja.saldoInicial;
                 newMovimientoCaja.valorDebito           = formatearNumero(movimientocaja.valorDebito);
                 newMovimientoCaja.valorCredito          = formatearNumero(movimientocaja.valorCredito);
-                newMovimientoCaja.saldoCerrarFormateado = formatearNumero(parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito));
+                newMovimientoCaja.saldoCerrarFormateado = formatearNumero(parseInt(movimientocaja.movcajsaldoinicial) + parseInt((movimientocaja.valorDebito === null) ? 0 : movimientocaja.valorDebito ));
                 newMovimientoCaja.saldoCerrar           = parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito);
                 setMovimientoCaja(newMovimientoCaja);
                 setData(res.data);

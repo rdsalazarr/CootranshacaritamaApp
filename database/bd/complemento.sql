@@ -180,3 +180,6 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (50, 1, 50);
+
+
+ALTER TABLE `comprobantecontabledetalle` CHANGE `cocodemonto` `cocodemonto` DOUBLE(12,2) NULL DEFAULT NULL COMMENT 'Monto del movimiento de caja detallado';

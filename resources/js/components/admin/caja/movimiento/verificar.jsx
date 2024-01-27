@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
+import RegistrarMovimientos from "./registrarMovimientos";
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import NoTieneCaja from "../abrir/noTieneCaja";
 import AbrirCaja from "../abrir/abrirCaja";
-import RegistrarMovimientos from "./list";
 import { Box} from '@mui/material';
 
 export default function Verificar(){

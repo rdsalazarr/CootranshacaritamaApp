@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Caja;
 
 use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Caja\ConsignacionBancaria;
 use App\Models\Caja\ComprobanteContable;
 use App\Models\Asociado\AsociadoSancion;
 use App\Http\Controllers\Controller;
@@ -296,6 +297,13 @@ class ProcesarMovimientoController extends Controller
         }
     }
 
+    public function tipoDocumentos(){
+        $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')
+                                    ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
+
+        return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
+    } 
+
     public function consultarSancionAsociado(Request $request)
 	{
         $this->validate(request(),['vehiculoId' => 'required|numeric']);
@@ -394,12 +402,68 @@ class ProcesarMovimientoController extends Controller
         }
     }
 
-    public function tipoDocumentos(){
-        $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')
-                                    ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
+    public function listConsignacion()
+    {
+        $consignacionBancarias = DB::table('consignacionbancaria as cb')
+                                    ->select('cb.conbanid','cb.entfinid','cb.conbanfechahora','cb.conbanmonto','cb.conbandescripcion','ef.entfinnombre',
+                                    DB::raw("FORMAT(cb.conbanmonto, 0) as monto"))
+                                    ->join('entidadfinanciera as ef', 'ef.entfinid', '=', 'cb.entfinid')
+                                    ->where('cb.usuaid', Auth::id())
+                                    ->orderBy('cb.conbanid')->get();
 
-        return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
-    } 
-   
-    
+        return response()->json(['data' => $consignacionBancarias ]);
+    }
+
+    public function datosConsignacion()
+    {
+        $entidadFinancieras = DB::table('entidadfinanciera')->select('entfinid','entfinnombre')
+                                    ->where('entfinactiva', true)
+                                    ->orderBy('entfinnombre')->get();
+
+        return response()->json(['entidadFinancieras' => $entidadFinancieras ]);
+    }
+
+    public function salveConsignacion(Request $request)
+	{
+        $this->validate(request(),['entidadFinaciera' => 'required|numeric',
+                                    'monto'           => 'required|numeric|between:1,999999999',
+                                    'descripcion'     => 'required|string|min:10|max:200']);
+
+        DB::beginTransaction();
+        try {
+            $fechaHoraActual = Carbon::now();
+            $fechaActual     = $fechaHoraActual->format('Y-m-d');
+
+            $consignacionbancaria                    =  new ConsignacionBancaria();
+            $consignacionbancaria->entfinid          = $request->entidadFinaciera;
+            $consignacionbancaria->usuaid            = Auth::id();
+            $consignacionbancaria->agenid            = auth()->user()->agenid;
+            $consignacionbancaria->conbanfechahora   = $fechaHoraActual;
+            $consignacionbancaria->conbanmonto       = $request->monto;
+            $consignacionbancaria->conbandescripcion = $request->descripcion;
+            $consignacionbancaria->save();
+
+            //Se realiza la contabilizacion
+            $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 1;//Banco
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $request->monto;
+            $comprobantecontabledetalle->save();
+
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 2;//Caja;
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $request->monto;
+            $comprobantecontabledetalle->save();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Registro realizado con éxito' ]);
+        } catch (Exception $error){
+            DB::rollback();
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+        }
+    }  
 }

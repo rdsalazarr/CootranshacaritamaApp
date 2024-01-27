@@ -515,6 +515,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);
             Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);
 
+            Route::get('/listar/consignacion/bancaria', [ProcesarMovimientoController::class, 'listConsignacion']);
+            Route::get('/consultar/datos/consignacion/bancaria', [ProcesarMovimientoController::class, 'datosConsignacion']);
+            Route::post('/registrar/consignacion/bancaria', [ProcesarMovimientoController::class, 'salveConsignacion']);
+
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
             Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
         });

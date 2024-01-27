@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import RegistrarMovimientos from "../movimiento/registrarMovimientos";
 import { ValidatorForm } from 'react-material-ui-form-validator';
 import { Button, Box, Grid, Stack, Card } from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import RegistrarMovimientos from "../movimiento/list";
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 
