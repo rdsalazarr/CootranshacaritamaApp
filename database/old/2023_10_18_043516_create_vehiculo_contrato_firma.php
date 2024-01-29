@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('vehiculocontratofirma', function (Blueprint $table) {
             $table->bigIncrements('vecofiid')->unsigned()->comment('Identificador de la tabla vehiculo contrato firma');
             $table->integer('vehconid')->unsigned()->comment('Identificador de la tabla vehiculo contrato');
-            $table->integer('persidGerente')->nullable()->unsigned()->comment('Identificador de la tabla persona');
-            $table->integer('asocid')->unsigned()->comment('Identificador del asociado');
+            $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->string('vecofitoken', 20)->nullable()->comment('Token con el cual es firmado el contrato');
             $table->datetime('vecofifechahorafirmado')->nullable()->comment('Fecha y hora de la cual se firma el contrato'); 
-            $table->datetime('vecofifechahoranotificacion')->nullable()->comment('Fecha y hora de la cual se envio la notifiación del token'); 
+            $table->datetime('vecofifechahoranotificacion')->nullable()->comment('Fecha y hora de la cual se envio la notifiación del token');
             $table->datetime('vecofifechahoramaxvalidez')->nullable()->comment('Fecha y hora maxima de validez del token'); 
             $table->string('vecofimensajecorreo', 500)->nullable()->comment('Contendio de la información enviada al correo');
             $table->string('vecofimensajecelular', 200)->nullable()->comment('Contendio de la información enviada al celular');
@@ -26,7 +25,6 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('vehconid')->references('vehconid')->on('vehiculocontrato')->onUpdate('cascade')->index('fk_vehconvecofi'); 
             $table->foreign('persidGerente')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persvecofi');
-            $table->foreign('asocid')->references('asocid')->on('asociado')->onUpdate('cascade')->index('fk_asocvecofi');
         });
     }
 

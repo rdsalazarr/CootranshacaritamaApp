@@ -133,6 +133,50 @@ class DesembolsarSolicitudCreditoController extends Controller
             $colocacioncambioestado->cocaesobservacion = $request->observacionGeneral;
             $colocacioncambioestado->save();
 
+            $fechaInicialColocacion = $generales->obtenerFechaInicialColocacion();         
+            $fechaVencimiento       = $generales->obtenerFechaMesSiguiente($fechaInicialColocacion);
+            $numeroDiasCambioFecha  = $generales->calcularDiasCambiosFechaDesembolso($fechaInicialColocacion, $fechaActual);
+            $valorCuota             = $generales->calculcularValorCuotaMensual($valorPrestamo, $tasaInteres, $numerosCuota);
+           
+           //dd($numeroDiasCambioFecha);
+           // dd($fechaInicialColocacion->format('Y-m-d'));
+            $arrayInteresMensual    = $generales->calcularValorInteresDiario($valorPrestamo, $tasaInteres, $fechaVencimiento, 0, $numeroDiasCambioFecha);
+           // $valorInteres           = $arrayInteresMensual['valorIntereses'];
+           
+            //$valorCuota +=  $arrayInteresMensual['valorIntereses'];
+
+            dd($valorCuota, $arrayInteresMensual['valorIntereses']);
+      
+            $saldoCapital           =  $valorPrestamo;
+            for ($cuota = 1; $cuota <= $numerosCuota; $cuota++) {
+
+                $abonoCapital     = round($valorCuota - $valorInteres, 0);
+                dd($valorCuota);
+
+                if ($saldoCapital < $valorCuota) {
+                    $abonoCapital = $saldoCapital;
+                    $valorCuota   = $saldoCapital + $valorInteres;
+                }
+
+                $saldoCapital -= $abonoCapital;
+                $colocacionliquidacion 				           = new ColocacionLiquidacion();
+                $colocacionliquidacion->coloid                 = $coloid;
+                $colocacionliquidacion->colliqnumerocuota      = $cuota;
+                $colocacionliquidacion->colliqfechavencimiento = $fechaVencimiento;
+                $colocacionliquidacion->colliqvalorcuota       = $valorCuota;
+                $fechaVencimiento                              = $generales->obtenerFechaMesSiguiente($fechaVencimiento);
+                $colocacionliquidacion->save();
+                $valorInteres           = $generales->calcularValorInteresMensual($saldoCapital, $tasaInteres);
+            }
+
+            /*$colocacioncambioestado 				   = new ColocacionCambioEstado();
+            $colocacioncambioestado->coloid            = $coloid;
+            $colocacioncambioestado->tiesclid          = $estadoColocacion;
+            $colocacioncambioestado->cocaesusuaid      = Auth::id();
+            $colocacioncambioestado->cocaesfechahora   = $fechaHoraActual;
+            $colocacioncambioestado->cocaesobservacion = $request->observacionGeneral;
+            $colocacioncambioestado->save();
+
             $valorCuota   = $generales->calculcularValorCuotaMensual($valorPrestamo, $tasaInteres, $numerosCuota);
             $saldoCapital = $valorPrestamo;
             for ($cuota = 1; $cuota <= $numerosCuota; $cuota++) {
@@ -155,7 +199,8 @@ class DesembolsarSolicitudCreditoController extends Controller
                 $colocacionliquidacion->colliqvalorcuota       = $valorCuota;
                 $fechaActual                                   = $fechaVencimiento;
                 $colocacionliquidacion->save();
-            }        
+            }        */
+
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito' ]);

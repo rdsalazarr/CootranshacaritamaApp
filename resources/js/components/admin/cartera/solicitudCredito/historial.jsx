@@ -40,8 +40,8 @@ export default function List(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Fecha','Línea crédito', 'Asociado','Destino', 'Valor solicitado','Plazo', 'Visualizar']}
-                    ver={["solcrefechasolicitud","lineaCredito","nombreAsociado","solcredescripcion","valorSolicitado", "solcrenumerocuota"]}
+                    titulo={['Fecha','Línea crédito', 'Persona','Destino', 'Valor solicitado','Plazo', 'Estado','Visualizar']}
+                    ver={["solcrefechasolicitud","lineaCredito","nombrePersona","solcredescripcion","valorSolicitado", "solcrenumerocuota","tiesscnombre"]}
                     accion={[{tipo: 'B', icono : 'visibility',    color: 'green', funcion : (data)=>{edit(data,0)} }]}
                     funciones={{orderBy: true, search: true, pagination:true}}
                 />

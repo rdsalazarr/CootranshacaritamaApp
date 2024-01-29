@@ -1627,10 +1627,9 @@ EOD;
 		PDF::Ln(4);
 		PDF::SetFont('helvetica','',11);
 		PDF::Cell(45,4,'Línea de crédito:',0,0,'');
-		PDF::Cell(45,4,$lineaCredito,0,0,'');
-		PDF::Ln(4);
+		PDF::MultiCell(130, 4, $lineaCredito."\n", 0, 'J', 0);
+
 		PDF::Cell(45,4,'Descripción:',0,0,'');
-		//PDF::MultiCell(0,4,$descripcionCredito,0,'',0);  
 		PDF::MultiCell(130, 4, $descripcionCredito."\n", 0, 'J', 0);
 		PDF::Cell(45,4,'Valor solicitado:',0,0,'');
 		PDF::Cell(45,4,'$'.number_format($valorSolicitado,0,',','.'),0,0,'');

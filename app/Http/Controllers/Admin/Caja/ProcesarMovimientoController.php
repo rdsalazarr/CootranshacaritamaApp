@@ -397,7 +397,7 @@ class ProcesarMovimientoController extends Controller
             $consignacionbancaria->conbandescripcion = $request->descripcion;
             $consignacionbancaria->save();
 
-            $fechaVencimiento                                = $generales->obtenerFechaPagoCuota($fechaActual);
+           // $fechaVencimiento                                = $generales->obtenerFechaPagoCuota($fechaActual);
             $colocacionliquidacion 				             = ColocacionLiquidacion::findOrFail($request->liquidacionId);
             $colocacionliquidacion->colliqfechapago          = $fechaVencimiento;
             $colocacionliquidacion->colliqnumerocomprobante  = $numeroComprobante;

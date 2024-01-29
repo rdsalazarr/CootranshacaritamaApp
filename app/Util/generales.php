@@ -299,6 +299,65 @@ class generales
 	function redonderarCienMasCercano($valor){
 		return round($valor/100.0,0)*100;
 	}
+	
+    function obtenerFechaInicialColocacion(){
+        $fechaHoraActual  = Carbon::now();
+        $fechaActual      = Carbon::parse($fechaHoraActual->format('Y-m-d'));
+        $diaFecha         = $fechaActual->day;
+        $mesFecha         = $fechaActual->month;
+        $nuevaFecha       = Carbon::parse($fechaActual);
+
+        if ($diaFecha >= 29 && $diaFecha <= 31) {
+            $nuevaFecha->setMonth($mesFecha + 1);
+            $nuevaFecha->setDay(1);
+        }
+
+        return $nuevaFecha;
+    }
+
+	function obtenerFechaMesSiguiente($fecha) {
+        $fecha = Carbon::parse($fecha);
+        return $fecha->addMonth();
+    }
+
+	function calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha){
+        $fechaActual         = Carbon::now();
+        $fechaVencimiento    = Carbon::parse($fechaVencimiento);
+        $interesMensual      = $montoPrestamo * ($tasaInteresMensual / 100);
+        $valorCambioFechas   = 0;
+        $totalInteresMora    = 0;
+        $totalValorDescuento = 0;
+
+        if($numeroDiasCambioFecha > 0){
+            $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
+			dd($this->redonderarCienMasCercano($valorCambioFechas));
+            $interesMensual   += $this->redonderarCienMasCercano($valorCambioFechas);
+        }
+
+        if ($fechaVencimiento->lt($fechaActual)) {//Tiene mora
+            $diasMora         = $fechaActual->diffInDays($fechaVencimiento);
+            $interesMora      = $montoPrestamo * ($interesMora / 100) * ($diasMora / 365);
+            $totalInteresMora = $this->redonderarCienMasCercano($interesMora); 
+        }else{
+            $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
+            $valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
+            $totalValorDescuento = $this->redonderarCienMasCercano($valorDescuento);
+        }
+
+        $resultado = [
+			'valorIntereses'   => $interesMensual,
+			'valorInteresMora' => $totalInteresMora,
+			'valorDescuento'   => $totalValorDescuento
+		];
+
+        return $resultado;
+    }
+
+    function calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaVencimiento){
+        $fechaDesembolso  = Carbon::parse($fechaDesembolso);
+        $fechaVencimiento = Carbon::parse($fechaVencimiento);
+        return  $fechaDesembolso->diffInDays($fechaVencimiento);
+    }
 
 	function obtenerFechaPagoCuota($fecha) {
 		$fecha        = Carbon::parse($fecha);
@@ -410,5 +469,4 @@ class generales
             ];
         }
     }
-
 }
