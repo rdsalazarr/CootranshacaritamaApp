@@ -1576,6 +1576,7 @@ EOD;
 		$tasaNominal       	 = $arrayDatos['tasaNominal'];
 		$plazoMensual        = $arrayDatos['plazoMensual'];
 		$numeroColocacion    = $arrayDatos['numeroColocacion'];
+		$fechaRegistro       = $arrayDatos['fechaRegistro'];
 		$metodo              = $arrayDatos['metodo'];
 
 		$empresa            = $this->consultarEmpresa();
@@ -1595,7 +1596,7 @@ EOD;
 		$titulo             = 'Tabla de liquidación de la colocación número '.$numeroColocacion;
 		$generales          = new generales();
 		$valorCuota         = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
-		$fechaActual        = $generales->formatearFecha($fechaDesembolso);
+		$fechaLargaDesembolso = $generales->formatearFecha($fechaRegistro);
 
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('ERP '.$siglaEmpresa);
@@ -1619,7 +1620,7 @@ EOD;
 	    PDF::Ln(12); 
 		PDF::SetFont('helvetica','',11);
 		PDF::Cell(45,4,'Fecha:',0,0,'');
-		PDF::Cell(45,4,$fechaActual,0,0,'');
+		PDF::Cell(45,4,$fechaLargaDesembolso,0,0,'');
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Persona:',0,0,'');
 		PDF::SetFont('helvetica','B',11);
@@ -1662,14 +1663,18 @@ EOD;
 
 		PDF::Ln();
 		PDF::SetFont('helvetica','',11);
-        $saldoCapital = $valorSolicitado;
+
+		$fechaVencimiento      = $generales->obtenerFechaMesSiguiente($fechaDesembolso);
+		$numeroDiasCambioFecha = $generales->calcularDiasCambiosFechaDesembolso($fechaRegistro, $fechaDesembolso);
+		$arrayInteresMensual   = $generales->calcularValorInteresDiario($valorSolicitado, $tasaNominal, $fechaVencimiento, 0, $numeroDiasCambioFecha);
+        $valorInteres          = $arrayInteresMensual['valorIntereses'];
+        $saldoCapital          = $valorSolicitado;
+
 		foreach($colocacionLiquidacion as $dato){
 			$numeroCuota      = $dato->colliqnumerocuota;
 			$fechaVencimiento = $dato->colliqfechavencimiento;
 			$valorCuota       = $dato->colliqvalorcuota;
-
-			$valorInteres = $generales->calcularValorInteresMensual($saldoCapital, $tasaNominal);
-            $abonoCapital = round($valorCuota - $valorInteres, 0);
+            $abonoCapital     = round($valorCuota - $valorInteres, 0);
 
             if ($saldoCapital < $valorCuota) {
                 $abonoCapital = $saldoCapital;
@@ -1685,6 +1690,7 @@ EOD;
             PDF::Cell(32, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($saldoCapital, 0, '.', ','), 1, 0, 'R');
             PDF::Ln();
+			$valorInteres           = $generales->calcularValorInteresMensual($saldoCapital, $tasaNominal);
 		}
 
 		PDF::Ln(12);
@@ -1999,7 +2005,7 @@ EOD;
 		$valorCuota        = $arrayDatos['valorCuota'];
 		$tiempoCredito     = $arrayDatos['tiempoCredito'];
 		$fechaDesembolso   = $arrayDatos['fechaDesembolso'];
-		$tipoPersona       = $arrayDatos['tipoPersona'];
+		$tipoPersona       = $arrayDatos['tipoPersona'];	
 		$metodo            = $arrayDatos['metodo'];	
 		$tituloFormato     = 'SOLICITUD DE CRÉDITO';
         $versionFormato    = '01';

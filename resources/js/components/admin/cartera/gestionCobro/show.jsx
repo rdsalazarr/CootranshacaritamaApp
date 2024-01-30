@@ -27,7 +27,7 @@ export default function Show({id}){
         instance.post('/admin/cartera/show/colocacion', {codigo: id, tipo:'H'}).then(res=>{
             let colocacion                          = res.colocacion;
             newFormDataColocacion.nombreUsuario     = colocacion.nombreUsuario;
-            newFormDataColocacion.fechaDesembolso   = colocacion.colofechahoraregistro;
+            newFormDataColocacion.fechaDesembolso   = colocacion.colofechahoradesembolso;
             newFormDataColocacion.estadoActual      = colocacion.tiesclnombre;
             newFormDataColocacion.numeroPagare      = colocacion.numeroColocacion;
             newFormDataColocacion.valorDesembolsado = colocacion.valorDesembolsado;

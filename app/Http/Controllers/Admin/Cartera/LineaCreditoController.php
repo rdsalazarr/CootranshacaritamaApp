@@ -11,8 +11,9 @@ class LineaCreditoController extends Controller
 {
     public function index()
     {
-        $data = DB::table('lineacredito')->select('lincreid','lincrenombre','lincretasanominal','lincremontominimo','lincremontomaximo',
-									'lincreplazomaximo','lincreactiva',DB::raw("CONCAT(lincretasanominal,' %') as tasaNominal"),
+        $data = DB::table('lineacredito')->select('lincreid','lincrenombre','lincretasanominal','lincremontominimo','lincremontomaximo','lincreinteresmora',
+									'lincreplazomaximo','lincreactiva',DB::raw("CONCAT(lincretasanominal,' %') as tasaNominal"),  
+									DB::raw("CONCAT(lincreinteresmora,' %') as interesMora"),
 									DB::raw("CONCAT('$ ', FORMAT(lincremontominimo, 0)) as montoMinimo"),
 									DB::raw("CONCAT('$ ', FORMAT(lincremontomaximo, 0)) as montoMaximo"),
 									DB::raw("CONCAT(lincreplazomaximo,' meses') as plazoMaximo"),
@@ -29,6 +30,7 @@ class LineaCreditoController extends Controller
 	    $this->validate(request(),[
 	   	        'nombre'      => 'required|string|min:4|max:100',
 				'tasaNominal' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+				'interesMora' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
 				'montoMinimo' => 'required|numeric|between:1,999999999',
 				'montoMaximo' => 'required|numeric|between:1,999999999',
 				'plazoMaximo' => 'required|numeric|between:1,99',
@@ -38,6 +40,7 @@ class LineaCreditoController extends Controller
         try {
             $lineacredito->lincrenombre      = mb_strtoupper($request->nombre,'UTF-8');
             $lineacredito->lincretasanominal = $request->tasaNominal;
+			$lineacredito->lincreinteresmora = $request->interesMora;			
 			$lineacredito->lincremontominimo = $request->montoMinimo;
 			$lineacredito->lincremontomaximo = $request->montoMaximo;
 			$lineacredito->lincreplazomaximo = $request->plazoMaximo;

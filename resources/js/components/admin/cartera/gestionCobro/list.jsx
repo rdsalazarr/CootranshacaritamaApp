@@ -83,7 +83,7 @@ export default function List(){
                         <TablaGeneral
                             datos={data}
                             titulo={['Documento','Nombre asociado','Número de crédito','Fecha desembolso','Valor', 'Vehículo', 'Placa', 'Número interno', 'Días en mora', 'Hacer seguimiento', 'Visualizar']}
-                            ver={["persdocumento","nombreAsociado","numeroColocacion","colofechadesembolso","colovalordesembolsado", "referenciaVehiculo", "vehiplaca", "vehinumerointerno", "diasMora"]}
+                            ver={["persdocumento","nombreAsociado","numeroColocacion","colofechacolocacion","colovalordesembolsado", "referenciaVehiculo", "vehiplaca", "vehinumerointerno", "diasMora"]}
                             accion={[
                                 {tipo: 'B', icono : 'assignment_turned_in', color: 'red',   funcion : (data)=>{edit(data,0)}},
                                 {tipo: 'B', icono : 'visibility',           color: 'green', funcion : (data)=>{edit(data,1)}}

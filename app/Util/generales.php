@@ -299,17 +299,15 @@ class generales
 	function redonderarCienMasCercano($valor){
 		return round($valor/100.0,0)*100;
 	}
-	
+
     function obtenerFechaInicialColocacion(){
         $fechaHoraActual  = Carbon::now();
-        $fechaActual      = Carbon::parse($fechaHoraActual->format('Y-m-d'));
-        $diaFecha         = $fechaActual->day;
-        $mesFecha         = $fechaActual->month;
-        $nuevaFecha       = Carbon::parse($fechaActual);
+        $fechaActual      = Carbon::parse(Carbon::now()->format('Y-m-d'));
+		$nuevaFecha       = Carbon::parse($fechaActual);
+		$diaFecha         = $fechaActual->day;
 
         if ($diaFecha >= 29 && $diaFecha <= 31) {
-            $nuevaFecha->setMonth($mesFecha + 1);
-            $nuevaFecha->setDay(1);
+			$nuevaFecha = $fechaActual->addMonthNoOverflow()->startOfMonth();
         }
 
         return $nuevaFecha;
@@ -330,7 +328,6 @@ class generales
 
         if($numeroDiasCambioFecha > 0){
             $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
-			dd($this->redonderarCienMasCercano($valorCambioFechas));
             $interesMensual   += $this->redonderarCienMasCercano($valorCambioFechas);
         }
 

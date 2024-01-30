@@ -326,7 +326,7 @@ class ProcesarMovimientoController extends Controller
             $fechaActual     = $fechaHoraActual->format('Y-m-d');
 
             $colocaciones = DB::table('colocacion as c')
-                                ->select('c.coloid', 'lc.lincrenombre', 'c.colofechadesembolso', 'Q.colliqfechavencimiento','Q.colliqid',
+                                ->select('c.coloid', 'lc.lincrenombre', 'c.colofechacolocacion', 'Q.colliqfechavencimiento','Q.colliqid',
                                     DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
                                     DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
                                     DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
@@ -362,7 +362,7 @@ class ProcesarMovimientoController extends Controller
         try{
             $colocacionLiquidacion = [];            
             $colocaciones = DB::table('colocacionliquidacion as cl')
-                            ->select('cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechadesembolso',
+                            ->select('cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechacolocacion',
                                  'c.colotasa','c.colonumerocuota','c.colovalordesembolsado',
                                 DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalCuotasPorPagar'),
                                 DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NOT NULL) AS totalCuotasPagadas'))

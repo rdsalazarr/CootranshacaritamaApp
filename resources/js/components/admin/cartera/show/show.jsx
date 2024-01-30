@@ -63,7 +63,7 @@ export default function Show({id}){
 
             if(solicitudCredito.totalColocacion > 0){
                 newFormDataColocacion.nombreUsuario     = colocacion.nombreUsuario;
-                newFormDataColocacion.fechaDesembolso   = colocacion.colofechahoraregistro;
+                newFormDataColocacion.fechaDesembolso   = colocacion.colofechahoradesembolso;
                 newFormDataColocacion.estadoActual      = colocacion.tiesclnombre;
                 newFormDataColocacion.numeroPagare      = colocacion.numeroColocacion;
                 newFormDataColocacion.valorDesembolsado = colocacion.valorDesembolsado;

@@ -222,3 +222,8 @@ ALTER TABLE `colocacion` ADD `colocontabilizada` TINYINT(1) NULL DEFAULT '0' COM
 INSERT INTO `cuentacontable` (`cueconid`, `cueconcodigo`, `cueconnombre`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES ('11', '120011', 'CXC DESEMBOLSOS', 'D', '1', '2024-02-06 09:14:53', '2024-02-06 09:14:53');
 
 ALTER TABLE `tiquete` ADD `tiquvalorestampilla` DECIMAL(10,0) NOT NULL AFTER `tiquvalortotal`, ADD `tiqucontabilizado` TINYINT(1) NOT NULL DEFAULT '0' AFTER `tiquvalorestampilla`;
+
+
+
+ALTER TABLE `colocacion` CHANGE `colofechahoraregistro` `colofechahoradesembolso` DATETIME NOT NULL COMMENT 'Fecha y hora actual en el que se registra la colocacion', CHANGE `colofechadesembolso` `colofechacolocacion` DATE NOT NULL COMMENT 'Fecha de desembolso del crédito';
+ALTER TABLE `lineacredito` ADD `lincreinteresmora` DECIMAL(6,2) NULL AFTER `lincretasanominal`;

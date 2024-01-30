@@ -16,10 +16,10 @@ class GestionCobroCarteraController extends Controller
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
         $data            = DB::table('colocacion as c')->select('c.solcreid','c.coloid','lc.lincrenombre',DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"), 
-                                'c.colovalordesembolsado', 'c.colofechadesembolso', 'p.persdocumento','v.vehiplaca', 'v.vehinumerointerno',
+                                'c.colovalordesembolsado', 'c.colofechacolocacion', 'p.persdocumento','v.vehiplaca', 'v.vehinumerointerno',
                                 DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
-                                DB::raw("DATEDIFF(NOW(), c.colofechadesembolso) as diasMora"))
+                                DB::raw("DATEDIFF(NOW(), c.colofechacolocacion) as diasMora"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                                 ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                 ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
@@ -31,7 +31,7 @@ class GestionCobroCarteraController extends Controller
                                         ->whereDate('colliqfechavencimiento', '<=', $fechaActual)
                                         ->whereNull('colliqfechapago');
                                 })
-                                ->orderBy('c.colofechadesembolso')->get();
+                                ->orderBy('c.colofechacolocacion')->get();
 
         return response()->json(["data" => $data]);
     }
@@ -42,7 +42,7 @@ class GestionCobroCarteraController extends Controller
 
         try {
             $colocacion = DB::table('colocacion as c')
-                            ->select('c.coloid','c.colofechahoraregistro','c.colovalordesembolsado','c.colotasa','c.colonumerocuota','tec.tiesclnombre','c.tiesclid',
+                            ->select('c.coloid','c.colofechahoradesembolso','c.colovalordesembolsado','c.colotasa','c.colonumerocuota','tec.tiesclnombre','c.tiesclid',
                                 DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
                                 DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
                                 DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))

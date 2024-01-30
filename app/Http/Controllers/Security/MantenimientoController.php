@@ -406,7 +406,7 @@ class MantenimientoController extends Controller
         dd($numeroDiasCambioFecha);
 
         $colocacion = DB::table('colocacionliquidacion as cl')
-                        ->select('cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechadesembolso',
+                        ->select('cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechacolocacion',
                         'c.colotasa','c.colonumerocuota','c.colovalordesembolsado',
                             DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion as cl1 WHERE coloid = c.coloid AND colliqfechapago IS NULL) AS totalCuotasPorPagar'),
                             DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion as cl2 WHERE coloid = c.coloid AND colliqfechapago IS NOT NULL) AS totalCuotasPagadas'))
@@ -421,7 +421,7 @@ class MantenimientoController extends Controller
         $plazo                 = $colocacion->colonumerocuota;
         $fechaVencimiento      = $colocacion->colliqfechavencimiento;
         $valorCuota            = $colocacion->colliqvalorcuota;
-        $fechaDesembolso       = $colocacion->colofechadesembolso;
+        $fechaDesembolso       = $colocacion->colofechacolocacion;
         $interesMora           = 2;
         $numeroDiasCambioFecha = ($colocacion->colliqnumerocuota === '1' ) ? $this->calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaVencimiento) : 0;
 

@@ -63,9 +63,9 @@ class CarteraVencidaExport implements FromCollection, WithHeadings,WithPropertie
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
         $consulta        = DB::table('colocacion as c')->select('p.persdocumento',DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
-                                'lc.lincrenombre', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"), 'c.colofechadesembolso','c.colovalordesembolsado', 
+                                'lc.lincrenombre', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"), 'c.colofechacolocacion','c.colovalordesembolsado', 
                                 DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),'v.vehiplaca', 'v.vehinumerointerno', 
-                                DB::raw("DATEDIFF(NOW(), c.colofechadesembolso) as diasMora"))
+                                DB::raw("DATEDIFF(NOW(), c.colofechacolocacion) as diasMora"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                                 ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                 ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
@@ -78,7 +78,7 @@ class CarteraVencidaExport implements FromCollection, WithHeadings,WithPropertie
                                         ->whereDate('colliqfechavencimiento', '<=', $fechaActual)
                                         ->whereNull('colliqfechapago');
                                 })
-                                ->orderBy('c.colofechadesembolso')->get();
+                                ->orderBy('c.colofechacolocacion')->get();
         return $consulta;
     }
 }

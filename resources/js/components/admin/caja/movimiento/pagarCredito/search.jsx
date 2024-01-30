@@ -114,7 +114,7 @@ export default function Search(){
                             <TablaGeneral 
                                 datos={creditoAsociados}
                                 titulo={['Persona','Número de colocacion','Fecha desembolso','Línea de crédito','Valor desembolsado', 'Fecha cuota','Procesar']}
-                                ver={["nombrePersona", "numeroColocacion", "colofechadesembolso","lincrenombre","valorDesembolsado", "colliqfechavencimiento"]}
+                                ver={["nombrePersona", "numeroColocacion", "colofechacolocacion","lincrenombre","valorDesembolsado", "colliqfechavencimiento"]}
                                 accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'green', funcion : (data)=>{edit(data, 0)} }]}
                                 funciones={{orderBy: false, search: false, pagination:false}}
                             />

@@ -47,7 +47,7 @@ class ShowSolicitudCreditoController extends Controller
             if($solicitudCredito->totalColocacion > 0){
 
                 $colocacion =   DB::table('colocacion as c')
-                                    ->select('c.colofechahoraregistro','c.colovalordesembolsado','c.colotasa','c.colonumerocuota','tec.tiesclnombre',
+                                    ->select('c.colofechahoradesembolso','c.colovalordesembolsado','c.colotasa','c.colonumerocuota','tec.tiesclnombre',
                                     DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
                                     DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
                                     DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
@@ -107,8 +107,8 @@ class ShowSolicitudCreditoController extends Controller
 
     function generarSolicitudCredito($request){
 
-        $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
-                                'sc.solcredescripcion','c.colofechadesembolso', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
+        $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre', DB::raw('DATE(c.colofechahoradesembolso) as fechaRegistro'),
+                                'sc.solcredescripcion','c.colofechacolocacion', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                                 ->join('persona as p', 'p.persid', '=', 'sc.persid')
@@ -121,14 +121,15 @@ class ShowSolicitudCreditoController extends Controller
                                     ->where('coloid', $colocacion->coloid)
                                     ->get();
 
-        $arrayDatos = [ "fechaDesembolso"       => $colocacion->colofechadesembolso,
+        $arrayDatos = [ "fechaDesembolso"       => $colocacion->colofechacolocacion,
                         "lineaCredito"          => $colocacion->lincrenombre,
                         "nombrePersona"         => $colocacion->nombrePersona,
                         "descripcionCredito"    => $colocacion->solcredescripcion,
                         "valorSolicitado"       => $colocacion->colovalordesembolsado,
                         "tasaNominal"           => $colocacion->colotasa,
                         "plazoMensual"          => $colocacion->colonumerocuota,
-                        "numeroColocacion"      => $colocacion->numeroColocacion,
+                        "numeroColocacion"      => $colocacion->numeroColocacion, 
+                        "fechaRegistro"         => $colocacion->fechaRegistro,
                         "metodo"                => 'S'
                         ];
 
@@ -138,7 +139,8 @@ class ShowSolicitudCreditoController extends Controller
 
     function generarCartaInstrucciones($request){
 
-        $colocacion = DB::table('colocacion as c')->select('c.colofechadesembolso','c.coloanio', 'c.colonumerodesembolso','p.persdocumento',DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
+        $colocacion = DB::table('colocacion as c')->select('c.colofechacolocacion','c.coloanio', 'c.colonumerodesembolso','p.persdocumento',
+                                DB::raw('DATE(c.colofechahoradesembolso) as fechaRegistro'), DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                                 ->join('persona as p', 'p.persid', '=', 'sc.persid')
@@ -150,7 +152,7 @@ class ShowSolicitudCreditoController extends Controller
 
         $generales           = new generales();
         $nombrePersona       = $colocacion->nombrePersona;
-        $fechaLargaPrestamo  = $generales->formatearFecha($colocacion->colofechadesembolso);
+        $fechaLargaPrestamo  = $generales->formatearFecha($colocacion->fechaRegistro);
         $numeroPagare        = $colocacion->numeroColocacion;
         $documento           = $colocacion->persdocumento;
 
@@ -167,9 +169,9 @@ class ShowSolicitudCreditoController extends Controller
 
         $generales  = new generales();
         $generarPdf = new generarPdf();
-        $colocacion = DB::table('colocacion as c')->select('c.coloid','c.colovalordesembolsado', 'c.colonumerocuota','lc.lincrenombre',
-                        DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
-                        'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
+        $colocacion = DB::table('colocacion as c')->select('c.coloid','c.colovalordesembolsado', 'c.colonumerocuota','lc.lincrenombre','c.colonumerodesembolso','c.coloanio',
+                        DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"), DB::raw('DATE(c.colofechahoradesembolso) as fechaRegistro'),
+                        'c.colofechacolocacion', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
                         'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
                         DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                         ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
@@ -194,7 +196,7 @@ class ShowSolicitudCreditoController extends Controller
                         "montoCredito"      => $colocacion->colovalordesembolsado,
                         "valorCuota"        => $colLiPrimerRegistro->colliqvalorcuota,
                         "tiempoCredito"     => $colocacion->colonumerocuota,
-                        "fechaDesembolso"   => mb_strtoupper($generales->formatearFechaLargaPagare($colocacion->colofechadesembolso),'UTF-8'),
+                        "fechaDesembolso"   => mb_strtoupper($generales->formatearFechaLargaPagare($colocacion->fechaRegistro),'UTF-8'),
                         "tipoPersona"       => $colocacion->tipperid,
                         "metodo"            => 'S'
                     ];
@@ -205,8 +207,8 @@ class ShowSolicitudCreditoController extends Controller
     function generarPagare($request){
 
         $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
-                                DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
-                                'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
+                                DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio', DB::raw('DATE(c.colofechahoradesembolso) as fechaRegistro'),
+                                'c.colofechacolocacion', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
                                 'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
@@ -231,7 +233,7 @@ class ShowSolicitudCreditoController extends Controller
         $valorCredito           = number_format($valorTotalCredito, 0, ',', '.');
         $valorCuota             = number_format($colLiPrimerRegistro->colliqvalorcuota, 0, ',', '.');
         $fechaSolicitud         = $colocacion->solcrefechasolicitud;
-        $fechaDesembolso        = $colocacion->colofechadesembolso;
+        $fechaDesembolso        = $colocacion->fechaRegistro;
         $fechaPrimeraCuota      = $colLiPrimerRegistro->colliqfechavencimiento;
         $fechaUltimaCuota       = $colLiUltimoRegistro->colliqfechavencimiento;
         $interesMensual         = $colocacion->colotasa;
@@ -248,8 +250,8 @@ class ShowSolicitudCreditoController extends Controller
         $documentoAsociado      = number_format($documento, 0, ',', '.');
         $interesMoratorio       = '0';
         $valorEnLetras          = trim($convertirNumeroALetras->valorEnLetras($valorTotalCredito));
-        $fechaLargaPrestamo     = $generales->formatearFecha($colocacion->colofechadesembolso);  
-        $fechaLargaDesembolso   = $generales->formatearFechaLargaPagare($colocacion->colofechadesembolso);
+        $fechaLargaPrestamo     = $generales->formatearFecha($colocacion->fechaRegistro);  
+        $fechaLargaDesembolso   = $generales->formatearFechaLargaPagare($colocacion->fechaRegistro);
 
         $buscar                 = Array('numeroPagare', 'valorCredito', 'fechaSolicitud', 'fechaDesembolso','fechaPrimeraCuota','fechaUltimaCuota',
                                             'interesMensual','numeroCuota', 'destinacionCredito', 'referenciaCredito', 'garantiaCredito',

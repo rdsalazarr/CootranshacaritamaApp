@@ -336,8 +336,8 @@ class Vencimiento
             $colocacionLiquidaciones = DB::table('colocacionliquidacion as cl')
                                     ->select('cl.colliqfechavencimiento', 'cl.colliqnumerocuota',
                                     DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                    DB::raw("DATEDIFF(NOW(), c.colofechadesembolso) as diasMora"),
-                                    'c.colofechadesembolso', 'p.perscorreoelectronico',
+                                    DB::raw("DATEDIFF(NOW(), c.colofechacolocacion) as diasMora"),
+                                    'c.colofechacolocacion', 'p.perscorreoelectronico',
                                     DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                     ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                                     ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
@@ -355,7 +355,7 @@ class Vencimiento
                 $nombreAsociado   = $colocacionLiquidacion->nombreAsociado;
                 $numeroCredito    = $colocacionLiquidacion->numeroColocacion;
                 $numeroCuota      = $colocacionLiquidacion->colliqnumerocuota;
-                $fechaPrestamo    = $colocacionLiquidacion->colofechadesembolso;
+                $fechaPrestamo    = $colocacionLiquidacion->colofechacolocacion;
                 $correoPersona    = $colocacionLiquidacion->perscorreoelectronico;
                 $fechaVencimiento = $colocacionLiquidacion->colliqfechavencimiento; 
 

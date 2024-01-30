@@ -36,7 +36,7 @@ class EntregarPagoCreditoController extends Controller
             $url             = URL::to('/');
 
             $colocacion = DB::table('colocacion as c')
-                                ->select('c.coloid', 'c.colofechadesembolso','p.persdocumento', 'p.persprimernombre',
+                                ->select('c.coloid', 'c.colofechacolocacion','p.persdocumento', 'p.persprimernombre',
                                 'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                 'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                 'p.persgenero','p.persrutafoto','c.colovalordesembolsado as valorDesembolsado',

@@ -23,8 +23,8 @@ export default function New({data, tipo}){
 
     const [formData, setFormData] = useState(
                     (tipo !== 'I') ? {codigo: data.lincreid, nombre: data.lincrenombre, tasaNominal: data.lincretasanominal, montoMinimo: data.lincremontominimo,
-                                       montoMaximo: data.lincremontomaximo, plazoMaximo: data.lincreplazomaximo, estado: data.lincreactiva, tipo:tipo 
-                                    } : {codigo:'000', nombre: '', tasaNominal: '',  montoMinimo: '', montoMaximo: '', plazoMaximo:'', estado: '1', tipo:tipo
+                                       montoMaximo: data.lincremontomaximo, plazoMaximo: data.lincreplazomaximo, estado: data.lincreactiva, interesMora: data.lincreinteresmora, tipo:tipo 
+                                    } : {codigo:'000', nombre: '', tasaNominal: '',  montoMinimo: '', montoMaximo: '', plazoMaximo:'', interesMora: '', estado: '1', tipo:tipo
                                 });
 
     const [loader, setLoader] = useState(false); 
@@ -44,7 +44,7 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', tasaNominal: '',  montoMinimo: '', montoMaximo: '', plazoMaximo:'', estado: '1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre: '', tasaNominal: '',  montoMinimo: '', montoMaximo: '', plazoMaximo:'', interesMora: '', estado: '1', tipo:tipo}) : null;
 
             setLoader(false);
         })
@@ -56,10 +56,10 @@ export default function New({data, tipo}){
 
     return (
         <ValidatorForm onSubmit={handleSubmit} >
-            
+
             <Grid container spacing={2}>
-                <Grid item xl={9} md={9} sm={6} xs={12}>
-                    <TextValidator 
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <TextValidator
                         name={'nombre'}
                         value={formData.nombre}
                         label={'Nombre'}
@@ -72,7 +72,7 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         name={'tasaNominal'}
                         value={formData.tasaNominal}
@@ -84,22 +84,22 @@ export default function New({data, tipo}){
                         errorMessages={["Campo obligatorio", 'Ingrese un tasa nominal válida']}
                         onChange={handleChange}
                     />
-                </Grid> 
+                </Grid>
 
-               <Grid item xl={3} md={3} sm={6} xs={12}>
+               <Grid item xl={4} md={4} sm={6} xs={12}>
                     <NumberValidator fullWidth
                         id={"montoMinimo"}
                         name={"montoMinimo"}
                         label={"Monto mínimo"}
                         value={formData.montoMinimo}
                         type={'numeric'}
-                        require={['required', 'maxStringLength:5']}
-                        error={['Campo obligatorio','Número máximo permitido es el 99999']}
+                        require={['required', 'maxStringLength:7']}
+                        error={['Campo obligatorio','Número máximo permitido es el 9999999']}
                         onChange={handleChange}
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <NumberValidator fullWidth
                         id={"montoMaximo"}
                         name={"montoMaximo"}
@@ -112,7 +112,21 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <TextValidator 
+                        name={'interesMora'}
+                        value={formData.interesMora}
+                        label={'Interés mora'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required", 'isTasaNominal']}
+                        errorMessages={["Campo obligatorio", 'Ingrese un tasa interés de mora válido']}
+                        onChange={handleChange}
+                    />
+                </Grid>
+
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <TextValidator 
                         name={'plazoMaximo'}
                         value={formData.plazoMaximo}
@@ -127,7 +141,7 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={3} md={3} sm={6} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}

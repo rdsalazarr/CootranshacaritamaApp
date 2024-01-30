@@ -46,14 +46,14 @@ export default function List(){
     }
 
     return (
-        <Box className={'containerMedium'}>
+        <Box>
             <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar líneas de créditos</Typography>
             </Box>
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Nombre','Tasa nominal','Monto mínimo','Monto máximo','Plazo máximo', 'Activo','Actualizar','Eliminar']}
-                    ver={["lincrenombre","tasaNominal","montoMinimo","montoMaximo","plazoMaximo", "estado"]}
+                    titulo={['Nombre','Tasa nominal','Interé mora','Monto mínimo','Monto máximo','Plazo máximo', 'Activo','Actualizar','Eliminar']}
+                    ver={["lincrenombre","tasaNominal","interesMora","montoMinimo","montoMaximo","plazoMaximo", "estado"]}
                     accion={[
                         {tipo: 'T', icono : 'add',   color: 'green',   funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
