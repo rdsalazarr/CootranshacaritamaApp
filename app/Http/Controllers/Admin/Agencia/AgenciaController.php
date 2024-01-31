@@ -11,27 +11,36 @@ class AgenciaController extends Controller
 {
     public function index()
     {
-        $data = DB::table('agencia as a')->select('a.agenid','a.persidresponsable', 'a.agendepaid','a.agenmuniid', 'a.agennombre','a.agendireccion','a.agencorreo',
+        try{
+            $data = DB::table('agencia as a')->select('a.agenid','a.persidresponsable', 'a.agendepaid','a.agenmuniid', 'a.agennombre','a.agendireccion','a.agencorreo',
                                         'a.agentelefonocelular','a.agentelefonofijo','a.agenactiva',
                                     DB::raw("if(a.agenactiva = 1 ,'Sí', 'No') as estado"),
                                     DB::raw("CONCAT(a.agentelefonocelular,' ',if(a.agentelefonofijo is null ,'', CONCAT(' - ',a.agentelefonofijo))) as telefonos"),
                                     DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as responsable"))
                                     ->join('persona as p', 'p.persid', '=', 'a.persidresponsable')
                                     ->orderBy('a.agennombre')->get();
-        return response()->json(["data" => $data]);
+
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function datos()
 	{
-        $deptos =  DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
-        $municipios =  DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get();
-        
-       $personas = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
-                       DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos"))
-                        ->whereNotIn('persid', [1])
-                        ->whereIn('carlabid', [1, 2])->get();
+        try{
+            $deptos     =  DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
+            $municipios =  DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get();
+            
+            $personas   = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
+                                DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos"))
+                                ->whereNotIn('persid', [1])
+                                ->whereIn('carlabid', [1, 2])->get();
 
-        return response()->json(["deptos" => $deptos, "municipios" => $municipios, "responsables" => $personas]);  
+            return response()->json(["deptos" => $deptos, "municipios" => $municipios, "responsables" => $personas]);  
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }    
 
     public function salve(Request $request)
