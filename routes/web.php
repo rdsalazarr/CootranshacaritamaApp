@@ -509,7 +509,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/vehiculo', [ProcesarMovimientoController::class, 'consultarVehiculo']);
             Route::post('/registrar/mensualidad', [ProcesarMovimientoController::class, 'salveMensualidad']);
 
-            Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos']);
+            Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos']);            
+            Route::post('/consultar/credito/asociado', [ProcesarMovimientoController::class, 'consultarCredito']);
             Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
 
             Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);

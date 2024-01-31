@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../layout/general';
+import PagoCredito from "./pagarCredito/search";
 import Consignacion from "./consignacion/list";
 import Mensualidad from "./mensualidad";
-import PagoCredito from "./pagoCredito";
 import Sancion from "./sancion";
 
 export default function RegistrarMovimientos(){

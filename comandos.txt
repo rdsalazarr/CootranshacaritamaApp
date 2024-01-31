@@ -150,6 +150,7 @@ php artisan make:migration create_comprobante_contable_detalle
 
 php artisan make:migration create_entidad_financiera
 php artisan make:migration create_consignacion_bancaria
+php artisan make:migration create_proceso_automatico
 
 
 
@@ -275,6 +276,8 @@ php artisan make:model Despacho\Tiquete
 php artisan make:model Despacho\TiquetePuesto
 
 php artisan make:model Tipos\EntidadFinanciera
+php artisan make:model Tipos\ProcesoAutomatico
+
 
 php artisan make:seeder InformacionConfiguracionCorreoSeeder
 php artisan make:seeder TipoIdentificacionSeeder
@@ -321,6 +324,7 @@ php artisan make:seeder TipoEstadoEncomiendaSeeder
 php artisan make:seeder ConfiguracionEncomiendaSeeder
 php artisan make:seeder CajaSeeder
 php artisan make:seeder CuentaContableSeeder
+php artisan make:seeder ProcesoAutomaticoSeeder
 
 
 php artisan make:request ActaRequests

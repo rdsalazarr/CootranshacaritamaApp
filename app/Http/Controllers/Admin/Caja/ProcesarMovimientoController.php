@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Caja;
 
 use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Cartera\ColocacionLiquidacion;
 use App\Models\Caja\ConsignacionBancaria;
 use App\Models\Caja\ComprobanteContable;
 use App\Models\Asociado\AsociadoSancion;
@@ -302,7 +303,85 @@ class ProcesarMovimientoController extends Controller
                                     ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
 
         return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
-    } 
+    }
+
+    public function consultarCredito(Request $request)
+	{
+        $this->validate(request(),['tipoIdentificacion' => 'required|numeric', 'documento' => 'required|string|max:15']);
+
+        $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')
+                                ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
+
+        return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
+    }
+
+    public function salvePagoCredito(Request $request)
+	{
+        $this->validate(request(),['tipoIdentificacion' => 'required|numeric', 'documento' => 'required|string|max:15']);
+
+        DB::beginTransaction();
+        try {
+            $fechaHoraActual = Carbon::now();
+            $fechaActual     = $fechaHoraActual->format('Y-m-d');
+
+            $consignacionbancaria                    = ConsignacionBancaria::findOrFail($request->idResponsabilidad);
+            $consignacionbancaria->entfinid          = $request->entidadFinaciera;
+            $consignacionbancaria->usuaid            = Auth::id();
+            $consignacionbancaria->agenid            = auth()->user()->agenid;
+            $consignacionbancaria->conbanfechahora   = $fechaHoraActual;
+            $consignacionbancaria->conbanmonto       = $request->monto;
+            $consignacionbancaria->conbandescripcion = $request->descripcion;
+            $consignacionbancaria->save();
+
+            $fechaVencimiento                                = $generales->obtenerFechaPagoCuota($fechaActual);
+            $colocacionliquidacion 				             = new ColocacionLiquidacion();
+            $colocacionliquidacion->colliqfechapago          = $coloid;
+            $colocacionliquidacion->colliqnumerocomprobante  = $cuota;
+            $colocacionliquidacion->colliqvalorpagado        = $fechaVencimiento;
+            $colocacionliquidacion->colliqsaldocapital       = $valorCuota; 
+            $colocacionliquidacion->colliqvalorcapitalpagado = $cuota;
+            $colocacionliquidacion->colliqvalorinterespagado = $fechaVencimiento;
+            $colocacionliquidacion->colliqvalorinteresmora   = $valorCuota; 
+            $colocacionliquidacion->save();
+
+            /*          $table->bigIncrements('colliqid')->unsigned()->comment('Identificador de la tabla colocación liquidación');
+            $table->integer('coloid')->unsigned()->comment('Identificador de la solicitud de crédito');
+            $table->string('colliqnumerocuota', 3)->comment('Número de cuota de la colocación');
+            $table->string('colliqvalorcuota', 10)->comment('Monto o valor de la cuota de la colocación');
+            $table->date('colliqfechavencimiento')->comment('Fecha de vencimiento de la cuota de la colocación');
+
+            $table->date('colliqfechapago')->nullable()->comment('Fecha de pago de la cuota de la colocación');
+            $table->string('colliqnumerocomprobante', 10)->nullable()->comment('Número de comprobante de pago de la cuota de la colocación');
+            $table->decimal('colliqvalorpagado', 12, 0)->nullable()->comment('Valor pagado en la cuota de la colocación');
+            $table->decimal('colliqsaldocapital', 10, 0)->nullable()->comment('Saldo a capital de la colocación');
+            $table->decimal('colliqvalorcapitalpagado', 10, 0)->nullable()->comment('Valor capital pagado la colocación');
+            $table->decimal('colliqvalorinterespagado', 10, 0)->nullable()->comment('Valor interés pagado la colocación');
+            $table->decimal('colliqvalorinteresmora', 10, 0)->nullable()->comment('Valor interés de mora pagado la colocación');*/
+
+
+            //Se realiza la contabilizacion
+            $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $request->monto;
+            $comprobantecontabledetalle->save();
+
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 5;//Pago de cuota credito; 6  pago de cuota de credito mensual
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $request->monto;
+            $comprobantecontabledetalle->save();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Registro realizado con éxito' ]);
+        } catch (Exception $error){
+            DB::rollback();
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+        }
+    }
 
     public function consultarSancionAsociado(Request $request)
 	{
@@ -465,5 +544,5 @@ class ProcesarMovimientoController extends Controller
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-    }  
+    }
 }

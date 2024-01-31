@@ -1,39 +1,45 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Icon, Autocomplete, createFilterOptions, Box, Typography, Card} from '@mui/material';
-import showSimpleSnackbar from '../../../layout/snackBar';
-import {LoaderModal} from "../../../layout/loader";
 import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
-import SaveIcon from '@mui/icons-material/Save';
-import instance from '../../../layout/instance';
+import { Button, Grid, MenuItem, Stack, Box, Card} from '@mui/material';
+import showSimpleSnackbar from '../../../../layout/snackBar';
+import TablaGeneral from '../../../../layout/tablaGeneral';
+import {LoaderModal} from "../../../../layout/loader";
+import instance from '../../../../layout/instance';
+import PagarCuota from "./pagarCuota";
 
-export default function pagoCredito(){
+export default function Search(){
 
+    const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
     const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:''});
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [habilitado, setHabilitado] = useState(true);
-    const [loader, setLoader] = useState(false); 
+    const [creditoAsociados, setCreditoAsociados] = useState([]);
+    const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const handleSubmit = () =>{
-        setLoader(true);
-        instance.post('/admin/caja/registrar/pago/cuota', formData).then(res=>{
-            let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.message, icono);
-            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo}) : null;
-            setLoader(false);
-        })
+    const modales     = [<PagarCuota data={modal.data} />  ];
+    const tituloModal = ['Pagar cuota de crédito'];
+
+    const edit = (data, tipo) =>{
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'mediumFlot'});
     }
 
     const consultarCredito = () =>{
-        
+        setLoader(true);
+        instance.post('/admin/caja/consultar/credito/asociado', formData).then(res=>{
+            if(!res.success){
+                showSimpleSnackbar(res.message, 'error');
+            }else{
+                setDatosEncontrados(true)
+                setCreditoAsociados(res.creditoAsociados); 
+            }
+            setLoader(false);
+        })
     }
-
 
     const inicio = () =>{
         setLoader(true);
@@ -45,11 +51,9 @@ export default function pagoCredito(){
 
     useEffect(()=>{inicio();}, []);
 
-
     if(loader){
         return <LoaderModal />
     }
-
 
     return (
         <Fragment>
@@ -77,7 +81,7 @@ export default function pagoCredito(){
                             </Grid>
 
                             <Grid item xl={5} md={5} sm={6} xs={12}>
-                                <TextValidator 
+                                <TextValidator
                                     name={'documento'}
                                     value={formData.documento}
                                     label={'Documento'}
@@ -102,6 +106,32 @@ export default function pagoCredito(){
                     </Card>
                 </Box>
             </ValidatorForm>
+
+            {(datosEncontrados) ?
+                <Box style={{marginTop: '2em'}}>
+                    <Grid container spacing={2} style={{margin: 'auto', width:'70%'}}>
+                        <Grid item md={12} xl={12} sm={12} xs={12} >
+                            <TablaGeneral 
+                                datos={creditoAsociados}
+                                titulo={['Fecha cuota','Valor','Pagar']}
+                                ver={[ "vehresfechacompromiso", "valorResponsabilidad"]}
+                                accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'red', funcion : (data)=>{edit(data, 0)} }]}
+                                funciones={{orderBy: false, search: false, pagination:false}}
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <ModalDefaultAuto
+                        title   = {modal.titulo}
+                        content = {modales[modal.vista]}
+                        close   = {() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''});}}
+                        tam     = {modal.tamano}
+                        abrir   = {modal.open}
+                    />
+                    
+                </Box>
+            : null }
+
         </Fragment>
     )
 }

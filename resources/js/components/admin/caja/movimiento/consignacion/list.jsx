@@ -12,11 +12,10 @@ export default function List(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [<New />  ];
-
+    const modales     = [<New />  ];
     const tituloModal = ['Nueva consignación bancaria'];
 
-    const edit = (data, tipo) =>{      
+    const edit = (data, tipo) =>{
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'mediumFlot'});
     }
 
