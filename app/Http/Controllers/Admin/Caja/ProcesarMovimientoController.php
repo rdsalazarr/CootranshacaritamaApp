@@ -344,7 +344,8 @@ class ProcesarMovimientoController extends Controller
             $colocacionliquidacion->colliqvalorinteresmora   = $valorCuota; 
             $colocacionliquidacion->save();
 
-            /*          $table->bigIncrements('colliqid')->unsigned()->comment('Identificador de la tabla colocación liquidación');
+            /* 
+            $table->bigIncrements('colliqid')->unsigned()->comment('Identificador de la tabla colocación liquidación');
             $table->integer('coloid')->unsigned()->comment('Identificador de la solicitud de crédito');
             $table->string('colliqnumerocuota', 3)->comment('Número de cuota de la colocación');
             $table->string('colliqvalorcuota', 10)->comment('Monto o valor de la cuota de la colocación');
