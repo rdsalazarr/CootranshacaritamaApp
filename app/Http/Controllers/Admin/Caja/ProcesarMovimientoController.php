@@ -309,10 +309,49 @@ class ProcesarMovimientoController extends Controller
 	{
         $this->validate(request(),['tipoIdentificacion' => 'required|numeric', 'documento' => 'required|string|max:15']);
 
-        $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')
-                                ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
+        try{
+            $fechaHoraActual = Carbon::now();
+            $fechaActual     = $fechaHoraActual->format('Y-m-d');
 
-        return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
+            $colocaciones = DB::table('colocacion as c')
+                                ->select('c.coloid', 'lc.lincrenombre',
+                                DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
+                                DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),
+                                'cli.colliqnumerocuota','cli.colliqfechavencimiento',
+                                DB::raw("CONCAT('$ ', FORMAT(cli.colliqvalorcuota, 0)) as valorCuota"))
+                                ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
+                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
+                                ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
+                                ->whereIn('c.tiesclid', ['V', 'J', 'R'])
+                                ->where('p.tipideid', $request->tipoIdentificacion)
+                                ->where('p.persdocumento', $request->documento)
+                                ->join('colocacionliquidacion as cli', function ($join) use ($fechaActual) {
+                                    $join->on('c.coloid', '=', 'cli.coloid')
+                                        ->whereDate('cli.colliqfechavencimiento', '<=', $fechaActual)
+                                        ->whereNull('cli.colliqfechapago');
+                                    })
+                                ->orderBy('c.coloid')
+                                ->get();
+
+            return response()->json(['success' => true, "colocaciones" => $colocaciones]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
+    }
+
+    public function calcularCuota(Request $request)
+	{
+        $this->validate(request(),['colocacionId' => 'required|numeric']);
+
+        try{
+            $colocacionLiquidacion = [];
+            
+            return response()->json(['success' => true, "colocacionLiquidacion" => $colocacionLiquidacion]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function salvePagoCredito(Request $request)

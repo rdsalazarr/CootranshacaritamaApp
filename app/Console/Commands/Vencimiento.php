@@ -43,14 +43,9 @@ class Vencimiento
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoLicencia' )->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $conductorNotificados = DB::table('conductorlicencia as cl')
                                         ->select('cl.conlicfechavencimiento', 'cl.conlicnumero','cl.conlicfechaexpedicion','p.perscorreoelectronico',
@@ -104,12 +99,7 @@ class Vencimiento
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoSoat')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
+            $empresa            = $this->consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -165,12 +155,7 @@ class Vencimiento
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoCRT')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
+            $empresa            = $this->consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -226,12 +211,7 @@ class Vencimiento
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoPolizas')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
+            $empresa            = $this->consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -288,12 +268,7 @@ class Vencimiento
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoTarjetaOperacion')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
+            $empresa            = $this->consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -359,12 +334,7 @@ class Vencimiento
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoCuotaCredito')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
+            $empresa            = $this->consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -415,4 +385,12 @@ class Vencimiento
         echo $mensaje;
         return $mensajeCorreo.'<br>';
     }
+
+    public static function consultarInfoEmpresa()
+    {
+        return DB::table('empresa as e')->select('e.emprcorreo',       
+                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
+                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                        ->where('emprid', '1')->first();
+    } 
 }

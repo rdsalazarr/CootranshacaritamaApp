@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('coloid')->unsigned()->comment('Identificador de la tabla solicitud de credito desembolso');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea la colocación');
             $table->integer('solcreid')->unsigned()->comment('Identificador de la solicitud de crédito');
-            $table->string('tiesclid', 2)->comment('Identificador del tipo estado solicitud colocación');
+            $table->string('tiesclid', 2)->comment('Identificador del tipo estado colocación');
             $table->dateTime('colofechahoraregistro')->comment('Fecha y hora actual en el que se registra la colocacion');
             $table->date('colofechadesembolso')->comment('Fecha de desembolso del crédito');
             $table->year('coloanio', 4)->comment('Año en el cual se desembolsa el crédito');

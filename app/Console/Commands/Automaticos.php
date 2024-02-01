@@ -48,14 +48,9 @@ class Automaticos
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionConductor')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-  
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $conductorLicencias = DB::table('conductorlicencia as cl')
                                     ->select('cl.condid', 'cl.conlicfechavencimiento', 'cl.conlicnumero', 'p.perscorreoelectronico',
@@ -132,19 +127,13 @@ class Automaticos
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $vehiculosNotificados = DB::table('vehiculosoat as vs')
                                         ->select('v.vehiid','vs.vehsoafechafinal', 'vs.vehsoanumero','v.vehinumerointerno','v.vehiplaca','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                         ->join('vehiculo as v', 'v.vehiid', '=', 'vs.vehiid')
                                         ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                         ->join('persona as p', 'p.persid', '=', 'a.persid')
@@ -220,14 +209,9 @@ class Automaticos
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $vehiculosNotificados = DB::table('vehiculocrt as vcrt')
                                         ->select('v.vehiid','vcrt.vehcrtfechafinal', 'vcrt.vehcrtnumero','v.vehinumerointerno','v.vehiplaca','p.perscorreoelectronico',
@@ -308,14 +292,9 @@ class Automaticos
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $vehiculosNotificados = DB::table('vehiculopoliza as vp')
                                         ->select('v.vehiid','vp.vehpolfechafinal', 'vp.vehpolnumeropolizacontractual','v.vehinumerointerno','v.vehiplaca','p.perscorreoelectronico',
@@ -396,14 +375,9 @@ class Automaticos
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $vehiculosNotificados = DB::table('vehiculotarjetaoperacion as vto')
                                         ->select('v.vehiid','vto.vetaopfechafinal', 'vto.vetaopnumero','v.vehinumerointerno','v.vehiplaca','p.perscorreoelectronico',
@@ -484,14 +458,9 @@ class Automaticos
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionLevantamientoSuspension')->first();
-            $empresa            = DB::table('empresa as e')->select('e.emprcorreo',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $correoEmpresa    = $empresa->emprcorreo;
-            $nombreGerente    = $empresa->nombreGerente;
+            $empresa            = $this->consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
 
             $vehiculosNotificados = DB::table('vehiculosuspendido as vs')
                                         ->select('v.vehiid','vs.vehsusfechafinalsuspencion', 'vs.vehsusfechainicialsuspencion','vs.vehsusmotivo', 
@@ -555,4 +524,12 @@ class Automaticos
         echo $mensaje;
         return $mensajeCorreo.'<br>';
     }
+
+    public static function consultarInfoEmpresa()
+    {
+        return DB::table('empresa as e')->select('e.emprcorreo',       
+                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
+                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                        ->where('emprid', '1')->first();
+    }    
 }
