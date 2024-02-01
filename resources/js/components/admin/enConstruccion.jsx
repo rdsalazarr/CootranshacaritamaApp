@@ -28,7 +28,7 @@ export default function EnConstruccion(){
             <Grid container spacing={4}>
                 <Grid item xl={12} md={12} sm={12} xs={12} style={{textAlign: 'center'}}>
                     <h1>Hola, {data.nombreUsuario}</h1>
-                    <p>Bienvenidos al CRM de <b>{data.siglaEmpresa}</b>, estamos trabajando para construir esta funcionalidad.</p>
+                    <p>Bienvenidos al ERP de <b>{data.siglaEmpresa}</b>, estamos trabajando para construir esta funcionalidad.</p>
                 </Grid>
 
                 <Grid item xl={4} md={4} sm={6} xs={12}> 

@@ -79,7 +79,7 @@ class generarPdf
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36, 20);
+		PDF::SetMargins(24, 40, 20);
 		PDF::AddPage('P', array(216,332));
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(24); 
@@ -220,7 +220,7 @@ class generarPdf
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36 , 20);
+		PDF::SetMargins(24, 40 , 20);
 		PDF::AddPage('P', 'Letter');
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(32); 
@@ -330,7 +330,7 @@ class generarPdf
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36 , 20);
+		PDF::SetMargins(24, 40, 20);
 		PDF::AddPage('P', 'Letter');
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(34);
@@ -448,7 +448,7 @@ class generarPdf
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36, 20);
+		PDF::SetMargins(24, 40, 20);
 		PDF::AddPage('P', array(216,332));
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(24); 
@@ -571,7 +571,7 @@ class generarPdf
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36 , 20);
+		PDF::SetMargins(24, 40, 20);
 		PDF::AddPage('P', 'Letter');
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(32); 
@@ -686,7 +686,7 @@ class generarPdf
 		PDF::SetProtection(($tipoMedio == 2) ? array('print', 'copy') : array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(24, 36 , 20);
+		PDF::SetMargins(24, 40, 20);
 		PDF::AddPage('P', 'Letter');
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(16);
@@ -975,7 +975,7 @@ class generarPdf
 
 	function firmaDocumentoDigital($siglaEmpresa, $nombreEmpresa, $consecutivoDocumental, $firmasDocumento){	
 		$informacioncertificado = array(
-			'Name'        => 'Sistema CRM de '.$siglaEmpresa,
+			'Name'        => 'Sistema ERP de '.$siglaEmpresa,
 			'Location'    => $nombreEmpresa,
 			'Reason'      => 'Tipo documental con consecutivo '.$consecutivoDocumental,
 			'ContactInfo' => URL::to('/')
