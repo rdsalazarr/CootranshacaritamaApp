@@ -22,7 +22,7 @@ class AgenciaController extends Controller
 
             return response()->json(['success' => true, "data" => $data]);
         }catch(Exception $e){
-            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
     }
 
@@ -39,7 +39,7 @@ class AgenciaController extends Controller
 
             return response()->json(["deptos" => $deptos, "municipios" => $municipios, "responsables" => $personas]);  
         }catch(Exception $e){
-            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
     }    
 

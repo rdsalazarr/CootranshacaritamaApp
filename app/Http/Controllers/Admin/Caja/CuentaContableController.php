@@ -11,11 +11,16 @@ class CuentaContableController extends Controller
 {
     public function index()
     {
-        $data = DB::table('cuentacontable')->select('cueconid','cueconnombre','cueconnaturaleza','cueconcodigo','cueconactiva',
-									DB::raw("if(cueconnaturaleza = 'C' ,'Crédito', 'Debito') as naturaleza"),
-                                    DB::raw("if(cueconactiva = 1 ,'Sí', 'No') as estado"))
-                                    ->orderBy('cueconid')->get();
-        return response()->json(["data" => $data]);
+		try{
+			$data = DB::table('cuentacontable')->select('cueconid','cueconnombre','cueconnaturaleza','cueconcodigo','cueconactiva',
+										DB::raw("if(cueconnaturaleza = 'C' ,'Crédito', 'Debito') as naturaleza"),
+										DB::raw("if(cueconactiva = 1 ,'Sí', 'No') as estado"))
+										->orderBy('cueconid')->get();
+
+			return response()->json(['success' => true, "data" => $data]);
+		}catch(Exception $e){
+			return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+		}
     }
 
     public function salve(Request $request)

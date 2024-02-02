@@ -20,28 +20,32 @@ class ProcesarMovimientoController extends Controller
 {
     public function index()
     {
-        $cajaId          = auth()->user()->cajaid;
-        $nombreUsuario   = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
-        $fechaHoraActual = Carbon::now();
-        $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $caja            = DB::table('caja')->select('cajanumero')->where('cajaid', $cajaId)->first();
-        $cajaNumero      = ($caja) ? $caja->cajanumero : '';
-        $data            = DB::table('movimientocaja')->select(DB::raw('COALESCE(movcajsaldofinal, 0) as movcajsaldofinal'))
-                                    ->whereNull('movcajsaldofinal')
-                                    ->whereDate('movcajfechahoraapertura', $fechaActual)
-                                    ->where('usuaid', Auth::id())
-                                    ->where('cajaid', $cajaId)->first();
+        try{
+            $cajaId          = auth()->user()->cajaid;
+            $nombreUsuario   = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
+            $fechaHoraActual = Carbon::now();
+            $fechaActual     = $fechaHoraActual->format('Y-m-d');
+            $caja            = DB::table('caja')->select('cajanumero')->where('cajaid', $cajaId)->first();
+            $cajaNumero      = ($caja) ? $caja->cajanumero : '';
+            $data            = DB::table('movimientocaja')->select(DB::raw('COALESCE(movcajsaldofinal, 0) as movcajsaldofinal'))
+                                        ->whereNull('movcajsaldofinal')
+                                        ->whereDate('movcajfechahoraapertura', $fechaActual)
+                                        ->where('usuaid', Auth::id())
+                                        ->where('cajaid', $cajaId)->first();
 
-        $ultimoSaldo     = DB::table('movimientocaja')->select(DB::raw('CAST(COALESCE(movcajsaldofinal, 0) AS UNSIGNED) as movcajsaldofinal'))
-                                    ->where('usuaid', Auth::id())
-                                    ->where('cajaid', $cajaId)
-                                    ->orderBy('movcajid', 'desc')
-                                    ->first();
+            $ultimoSaldo     = DB::table('movimientocaja')->select(DB::raw('CAST(COALESCE(movcajsaldofinal, 0) AS UNSIGNED) as movcajsaldofinal'))
+                                        ->where('usuaid', Auth::id())
+                                        ->where('cajaid', $cajaId)
+                                        ->orderBy('movcajid', 'desc')
+                                        ->first();
 
-        $saldoAnterior   = ($ultimoSaldo) ? $ultimoSaldo->movcajsaldofinal  : null;
+            $saldoAnterior   = ($ultimoSaldo) ? $ultimoSaldo->movcajsaldofinal  : null;
 
-        return response()->json(["data" => $data,    "saldoAnterior" => $saldoAnterior, "cajaNumero" => $cajaNumero, 
-                                "cajaId" => $cajaId, "nombreUsuario" => $nombreUsuario]);
+            return response()->json(['success'   => true,        "data"    => $data,   "saldoAnterior" => $saldoAnterior, 
+                                    "cajaNumero" => $cajaNumero, "cajaId" => $cajaId, "nombreUsuario" => $nombreUsuario ]);                           
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function abrirDia(Request $request)
@@ -102,84 +106,92 @@ class ProcesarMovimientoController extends Controller
 	}
 
     public function listVehiculos(){
-        $vehiculos = DB::table('vehiculo as v')->select('v.vehiid',DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
-                                ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                ->whereIn('v.tiesveid', ['A','S'])
-                                ->orderBy('v.vehinumerointerno')->get();
+        try{
+            $vehiculos = DB::table('vehiculo as v')->select('v.vehiid',DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
+                                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                    ->whereIn('v.tiesveid', ['A','S'])
+                                    ->orderBy('v.vehinumerointerno')->get();
 
-        return response()->json(["vehiculos" => $vehiculos]);
+            return response()->json(['success' => true, "vehiculos" => $vehiculos]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function consultarVehiculo(Request $request)
 	{
         $this->validate(request(),['vehiculoId' => 'required|numeric']);
 
-        $generales       = new generales();
-        $fechaHoraActual = Carbon::now();
-        $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $vehiculo        = DB::table('vehiculo as v')
-                            ->select('v.vehiid', 'tmv.timoveid', 'tmv.timovecuotasostenimiento', 'tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora')
-                            ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
-                            ->where('v.vehiid', $request->vehiculoId)->first();
+        try{
+            $generales       = new generales();
+            $fechaHoraActual = Carbon::now();
+            $fechaActual     = $fechaHoraActual->format('Y-m-d');
+            $vehiculo        = DB::table('vehiculo as v')
+                                ->select('v.vehiid', 'tmv.timoveid', 'tmv.timovecuotasostenimiento', 'tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora')
+                                ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
+                                ->where('v.vehiid', $request->vehiculoId)->first();
 
-       $vehiculoResponsabilidades = DB::table('vehiculoresponsabilidad')->select('vehresid','vehresfechacompromiso','vehresvalorresponsabilidad')
-                                    ->whereNull('vehresvalorpagado')
-                                    ->where('vehiid', $request->vehiculoId)
-                                    ->orderBy('vehresid')->get();
+        $vehiculoResponsabilidades = DB::table('vehiculoresponsabilidad')->select('vehresid','vehresfechacompromiso','vehresvalorresponsabilidad')
+                                        ->whereNull('vehresvalorpagado')
+                                        ->where('vehiid', $request->vehiculoId)
+                                        ->orderBy('vehresid')->get();
 
-        $pagoMensualidad        = []; 
-        $pagoTotal              = []; 
-        $valorMora              = 0;
-        $valorDesAnticipado     = 0;
-        $totalAPagar            = 0;
-        $fechaCompromisoInicial = '';
-        $mensajeError           = 'No se ha encontrado información de liquidación de mensualidad para el vehículo seleccionado. ';
-        $mensajeError           .= 'Por favor, asegúrese de que la información esté disponible o consulte con el administrador del sistema';
+            $pagoMensualidad        = [];
+            $pagoTotal              = [];
+            $valorMora              = 0;
+            $valorDesAnticipado     = 0;
+            $totalAPagar            = 0;
+            $fechaCompromisoInicial = '';
+            $mensajeError           = 'No se ha encontrado información de liquidación de mensualidad para el vehículo seleccionado. ';
+            $mensajeError           .= 'Por favor, asegúrese de que la información esté disponible o consulte con el administrador del sistema';
 
-        if(count($vehiculoResponsabilidades) > 0){
-            foreach($vehiculoResponsabilidades as $key => $vehiculoResponsabilidad){ 
-                $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
-                $recargoMora          = $vehiculo->timoverecargomora;
-                $fechaCompromiso      = $vehiculoResponsabilidad->vehresfechacompromiso;
-                $valorResponsabilidad = $vehiculoResponsabilidad->vehresvalorresponsabilidad;
-                $resultadoMensualidad = $generales->calcularMensualidadVehiculo($fechaCompromiso, $valorResponsabilidad, $descuentoAnticipado, $recargoMora);
-                $valorMora            += $resultadoMensualidad['mora'];
-                $valorDesAnticipado   += $resultadoMensualidad['descuento'];
-                $totalAPagar          += $resultadoMensualidad['totalPagar'];
+            if(count($vehiculoResponsabilidades) > 0){
+                foreach($vehiculoResponsabilidades as $key => $vehiculoResponsabilidad){ 
+                    $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
+                    $recargoMora          = $vehiculo->timoverecargomora;
+                    $fechaCompromiso      = $vehiculoResponsabilidad->vehresfechacompromiso;
+                    $valorResponsabilidad = $vehiculoResponsabilidad->vehresvalorresponsabilidad;
+                    $resultadoMensualidad = $generales->calcularMensualidadVehiculo($fechaCompromiso, $valorResponsabilidad, $descuentoAnticipado, $recargoMora);
+                    $valorMora            += $resultadoMensualidad['mora'];
+                    $valorDesAnticipado   += $resultadoMensualidad['descuento'];
+                    $totalAPagar          += $resultadoMensualidad['totalPagar'];
 
-                if($key === 0)  {
-                    $fechaCompromisoInicial   = $fechaCompromiso;
-                    $mensualiad = [
-                        'idResponsabilidad'   => $vehiculoResponsabilidad->vehresid,
-                        'fechaCompromiso'     => $vehiculoResponsabilidad->vehresfechacompromiso,
-                        'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),                        
-                        'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
-                        'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
-                        'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
-                        'valorDesAnticipado'  => $valorDesAnticipado,
-                        'interesMora'         => $valorMora,
-                        'totalAPagar'         => $totalAPagar
-                    ];
-                    array_push($pagoMensualidad, $mensualiad);
+                    if($key === 0)  {
+                        $fechaCompromisoInicial   = $fechaCompromiso;
+                        $mensualiad = [
+                            'idResponsabilidad'   => $vehiculoResponsabilidad->vehresid,
+                            'fechaCompromiso'     => $vehiculoResponsabilidad->vehresfechacompromiso,
+                            'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),                        
+                            'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
+                            'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
+                            'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
+                            'valorDesAnticipado'  => $valorDesAnticipado,
+                            'interesMora'         => $valorMora,
+                            'totalAPagar'         => $totalAPagar
+                        ];
+                        array_push($pagoMensualidad, $mensualiad);
+                    }
                 }
+
+                $totalizado = [
+                    'idResponsabilidad'   => '',
+                    'fechaCompromiso'     => $fechaCompromisoInicial,
+                    'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
+                    'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
+                    'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
+                    'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
+                    'valorDesAnticipado'  => $valorDesAnticipado,
+                    'interesMora'         => $valorMora,
+                    'totalAPagar'         => $totalAPagar
+                ];
+                array_push($pagoTotal, $totalizado);
             }
 
-            $totalizado = [
-                'idResponsabilidad'   => '',
-                'fechaCompromiso'     => $fechaCompromisoInicial,
-                'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
-                'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
-                'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
-                'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
-                'valorDesAnticipado'  => $valorDesAnticipado,
-                'interesMora'         => $valorMora,
-                'totalAPagar'         => $totalAPagar
-            ];
-            array_push($pagoTotal, $totalizado);
-        }
-
-       return response()->json(['success' => (count($vehiculoResponsabilidades) > 0) ? true : false, 'message' => $mensajeError,
+        return response()->json(['success' => (count($vehiculoResponsabilidades) > 0) ? true : false, 'message' => $mensajeError,
                                  "pagoMensualidad" => $pagoMensualidad, "pagoTotal" => $pagoTotal]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function salveMensualidad(Request $request)
@@ -299,10 +311,14 @@ class ProcesarMovimientoController extends Controller
     }
 
     public function tipoDocumentos(){
-        $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')
-                                    ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
+        try{
+            $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')
+                                        ->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
 
-        return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
+            return response()->json(['success' => true, "tipoIdentificaciones" => $tipoIdentificaciones]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function consultarCredito(Request $request)
@@ -337,7 +353,7 @@ class ProcesarMovimientoController extends Controller
 
             return response()->json(['success' => true, "colocaciones" => $colocaciones]);
         }catch(Exception $e){
-            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
     }
 
@@ -350,7 +366,7 @@ class ProcesarMovimientoController extends Controller
             
             return response()->json(['success' => true, "colocacionLiquidacion" => $colocacionLiquidacion]);
         }catch(Exception $e){
-            return response()->json(['success' => false, 'data' => 'Error al obtener la información => '.$e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
     }
 
@@ -427,18 +443,22 @@ class ProcesarMovimientoController extends Controller
 	{
         $this->validate(request(),['vehiculoId' => 'required|numeric']);
 
-        $mensajeError      = 'No se ha encontrado sanción por procesar para el vehículo seleccionado';
-        $sancionesAsociado = DB::table('asociadosancion as as')
-                                    ->select('as.asosanid','ts.tipsannombre','as.asosanfechahora','as.asosanfechamaximapago','as.asosanmotivo','as.asosanvalorsancion',
-                                    DB::raw("DATE(as.asosanfechahora) as fechaSancion"),
-                                    DB::raw("CONCAT('$ ', FORMAT(as.asosanvalorsancion, 0)) as valorSancion"))
-                                    ->join('tiposancion as ts', 'ts.tipsanid', '=', 'ts.tipsanid')
-                                    ->join('vehiculo as v', 'v.asocid', '=', 'as.asocid')
-                                    ->where('as.asosanprocesada', false)
-                                    ->where('v.vehiid', $request->vehiculoId)->get();
+        try{
+            $mensajeError      = 'No se ha encontrado sanción por procesar para el vehículo seleccionado';
+            $sancionesAsociado = DB::table('asociadosancion as as')
+                                        ->select('as.asosanid','ts.tipsannombre','as.asosanfechahora','as.asosanfechamaximapago','as.asosanmotivo','as.asosanvalorsancion',
+                                        DB::raw("DATE(as.asosanfechahora) as fechaSancion"),
+                                        DB::raw("CONCAT('$ ', FORMAT(as.asosanvalorsancion, 0)) as valorSancion"))
+                                        ->join('tiposancion as ts', 'ts.tipsanid', '=', 'ts.tipsanid')
+                                        ->join('vehiculo as v', 'v.asocid', '=', 'as.asocid')
+                                        ->where('as.asosanprocesada', false)
+                                        ->where('v.vehiid', $request->vehiculoId)->get();
 
-        return response()->json(['success'           => (count($sancionesAsociado) > 0) ? true : false, 'message' => $mensajeError,
-                                 "sancionesAsociado" => $sancionesAsociado]);
+            return response()->json(['success'          => (count($sancionesAsociado) > 0) ? true : false, 'message' => $mensajeError,
+                                    "sancionesAsociado" => $sancionesAsociado]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function salveSancion(Request $request)
@@ -523,23 +543,31 @@ class ProcesarMovimientoController extends Controller
 
     public function listConsignacion()
     {
-        $consignacionBancarias = DB::table('consignacionbancaria as cb')
-                                    ->select('cb.conbanid','cb.entfinid','cb.conbanfechahora','cb.conbanmonto','cb.conbandescripcion','ef.entfinnombre',
-                                    DB::raw("FORMAT(cb.conbanmonto, 0) as monto"))
-                                    ->join('entidadfinanciera as ef', 'ef.entfinid', '=', 'cb.entfinid')
-                                    ->where('cb.usuaid', Auth::id())
-                                    ->orderBy('cb.conbanid')->get();
+        try{
+            $consignacionBancarias = DB::table('consignacionbancaria as cb')
+                                        ->select('cb.conbanid','cb.entfinid','cb.conbanfechahora','cb.conbanmonto','cb.conbandescripcion','ef.entfinnombre',
+                                        DB::raw("FORMAT(cb.conbanmonto, 0) as monto"))
+                                        ->join('entidadfinanciera as ef', 'ef.entfinid', '=', 'cb.entfinid')
+                                        ->where('cb.usuaid', Auth::id())
+                                        ->orderBy('cb.conbanid')->get();
 
-        return response()->json(['data' => $consignacionBancarias ]);
+            return response()->json(['success' => true, "data" => $consignacionBancarias]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function datosConsignacion()
     {
-        $entidadFinancieras = DB::table('entidadfinanciera')->select('entfinid','entfinnombre')
-                                    ->where('entfinactiva', true)
-                                    ->orderBy('entfinnombre')->get();
+        try{
+            $entidadFinancieras = DB::table('entidadfinanciera')->select('entfinid','entfinnombre')
+                                        ->where('entfinactiva', true)
+                                        ->orderBy('entfinnombre')->get();
 
-        return response()->json(['entidadFinancieras' => $entidadFinancieras ]);
+            return response()->json(['success' => true, "entidadFinancieras" => $entidadFinancieras]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function salveConsignacion(Request $request)
