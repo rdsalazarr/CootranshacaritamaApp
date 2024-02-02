@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin\Despacho;
 
 use App\Models\Despacho\EncomiendaCambioEstado;
+use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Caja\ComprobanteContable;
 use App\Models\Despacho\PlanillaRuta;
 use App\Http\Controllers\Controller;
 use App\Models\Despacho\Encomienda;
+use App\Models\Caja\MovimientoCaja;
 use Illuminate\Http\Request;
 use Exception, DB, Auth;
 use App\Util\generarPdf;
@@ -18,71 +21,79 @@ class PlanillaRutaController extends Controller
     {
 		$this->validate(request(),['estado' => 'required']);
 
-        $data   = DB::table('planillaruta as pr')
-                    ->select('pr.plarutid','pr.rutaid','pr.vehiid','pr.condid', 'pr.plarutfechahorasalida',
-                    'pr.plarutfechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaHoraSalida',
-                    'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
-                    DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                    DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo) as numeroPlanilla"),
-                    DB::raw("CONCAT(p.persprimernombre,' ',  p.persprimerapellido) as nombreConductor"),
-                    DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
-                    DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos) as usuarioDespacha"))
-                    ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                    ->join('municipio as mo', function($join)
-                    {
-                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                        $join->on('mo.muniid', '=', 'r.muniidorigen');
-                    })
-                    ->join('municipio as md', function($join)
-                    {
-                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                        $join->on('md.muniid', '=', 'r.muniiddestino');
-                    })
-                    ->join('conductor as c', 'c.condid', '=', 'pr.condid')
-                    ->join('persona as p', 'p.persid', '=', 'c.persid')
-                    ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
-                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                    ->join('usuario as ur', 'ur.usuaid', '=', 'pr.usuaidregistra')
-                    ->leftJoin('usuario as urg', 'urg.usuaid', '=', 'pr.usuaiddespacha')
-                    ->where('pr.agenid', auth()->user()->agenid) 
-                    ->where('pr.plarutdespachada', $request->estado)
-                    ->orderBy('pr.plarutid', 'Desc')->get();
+        try{
+            $data   = DB::table('planillaruta as pr')
+                        ->select('pr.plarutid','pr.rutaid','pr.vehiid','pr.condid', 'pr.plarutfechahorasalida',
+                        'pr.plarutfechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaHoraSalida',
+                        'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
+                        DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
+                        DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo) as numeroPlanilla"),
+                        DB::raw("CONCAT(p.persprimernombre,' ',  p.persprimerapellido) as nombreConductor"),
+                        DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
+                        DB::raw("CONCAT(urg.usuanombre,' ',urg.usuaapellidos) as usuarioDespacha"))
+                        ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                        ->join('municipio as mo', function($join)
+                        {
+                            $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                            $join->on('mo.muniid', '=', 'r.muniidorigen');
+                        })
+                        ->join('municipio as md', function($join)
+                        {
+                            $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                            $join->on('md.muniid', '=', 'r.muniiddestino');
+                        })
+                        ->join('conductor as c', 'c.condid', '=', 'pr.condid')
+                        ->join('persona as p', 'p.persid', '=', 'c.persid')
+                        ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
+                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                        ->join('usuario as ur', 'ur.usuaid', '=', 'pr.usuaidregistra')
+                        ->leftJoin('usuario as urg', 'urg.usuaid', '=', 'pr.usuaiddespacha')
+                        ->where('pr.agenid', auth()->user()->agenid) 
+                        ->where('pr.plarutdespachada', $request->estado)
+                        ->orderBy('pr.plarutid', 'Desc')->get();
 
-        return response()->json(["data" => $data]);
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function datos(Request $request)
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $vehiculos      = DB::table('vehiculo as v')
-                                    ->select('v.vehiid', DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
-                                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                    ->where('v.agenid', auth()->user()->agenid)->get();
+        try{
+            $vehiculos      = DB::table('vehiculo as v')
+                                        ->select('v.vehiid', DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
+                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                        ->where('v.agenid', auth()->user()->agenid)->get();
 
-        $conductores    = DB::table('conductorvehiculo as cv')
-                                ->select('c.condid','cv.vehiid', DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"))
-                                ->join('conductor as c', 'c.condid', '=', 'cv.condid')
-                                ->join('persona as p', 'p.persid', '=', 'c.persid')
-                                ->where('c.tiescoid', 'A')->get();
+            $conductores    = DB::table('conductorvehiculo as cv')
+                                    ->select('c.condid','cv.vehiid', DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"))
+                                    ->join('conductor as c', 'c.condid', '=', 'cv.condid')
+                                    ->join('persona as p', 'p.persid', '=', 'c.persid')
+                                    ->where('c.tiescoid', 'A')->get();
 
-        $rutas          = DB::table('ruta as r')
-                                ->select('r.rutaid',DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"))
-                                ->join('municipio as mo', function($join)
-                                {
-                                    $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                    $join->on('mo.muniid', '=', 'r.muniidorigen');
-                                })
-                                ->join('municipio as md', function($join)
-                                {
-                                    $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                    $join->on('md.muniid', '=', 'r.muniiddestino');
-                                })->get();
+            $rutas          = DB::table('ruta as r')
+                                    ->select('r.rutaid',DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"))
+                                    ->join('municipio as mo', function($join)
+                                    {
+                                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                        $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                    })
+                                    ->join('municipio as md', function($join)
+                                    {
+                                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                        $join->on('md.muniid', '=', 'r.muniiddestino');
+                                    })->get();
 
-        $fechaActual = Carbon::now()->format('Y-m-d h:m:s');
+            $fechaActual = Carbon::now()->format('Y-m-d h:m:s');
 
-        return response()->json(["fechaActual" => $fechaActual, "vehiculos" => $vehiculos, "conductores" => $conductores,  "rutas" => $rutas]);
+            return response()->json(['success' => true, "fechaActual" => $fechaActual, "vehiculos" => $vehiculos, "conductores" => $conductores,  "rutas" => $rutas]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function salve(Request $request)
@@ -127,82 +138,86 @@ class PlanillaRutaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required']);
 
-        $planillaRuta   = DB::table('planillaruta as pr')
-                        ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida',
-                        DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
-                        DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                        DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo) as numeroPlanilla"),
-                        DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
-                        DB::raw('(SELECT COUNT(encoid) AS encoid FROM encomienda WHERE plarutid = pr.plarutid) AS totalEncomiendas'),
-                        DB::raw('(SELECT COUNT(tiquid) AS encotiquidid FROM tiquete WHERE plarutid = pr.plarutid) AS totalTiquete'))
-                        ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                        ->join('municipio as mo', function($join)
-                        {
-                            $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                            $join->on('mo.muniid', '=', 'r.muniidorigen');
-                        })
-                        ->join('municipio as md', function($join)
-                        {
-                            $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                            $join->on('md.muniid', '=', 'r.muniiddestino');
-                        })
-                        ->join('conductor as c', 'c.condid', '=', 'pr.condid')
-                        ->join('persona as p', 'p.persid', '=', 'c.persid')
-                        ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
-                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                        ->where('pr.plarutid', $request->codigo)
-                        ->first();
-
-            $encomiendas = [];
-            if($planillaRuta->totalEncomiendas > 0){
-                $encomiendas = DB::table('encomienda as e')->select('te.tipencnombre as tipoEncomienda',
-                            DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorenvio, 0)) as valorEnvio"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalordeclarado, 0)) as valorDeclarado"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionseguro, 0)) as comisionSeguro"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionempresa, 0)) as comisionEmpresa"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionagencia, 0)) as comisionAgencia"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionvehiculo, 0)) as comisionVehiculo"),
-                            DB::raw("CONCAT('$ ', FORMAT(e.encovalortotal, 0)) as valorTotal"),
-                            DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
-                                ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaRemitente"))
-                            ->join('personaservicio as ps', 'ps.perserid', '=', 'e.perseridremitente')
-                            ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
-                            
-                            ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino')
+        try{
+            $planillaRuta   = DB::table('planillaruta as pr')
+                            ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida',
+                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
+                            DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
+                            DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo) as numeroPlanilla"),
+                            DB::raw("CONCAT(p.persdocumento,' ',p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
+                            DB::raw('(SELECT COUNT(encoid) AS encoid FROM encomienda WHERE plarutid = pr.plarutid) AS totalEncomiendas'),
+                            DB::raw('(SELECT COUNT(tiquid) AS encotiquidid FROM tiquete WHERE plarutid = pr.plarutid) AS totalTiquete'))
+                            ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                            ->join('municipio as mo', function($join)
+                            {
+                                $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                $join->on('mo.muniid', '=', 'r.muniidorigen');
+                            })
                             ->join('municipio as md', function($join)
                             {
-                                $join->on('md.munidepaid', '=', 'e.depaiddestino');
-                                $join->on('md.muniid', '=', 'e.muniiddestino');
+                                $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                $join->on('md.muniid', '=', 'r.muniiddestino');
                             })
-                            ->where('e.plarutid', $request->codigo)->get();
+                            ->join('conductor as c', 'c.condid', '=', 'pr.condid')
+                            ->join('persona as p', 'p.persid', '=', 'c.persid')
+                            ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
+                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                            ->where('pr.plarutid', $request->codigo)
+                            ->first();
+
+                $encomiendas = [];
+                if($planillaRuta->totalEncomiendas > 0){
+                    $encomiendas = DB::table('encomienda as e')->select('te.tipencnombre as tipoEncomienda',
+                                DB::raw("CONCAT(de.depanombre,' - ',md.muninombre) as destinoEncomienda"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalorenvio, 0)) as valorEnvio"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalordeclarado, 0)) as valorDeclarado"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionseguro, 0)) as comisionSeguro"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionempresa, 0)) as comisionEmpresa"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionagencia, 0)) as comisionAgencia"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalorcomisionvehiculo, 0)) as comisionVehiculo"),
+                                DB::raw("CONCAT('$ ', FORMAT(e.encovalortotal, 0)) as valorTotal"),
+                                DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                    ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaRemitente"))
+                                ->join('personaservicio as ps', 'ps.perserid', '=', 'e.perseridremitente')
+                                ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
+                                
+                                ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino')
+                                ->join('municipio as md', function($join)
+                                {
+                                    $join->on('md.munidepaid', '=', 'e.depaiddestino');
+                                    $join->on('md.muniid', '=', 'e.muniiddestino');
+                                })
+                                ->where('e.plarutid', $request->codigo)->get();
+                    }
+
+                $tiquetes    = [];
+                if($planillaRuta->totalTiquete > 0){
+                    $tiquetes  = DB::table('tiquete as t')
+                                ->select(
+                                DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortiquete, 0)) as valorTiquete"),
+                                DB::raw("CONCAT('$ ', FORMAT(t.tiquvalordescuento, 0)) as valorDescuento"),
+                                DB::raw("CONCAT('$ ', FORMAT(t.tiquvalorfondoreposicion, 0)) as valorValorfondoReposicion"),
+                                DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortotal, 0)) as valorTotalTiquete"),
+                                DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                                'mde.muninombre as municipioDestino', 'a.agennombre as nombreAgencia', 
+                                DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                            ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente"))
+                                ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                                ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                                ->join('municipio as mde', function($join)
+                                {
+                                    $join->on('mde.munidepaid', '=', 't.depaiddestino');
+                                    $join->on('mde.muniid', '=', 't.muniiddestino');
+                                })
+                                ->join('agencia as a', 'a.agenid', '=', 't.agenid')
+                                ->where('pr.plarutid', $request->codigo)->get();
                 }
 
-            $tiquetes    = [];
-            if($planillaRuta->totalTiquete > 0){
-                $tiquetes  = DB::table('tiquete as t')
-                            ->select(
-                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortiquete, 0)) as valorTiquete"),
-                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalordescuento, 0)) as valorDescuento"),
-                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalorfondoreposicion, 0)) as valorValorfondoReposicion"),
-                            DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortotal, 0)) as valorTotalTiquete"),
-                            DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
-                            'mde.muninombre as municipioDestino', 'a.agennombre as nombreAgencia', 
-                            DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
-                                        ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente"))
-                            ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
-                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                            ->join('municipio as mde', function($join)
-                            {
-                                $join->on('mde.munidepaid', '=', 't.depaiddestino');
-                                $join->on('mde.muniid', '=', 't.muniiddestino');
-                            })
-                            ->join('agencia as a', 'a.agenid', '=', 't.agenid')
-                            ->where('pr.plarutid', $request->codigo)->get();
-            }
-
-        return response()->json(["planillaRuta" => $planillaRuta, "encomiendas" => $encomiendas, "tiquetes" => $tiquetes]);    
+            return response()->json(['success' => true, "planillaRuta" => $planillaRuta, "encomiendas" => $encomiendas, "tiquetes" => $tiquetes]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
     
     public function registrarSalida(Request $request)
@@ -212,6 +227,12 @@ class PlanillaRutaController extends Controller
         DB::beginTransaction();
         try {
             $fechaHoraActual = Carbon::now();
+            $fechaActual     = $fechaHoraActual->format('Y-m-d');
+            $cajaAbierta     = MovimientoCaja::verificarCajaAbierta();
+
+            if(!$cajaAbierta){
+                return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible registrar una encomienda sin antes haber abierto la caja para el día de hoy']);
+            }
 
             //Verifico que el conductor y el vehiculo no este suspendido
             $conductor   = DB::table('conductor')->select('condid')->where('tiescoid', 'A')->where('condid', $request->conductor)->first();
@@ -244,6 +265,24 @@ class PlanillaRutaController extends Controller
                 $encomiendacambioestado->encaesobservacion = 'En transporte hacia el terminal destino. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $encomiendacambioestado->save();
             }
+
+
+            //Se realiza la contabilizacion
+            /*$comprobanteContableId                     = ComprobanteContable::obtenerId($fechaActual);
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $valorTotalTiquete;
+            $comprobantecontabledetalle->save();
+
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 10; //CXP PAGO TIQUETE
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $valorTotalTiquete;
+            $comprobantecontabledetalle->save();*/
+
 
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

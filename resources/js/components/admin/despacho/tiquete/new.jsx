@@ -130,6 +130,7 @@ export default function New({data, tipo}){
                     newFormData.direccion       = (personaservicio.perserdireccion !== undefined) ? personaservicio.perserdireccion : '';
                     newFormData.correo          = (personaservicio.persercorreoelectronico !== undefined) ? personaservicio.persercorreoelectronico : '';
                     newFormData.telefonoCelular = (personaservicio.persernumerocelular !== undefined) ? personaservicio.persernumerocelular : '';
+                    setEnviarTiquete((personaservicio.perserpermitenotificacion) ? true : false);
                 }else{
                     newFormData.personaId       = '000';
                     newFormData.primerNombre    = '';
@@ -139,6 +140,7 @@ export default function New({data, tipo}){
                     newFormData.direccion       = '';
                     newFormData.correo          = '';
                     newFormData.telefonoCelular = '';
+                    setEnviarTiquete(false);
                 }
                 setLoader(false); 
             })
@@ -320,7 +322,8 @@ export default function New({data, tipo}){
                 setFormDataPuesto(newFormDataPuesto);
                 setMunicipiosDestino(municipiosDestino);
                 setEsEmpresa((tiquete.tipideid === 5) ? true : false);
-
+                setEnviarTiquete((tiquete.perserpermitenotificacion) ? true : false);
+              
                 //Dibujamos el vehiculo
                 const distribucionVehiculos          = res.distribucionVehiculos;
                 const distribucionVehiculosFiltrados = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === tiquete.vehiid);
@@ -627,7 +630,7 @@ export default function New({data, tipo}){
                         <FormControlLabel
                             control={<Switch name={'notificar'} 
                             value={enviarTiquete} onChange={handleChangeEnviarTiquete} 
-                            color="secondary"/>} 
+                            color="secondary" checked={(enviarTiquete) ? true : false}/>} 
                             label="Enviar copia del tiquete al correo"
                         />
                     </Grid>

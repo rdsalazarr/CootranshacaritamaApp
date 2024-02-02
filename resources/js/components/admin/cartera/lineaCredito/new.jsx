@@ -93,8 +93,8 @@ export default function New({data, tipo}){
                         label={"Monto mínimo"}
                         value={formData.montoMinimo}
                         type={'numeric'}
-                        require={['required', 'maxStringLength:4']}
-                        error={['Campo obligatorio','Número máximo permitido es el 9999']}
+                        require={['required', 'maxStringLength:5']}
+                        error={['Campo obligatorio','Número máximo permitido es el 99999']}
                         onChange={handleChange}
                     />
                 </Grid>

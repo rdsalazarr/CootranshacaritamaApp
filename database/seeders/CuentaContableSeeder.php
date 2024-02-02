@@ -16,7 +16,7 @@ class CuentaContableSeeder extends Seeder
     {
         $fechaHoraActual = Carbon::now();
 
-        /*DB::table('cuentacontable')->insert([
+        DB::table('cuentacontable')->insert([
             'cueconid'         => '1',
             'cueconnombre'     => 'CAJA',
             'cueconnaturaleza' => 'D',
@@ -38,7 +38,7 @@ class CuentaContableSeeder extends Seeder
             'cueconid'         => '3',
             'cueconnombre'     => 'CXP MENSUALIDADES',
             'cueconnaturaleza' => 'C',
-            'cueconcodigo'     => '120000',
+            'cueconcodigo'     => '120003',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);
@@ -47,10 +47,10 @@ class CuentaContableSeeder extends Seeder
             'cueconid'         => '4',
             'cueconnombre'     => 'CXP MENSUALIDADES TOTAL',
             'cueconnaturaleza' => 'C',
-            'cueconcodigo'     => '120001',
+            'cueconcodigo'     => '120004',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
-        ]);*/
+        ]);
 
         DB::table('cuentacontable')->insert([
             'cueconid'         => '5',
@@ -65,7 +65,7 @@ class CuentaContableSeeder extends Seeder
             'cueconid'         => '6',
             'cueconnombre'     => 'CXP PAGO CUOTA CRÉDITO TOTAL',
             'cueconnaturaleza' => 'C',
-            'cueconcodigo'     => '120002',
+            'cueconcodigo'     => '120006',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);
@@ -74,7 +74,7 @@ class CuentaContableSeeder extends Seeder
             'cueconid'         => '7',
             'cueconnombre'     => 'CXP PAGO SANCIÓN',
             'cueconnaturaleza' => 'C',
-            'cueconcodigo'     => '120005',
+            'cueconcodigo'     => '120007',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);
@@ -83,7 +83,7 @@ class CuentaContableSeeder extends Seeder
             'cueconid'         => '8',
             'cueconnombre'     => 'CXP PAGO ENCOMIENDA',
             'cueconnaturaleza' => 'C',
-            'cueconcodigo'     => '120006',
+            'cueconcodigo'     => '120008',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);
@@ -92,7 +92,16 @@ class CuentaContableSeeder extends Seeder
             'cueconid'         => '9',
             'cueconnombre'     => 'CXP PAGO ENCOMIENDA CONTRAENTREGA',
             'cueconnaturaleza' => 'C',
-            'cueconcodigo'     => '120007',
+            'cueconcodigo'     => '120009',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '10',
+            'cueconnombre'     => 'CXP PAGO DE TIQUETE',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120010',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);

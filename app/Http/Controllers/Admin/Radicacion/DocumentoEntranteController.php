@@ -409,9 +409,9 @@ class DocumentoEntranteController extends Controller
             $nombreDependencia = $dataRadicado->depenombre;
             $correoDependencia = $dataRadicado->depecorreo;
 
-            $radicaciondocumentoentrante           = RadicacionDocumentoEntrante::findOrFail($codigo);
-            $radicaciondocumentoentrante->tierdeid = $estado;
-            $radicaciondocumentoentrante->save();
+            $documentoentrante           = DocumentoEntrante::findOrFail($codigo);
+            $documentoentrante->tierdeid = $estado;
+            $documentoentrante->save();
 
             $radicaciondocentcambioestado 					 = new DocumentoEntranteCambioEstado();
             $radicaciondocentcambioestado->radoenid          = $codigo;

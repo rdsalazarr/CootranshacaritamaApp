@@ -85,13 +85,13 @@ class HistoricoController extends Controller
 
         DB::beginTransaction();
         try {
-            $fechaHoraActual     = Carbon::now();  
-            $funcion 		     = new generales();   
+            $fechaHoraActual     = Carbon::now();
+            $funcion 		     = new generales();
             $archisid            = $request->codigo;
-            $archivohistorico    = ($request->tipo === 'U') ? ArchivoHistorico::findOrFail($archisid) : new ArchivoHistorico();
-            if($request->tipo === 'I'){     
-                $archivohistorico->usuaid                   = Auth::id();
-                $archivohistorico->archisfechahora          = $fechaHoraActual;
+            $archivohistorico    = ($request->tipo === 'U') ? Historico::findOrFail($archisid) : new Historico();
+            if($request->tipo === 'I'){
+                $archivohistorico->usuaid              = Auth::id();
+                $archivohistorico->archisfechahora     = $fechaHoraActual;
             }
 
             $archivohistorico->tipdocid                = $request->tipoDocumental;
@@ -111,7 +111,7 @@ class HistoricoController extends Controller
 
             if($request->tipo === 'I'){
                 //Consulto el ultimo identificador de la persona 
-                $archHistoricoMaxConsecutio = ArchivoHistorico::latest('archisid')->first();
+                $archHistoricoMaxConsecutio = Historico::latest('archisid')->first();
                 $archisid                   = $archHistoricoMaxConsecutio->archisid;
             }
 
@@ -137,7 +137,7 @@ class HistoricoController extends Controller
                         return response()->json(['success' => false, 'message'=> 'Este documento PDF está encriptado y no puede ser procesado']);
                     }
 
-					$archivohistoricodigitalizado                              = new ArchivoHistoricoDigitalizado();
+					$archivohistoricodigitalizado                              = new HistoricoDigitalizado();
 					$archivohistoricodigitalizado->archisid                    = $archisid;
 					$archivohistoricodigitalizado->arhidinombrearchivooriginal = $nombreOriginal;
 					$archivohistoricodigitalizado->arhidinombrearchivoeditado  = $nombreArchivo;

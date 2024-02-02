@@ -1036,18 +1036,20 @@ class generarPdf
 				//$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
 
 				PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
-				
+			}
+
+			if($firma->codopffirmado === 1 ){
 				PDF::Ln(8);
 				PDF::SetFont('helvetica', '', 6);
 				if($totalFirmas <= 4){
 					PDF::setXY($posicionX, 264);
 					PDF::StartTransform();
 					PDF::Rotate(90);
-					PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+					PDF::MultiCell(200,3,"En constancia se firma electrónicamente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
 					PDF::StopTransform();
 					$posicionX += 3;
 				}else{
-					PDF::MultiCell(200,3,"En constancia se firma digitalmente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
+					PDF::MultiCell(200,3,"En constancia se firma electrónicamente el día ".$firma->codopffechahorafirmado.", mediante el token número ".$firma->codopftoken." por ".$firma->nombrePersona."\n",0,'J',0);
 				}
 			}
 		}
@@ -1271,6 +1273,7 @@ EOD;
 		$urlEmpresa     = $empresa->emprurl;
 		$nombreEmpresa  = $empresa->emprnombre;
 		$siglaEmpresa   = $empresa->emprsigla;
+		$logoEmpresa    = $empresa->emprlogo;
 
 		PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('ERP '.$siglaEmpresa);
@@ -1871,6 +1874,7 @@ EOD;
 		$empresa       = $this->consultarEmpresa();
 		$nombreEmpresa = $empresa->emprnombre;
 		$lemaEmpresa   = $empresa->emprlema;
+		$siglaEmpresa  = $empresa->emprsigla;
 	
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator('ERP '.$siglaEmpresa);
@@ -2055,15 +2059,15 @@ EOD;
         PDF::Ln(5);
 
         PDF::Cell(40, 4, "TIPO DE CRÉDITO:", 0, 0, 'L');
-        PDF::Cell(76, 4,  $tipoCredito,0, 0, 'L');
+  		PDF::MultiCell(76, 4, $tipoCredito, 0, 'L', 0, 0, '', '', true);
         PDF::Cell(26, 4, "MONTO:", 0, 0, 'L');
-        PDF::Cell(40, 4, '$ '.number_format($montoCredito,0,',','.'), 0, 0, 'L');
+		PDF::MultiCell(40, 5, '$ '.number_format($montoCredito,0,',','.'), 0, 'L', 0, 1, '', '', true);
         PDF::Ln(5);
-        
+
         PDF::Cell(40, 4, "VALOR CUOTA:", 0, 0, 'L');
         PDF::Cell(76, 4, '$ '.number_format($valorCuota,0,',','.') ,0, 0, 'L');
         PDF::Cell(26, 4, "TIEMPO:", 0, 0, 'L');
-        PDF::Cell(40, 4, $tiempoCredito.' MESES', 0, 0, 'L');  
+        PDF::Cell(40, 4, $tiempoCredito.' MESES', 0, 0, 'L');
         PDF::Ln(12);
 
         PDF::Cell(40, 4, "CONCEPTO Y/O OBJETO DEL CRÉDITO: ", 0, 0, 'L');
@@ -2108,7 +2112,7 @@ EOD;
         PDF::Ln(12);
         PDF::Cell(60, 4, "MIEMBRO DEL COMITÉ :", 0, 0, 'L');   
         PDF::Cell(115, 4, "",'B', 0, 'L');
-        PDF::Ln(16);
+        PDF::Ln(12);
 
         PDF::Cell(32, 4, " Observaciones:", 0, 0, 'L');
         PDF::Cell(143, 4, "",'B', 0, 'L');

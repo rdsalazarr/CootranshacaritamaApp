@@ -17,131 +17,147 @@ class TiqueteController extends Controller
     public function index(Request $request)
     {
 		$this->validate(request(),['estado' => 'required']);
-        $rutaDespachada  = ($request->tipo === 'REGISTRADO') ? false : true;
-        $fechaHoraActual = Carbon::now();
-        $fechaInicial    = $fechaHoraActual->subMonths(6)->format('Y-m-d');
+        try{
+            $rutaDespachada  = ($request->tipo === 'REGISTRADO') ? false : true;
+            $fechaHoraActual = Carbon::now();
+            $fechaInicial    = $fechaHoraActual->subMonths(6)->format('Y-m-d');
 
-        $consulta   = DB::table('tiquete as t')
-                        ->select('t.tiquid','pr.rutaid', 't.tiqufechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaSalida',
-                        'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino','t.plarutid',
-                        DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                        DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
-                        DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
-                                ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente") )
-                        ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                        ->join('municipio as mo', function($join)
-                        {
-                            $join->on('mo.munidepaid', '=', 't.depaidorigen');
-                            $join->on('mo.muniid', '=', 't.muniidorigen');
-                        })
-                        ->join('municipio as md', function($join)
-                        {
-                            $join->on('md.munidepaid', '=', 't.depaiddestino');
-                            $join->on('md.muniid', '=', 't.muniiddestino');
-                        })
-                        ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
-                        ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
-                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                        ->where('pr.agenid', auth()->user()->agenid)
-                        ->where('pr.plarutdespachada', $rutaDespachada);
+            $consulta   = DB::table('tiquete as t')
+                            ->select('t.tiquid','pr.rutaid', 't.tiqufechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaSalida',
+                            'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino','t.plarutid',
+                            DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
+                            DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                    ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente") )
+                            ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                            ->join('municipio as mo', function($join)
+                            {
+                                $join->on('mo.munidepaid', '=', 't.depaidorigen');
+                                $join->on('mo.muniid', '=', 't.muniidorigen');
+                            })
+                            ->join('municipio as md', function($join)
+                            {
+                                $join->on('md.munidepaid', '=', 't.depaiddestino');
+                                $join->on('md.muniid', '=', 't.muniiddestino');
+                            })
+                            ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                            ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
+                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                            ->where('pr.agenid', auth()->user()->agenid)
+                            ->where('pr.plarutdespachada', $rutaDespachada);
 
-                        if($rutaDespachada)
-                            $consulta = $consulta->whereDate('t.tiqufechahoraregistro', '>=', $fechaInicial);
-                        
-                        $data  = $consulta->orderBy('t.tiquid', 'Desc')->orderBy('pr.plarutid', 'Desc')->get();
+                            if($rutaDespachada)
+                                $consulta = $consulta->whereDate('t.tiqufechahoraregistro', '>=', $fechaInicial);
+                            
+                            $data  = $consulta->orderBy('t.tiquid', 'Desc')->orderBy('pr.plarutid', 'Desc')->get();
 
-        return response()->json(["data" => $data]);
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function datos(Request $request)
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
-        $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
-        $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre')
-                                    ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
-                                    ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
+        try{
+            $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
+            $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre')
+                                        ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
+                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
 
-        $tarifaTiquetes         = DB::table('tarifatiquete as tt')
-                                    ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion')
-                                    ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')->get();
+            $tarifaTiquetes         = DB::table('tarifatiquete as tt')
+                                        ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion')
+                                        ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')->get();
 
-        $planillaRutas        = DB::table('planillaruta as pr')
-                                    ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
-                                    DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
-                                    ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                                    ->join('municipio as mo', function($join)
-                                    {
-                                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                        $join->on('mo.muniid', '=', 'r.muniidorigen');
-                                    })
-                                    ->join('municipio as md', function($join)
-                                    {
-                                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                        $join->on('md.muniid', '=', 'r.muniiddestino');
-                                    })
-                                    ->where('pr.plarutdespachada', false)
-                                    ->get();
+            $planillaRutas        = DB::table('planillaruta as pr')
+                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                        DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
+                                        ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                                        ->join('municipio as mo', function($join)
+                                        {
+                                            $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                                            $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                        })
+                                        ->join('municipio as md', function($join)
+                                        {
+                                            $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                                            $join->on('md.muniid', '=', 'r.muniiddestino');
+                                        })
+                                        ->where('pr.plarutdespachada', false)
+                                        ->get();
 
-        $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
-                                    ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
-                                    DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
-                                    ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
-                                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                    ->orderBy('tvd.tivediid')->get();
-                                    
-        $tiquete                = [];
-        $tiquetePuestos         = [];
-        $tiquetePuestosPlanilla = [];
-        if($request->tipo === 'U'){
-            $tiquete  = DB::table('tiquete as t')
-                                ->select('t.tiquid','t.plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino',
-                                't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
-                                'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
-                                'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'pr.vehiid')
-                                ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
-                                ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                                ->where('t.tiquid', $request->codigo)->first();
+            $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
+                                        ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
+                                        DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
+                                        ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
+                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                        ->orderBy('tvd.tivediid')->get();
 
-            $tiquetePuestos  = DB::table('tiquetepuesto')->select('tiqpueid','tiqpuenumeropuesto')
-                                ->where('tiquid', $request->codigo)->get();
+            $tiquete                = [];
+            $tiquetePuestos         = [];
+            $tiquetePuestosPlanilla = [];
+            if($request->tipo === 'U'){
+                $tiquete  = DB::table('tiquete as t')
+                                    ->select('t.tiquid','t.plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino',
+                                    't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
+                                    'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido','ps.perserpermitenotificacion',
+                                    'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'pr.vehiid')
+                                    ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                                    ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                                    ->where('t.tiquid', $request->codigo)->first();
 
-            $tiquetePuestosPlanilla  = DB::table('tiquetepuesto as tp')->select('tp.tiqpuenumeropuesto')
-                                    ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
-                                    ->where('t.plarutid', $request->planillaId)
-                                    ->where('t.tiquid', '<>', $request->codigo)->get();
+                $tiquetePuestos  = DB::table('tiquetepuesto')->select('tiqpueid','tiqpuenumeropuesto')
+                                    ->where('tiquid', $request->codigo)->get();
+
+                $tiquetePuestosPlanilla  = DB::table('tiquetepuesto as tp')->select('tp.tiqpuenumeropuesto')
+                                        ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
+                                        ->where('t.plarutid', $request->planillaId)
+                                        ->where('t.tiquid', '<>', $request->codigo)->get();
+            }
+
+            return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"          => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
+                                    "municipios"             => $municipios,           "distribucionVehiculos"  => $distribucionVehiculos, "tiquete"        => $tiquete,  
+                                    "tiquetePuestos"         => $tiquetePuestos,       "tiquetePuestosPlanilla" => $tiquetePuestosPlanilla ]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
-
-        return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"          => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
-                                  "municipios"           => $municipios,           "distribucionVehiculos"  => $distribucionVehiculos, "tiquete"        => $tiquete,  
-                                  "tiquetePuestos"        => $tiquetePuestos,      "tiquetePuestosPlanilla" => $tiquetePuestosPlanilla ]);
     }
 
     public function consultarVenta(Request $request)
 	{
         $this->validate(request(),['palnillaId' => 'required|numeric']);
 
-        $data  = DB::table('tiquete as t')
-                    ->select('tp.tiqpueid','tp.tiqpuenumeropuesto')
-                    ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 'tp.tiquid')
-                    ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                    ->where('t.plarutid', $request->palnillaId)->get();
+        try{
+            $data  = DB::table('tiquete as t')
+                        ->select('tp.tiqpueid','tp.tiqpuenumeropuesto')
+                        ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 'tp.tiquid')
+                        ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                        ->where('t.plarutid', $request->palnillaId)->get();
 
-        return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data]);
+            return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data]);
+          }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function consultarPersona(Request $request)
 	{
         $this->validate(request(),['tipoIdentificacion' => 'required|numeric', 'documento' => 'required|string|max:15']);
 
-        $data   = DB::table('personaservicio')
-                            ->select('perserid','tipideid','perserdocumento','perserprimernombre','persersegundonombre','perserprimerapellido',
-                            			'persersegundoapellido','perserdireccion', 'persercorreoelectronico','persernumerocelular')
-                            ->where('tipideid', $request->tipoIdentificacion)
-                            ->where('perserdocumento', $request->documento)->first();
+        try{
+            $data   = DB::table('personaservicio')
+                                ->select('perserid','tipideid','perserdocumento','perserprimernombre','persersegundonombre','perserprimerapellido',
+                                            'persersegundoapellido','perserdireccion', 'persercorreoelectronico','persernumerocelular','perserpermitenotificacion')
+                                ->where('tipideid', $request->tipoIdentificacion)
+                                ->where('perserdocumento', $request->documento)->first();
 
-        return response()->json(['success' => ($data !== null) ? true : false, 'data' => $data]);
+            return response()->json(['success' => ($data !== null) ? true : false, 'data' => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function salve(Request $request)
@@ -270,45 +286,49 @@ class TiqueteController extends Controller
     {
 		$this->validate(request(),['codigo'  => 'required']);
 
-        $tiquete  = DB::table('tiquete as t')
-                    ->select('t.tiquid', 't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
-                    DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"), 't.plarutid', 'pr.vehiid',
-                    'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino', 'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
-                    'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular',
-                    'ti.tipidenombre as tipoIdentificacion')
-                    ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
-                    ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'ps.tipideid')
-                    ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                    ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                    ->join('municipio as mo', function($join)
-                    {
-                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                        $join->on('mo.muniid', '=', 'r.muniidorigen');
-                    })
-                    ->join('municipio as md', function($join)
-                    {
-                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                        $join->on('md.muniid', '=', 'r.muniiddestino');
-                    })
-                    ->join('departamento as dd', 'dd.depaid', '=', 't.depaiddestino')
-                    ->join('municipio as mde', function($join)
-                    {
-                        $join->on('mde.munidepaid', '=', 't.depaiddestino');
-                        $join->on('mde.muniid', '=', 't.muniiddestino');
-                    })
-                    ->where('t.tiquid', $request->codigo)->first();
+        try{
+            $tiquete  = DB::table('tiquete as t')
+                        ->select('t.tiquid', 't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
+                        DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"), 't.plarutid', 'pr.vehiid',
+                        'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino', 'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
+                        'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular',
+                        'ti.tipidenombre as tipoIdentificacion')
+                        ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                        ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'ps.tipideid')
+                        ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                        ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                        ->join('municipio as mo', function($join)
+                        {
+                            $join->on('mo.munidepaid', '=', 'r.depaidorigen');
+                            $join->on('mo.muniid', '=', 'r.muniidorigen');
+                        })
+                        ->join('municipio as md', function($join)
+                        {
+                            $join->on('md.munidepaid', '=', 'r.depaiddestino');
+                            $join->on('md.muniid', '=', 'r.muniiddestino');
+                        })
+                        ->join('departamento as dd', 'dd.depaid', '=', 't.depaiddestino')
+                        ->join('municipio as mde', function($join)
+                        {
+                            $join->on('mde.munidepaid', '=', 't.depaiddestino');
+                            $join->on('mde.muniid', '=', 't.muniiddestino');
+                        })
+                        ->where('t.tiquid', $request->codigo)->first();
 
-        $tiquetePuestos  = DB::table('tiquetepuesto')->select('tiqpueid','tiqpuenumeropuesto')
-                                    ->where('tiquid', $request->codigo)->get();
+            $tiquetePuestos  = DB::table('tiquetepuesto')->select('tiqpueid','tiqpuenumeropuesto')
+                                        ->where('tiquid', $request->codigo)->get();
 
-        $distribucionVehiculo = DB::table('tipovehiculodistribucion as tvd')
-                                    ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
-                                    DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
-                                    ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
-                                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                    ->where('v.vehiid', $tiquete->vehiid)->get();
+            $distribucionVehiculo = DB::table('tipovehiculodistribucion as tvd')
+                                        ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
+                                        DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
+                                        ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
+                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                        ->where('v.vehiid', $tiquete->vehiid)->get();
 
-        return response()->json(["tiquete" => $tiquete, "tiquetePuestos" => $tiquetePuestos, "distribucionVehiculo" => $distribucionVehiculo ]);
+            return response()->json(['success' => true, "tiquete" => $tiquete, "tiquetePuestos" => $tiquetePuestos, "distribucionVehiculo" => $distribucionVehiculo ]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function verFactura(Request $request)

@@ -44,7 +44,8 @@ class PersonaRequests extends FormRequest
             'estado'                 => 'required',
             'firmaDigital'           => 'required',
             'firma' 	             => 'nullable|mimes:png,PNG|max:1000',
-            'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
+            //'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
+            'fotografia'             => 'nullable|mimetypes:image/png,image/jpg,image/jpeg|max:1000',
             'claveCertificado'       => 'nullable|string|max:20',
             'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:formulario,ASOCIADO',
 
@@ -55,7 +56,7 @@ class PersonaRequests extends FormRequest
             'numeroLicencia'          => 'nullable|string|min:4|max:30|required_if:formulario,CONDUCTOR',
             'fechaExpedicionLicencia' => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
             'fechaVencimiento'        => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
-            'imagenLicencia' 	      => 'nullable|mimes:jpg,png,jpeg,pdf|max:1000'
+            'imagenLicencia' 	      => 'nullable|mimes:jpg,png,jpeg,pdf,JPG,PNG,JPEG,PDF|max:1000'
         ];
     }
 }

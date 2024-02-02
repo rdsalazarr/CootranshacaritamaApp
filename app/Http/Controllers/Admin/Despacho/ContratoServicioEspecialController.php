@@ -60,7 +60,7 @@ class ContratoServicioEspecialController extends Controller
 		$vehiculos = DB::table('vehiculo as v')->select('v.vehiid',DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
 									->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
 									->where('v.tiesveid', 'A')
-									->where('v.timoveid', '7')//Tipo modalidad especial
+									->where('v.timoveid', 'E')//Tipo modalidad especial
 									->orderBy('v.vehinumerointerno')->get();
 
 		if($request->tipo === 'U'){
@@ -99,8 +99,8 @@ class ContratoServicioEspecialController extends Controller
 	{
         $coseesid                        = $request->codigo;
 		$pecoseid                        = $request->personaId;
-        $contratoServicioEspecial        = ($coseesid != 000) ? ContratoServicioEspecial::findOrFail($coseesid) : new ContratoServicioEspecial();
-		$personaContratoServicioEspecial = ($pecoseid != 000) ? PersonaContratoServicioEspecial::findOrFail($pecoseid) : new PersonaContratoServicioEspecial();
+        $contratoServicioEspecial        = ($coseesid != '000') ? ContratoServicioEspecial::findOrFail($coseesid) : new ContratoServicioEspecial();
+		$personaContratoServicioEspecial = ($pecoseid != '000') ? PersonaContratoServicioEspecial::findOrFail($pecoseid) : new PersonaContratoServicioEspecial();
 
 	    $this->validate(request(),[
 			    'tipoIdentificacion'   => 'required|numeric',
@@ -144,7 +144,7 @@ class ContratoServicioEspecialController extends Controller
 			$personaContratoServicioEspecial->pecosenumerocelular     = $request->telefonoCelular;
 			$personaContratoServicioEspecial->save();
 
-            if($request->tipo === 'I' and $pecoseid === 000){
+            if($request->tipo === 'I' and $pecoseid === '000'){
 				//Consulto el ultimo identificador de la persona del contrato
 				$personaContratoConsecutivo = PersonaContratoServicioEspecial::latest('pecoseid')->first();
 				$pecoseid                   = $personaContratoConsecutivo->pecoseid;

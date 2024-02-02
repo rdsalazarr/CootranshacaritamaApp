@@ -58,9 +58,25 @@ export default function New({data, tipo, frm, url, tpRelacion}){
         setFormDataFile(prev => ({...prev, [nombre]: files}));
     }
 
-    const removeFIle = (nombre)=>{
-        setFormDataFile(prev => ({...prev, archivos: prev.archivos.filter(item => item.name !== nombre)}));
+    const removeFIleFotografia = (nombre)=>{ 
+        setFormDataFile(prev => ({...prev, fotografia: prev.fotografia.filter(item => item.name !== nombre)}));
     }
+
+    const removeFIleFirma = (nombre)=>{ 
+        setFormDataFile(prev => ({...prev, firma: prev.firma.filter(item => item.name !== nombre)}));
+    }
+
+    const removeFIleRutaCrt = (nombre)=>{ 
+        setFormDataFile(prev => ({...prev, rutaCrt: prev.rutaCrt.filter(item => item.name !== nombre)}));
+    }
+
+    const removeFIleRutaPem = (nombre)=>{ 
+        setFormDataFile(prev => ({...prev, rutaPem: prev.rutaPem.filter(item => item.name !== nombre)}));
+    }
+
+     const removeFIleImagenLicencia = (nombre)=>{ 
+        setFormDataFile(prev => ({...prev, imagenLicencia: prev.imagenLicencia.filter(item => item.name !== nombre)}));
+    } 
 
     const onFilesError = (error, file) => {
         let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
@@ -608,7 +624,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                 <Grid item md={4} xl={4} sm={12} xs={12}>
                     <Box style={{display: 'flex', flexWrap: 'wrap'}}>
                         {formDataFile.fotografia.map((file, a) =>{
-                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                            return <ContentFile file={file} name={file.name} remove={removeFIleFotografia} key={'ContentFile-' +a}/>
                         })}
                     </Box>
                 </Grid>
@@ -648,7 +664,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                         <Grid item md={4} xl={4} sm={12} xs={12}>
                             <Box style={{display: 'flex', flexWrap: 'wrap'}}>
                                 {formDataFile.firma.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                    return <ContentFile file={file} name={file.name} remove={removeFIleFirma} key={'ContentFile-' +a}/>
                                 })}
                             </Box>
                         </Grid>
@@ -705,7 +721,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                         <Grid item md={2} xl={2} sm={3} xs={12}>
                             <Box style={{display: 'flex', flexWrap: 'wrap'}}>
                                 {formDataFile.rutaCrt.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                    return <ContentFile file={file} name={file.name} remove={removeFIleRutaCrt} key={'ContentFile-' +a}/>
                                 })}
                             </Box>
                         </Grid>
@@ -729,7 +745,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                         <Grid item md={2} xl={2} sm={6} xs={12}>
                             <Box style={{display: 'flex', flexWrap: 'wrap'}}>
                                 {formDataFile.rutaPem.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                    return <ContentFile file={file} name={file.name} remove={removeFIleRutaPem} key={'ContentFile-' +a}/>
                                 })}
                             </Box>
                         </Grid>
@@ -941,7 +957,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                         <Grid item md={4} xl={4} sm={12} xs={12}>
                             <Box style={{display: 'flex', flexWrap: 'wrap'}}>
                                 {formDataFile.imagenLicencia.map((file, a) =>{
-                                    return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                    return <ContentFile file={file} name={file.name} remove={removeFIleImagenLicencia} key={'ContentFile-' +a}/>
                                 })}
                             </Box>
                         </Grid>

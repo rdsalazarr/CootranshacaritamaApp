@@ -77,7 +77,7 @@ class CitacionController extends Controller
 
 		$manejadorDocumentos = new manejadorDocumentos();
 		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
-		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('T', '');
+		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra('H', '');
 
         return response()->json(["fechaActual"   => $fechaActual,    "tipoMedios" => $tipoMedios, "personas"        => $personas,       "tipoCitaciones"  => $tipoActas,
 								"cargoLaborales" => $cargoLaborales, "data"      => $data,		  "firmasDocumento" => $firmasDocumento, "firmaInvitados" => $firmaInvitados ]);
