@@ -23,7 +23,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                         departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                         segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                         estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm, fechaIngresoAsociado:'', fechaIngresoConductor:'',
-                                        tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:''
+                                        tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', firmaElectronica:''
                                 }); 
 
     const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]});
@@ -90,6 +90,11 @@ export default function New({data, tipo, frm, url, tpRelacion}){
         let rutaPem        = formDataFile.rutaPem;
         let imagenLicencia = formDataFile.imagenLicencia;
 
+        if(formData.firmaElectronica.toString() === '1' && formData.correo === ''){
+            showSimpleSnackbar("El campo correo es obligatorio cuando el campo tiene firma electronica es sí", 'error');
+            return;
+        }
+
         if(tipo === '' && formData.firmaDigital.toString() === '1' && rutaCrt.length < 1){
             showSimpleSnackbar("Debe subir el certificado digital en formato crt", 'error');
             return;
@@ -120,7 +125,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                                                 departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                                                 segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                                                 estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm,  fechaIngresoAsociado:'', fechaIngresoConductor:'', 
-                                                                tipoConductor:'', agencia:''}) : null;
+                                                                tipoConductor:'', agencia:'', firmaElectronica:''}) : null;
             (formData.tipo === 'I' && res.success) ? setFormDataFile({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]}) : null;
             setLoader(false);
         })
@@ -161,6 +166,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                 newFormData.genero                 = persona.persgenero;
                 newFormData.rutaFirmaOld           = (persona.persrutafirma !== null) ? persona.persrutafirma : '';
                 newFormData.rutaFotoOld            = (persona.persrutafoto !== null) ? persona.persrutafoto : '';
+                newFormData.firmaElectronica       = persona.perstienefirmaelectronica;
                 newFormData.firmaDigital           = persona.perstienefirmadigital;
                 newFormData.rutaCrtOld             = (persona.persrutacrt !== null) ? persona.persrutacrt : '';
                 newFormData.rutaPemOld             = (persona.persrutapem !== null) ? persona.persrutapem : '';
@@ -540,6 +546,24 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                     </SelectValidator>
                 </Grid>
 
+                <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <SelectValidator
+                        name={'firmaElectronica'}
+                        value={formData.firmaElectronica}
+                        label={'¿Tiene firma electrónica?'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off'}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange} 
+                    >
+                        <MenuItem value={""}>Seleccione</MenuItem>
+                        <MenuItem value={"1"}>Sí</MenuItem>
+                        <MenuItem value={"0"}>No</MenuItem>
+                    </SelectValidator>
+                </Grid>
+
                 {(frm === 'PERSONA') ?
                     <Fragment>
                         <Grid item xl={3} md={3} sm={6} xs={12}>
@@ -560,8 +584,8 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 })}
                             </SelectValidator>
                         </Grid>
-               
-                        <Grid item xl={3} md={3} sm={6} xs={12}>
+
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
                             <SelectValidator
                                 name={'firmaDigital'}
                                 value={formData.firmaDigital}
@@ -579,7 +603,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                             </SelectValidator>
                         </Grid>
 
-                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
                             <SelectValidator
                                 name={'estado'}
                                 value={formData.estado}

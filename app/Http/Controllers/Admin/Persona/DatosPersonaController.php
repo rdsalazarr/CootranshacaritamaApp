@@ -16,7 +16,7 @@ class DatosPersonaController extends Controller
 
         $generales             = new generales();
         $fechaHoraActual       = Carbon::now();
-        $fechaActual           = $fechaHoraActual->format('Y-m-d');   
+        $fechaActual           = $fechaHoraActual->format('Y-m-d');
         $debeCrearRegistro     = false;
         $tipoConductores       = [];
         $agencias              = [];
@@ -39,7 +39,7 @@ class DatosPersonaController extends Controller
         if($request->tipo !== 'I'){
             $url        = URL::to('/');
             $persona    = DB::table('persona as p')->select('p.persid','p.carlabid','p.tipideid','p.tipperid','p.persdepaidnacimiento','p.persmuniidnacimiento',
-                                'p.persdepaidexpedicion','p.persmuniidexpedicion','p.persdocumento','p.perstienefirmadigital',
+                                'p.persdepaidexpedicion','p.persmuniidexpedicion','p.persdocumento','p.perstienefirmadigital','p.perstienefirmaelectronica',
                                 'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                 'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                 'p.persgenero','p.persrutafoto','p.persrutafirma','p.persactiva','p.persrutapem','p.persrutacrt','p.persclavecertificado',
@@ -99,11 +99,12 @@ class DatosPersonaController extends Controller
         $url  = URL::to('/');
         $persona = DB::table('persona as p')->select('cl.carlabnombre as nombreCargo', 'tp.tippernombre as nombreTipoPersona', 'p.persdocumento',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
-                                    'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
-                                    'p.persgenero','p.persrutafoto','p.persrutafirma','p.perstienefirmadigital as firmaDigital',
+                                    'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular','p.persgenero',
+                                    'p.persrutafoto','p.persrutafirma','p.perstienefirmaelectronica as firmaElectronica', 'p.perstienefirmadigital as firmaDigital',
                                     'dn.depanombre as nombreDeptoNacimiento', 'mn.muninombre as nombreMunicipioNacimiento',   
                                     'de.depanombre as nombreDeptoExpedicion', 'me.muninombre as nombreMunicipioExpedicion',
                                     DB::raw("if(p.persgenero = 'M' ,'Masculino', 'Femenino') as genero"),
+                                    DB::raw("if(p.perstienefirmaelectronica = 1 ,'Sí', 'No') as tieneFirmaElectronica"),
                                     DB::raw("if(p.perstienefirmadigital = 1 ,'Sí', 'No') as tieneFirmaDigital"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
                                     DB::raw("if(p.persactiva = 1 ,'Sí', 'No') as estado"),
@@ -171,5 +172,5 @@ class DatosPersonaController extends Controller
 
         return response()->json(["persona" => $persona,                              "cambiosEstadoAsociado" => $cambiosEstadoAsociado, 
                                 "cambiosEstadoConductor" => $cambiosEstadoConductor, "licenciasConducion" => $licenciasConducion]);
-    } 
+    }
 }

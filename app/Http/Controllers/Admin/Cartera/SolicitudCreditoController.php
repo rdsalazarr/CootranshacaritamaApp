@@ -16,16 +16,20 @@ class SolicitudCreditoController extends Controller
 {
     public function index()
     {
-        $listaAsociados = DB::table('vehiculo as v')->select(DB::raw("CONCAT(a.asocid,'-', v.vehiid) as identificador"),
-                        DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno,' ',p.persdocumento,' ', p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
-                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                        ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
-                        ->join('persona as p', 'p.persid', '=', 'a.persid')
-                        ->where('v.tiesveid', 'A')
-                        ->orderBy('v.vehinumerointerno')->get();
+        try{
+            $listaAsociados = DB::table('vehiculo as v')->select(DB::raw("CONCAT(p.persid,'-', v.vehiid) as identificador"),
+                            DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno,' ',p.persdocumento,' ', p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
+                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                            ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
+                            ->join('persona as p', 'p.persid', '=', 'a.persid')
+                            ->where('v.tiesveid', 'A')
+                            ->orderBy('v.vehinumerointerno')->get();
 
-        return response()->json(["listaAsociados" => $listaAsociados]);
+            return response()->json(['success' => true, "listaAsociados" => $listaAsociados]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function consultar(Request $request)
@@ -38,8 +42,7 @@ class SolicitudCreditoController extends Controller
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     'p.persgenero','p.persrutafoto','a.asocfechaingreso',
-                                    DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"))
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
@@ -59,7 +62,7 @@ class SolicitudCreditoController extends Controller
     public function salve(Request $request)
 	{
 	    $this->validate(request(),[
-                'asociadoId'         => 'required|numeric',
+                'personaId'          => 'required|numeric',
                 'vehiculoId'         => 'required|numeric',
                 'lineaCredito'       => 'required|numeric',
 	   	        'destinoCredito'     => 'required|string|min:20|max:1000',
@@ -74,8 +77,7 @@ class SolicitudCreditoController extends Controller
 
             $empresa               = DB::table('empresa as e')
                                         ->select('e.persidrepresentantelegal', 'e.emprcorreo','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"),
+                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
                                             DB::raw("(SELECT lincrenombre FROM lineacredito WHERE lincreid = '$request->lineaCredito') as nombreLineaCredito"))
                                         ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                                         ->where('emprid', '1')->first();
@@ -95,7 +97,7 @@ class SolicitudCreditoController extends Controller
             $solicitudcredito                        = new SolicitudCredito();
             $solicitudcredito->usuaid                = Auth::id();
             $solicitudcredito->lincreid              = $request->lineaCredito;
-			$solicitudcredito->asocid                = $request->asociadoId;
+			$solicitudcredito->persid                = $request->personaId;
             $solicitudcredito->vehiid                = $request->vehiculoId;
 			$solicitudcredito->tiesscid              = $estadoSolicitudCredito;
 			$solicitudcredito->solcrefechasolicitud  = $fechaHoraActual;
@@ -144,7 +146,7 @@ class SolicitudCreditoController extends Controller
     public function simular(Request $request)
 	{
 	    $this->validate(request(),[
-                'asociadoId'         => 'required|numeric',
+                'personaId'           => 'required|numeric',
                 'lineaCredito'       => 'required|numeric',
 	   	        'destinoCredito'     => 'required|string|max:1000',
                 'valorSolicitado'    => 'required|numeric|between:1,999999999',
@@ -154,20 +156,19 @@ class SolicitudCreditoController extends Controller
 
         try {
             $lineasCredito = DB::table('lineacredito')->select('lincrenombre')->where('lincreid', $request->lineaCredito)->first();
-            $asociado      = DB::table('persona as p')->select('a.asocid', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
-                                            ->join('asociado as a', 'a.persid', '=', 'p.persid')
-                                            ->where('a.asocid', $request->asociadoId)->first();
+            $persona       = DB::table('persona as p')
+                                        ->select('a.asocid', DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                                        ->where('p.persid', $request->personaId)->first();
 
-            $lineaCredito        = $lineasCredito->lincrenombre;
-            $asociado            = $asociado->nombrePersona;
-            $descripcionCredito  = $request->destinoCredito;
-            $valorSolicitado     = $request->valorSolicitado;
-            $tasaNominal         = $request->tasaNominal;
-            $plazoMensual        = $request->plazo;
+            $lineaCredito       = $lineasCredito->lincrenombre;
+            $persona            = $persona->nombrePersona;
+            $descripcionCredito = $request->destinoCredito;
+            $valorSolicitado    = $request->valorSolicitado;
+            $tasaNominal        = $request->tasaNominal;
+            $plazoMensual       = $request->plazo;
 
 			$generarPdf    = new generarPdf();
-			$dataDocumento = $generarPdf->simuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, 'S');
+			$dataDocumento = $generarPdf->simuladorCredito($lineaCredito, $persona, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, 'S');
 			return response()->json(["data" => $dataDocumento]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

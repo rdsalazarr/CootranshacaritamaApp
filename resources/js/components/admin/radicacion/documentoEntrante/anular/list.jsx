@@ -48,6 +48,7 @@ export default function List(){
             newDataUsuario.empresaCodigo        = radicado.peradocodigodocumental;
 
             //Informacion del radicado
+            newDataRadicado.usuario                 = radicado.nombreUsuario;
             newDataRadicado.fechaRadicado           = radicado.radoenfechahoraradicado;
             newDataRadicado.fechaMaxRespuesta       = radicado.radoenfechamaximarespuesta;
             newDataRadicado.fechaLlegadaDocumento   = radicado.radoenfechallegada;

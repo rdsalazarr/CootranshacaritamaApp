@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('persgenero', 1)->comment('Determina el genero de la persona');
             $table->string('persrutafoto', 100)->nullable()->comment('Ruta de la foto de la persona');
             $table->string('persrutafirma', 100)->nullable()->comment('Ruta de la firma digital de la persona para la gestión documental');
+            $table->boolean('perstienefirmaelectronica')->default(false)->comment('Determina si la persona tiene firma electrónica');
             $table->boolean('perstienefirmadigital')->default(false)->comment('Determina si la persona tiene firma digital');
             $table->string('persclavecertificado', 20)->nullable()->comment('Clave del certificado digital');
             $table->string('persrutacrt', 500)->nullable()->comment('Ruta de certificado digital con extensión crt');

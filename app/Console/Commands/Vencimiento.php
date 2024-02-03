@@ -49,8 +49,7 @@ class Vencimiento
 
             $conductorNotificados = DB::table('conductorlicencia as cl')
                                         ->select('cl.conlicfechavencimiento', 'cl.conlicnumero','cl.conlicfechaexpedicion','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"))
+                                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreConductor"))
                                         ->join('conductor as c', 'c.condid', '=', 'cl.condid')
                                         ->join('persona as p', 'p.persid', '=', 'c.persid')
                                         ->whereIn('cl.conlicfechavencimiento', $fechasNotificacion)
@@ -105,8 +104,7 @@ class Vencimiento
 
             $vehiculosNotificados = DB::table('vehiculosoat as vs')
                                         ->select('vs.vehsoafechafinal', 'vs.vehsoanumero','vs.vehsoafechainicial','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                         ->join('vehiculo as v', 'v.vehiid', '=', 'vs.vehiid')
                                         ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                         ->join('persona as p', 'p.persid', '=', 'a.persid')
@@ -161,8 +159,7 @@ class Vencimiento
 
             $vehiculosNotificados = DB::table('vehiculocrt as vcrt')
                                         ->select('vcrt.vehcrtfechafinal', 'vcrt.vehcrtnumero','vcrt.vehcrtfechainicial','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                         ->join('vehiculo as v', 'v.vehiid', '=', 'vcrt.vehiid')
                                         ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                         ->join('persona as p', 'p.persid', '=', 'a.persid')
@@ -217,8 +214,7 @@ class Vencimiento
 
             $vehiculosNotificados = DB::table('vehiculopoliza as vp')
                                     ->select('vp.vehpolfechafinal', 'vp.vehpolnumeropolizacontractual','vp.vehpolnumeropolizaextcontrac','vp.vehpolfechainicial','p.perscorreoelectronico',
-                                        DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                     ->join('vehiculo as v', 'v.vehiid', '=', 'vp.vehiid')
                                     ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                     ->join('persona as p', 'p.persid', '=', 'a.persid')
@@ -274,8 +270,7 @@ class Vencimiento
 
             $vehiculosNotificados = DB::table('vehiculotarjetaoperacion as vto')
                                     ->select('vto.vetaopfechainicial', 'vto.vetaopnumero','vto.vetaopfechafinal','p.perscorreoelectronico',
-                                        DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                     ->join('vehiculo as v', 'v.vehiid', '=', 'vto.vehiid')
                                     ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                     ->join('persona as p', 'p.persid', '=', 'a.persid')
@@ -343,8 +338,7 @@ class Vencimiento
                                     DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
                                     DB::raw("DATEDIFF(NOW(), c.colofechadesembolso) as diasMora"),
                                     'c.colofechadesembolso', 'p.perscorreoelectronico',
-                                    DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                     ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                                     ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                                     ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
@@ -388,7 +382,7 @@ class Vencimiento
 
     public static function consultarInfoEmpresa()
     {
-        return DB::table('empresa as e')->select('e.emprcorreo',       
+        return DB::table('empresa as e')->select('e.emprcorreo',
                         DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
                         ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                         ->where('emprid', '1')->first();

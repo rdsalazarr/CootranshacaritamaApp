@@ -31,35 +31,36 @@ export default function Show({id, frm}){
         setLoader(true);
         let newFormData = {...formData};
         instance.post('/admin/show/persona', {codigo: id, frm: frm}).then(res=>{
-            let persona                           = res.persona;
-            newFormData.documento                 = persona.persdocumento;
-            newFormData.cargo                     = persona.nombreCargo;
-            newFormData.tipoIdentificacion        = persona.nombreTipoIdentificacion;
-            newFormData.nombreTipoPersona         = persona.nombreTipoPersona;
-            newFormData.departamentoNacimiento    = persona.nombreDeptoNacimiento;
-            newFormData.municipioNacimiento       = persona.nombreMunicipioNacimiento;
-            newFormData.departamentoExpedicion    = persona.nombreDeptoExpedicion;
-            newFormData.municipioExpedicion       = persona.nombreMunicipioExpedicion;
-            newFormData.primerNombre              = persona.persprimernombre;
-            newFormData.segundoNombre             = persona.perssegundonombre;
-            newFormData.primerApellido            = persona.persprimerapellido;
-            newFormData.segundoApellido           = persona.perssegundoapellido;
-            newFormData.fechaNacimiento           = persona.persfechanacimiento;
-            newFormData.direccion                 = persona.persdireccion;
-            newFormData.correo                    = persona.perscorreoelectronico;
-            newFormData.fechaExpedicion           = persona.persfechadexpedicion;
-            newFormData.telefonoFijo              = persona.persnumerotelefonofijo;
-            newFormData.numeroCelular             = persona.persnumerocelular;
-            newFormData.genero                    = persona.genero;
-            newFormData.estado                    = persona.estado;
-            newFormData.firma                     = persona.persrutafirma;
-            newFormData.foto                      = persona.persrutafoto;
-            newFormData.showFotografia            = persona.fotografia;
-            newFormData.showFirmaPersona          = persona.firmaPersona;
-            newFormData.tieneFirmaDigital         = persona.tieneFirmaDigital;
-            newFormData.firmaDigital              = persona.firmaDigital;
-            newFormData.rutaDescargaCrt           = persona.rutaCrt;
-            newFormData.rutaDescargaPem           = persona.rutaPem;
+            let persona                            = res.persona;
+            newFormData.documento                  = persona.persdocumento;
+            newFormData.cargo                      = persona.nombreCargo;
+            newFormData.tipoIdentificacion         = persona.nombreTipoIdentificacion;
+            newFormData.nombreTipoPersona          = persona.nombreTipoPersona;
+            newFormData.departamentoNacimiento     = persona.nombreDeptoNacimiento;
+            newFormData.municipioNacimiento        = persona.nombreMunicipioNacimiento;
+            newFormData.departamentoExpedicion     = persona.nombreDeptoExpedicion;
+            newFormData.municipioExpedicion        = persona.nombreMunicipioExpedicion;
+            newFormData.primerNombre               = persona.persprimernombre;
+            newFormData.segundoNombre              = persona.perssegundonombre;
+            newFormData.primerApellido             = persona.persprimerapellido;
+            newFormData.segundoApellido            = persona.perssegundoapellido;
+            newFormData.fechaNacimiento            = persona.persfechanacimiento;
+            newFormData.direccion                  = persona.persdireccion;
+            newFormData.correo                     = persona.perscorreoelectronico;
+            newFormData.fechaExpedicion            = persona.persfechadexpedicion;
+            newFormData.telefonoFijo               = persona.persnumerotelefonofijo;
+            newFormData.numeroCelular              = persona.persnumerocelular;
+            newFormData.genero                     = persona.genero;
+            newFormData.estado                     = persona.estado;
+            newFormData.firma                      = persona.persrutafirma;
+            newFormData.foto                       = persona.persrutafoto;
+            newFormData.showFotografia             = persona.fotografia;
+            newFormData.showFirmaPersona           = persona.firmaPersona;
+            newFormData.tieneFirmaElectronica      = persona.tieneFirmaElectronica;
+            newFormData.tieneFirmaDigital          = persona.tieneFirmaDigital;
+            newFormData.firmaDigital               = persona.firmaDigital;
+            newFormData.rutaDescargaCrt            = persona.rutaCrt;
+            newFormData.rutaDescargaPem            = persona.rutaPem;
             newFormData.totalCambioEstadoAsociado  = persona.totalCambioEstadoAsociado
             newFormData.totalCambioEstadoConductor = persona.totalCambioEstadoConductor
 
@@ -207,6 +208,13 @@ export default function Show({id, frm}){
                     <Box className='frmTexto'>
                         <label>Género</label>
                         <span>{formData.genero}</span>
+                    </Box>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTexto'>
+                        <label>¿Tiene firma electrónica?</label>
+                        <span>{formData.tieneFirmaElectronica}</span>
                     </Box>
                 </Grid>
 

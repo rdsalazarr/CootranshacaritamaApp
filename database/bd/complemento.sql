@@ -196,3 +196,7 @@ INSERT INTO `cuentacontable` (`cueconid`, `cueconcodigo`, `cueconnombre`, `cueco
 (8, '120008', 'CXP PAGO ENCOMIENDA', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (9, '120009', 'CXP PAGO ENCOMIENDA CONTRAENTREGA', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (10, '120010', 'CXP PAGO DE TIQUETE', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+ALTER TABLE `persona` ADD `perstienefirmaelectronica` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la persona tiene firma electrónica' AFTER `persrutafirma`;
+ALTER TABLE `solicitudcredito` CHANGE `asocid` `persid` INT(10) UNSIGNED NOT NULL COMMENT 'Identificador del asociado';

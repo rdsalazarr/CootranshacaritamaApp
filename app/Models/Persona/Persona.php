@@ -13,6 +13,6 @@ class Persona extends Model
     protected $primaryKey = 'persid';
     protected $fillable   = ['carlabid','tipideid','tipperid','persdepaidnacimiento','persmuniidnacimiento','persdepaidexpedicion','persmuniidexpedicion',
                             'persdocumento','persprimernombre','perssegundonombre','persprimerapellido','perssegundoapellido','persfechanacimiento',
-                            'persdireccion','perscorreoelectronico','persfechadexpedicion','persnumerotelefonofijo','persnumerocelular',
-                            'persgenero','persrutafoto','persrutafirma','perstienefirmadigital','persrutacrt','persrutapem','persactiva'];
+                            'persdireccion','perscorreoelectronico','persfechadexpedicion','persnumerotelefonofijo','persnumerocelular','persgenero',
+                            'persrutafoto','persrutafirma','perstienefirmaelectronica','perstienefirmadigital','persrutacrt','persrutapem','persactiva'];
 }
