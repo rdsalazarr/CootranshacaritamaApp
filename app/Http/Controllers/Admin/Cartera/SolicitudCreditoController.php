@@ -146,12 +146,12 @@ class SolicitudCreditoController extends Controller
     public function simular(Request $request)
 	{
 	    $this->validate(request(),[
-                'personaId'           => 'required|numeric',
-                'lineaCredito'       => 'required|numeric',
-	   	        'destinoCredito'     => 'required|string|max:1000',
-                'valorSolicitado'    => 'required|numeric|between:1,999999999',
-				'tasaNominal'        => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
-                'plazo'              => 'required|numeric|between:1,99'
+                'personaId'       => 'required|numeric',
+                'lineaCredito'    => 'required|numeric',
+	   	        'destinoCredito'  => 'required|string|max:1000',
+                'valorSolicitado' => 'required|numeric|between:1,999999999',
+				'tasaNominal'     => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+                'plazo'           => 'required|numeric|between:1,99'
 	        ]);
 
         try {

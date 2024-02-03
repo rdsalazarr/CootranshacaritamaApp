@@ -386,5 +386,5 @@ class Vencimiento
                         DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
                         ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                         ->where('emprid', '1')->first();
-    } 
+    }
 }
