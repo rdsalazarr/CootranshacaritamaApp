@@ -1449,7 +1449,7 @@ EOD;
 		}
 	}
 
-	function simuladorCredito($lineaCredito, $asociado, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
+	function simuladorCredito($lineaCredito, $nombrePersona, $descripcionCredito, $valorSolicitado, $tasaNominal, $plazoMensual, $metodo = 'I'){
 
 		$empresa            = $this->consultarEmpresa();
 		$direccionEmpresa 	= $empresa->emprdireccion;
@@ -1465,7 +1465,7 @@ EOD;
 		$personeriaJuridica = $empresa->emprpersoneriajuridica;
 		$logoEmpresa        = $empresa->emprlogo;
 
-		$titulo           = 'Simulación del crédito para el asociado '.$asociado;
+		$titulo           = 'Simulación del crédito para la persona '.$nombrePersona;
 		$generales        = new generales();
 		$valorCuota       = $generales->calculcularValorCuotaMensual($valorSolicitado, $tasaNominal, $plazoMensual);
 		$fechaHoraActual  = Carbon::now();
@@ -1495,16 +1495,16 @@ EOD;
 		PDF::Cell(45,4,'Fecha:',0,0,'');
 		PDF::Cell(45,4,$fechaActual,0,0,'');
 		PDF::Ln(4);
-		PDF::Cell(45,4,'Asociado:',0,0,'');
+		PDF::Cell(45,4,'Persona:',0,0,'');
 		PDF::SetFont('helvetica','B',11);
-		PDF::Cell(45,4,$asociado,0,0,'');
+		PDF::Cell(45,4,$nombrePersona,0,0,'');
 		PDF::Ln(4);
 		PDF::SetFont('helvetica','',11);
 		PDF::Cell(45,4,'Línea de crédito:',0,0,'');
 		PDF::Cell(45,4,$lineaCredito,0,0,'');
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Descripción:',0,0,'');
-		PDF::MultiCell(0,4,$descripcionCredito,0,'',0);  
+		PDF::MultiCell(130, 4, $descripcionCredito."\n", 0, 'J', 0);
 		PDF::Cell(45,4,'Valor solicitado:',0,0,'');
 		PDF::Cell(45,4,'$'.number_format($valorSolicitado,0,',','.'),0,0,'');
 		PDF::Ln(4);
@@ -1570,7 +1570,7 @@ EOD;
 
 		$fechaDesembolso     = $arrayDatos['fechaDesembolso'];
 		$lineaCredito        = $arrayDatos['lineaCredito'];
-		$nombreAsociado      = $arrayDatos['nombreAsociado'];
+		$nombrePersona       = $arrayDatos['nombrePersona'];
 		$descripcionCredito  = $arrayDatos['descripcionCredito'];
 		$valorSolicitado     = $arrayDatos['valorSolicitado'];
 		$tasaNominal       	 = $arrayDatos['tasaNominal'];
@@ -1621,16 +1621,17 @@ EOD;
 		PDF::Cell(45,4,'Fecha:',0,0,'');
 		PDF::Cell(45,4,$fechaActual,0,0,'');
 		PDF::Ln(4);
-		PDF::Cell(45,4,'Asociado:',0,0,'');
+		PDF::Cell(45,4,'Persona:',0,0,'');
 		PDF::SetFont('helvetica','B',11);
-		PDF::Cell(45,4,$nombreAsociado,0,0,'');
+		PDF::Cell(45,4,$nombrePersona,0,0,'');
 		PDF::Ln(4);
 		PDF::SetFont('helvetica','',11);
 		PDF::Cell(45,4,'Línea de crédito:',0,0,'');
 		PDF::Cell(45,4,$lineaCredito,0,0,'');
 		PDF::Ln(4);
 		PDF::Cell(45,4,'Descripción:',0,0,'');
-		PDF::MultiCell(0,4,$descripcionCredito,0,'',0);  
+		//PDF::MultiCell(0,4,$descripcionCredito,0,'',0);  
+		PDF::MultiCell(130, 4, $descripcionCredito."\n", 0, 'J', 0);
 		PDF::Cell(45,4,'Valor solicitado:',0,0,'');
 		PDF::Cell(45,4,'$'.number_format($valorSolicitado,0,',','.'),0,0,'');
 		PDF::Ln(4);
@@ -1690,7 +1691,7 @@ EOD;
 		PDF::Ln(12);
 		PDF::Cell(130, 4, '', '', 0, 'L');
 		PDF::MultiCell(30, 30, '', 1, 'C', false, 1);
-		PDF::Cell(80, 4, $nombreAsociado, 'T', 0, 'L');
+		PDF::Cell(80, 4, $nombrePersona, 'T', 0, 'L');
 		PDF::Cell(50, 4, '', '', 0, 'L');
 		PDF::Cell(30, 4, 'HUELLA', '', 0, 'L');
 		PDF::Ln(4);
@@ -1885,10 +1886,10 @@ EOD;
 		PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(false);
 		PDF::SetPrintFooter(false);
-		PDF::SetMargins(20, 36, 14);
+		PDF::SetMargins(20, 30, 14);
 		PDF::AddPage('P', 'Letter');
-		PDF::SetAutoPageBreak(true, 30);
-		PDF::SetY(10);
+		PDF::SetAutoPageBreak(true, 26);
+		PDF::SetY(8);
 		PDF::Ln(4);
 		PDF::SetFont('helvetica', 'B', 13);
 		PDF::Cell(176, 4, $titulo, 0, 0, 'C');
@@ -1989,7 +1990,7 @@ EOD;
 	function formatoSolicitudCredito($arrayDatos){
 
 		$documentoAsociado = $arrayDatos['documentoAsociado'];
-		$nombreAsociado    = $arrayDatos['nombreAsociado'];
+		$nombrePersona     = $arrayDatos['nombrePersona'];
 		$vehiculo          = $arrayDatos['vehiculo'];
 		$numeroVehiculo    = $arrayDatos['numeroVehiculo'];
 		$placaVehiculo     = $arrayDatos['placaVehiculo'];
@@ -1999,6 +2000,7 @@ EOD;
 		$valorCuota        = $arrayDatos['valorCuota'];
 		$tiempoCredito     = $arrayDatos['tiempoCredito'];
 		$fechaDesembolso   = $arrayDatos['fechaDesembolso'];
+		$tipoPersona       = $arrayDatos['tipoPersona'];
 		$metodo            = $arrayDatos['metodo'];	
 		$tituloFormato     = 'SOLICITUD DE CRÉDITO';
         $versionFormato    = '01';
@@ -2041,34 +2043,40 @@ EOD;
 		PDF::SetFont('helvetica', '', 11);
 
         PDF::Cell(40, 4, "NOMBRE:", 0, 0, 'L');
-        PDF::Cell(76, 4, $nombreAsociado,0, 0, 'L');
+        PDF::Cell(76, 4, $nombrePersona,0, 0, 'L');
 		PDF::Cell(26, 4, "CC:", 0, 0, 'L');
         PDF::Cell(40, 4, number_format($documentoAsociado,0,',','.'), 0, 0, 'L');
         PDF::Ln(5);
 
-        PDF::Cell(40, 4, "VEHÍCULO:", 0, 0, 'L');
-        PDF::Cell(76, 4,  $vehiculo,0, 0, 'L');
-        PDF::Cell(26, 4, "NÚMERO:", 0, 0, 'L');
-        PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L'); 
-        PDF::Ln(5);
+		if($tipoPersona === 'A'){
+			PDF::Cell(40, 4, "VEHÍCULO:", 0, 0, 'L');
+			PDF::Cell(76, 4,  $vehiculo,0, 0, 'L');
+			PDF::Cell(26, 4, "NÚMERO:", 0, 0, 'L');
+			PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L'); 
+			PDF::Ln(5);
+	
+			PDF::Cell(40, 4, "PLACA:", 0, 0, 'L');
+			PDF::Cell(76, 4, $placaVehiculo,0, 0, 'L');
+		}else{
+			PDF::Cell(40, 4, "RESPALDO", 0, 0, 'L');
+			PDF::Cell(76, 4, "POR LIBRANZA",0, 0, 'L');
+		}
 
-        PDF::Cell(40, 4, "PLACA:", 0, 0, 'L');
-        PDF::Cell(76, 4, $placaVehiculo,0, 0, 'L');
         PDF::Cell(26, 4, "PAGARÉ Nº:", 0, 0, 'L');
         PDF::Cell(40, 4, $pagareNumero, 0, 0, 'L');
-        PDF::Ln(5);
-
-        PDF::Cell(40, 4, "TIPO DE CRÉDITO:", 0, 0, 'L');
-  		PDF::MultiCell(76, 4, $tipoCredito, 0, 'L', 0, 0, '', '', true);
-        PDF::Cell(26, 4, "MONTO:", 0, 0, 'L');
-		PDF::MultiCell(40, 5, '$ '.number_format($montoCredito,0,',','.'), 0, 'L', 0, 1, '', '', true);
-        PDF::Ln(5);
+        PDF::Ln(5);       
 
         PDF::Cell(40, 4, "VALOR CUOTA:", 0, 0, 'L');
         PDF::Cell(76, 4, '$ '.number_format($valorCuota,0,',','.') ,0, 0, 'L');
         PDF::Cell(26, 4, "TIEMPO:", 0, 0, 'L');
         PDF::Cell(40, 4, $tiempoCredito.' MESES', 0, 0, 'L');
-        PDF::Ln(12);
+        PDF::Ln(5);
+
+		PDF::Cell(40, 4, "TIPO DE CRÉDITO:", 0, 0, 'L');
+		PDF::MultiCell(76, 4, $tipoCredito, 0, 'L', 0, 0, '', '', true);
+		PDF::Cell(26, 4, "MONTO:", 0, 0, 'L');
+		PDF::MultiCell(40, 5, '$ '.number_format($montoCredito,0,',','.'), 0, 'L', 0, 1, '', '', true);
+		PDF::Ln(12);
 
         PDF::Cell(40, 4, "CONCEPTO Y/O OBJETO DEL CRÉDITO: ", 0, 0, 'L');
         PDF::Ln(12);

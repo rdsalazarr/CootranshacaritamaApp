@@ -4,6 +4,7 @@ import { Button, Grid, Stack, Icon, Autocomplete, createFilterOptions, Box, Card
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
+import SearchIcon from '@mui/icons-material/Search';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
@@ -118,7 +119,7 @@ export default function Mensualidad(){
                 <Box className={'containerSmall'}>
                     <Card className={'cardContainer'}>
                         <Grid container spacing={2}>
-                            <Grid item xl={11} md={11} sm={10} xs={9}>
+                            <Grid item xl={9} md={9} sm={8} xs={8}>
                                 <Autocomplete
                                     id="vehiculo"
                                     style={{height: "26px", width: "100%"}}
@@ -141,13 +142,16 @@ export default function Mensualidad(){
                                             value={formData.vehiculoId}
                                             placeholder="Consulte el vehículo aquí..." />}
                                 />
-                                <br />
+                            </Grid> 
+
+                            <Grid item xl={3} md={3} sm={4} xs={4}>
+                                <Stack direction="row" spacing={2} >
+                                    <Button type={"submit"} className={'modalBtnBuscar'}
+                                        startIcon={<SearchIcon className='icono' />}> Consultar
+                                    </Button>
+                                </Stack>
                             </Grid>
 
-                            <Grid item xl={1} md={1} sm={2} xs={3} sx={{position: 'relative'}}>
-                                <Icon className={'iconLupa'} onClick={consultarVehiculo}>search</Icon>
-                                <br />
-                            </Grid>
                         </Grid>
                     </Card>
                 </Box>
@@ -207,6 +211,8 @@ export default function Mensualidad(){
                                      <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
                                 </Box>
                             </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}></Grid>
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Stack direction="row" spacing={2}>

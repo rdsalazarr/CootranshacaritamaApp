@@ -200,3 +200,5 @@ INSERT INTO `cuentacontable` (`cueconid`, `cueconcodigo`, `cueconnombre`, `cueco
 
 ALTER TABLE `persona` ADD `perstienefirmaelectronica` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la persona tiene firma electrónica' AFTER `persrutafirma`;
 ALTER TABLE `solicitudcredito` CHANGE `asocid` `persid` INT(10) UNSIGNED NOT NULL COMMENT 'Identificador del asociado';
+
+ALTER TABLE `solicitudcredito` CHANGE `vehiid` `vehiid` INT(10) UNSIGNED NULL COMMENT 'Identificador del vehículo';

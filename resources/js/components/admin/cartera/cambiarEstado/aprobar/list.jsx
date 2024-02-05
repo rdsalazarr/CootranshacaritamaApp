@@ -51,8 +51,8 @@ export default function List(){
             <Box style={{ paddingTop: "1em"}}  sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Fecha','Línea crédito', 'Asociado','Destino', 'Valor solicitado','Plazo', 'Decidir','Visualizar']}
-                    ver={["solcrefechasolicitud","lineaCredito","nombreAsociado","solcredescripcion","valorSolicitado", "solcrenumerocuota"]}
+                    titulo={['Fecha','Línea crédito', 'Nombre de la persona','Destino', 'Valor solicitado','Plazo', 'Decidir','Visualizar']}
+                    ver={["solcrefechasolicitud","lineaCredito","nombrePersona","solcredescripcion","valorSolicitado", "solcrenumerocuota"]}
                     accion={[
                         {tipo: 'B', icono : 'done_all_icon', color: 'red',   funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'visibility',    color: 'green', funcion : (data)=>{edit(data,1)} },

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import {Button, Grid, Stack, Box, MenuItem, Card} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
@@ -23,6 +23,7 @@ export default function Empleado(){
 
     const ocultarDatos = () =>{
         setDatosEncontrados(false);
+        setFormData({tipoIdentificacion:'1', documento:''});
     }
 
     const consultarPersona = () =>{
@@ -31,6 +32,8 @@ export default function Empleado(){
         instance.post('/admin/cartera/consultar/datos/persona', formData).then(res=>{
             if(res.success) {
                 let persona                            = res.persona;
+                newFormDataConsulta.personaId          = persona.persid;
+                newFormDataConsulta.vehiculoId         = '000';//Asigno un identificador para pasar la validacion por el asociado               
                 newFormDataConsulta.tipoIdentificacion = persona.nombreTipoIdentificacion;
                 newFormDataConsulta.documento          = persona.persdocumento;
                 newFormDataConsulta.primerNombre       = persona.persprimernombre;
@@ -69,59 +72,61 @@ export default function Empleado(){
     }
     
     return (
-        <ValidatorForm onSubmit={consultarPersona}>
-            <Box className={'containerMedium'}>
-                <Card className={'cardContainer'}>
-                    <Grid container spacing={2}>
-                        <Grid item xl={5} md={5} sm={6} xs={12}>
-                            <SelectValidator
-                                name={'tipoIdentificacion'}
-                                value={formData.tipoIdentificacion}
-                                label={'Tipo identificación'}
-                                className={'inputGeneral'}
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off'}}
-                                validators={["required"]}
-                                errorMessages={["Debe hacer una selección"]}
-                                onChange={handleChange} 
-                            >
-                                <MenuItem value={""}>Seleccione</MenuItem>
-                                {tipoIdentificaciones.map(res=>{
-                                    return <MenuItem value={res.tipideid} key={res.tipideid} >{res.tipidenombre}</MenuItem>
-                                })}
-                            </SelectValidator>
-                        </Grid>
+        <Fragment>
+            <ValidatorForm onSubmit={consultarPersona}>
+                <Box className={'containerMedium'}>
+                    <Card className={'cardContainer'}>
+                        <Grid container spacing={2}>
+                            <Grid item xl={5} md={5} sm={6} xs={12}>
+                                <SelectValidator
+                                    name={'tipoIdentificacion'}
+                                    value={formData.tipoIdentificacion}
+                                    label={'Tipo identificación'}
+                                    className={'inputGeneral'}
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off'}}
+                                    validators={["required"]}
+                                    errorMessages={["Debe hacer una selección"]}
+                                    onChange={handleChange} 
+                                >
+                                    <MenuItem value={""}>Seleccione</MenuItem>
+                                    {tipoIdentificaciones.map(res=>{
+                                        return <MenuItem value={res.tipideid} key={res.tipideid} >{res.tipidenombre}</MenuItem>
+                                    })}
+                                </SelectValidator>
+                            </Grid>
 
-                        <Grid item xl={5} md={5} sm={6} xs={12}>
-                            <TextValidator 
-                                name={'documento'}
-                                value={formData.documento}
-                                label={'Documento'}
-                                className={'inputGeneral'} 
-                                variant={"standard"} 
-                                inputProps={{autoComplete: 'off', maxLength: 15}}
-                                validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+                            <Grid item xl={5} md={5} sm={6} xs={12}>
+                                <TextValidator 
+                                    name={'documento'}
+                                    value={formData.documento}
+                                    label={'Documento'}
+                                    className={'inputGeneral'} 
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off', maxLength: 15}}
+                                    validators={["required"]}
+                                    errorMessages={["Campo obligatorio"]}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
 
-                        <Grid item xl={2} md={2} sm={6} xs={12}>
-                            <Stack direction="row" spacing={2}>
-                                <Button type={"submit"} className={'modalBtnBuscar'} 
-                                    startIcon={<SearchIcon className='icono' />}> consultar
-                                </Button>
-                            </Stack>
-                        </Grid>
+                            <Grid item xl={2} md={2} sm={6} xs={12}>
+                                <Stack direction="row" spacing={2}>
+                                    <Button type={"submit"} className={'modalBtnBuscar'} 
+                                        startIcon={<SearchIcon className='icono' />}> consultar
+                                    </Button>
+                                </Stack>
+                            </Grid>
 
-                    </Grid>
-                </Card>
-            </Box>
+                        </Grid>
+                    </Card>
+                </Box>
+            </ValidatorForm>
 
             {(datosEncontrados) ?
                 <Procesar data={formDataConsulta} lineasCreditos={lineasCreditos} ocultarDatos={ocultarDatos} />
             :null }
 
-        </ValidatorForm>
+        </Fragment>
     )
 }

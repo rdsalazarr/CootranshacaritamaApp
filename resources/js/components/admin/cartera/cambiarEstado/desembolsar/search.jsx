@@ -75,7 +75,6 @@ export default function Search(){
                 let solicitudCredito                     = res.solicitudCredito;
 
                 newFormData.personaId                    = solicitudCredito.persid;
-                newFormData.asociadoId                   = solicitudCredito.asocid;
                 newFormData.solicitudId                  = solicitudCredito.solcreid;
                 newFormData.lineaCredito                 = solicitudCredito.lincreid;
                 newFormData.valorSolicitado              = solicitudCredito.solcrevalorsolicitado;

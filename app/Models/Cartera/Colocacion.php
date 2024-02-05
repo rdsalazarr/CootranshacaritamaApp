@@ -12,5 +12,5 @@ class Colocacion extends Model
     protected $table      = 'colocacion';
     protected $primaryKey = 'coloid';
     protected $fillable   = ['usuaid','solcreid','tiesclid','colofechahoraregistro','colofechadesembolso','coloanio',
-                            'colonumerodesembolso', 'colovalordesembolsado', 'colotasa','colonumerocuota'];
+                            'colonumerodesembolso', 'colovalordesembolsado', 'colotasa','colonumerocuota','colocontabilizada'];
 }

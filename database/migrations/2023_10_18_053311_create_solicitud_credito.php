@@ -16,7 +16,7 @@ return new class extends Migration
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que crea la solicitud de crédito');
             $table->integer('lincreid')->unsigned()->comment('Identificador de la línea de crédito');
             $table->integer('persid')->unsigned()->comment('Identificador de la persona');
-            $table->integer('vehiid')->unsigned()->comment('Identificador del vehículo');
+            $table->integer('vehiid')->unsigned()->nullable()->comment('Identificador del vehículo');
             $table->string('tiesscid', 2)->comment('Identificador del tipo de estado de la solicitud de crédito');
             $table->date('solcrefechasolicitud')->comment('Fecha de registro de la solicitud de crédito');
             $table->string('solcredescripcion', 1000)->comment('Descripción de la solicitud de crédito');

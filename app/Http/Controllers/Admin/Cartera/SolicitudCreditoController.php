@@ -34,7 +34,7 @@ class SolicitudCreditoController extends Controller
 
     public function consultar(Request $request)
     {
-        $this->validate(request(),['asociadoId' => 'required|numeric' ]);
+        $this->validate(request(),['personaId' => 'required|numeric' ]);
 
         try {
             $url      = URL::to('/');
@@ -47,7 +47,7 @@ class SolicitudCreditoController extends Controller
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"))
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->join('asociado as a', 'a.persid', '=', 'p.persid')
-                                    ->where('a.asocid', $request->asociadoId)->first();
+                                    ->where('p.persid', $request->personaId)->first();
 
             $lineasCreditos = DB::table('lineacredito')
                                     ->select('lincreid','lincrenombre','lincretasanominal','lincremontominimo','lincremontomaximo', 'lincreplazomaximo')
@@ -78,7 +78,7 @@ class SolicitudCreditoController extends Controller
 
         try {
             $url      = URL::to('/');
-            $persona = DB::table('persona as p')->select('p.persdocumento','p.persgenero','p.persrutafoto',
+            $persona = DB::table('persona as p')->select('p.persid','p.persdocumento','p.persgenero','p.persrutafoto',
                                     'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
@@ -138,7 +138,7 @@ class SolicitudCreditoController extends Controller
             $solicitudcredito->usuaid                = Auth::id();
             $solicitudcredito->lincreid              = $request->lineaCredito;
 			$solicitudcredito->persid                = $request->personaId;
-            $solicitudcredito->vehiid                = $request->vehiculoId;
+            $solicitudcredito->vehiid                = ($request->vehiculoId !== '000') ? $request->vehiculoId : null;
 			$solicitudcredito->tiesscid              = $estadoSolicitudCredito;
 			$solicitudcredito->solcrefechasolicitud  = $fechaHoraActual;
             $solicitudcredito->solcredescripcion     = $request->destinoCredito;
@@ -197,7 +197,7 @@ class SolicitudCreditoController extends Controller
         try {
             $lineasCredito = DB::table('lineacredito')->select('lincrenombre')->where('lincreid', $request->lineaCredito)->first();
             $persona       = DB::table('persona as p')
-                                        ->select('a.asocid', DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                                        ->select(DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                         ->where('p.persid', $request->personaId)->first();
 
             $lineaCredito       = $lineasCredito->lincrenombre;

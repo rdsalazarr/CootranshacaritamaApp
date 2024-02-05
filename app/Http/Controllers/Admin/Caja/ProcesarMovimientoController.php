@@ -330,28 +330,30 @@ class ProcesarMovimientoController extends Controller
             $fechaActual     = $fechaHoraActual->format('Y-m-d');
 
             $colocaciones = DB::table('colocacion as c')
-                                ->select('c.coloid', 'lc.lincrenombre',
-                                DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
-                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),
-                                'cli.colliqnumerocuota','cli.colliqfechavencimiento',
-                                DB::raw("CONCAT('$ ', FORMAT(cli.colliqvalorcuota, 0)) as valorCuota"))
+                                ->select('c.coloid', 'lc.lincrenombre', 'c.colofechadesembolso', 'Q.colliqfechavencimiento',
+                                    DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
+                                    DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
+                                ->join('persona as p', 'p.persid', '=', 'sc.persid')
+                                ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid') 
+                                ->join(DB::raw("(SELECT coloid, colliqfechavencimiento 
+                                                FROM colocacionliquidacion
+                                                WHERE colliqfechavencimiento <= '$fechaActual'
+                                                AND colliqfechapago IS NULL) as Q"), 
+                                                function ($join) {
+                                                    $join->on('Q.coloid', '=', 'c.coloid');
+                                                })
                                 ->whereIn('c.tiesclid', ['V', 'J', 'R'])
                                 ->where('p.tipideid', $request->tipoIdentificacion)
                                 ->where('p.persdocumento', $request->documento)
-                                ->join('colocacionliquidacion as cli', function ($join) use ($fechaActual) {
-                                    $join->on('c.coloid', '=', 'cli.coloid')
-                                        ->whereDate('cli.colliqfechavencimiento', '<=', $fechaActual)
-                                        ->whereNull('cli.colliqfechapago');
-                                    })
-                                ->orderBy('c.coloid')
+                                ->orderBy('c.coloid', 'asc')
                                 ->get();
 
-            return response()->json(['success' => true, "colocaciones" => $colocaciones]);
+            $success        = (count($colocaciones) > 0) ? true : false;
+
+            return response()->json(['success' => true, 'message' => 'Lo siento, no se encontraron registros con la información proporcionada', 
+                                     "datosEncontrado" => $success,  "creditoAsociados" => ($success) ? $colocaciones : []]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }

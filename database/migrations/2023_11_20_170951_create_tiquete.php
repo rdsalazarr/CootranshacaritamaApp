@@ -27,8 +27,10 @@ return new class extends Migration
             $table->decimal('tiqucantidad', 4, 0)->comment('Cantidad de puesto en el tiquete');
             $table->decimal('tiquvalortiquete', 10, 0)->comment('Valor del tiquete');
             $table->decimal('tiquvalordescuento', 10, 0)->nullable()->comment('Valor de descuento del tiquete');
+            $table->decimal('tiquvalorestampilla', 10, 0)->nullable()->comment('Valor de la estampilla del tiquete');
             $table->decimal('tiquvalorfondoreposicion', 10, 0)->comment('Valor del fondo de reposición del tiquete');
             $table->decimal('tiquvalortotal', 10, 0)->comment('Valor total del tiquete');
+            $table->boolean('tiqucontabilizada')->default(false)->comment('Determina si el tiquete ha sido contabilizado'); 
             $table->timestamps();
             $table->unique(['agenid','tiquanio','tiquconsecutivo'],'uk_tiquete');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agentiqu');

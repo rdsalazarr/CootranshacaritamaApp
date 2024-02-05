@@ -13,5 +13,5 @@ class Tiquete extends Model
     protected $primaryKey = 'tiquid';
     protected $fillable   = ['agenid','usuaid','plarutid','perserid','depaidorigen','muniidorigen','depaiddestino','muniiddestino',
                             'tiquanio','tiquconsecutivo','tiqufechahoraregistro','tiqucantidad','tiquvalortiquete','tiquvalordescuento', 
-                            'tiquvalorfondoreposicion','tiquvalortotal'];
+                            'tiquvalorestampilla','tiquvalorfondoreposicion','tiquvalortotal','tiqucontabilizada'];
 }

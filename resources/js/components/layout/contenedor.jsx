@@ -163,22 +163,22 @@ const componenteMenu = [
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
         ]
-    },
-    {   nombre: 'Caja',
-        icono : 'attach_money_icon',
-        itemMenu: [
-            {ruta : 'admin/caja/procesar',             menu: 'Procesar',          icono : 'currency_exchange_icon',   componente : <MovimientoCaja />},
-            {ruta : 'admin/caja/cerrar',             menu: 'Cerrar',            icono : 'close_icon',   componente : <CerrarCaja />},
-        ]
     },*/
+    {   nombre: 'Atención usuario',
+        icono : 'repeat_one_icon',
+        itemMenu: [
+            {ruta : 'admin/caja/procesar',             menu: 'Gestionar',          icono : 'clean_hands_icon',   componente : <MovimientoCaja />},           
+        ]
+    },
     {   nombre: 'Informes',
         icono : 'assessment_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'card_travel_icon',   componente : <EnConstruccion />},
+            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'close_icon',   componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'repeat_one_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Consignar',            icono : 'account_balance_icon',        componente : <EnConstruccion />},
-            {ruta : 'admin/despacho/otros3',            menu: 'Consignar2',            icono : 'price_check_icon',        componente : <EnConstruccion />},             
+            {ruta : 'admin/despacho/otros3',            menu: 'Consignar2',            icono : 'price_check_icon',        componente : <EnConstruccion />},
+                         
         ]
     } 
 ];

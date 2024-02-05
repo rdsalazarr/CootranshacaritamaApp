@@ -513,7 +513,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos']);
             Route::post('/consultar/credito/asociado', [ProcesarMovimientoController::class, 'consultarCredito']);
-            Route::post('/calcular/valor/cutoa', [ProcesarMovimientoController::class, 'calcularCuota']);
+            Route::post('/calcular/valor/cuota', [ProcesarMovimientoController::class, 'calcularCuota']);
             Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
 
             Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);

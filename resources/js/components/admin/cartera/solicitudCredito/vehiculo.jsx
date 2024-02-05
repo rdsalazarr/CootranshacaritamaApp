@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { Grid, Icon, Box, Card, Autocomplete, createFilterOptions} from '@mui/material';
 import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../layout/snackBar';
@@ -19,6 +19,7 @@ export default function Vehiculo(){
 
     const ocultarDatos = () =>{
         setDatosEncontrados(false);
+        setFormData([]);
     }
 
     const consultarVehiculo = () =>{
@@ -35,9 +36,9 @@ export default function Vehiculo(){
         }
 
         setLoader(true);
-
-        instance.post('/admin/cartera/consultar/datos/asociado', {asociadoId: Number(array[0])}).then(res=>{
+        instance.post('/admin/cartera/consultar/datos/asociado', {personaId: Number(array[0])}).then(res=>{
             if(res.success) {
+                console.log(res.asociado);
                 let asociado                             = res.asociado;
                 newFormDataConsulta.tipoIdentificacion   = asociado.nombreTipoIdentificacion;
                 newFormDataConsulta.documento            = asociado.persdocumento;
@@ -62,8 +63,6 @@ export default function Vehiculo(){
             }
             setLoader(false);
         })
-
-        setFormData(newFormData);
     }
 
     const inicio = () =>{
@@ -81,48 +80,50 @@ export default function Vehiculo(){
     }
 
     return (
-        <ValidatorForm onSubmit={consultarVehiculo}>
-            <Box className={'containerSmall'}>
-                <Card className={'cardContainer'}>
-                    <Grid container spacing={2}>
-                        <Grid item xl={11} md={11} sm={10} xs={9}>
-                            <Autocomplete
-                                id="vehiculo"
-                                style={{height: "26px", width: "100%"}}
-                                options={listaAsociados}
-                                getOptionLabel={(option) => option.nombrePersona} 
-                                value={listaAsociados.find(v => v.identificador === formData.identificador) || null}
-                                filterOptions={createFilterOptions({ limit:10 })}
-                                onChange={(event, newInputValue) => {
-                                    if(newInputValue){
-                                        setFormData({...formData, identificador: newInputValue.identificador})
-                                    }
-                                }}
-                                renderInput={(params) =>
-                                    <TextValidator {...params}
-                                        label="Consultar asociado con el número interno del vehículo"
-                                        className="inputGeneral"
-                                        variant="standard"
-                                        validators={["required"]}
-                                        errorMessages="Campo obligatorio"
-                                        value={formData.identificador}
-                                        placeholder="Consulte el asociado con el número interno del vehículo aquí..." />}
-                            />
-                            <br />
-                        </Grid>
+        <Fragment>
+            <ValidatorForm onSubmit={consultarVehiculo}>
+                <Box className={'containerSmall'}>
+                    <Card className={'cardContainer'}>
+                        <Grid container spacing={2}>
+                            <Grid item xl={11} md={11} sm={10} xs={9}>
+                                <Autocomplete
+                                    id="vehiculo"
+                                    style={{height: "26px", width: "100%"}}
+                                    options={listaAsociados}
+                                    getOptionLabel={(option) => option.nombrePersona} 
+                                    value={listaAsociados.find(v => v.identificador === formData.identificador) || null}
+                                    filterOptions={createFilterOptions({ limit:10 })}
+                                    onChange={(event, newInputValue) => {
+                                        if(newInputValue){
+                                            setFormData({...formData, identificador: newInputValue.identificador})
+                                        }
+                                    }}
+                                    renderInput={(params) =>
+                                        <TextValidator {...params}
+                                            label="Consultar asociado con el número interno del vehículo"
+                                            className="inputGeneral"
+                                            variant="standard"
+                                            validators={["required"]}
+                                            errorMessages="Campo obligatorio"
+                                            value={formData.identificador}
+                                            placeholder="Consulte el asociado con el número interno del vehículo aquí..." />}
+                                />
+                                <br />
+                            </Grid>
 
-                        <Grid item xl={1} md={1} sm={2} xs={3} sx={{position: 'relative'}}>
-                            <Icon className={'iconLupa'} onClick={consultarVehiculo}>search</Icon>
-                            <br />
+                            <Grid item xl={1} md={1} sm={2} xs={3} sx={{position: 'relative'}}>
+                                <Icon className={'iconLupa'} onClick={consultarVehiculo}>search</Icon>
+                                <br />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Card>
-            </Box>
+                    </Card>
+                </Box>
+            </ValidatorForm>
 
             {(datosEncontrados) ?
                 <Procesar data={formDataConsulta} lineasCreditos={lineasCreditos} ocultarDatos={ocultarDatos} />
             :null }
 
-        </ValidatorForm>
+        </Fragment>
     )
 }

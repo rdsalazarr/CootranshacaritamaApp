@@ -14,22 +14,31 @@ class AprobarSolicitudCreditoController extends Controller
 {
     public function index()
     {
-        $data = DB::table('solicitudcredito as sc')
-                        ->select('sc.solcreid', 'p.persid', 'sc.solcrefechasolicitud','sc.solcredescripcion','sc.solcrenumerocuota',
-                        DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),'lc.lincrenombre as lineaCredito',
-                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
-                        ->join('persona as p', 'p.persid', '=', 'sc.persid')
-                        ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                        ->where('sc.tiesscid', 'R')
-                        ->orderBy('sc.solcreid')->get();
+        try{
+            $data = DB::table('solicitudcredito as sc')
+                            ->select('sc.solcreid', 'p.persid', 'sc.solcrefechasolicitud','sc.solcredescripcion','sc.solcrenumerocuota',
+                                DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),'lc.lincrenombre as lineaCredito',
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                            ->join('persona as p', 'p.persid', '=', 'sc.persid')
+                            ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
+                            ->where('sc.tiesscid', 'R')
+                            ->orderBy('sc.solcreid')->get();
 
-        return response()->json(["data" => $data]);
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
+        }
     }
 
     public function estados()
     {
-        $tipoEstadosSolicitudCredito = DB::table('tipoestadosolicitudcredito')->select('tiesscid','tiesscnombre')->whereIn('tiesscid', ['A', 'N'])->get();
-        return response()->json(["tipoEstadosSolicitudCredito" => $tipoEstadosSolicitudCredito]);
+        try{
+            $tipoEstadosSolicitudCredito = DB::table('tipoestadosolicitudcredito')->select('tiesscid','tiesscnombre')->whereIn('tiesscid', ['A', 'N'])->get();
+
+            return response()->json(['success' => true, "tipoEstadosSolicitudCredito" => $tipoEstadosSolicitudCredito]);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
+        }
     }
 
     public function salve(Request $request)
@@ -41,15 +50,18 @@ class AprobarSolicitudCreditoController extends Controller
         DB::beginTransaction();
         try {
 
+            $notificar                  = new notificar();
             $fechaHoraActual            = Carbon::now();
             $solcreid                   = $request->codigo;
             $idNotificacionCorreo       = ($request->estadoSolicitud === 'A') ? "notificarAprobacionSolicitudCredito" : "notificarNegacionSolicitudCredito";
 
             $solicitudcredito           = DB::table('solicitudcredito as sc')
-                                            ->select('sc.solcrenumerocuota','sc.solcretasa','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
-                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                                            ->select('sc.solcrenumerocuota','sc.solcretasa','sc.solcrefechasolicitud','p.perscorreoelectronico',
+                                                DB::raw("CONCAT(FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
+                                                DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"),'u.usuaemail',
+                                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                             ->join('persona as p', 'p.persid', '=', 'sc.persid')
+                                            ->join('usuario as u', 'u.usuaid', '=', 'sc.usuaid')
                                             ->where('sc.solcreid', $solcreid )->first();
 
             $nombreSolicitante          = $solicitudcredito->nombrePersona;
@@ -59,12 +71,16 @@ class AprobarSolicitudCreditoController extends Controller
             $tasaInteres                = $solicitudcredito->solcretasa;
             $plazoCredito               = $solicitudcredito->solcrenumerocuota;
             $correoPersona              = $solicitudcredito->perscorreoelectronico;
+            $fechaSolicitud             = $solicitudcredito->solcrefechasolicitud;
+            $correoUsuarioCartera       = $solicitudcredito->usuaemail;
+            $nombreUsuarioCartera       = $solicitudcredito->nombreUsuario;
             $correoPersonaSesion        = auth()->user()->usuaemail;
+            $decisionTomada             = ($request->estadoSolicitud === 'A') ? 'Aprobada' : 'Rechazada';
             $mensajeNotificar           = '';
 
-            $solicitudcredito           = SolicitudCredito::findOrFail($solcreid);
-            $solicitudcredito->tiesscid = $request->estadoSolicitud;
-            $solicitudcredito->save();
+            $solicitudCredito           = SolicitudCredito::findOrFail($solcreid);
+            $solicitudCredito->tiesscid = $request->estadoSolicitud;
+            $solicitudCredito->save();
 
             $solicitudcreditocambioestado 					 = new SolicitudCreditoCambioEstado();
             $solicitudcreditocambioestado->solcreid          = $solcreid;
@@ -75,7 +91,6 @@ class AprobarSolicitudCreditoController extends Controller
             $solicitudcreditocambioestado->save();
 
             if ($correoPersona !== ''){
-                $notificar            = new notificar();
                 $informacionCorreo    = DB::table('informacionnotificacioncorreo')->where('innoconombre', $idNotificacionCorreo )->orderBy('innocoid')->first();        
                 $buscar               = Array('nombreSolicitante', 'valorCredito', 'montoAprobado','nombreGerente', 'tasaInteres', 'plazoCredito', 'observacionesGenerales');
                 $remplazo             = Array($nombreSolicitante, $valorCredito, $montoAprobado, $nombreGerente, $tasaInteres, $plazoCredito, $request->observacion); 
@@ -87,6 +102,18 @@ class AprobarSolicitudCreditoController extends Controller
                 $msg                  = str_replace($buscar, $remplazo, $innococontenido);
                 $mensajeNotificar     = ', se ha enviado notificación a '.$notificar->correo([$correoPersona], $asunto, $msg, [], $correoPersonaSesion, $enviarcopia, $enviarpiepagina);
             }
+
+            //Notifico al encargado de cartera
+            $informacionCorreo    = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarCarteraSolicitudCredito' )->orderBy('innocoid')->first();
+            $buscar               = Array('valorCredito', 'nombreUsuario', 'nombreSolicitante','nombreGerente', 'fechaSolicitud', 'decisionTomada');
+            $remplazo             = Array($valorCredito, $nombreUsuarioCartera, $nombreSolicitante, $nombreGerente, $fechaSolicitud, $decisionTomada);
+            $innocoasunto         = $informacionCorreo->innocoasunto;
+            $innococontenido      = $informacionCorreo->innococontenido;
+            $enviarcopia          = $informacionCorreo->innocoenviarcopia;
+            $enviarpiepagina      = $informacionCorreo->innocoenviarpiepagina;
+            $asunto               = str_replace($buscar, $remplazo, $innocoasunto);
+            $msg                  = str_replace($buscar, $remplazo, $innococontenido);
+                                    $notificar->correo([$correoUsuarioCartera], $asunto, $msg, [], $correoPersonaSesion, $enviarcopia, $enviarpiepagina);
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito'.$mensajeNotificar ]);

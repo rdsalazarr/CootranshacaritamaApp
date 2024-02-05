@@ -34,6 +34,7 @@ class ShowSolicitudCreditoController extends Controller
                                             ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                             ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
+                                            ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
                                             ->where('sc.solcreid', $request->codigo)->first();
 
             $cambiosEstadoSolicitudCredito =  DB::table('solicitudcreditocambioestado as cesc')
@@ -94,7 +95,7 @@ class ShowSolicitudCreditoController extends Controller
             }else if($request->url === 'CARTAINSTRUCCIONES'){
                 $dataDocumento = $this->generarCartaInstrucciones($request);
             }else if($request->url === 'FORMATO'){
-                $dataDocumento = $this->generarformatoSolicitudCredito($request);
+                $dataDocumento = $this->generarFormatoSolicitudCredito($request);
             }else{//De lo contrario genera el pagaré
                 $dataDocumento = $this->generarPagare($request);
             }
@@ -155,28 +156,28 @@ class ShowSolicitudCreditoController extends Controller
 
         $documentoAsociado   = number_format($documento, 0, ',', '.');
         $buscar              = Array('nombreAsociado', 'numeroPagare', 'fechaLargaPrestamo');
-        $remplazo            = Array( $nombrePersona, $numeroPagare, $fechaLargaPrestamo); 
+        $remplazo            = Array($nombrePersona, $numeroPagare, $fechaLargaPrestamo); 
         $titulo              = str_replace($buscar,$remplazo,$dataInfoPdf->ingpdftitulo);
         $contenido           = str_replace($buscar,$remplazo,$dataInfoPdf->ingpdfcontenido);
         $generarPdf          = new generarPdf();
         return $generarPdf->cartaInstrucciones($titulo, $contenido, $numeroPagare, $documento, 'S');
     }
 
-    function generarformatoSolicitudCredito($request){
+    function generarFormatoSolicitudCredito($request){
 
         $generales  = new generales();
         $generarPdf = new generarPdf();
         $colocacion = DB::table('colocacion as c')->select('c.coloid','c.colovalordesembolsado', 'c.colonumerocuota','lc.lincrenombre',
                         DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
-                        'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento',
+                        'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
                         'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
                         DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                         ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                         ->join('persona as p', 'p.persid', '=', 'sc.persid')
                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                         ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                        ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
-                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                        ->leftJoin('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
+                        ->leftJoin('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                         ->where('c.solcreid', $request->solicitudId)
                         ->where('sc.tiesscid', 'D')
                         ->first();
@@ -184,7 +185,7 @@ class ShowSolicitudCreditoController extends Controller
         $colLiPrimerRegistro = DB::table('colocacionliquidacion') ->select('colliqvalorcuota')->where('coloid', $colocacion->coloid)->orderBy('colliqid')->first();
 
         $arrayDatos = [ "documentoAsociado" => $colocacion->persdocumento,
-                        "nombreAsociado"    => $colocacion->nombrePersona,
+                        "nombrePersona"     => $colocacion->nombrePersona,
                         "vehiculo"          => $colocacion->referenciaVehiculo,
                         "numeroVehiculo"    => $colocacion->vehinumerointerno,
                         "placaVehiculo"     => $colocacion->vehiplaca,
@@ -194,6 +195,7 @@ class ShowSolicitudCreditoController extends Controller
                         "valorCuota"        => $colLiPrimerRegistro->colliqvalorcuota,
                         "tiempoCredito"     => $colocacion->colonumerocuota,
                         "fechaDesembolso"   => mb_strtoupper($generales->formatearFechaLargaPagare($colocacion->colofechadesembolso),'UTF-8'),
+                        "tipoPersona"       => $colocacion->tipperid,
                         "metodo"            => 'S'
                     ];
 
@@ -204,15 +206,15 @@ class ShowSolicitudCreditoController extends Controller
 
         $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
                                 DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
-                                'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento',
+                                'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
                                 'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                             ->join('persona as p', 'p.persid', '=', 'sc.persid')
                             ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                            ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
-                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                            ->leftJoin('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
+                            ->leftJoin('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                             ->where('c.solcreid', $request->solicitudId)
                             ->where('sc.tiesscid', 'D')
                             ->first();
@@ -236,12 +238,13 @@ class ShowSolicitudCreditoController extends Controller
         $numeroCuota            = $colocacion->colonumerocuota;
         $destinacionCredito     = $colocacion->solcredescripcion;
         $referenciaCredito      = $colocacion->coloanio;
-        $garantiaCredito        = $colocacion->referenciaVehiculo;
+        $garantiaCredito        = ($colocacion->tipperid === 'A') ? $colocacion->referenciaVehiculo :'POR LIBRANZA';
         $numeroInternoVehiculo  = $colocacion->vehinumerointerno;
         $placaVehiculo          = $colocacion->vehiplaca;
         $nombreAsociado         = $colocacion->nombrePersona;
         $tpDocumentoAsociado    = $colocacion->tipidesigla;
         $documento              = $colocacion->persdocumento;
+        $tipoPersona            = $colocacion->tipperid;
         $documentoAsociado      = number_format($documento, 0, ',', '.');
         $interesMoratorio       = '0';
         $valorEnLetras          = trim($convertirNumeroALetras->valorEnLetras($valorTotalCredito));

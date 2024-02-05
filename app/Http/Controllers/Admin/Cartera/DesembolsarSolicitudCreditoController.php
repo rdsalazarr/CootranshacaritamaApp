@@ -18,7 +18,7 @@ class DesembolsarSolicitudCreditoController extends Controller
     public function index()
     {
         try{
-            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
+            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
 
             return response()->json(['success' => true, "tipoIdentificaciones" => $tipoIdentificaciones]);
         }catch(Exception $e){
@@ -35,7 +35,7 @@ class DesembolsarSolicitudCreditoController extends Controller
         $url              = URL::to('/');
         $solicitudCredito = DB::table('solicitudcredito as sc')->select('a.asocid','p.persid','sc.solcreid','sc.solcrefechasolicitud','sc.solcredescripcion','sc.lincreid',
                                     'sc.solcrenumerocuota','sc.solcreobservacion','sc.solcretasa','sc.solcrevalorsolicitado','p.persdocumento', 'p.persprimernombre',
-                                    'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
+                                    'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento','p.tipperid',
                                     'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
                                     'p.persgenero','p.persrutafoto','a.asocfechaingreso','lc.lincrenombre as lineaCredito','tesc.tiesscnombre as estadoActual',
                                     DB::raw("CONCAT(sc.solcretasa,' %') as tasaNominal"),
@@ -46,6 +46,7 @@ class DesembolsarSolicitudCreditoController extends Controller
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                     ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
+                                    ->leftJoin('asociado as a', 'a.persid', '=', 'p.persid')
                                     ->where('p.tipideid', $request->tipoIdentificacion)
                                     ->where('p.persdocumento', $request->documento)
                                     ->where('sc.tiesscid', 'A')
@@ -64,7 +65,6 @@ class DesembolsarSolicitudCreditoController extends Controller
     public function salve(Request $request)
     {
         $this->validate(request(),['personaId'           => 'required|numeric',
-                                    'asociadoId'         => 'required|numeric',
                                     'solicitudId'        => 'required|numeric',
                                     'lineaCredito'       => 'required|numeric',
                                     'valorSolicitado'    => 'required|numeric|between:1,999999999',

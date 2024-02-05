@@ -1,17 +1,18 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import { Button, Grid, MenuItem, Stack, Box, Card} from '@mui/material';
 import showSimpleSnackbar from '../../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../../layout/modal';
 import TablaGeneral from '../../../../layout/tablaGeneral';
 import {LoaderModal} from "../../../../layout/loader";
+import SearchIcon from '@mui/icons-material/Search';
 import instance from '../../../../layout/instance';
 import PagarCuota from "./pagarCuota";
 
 export default function Search(){
 
     const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
-    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:''});
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'1978917'});
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [creditoAsociados, setCreditoAsociados] = useState([]);
@@ -21,7 +22,7 @@ export default function Search(){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const modales     = [<PagarCuota data={modal.data} />  ];
+    const modales     = [<PagarCuota data={modal.data} /> ];
     const tituloModal = ['Pagar cuota de crédito'];
 
     const edit = (data, tipo) =>{
@@ -34,8 +35,8 @@ export default function Search(){
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');
             }else{
-                setDatosEncontrados(true)
                 setCreditoAsociados(res.creditoAsociados); 
+                setDatosEncontrados(res.datosEncontrado)
             }
             setLoader(false);
         })
@@ -96,11 +97,10 @@ export default function Search(){
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Stack direction="row" spacing={2} >
-                                    <Button type={"submit"} className={'modalBtn'}
-                                        startIcon={<ContentPasteSearchIcon />}> Consultar
+                                    <Button type={"submit"} className={'modalBtnBuscar'}
+                                        startIcon={<SearchIcon className='icono' />}> Consultar
                                     </Button>
                                 </Stack>
-
                             </Grid>
                         </Grid>
                     </Card>
@@ -109,13 +109,13 @@ export default function Search(){
 
             {(datosEncontrados) ?
                 <Box style={{marginTop: '2em'}}>
-                    <Grid container spacing={2} style={{margin: 'auto', width:'70%'}}>
+                    <Grid container spacing={2} style={{margin: 'auto', width:'90%'}}>
                         <Grid item md={12} xl={12} sm={12} xs={12} >
                             <TablaGeneral 
                                 datos={creditoAsociados}
-                                titulo={['Fecha cuota','Valor','Pagar']}
-                                ver={[ "vehresfechacompromiso", "valorResponsabilidad"]}
-                                accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'red', funcion : (data)=>{edit(data, 0)} }]}
+                                titulo={['Persona','Número de colocacion','Fecha desembolso','Línea de crédito','Valor desembolsado', 'Fecha cuota','Procesar']}
+                                ver={["nombrePersona", "numeroColocacion", "colofechadesembolso","lincrenombre","valorDesembolsado", "colliqfechavencimiento"]}
+                                accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'green', funcion : (data)=>{edit(data, 0)} }]}
                                 funciones={{orderBy: false, search: false, pagination:false}}
                             />
                         </Grid>

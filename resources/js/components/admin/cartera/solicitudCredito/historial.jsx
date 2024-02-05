@@ -8,17 +8,14 @@ import Show from '../show/show';
 
 export default function List(){
 
+    const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
-    const [tipo, setTipo] = useState(0);
-    const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [ <Show id={modal.data.solcreid } /> ];
-
-    const tituloModal = ['Visualizar información de la solicitud de crédito',''];
+    const modales     = [ <Show id={modal.data.solcreid } /> ];
+    const tituloModal = ['Visualizar información de la solicitud de crédito'];
 
     const edit = (data, tipo) =>{
-        setTipo(tipo);
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'bigFlot'});
     }
 
@@ -27,7 +24,7 @@ export default function List(){
         instance.get('/admin/cartera/historial/solicitud/credito').then(res=>{
             setData(res.data);
             setLoader(false);
-        }) 
+        })
     }
 
     useEffect(()=>{inicio();}, []);

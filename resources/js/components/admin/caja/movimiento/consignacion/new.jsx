@@ -13,7 +13,7 @@ export default function New(){
     const [entidadFinancieras, setEntidadFinancieras] = useState([]);
     const [loader, setLoader]         = useState(false); 
     const [habilitado, setHabilitado] = useState(true);
-      
+
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }

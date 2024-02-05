@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Button, Grid, Icon, Box, MenuItem, Stack, Typography, Card, Autocomplete, createFilterOptions} from '@mui/material';
+import React, {useState} from 'react';
+import {Button, Grid, Box, MenuItem, Stack} from '@mui/material';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import NumberValidator from '../../../layout/numberValidator';
@@ -167,7 +167,9 @@ export default function Procesar({data, lineasCreditos, ocultarDatos}){
                 </Grid>
 
                 <Grid item xl={6} md={6} sm={6} xs={12}>
-                    <TextValidator 
+                    <TextValidator
+                        multiline
+                        maxRows={3}
                         name={'destinoCredito'}
                         value={formData.destinoCredito}
                         label={'Destino del crédito'}

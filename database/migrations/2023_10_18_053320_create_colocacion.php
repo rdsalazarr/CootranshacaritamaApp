@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('colovalordesembolsado', 12, 0)->comment('Monto o valor desembolsado');
             $table->decimal('colotasa',6,2)->comment('Tasa de interés aplicado en el desembolso');
             $table->decimal('colonumerocuota', 5, 0)->comment('Número de cuota aprobado en el desembolso');
+            $table->boolean('colocontabilizada')->default(false)->comment('Determina si la colocación ha sido contabilizada'); 
             $table->timestamps();
             $table->unique(['coloanio','colonumerodesembolso'],'uk_colocacion');
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuacolo');
