@@ -59,6 +59,46 @@ class SolicitudCreditoController extends Controller
 		}
     }
 
+    public function tipoDocumento()
+    {
+        try{
+            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
+
+            return response()->json(['success' => true, "tipoIdentificaciones" => $tipoIdentificaciones]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
+    }
+
+    public function persona(Request $request)
+    {
+        $this->validate(request(),[ 'tipoIdentificacion' => 'required|numeric',
+                                    'documento' 		 => 'required|string|max:15'
+                                ]);
+
+        try {
+            $url      = URL::to('/');
+            $persona = DB::table('persona as p')->select('p.persdocumento','p.persgenero','p.persrutafoto',
+                                    'p.persprimernombre','p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
+                                    'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
+                                    DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
+                                    DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"))
+                                    ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
+                                    ->where('p.tipideid', $request->tipoIdentificacion)
+                                    ->where('p.persdocumento', $request->documento)
+                                    ->whereIn('p.tipperid', ['E','A'])->first();
+
+            $lineasCreditos = DB::table('lineacredito')
+                                    ->select('lincreid','lincrenombre','lincretasanominal','lincremontominimo','lincremontomaximo', 'lincreplazomaximo')
+                                    ->where('lincreactiva', true)->get();
+        
+			return response()->json(['success' => true, 'persona' => $persona, 'lineasCreditos' => $lineasCreditos]);
+		} catch (Exception $error){
+			return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$error->getMessage()]);
+		}
+    }
+
     public function salve(Request $request)
 	{
 	    $this->validate(request(),[

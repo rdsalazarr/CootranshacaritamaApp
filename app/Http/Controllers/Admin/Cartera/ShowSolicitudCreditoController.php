@@ -30,8 +30,7 @@ class ShowSolicitudCreditoController extends Controller
                                             DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
                                             DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"),
                                             DB::raw('(SELECT COUNT(coloid) AS coloid FROM colocacion WHERE solcreid = sc.solcreid) AS totalColocacion'))
-                                            ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                            ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                            ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                             ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                             ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
@@ -109,10 +108,9 @@ class ShowSolicitudCreditoController extends Controller
 
         $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
                                 'sc.solcredescripcion','c.colofechadesembolso', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                 ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                 ->where('c.solcreid', $request->solicitudId)
                                 ->where('sc.tiesscid', 'D')
@@ -124,7 +122,7 @@ class ShowSolicitudCreditoController extends Controller
 
         $arrayDatos = [ "fechaDesembolso"       => $colocacion->colofechadesembolso,
                         "lineaCredito"          => $colocacion->lincrenombre,
-                        "nombreAsociado"        => $colocacion->nombreAsociado,
+                        "nombrePersona"         => $colocacion->nombrePersona,
                         "descripcionCredito"    => $colocacion->solcredescripcion,
                         "valorSolicitado"       => $colocacion->colovalordesembolsado,
                         "tasaNominal"           => $colocacion->colotasa,
@@ -140,10 +138,9 @@ class ShowSolicitudCreditoController extends Controller
     function generarCartaInstrucciones($request){
 
         $colocacion = DB::table('colocacion as c')->select('c.colofechadesembolso','c.coloanio', 'c.colonumerodesembolso','p.persdocumento',DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                 ->where('c.solcreid', $request->solicitudId)
                                 ->where('sc.tiesscid', 'D')
                                 ->first();
@@ -151,14 +148,14 @@ class ShowSolicitudCreditoController extends Controller
         $dataInfoPdf         = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', 'cartaInstrucciones')->first();
 
         $generales           = new generales();
-        $nombreAsociado      = $colocacion->nombreAsociado;
+        $nombrePersona       = $colocacion->nombrePersona;
         $fechaLargaPrestamo  = $generales->formatearFecha($colocacion->colofechadesembolso);
         $numeroPagare        = $colocacion->numeroColocacion;
         $documento           = $colocacion->persdocumento;
 
         $documentoAsociado   = number_format($documento, 0, ',', '.');
         $buscar              = Array('nombreAsociado', 'numeroPagare', 'fechaLargaPrestamo');
-        $remplazo            = Array( $nombreAsociado, $numeroPagare, $fechaLargaPrestamo); 
+        $remplazo            = Array( $nombrePersona, $numeroPagare, $fechaLargaPrestamo); 
         $titulo              = str_replace($buscar,$remplazo,$dataInfoPdf->ingpdftitulo);
         $contenido           = str_replace($buscar,$remplazo,$dataInfoPdf->ingpdfcontenido);
         $generarPdf          = new generarPdf();
@@ -173,10 +170,9 @@ class ShowSolicitudCreditoController extends Controller
                         DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
                         'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento',
                         'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
-                        DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                         ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                        ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                        ->join('persona as p', 'p.persid', '=', 'a.persid')
+                        ->join('persona as p', 'p.persid', '=', 'sc.persid')
                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                         ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                         ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
@@ -188,7 +184,7 @@ class ShowSolicitudCreditoController extends Controller
         $colLiPrimerRegistro = DB::table('colocacionliquidacion') ->select('colliqvalorcuota')->where('coloid', $colocacion->coloid)->orderBy('colliqid')->first();
 
         $arrayDatos = [ "documentoAsociado" => $colocacion->persdocumento,
-                        "nombreAsociado"    => $colocacion->nombreAsociado,
+                        "nombreAsociado"    => $colocacion->nombrePersona,
                         "vehiculo"          => $colocacion->referenciaVehiculo,
                         "numeroVehiculo"    => $colocacion->vehinumerointerno,
                         "placaVehiculo"     => $colocacion->vehiplaca,
@@ -210,10 +206,9 @@ class ShowSolicitudCreditoController extends Controller
                                 DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio',
                                 'c.colofechadesembolso', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento',
                                 'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
-                            DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                            ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                            ->join('persona as p', 'p.persid', '=', 'a.persid')
+                            ->join('persona as p', 'p.persid', '=', 'sc.persid')
                             ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
@@ -244,7 +239,7 @@ class ShowSolicitudCreditoController extends Controller
         $garantiaCredito        = $colocacion->referenciaVehiculo;
         $numeroInternoVehiculo  = $colocacion->vehinumerointerno;
         $placaVehiculo          = $colocacion->vehiplaca;
-        $nombreAsociado         = $colocacion->nombreAsociado;
+        $nombreAsociado         = $colocacion->nombrePersona;
         $tpDocumentoAsociado    = $colocacion->tipidesigla;
         $documento              = $colocacion->persdocumento;
         $documentoAsociado      = number_format($documento, 0, ',', '.');

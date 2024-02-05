@@ -10,7 +10,7 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import VisualizarPdf from './visualizarPdf';
-import Asociado from '../show/asociado';
+import Asociado from '../show/persona';
 
 ValidatorForm.addValidationRule('isTasaNominal', (value) => {
     // Verificar si el valor es un número válido en formato "10.50"
@@ -27,15 +27,15 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 export default function Search(){
 
     const [formData, setFormData] = useState({identificador:'', asociadoId:'', vehiculoId:'', lineaCredito:'', destinoCredito:'', valorSolicitado:'',  tasaNominal:'',  plazo:'', observacionGeneral:'',
-                                            tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:'', correo:'', nombreAsociado:'' })
+                                            tasaNominalLineaCredito: '', valorMinimoLineaCredito:'', valorMaximoLineaCredito:'', plazoMaximoLineaCredito:'', correo:'', nombreAsociado:'' });
     const [formDataConsulta, setFormDataConsulta] = useState({tipoIdentificacion:'', documento:'', primerNombre:'', segundoNombre:'', primerApellido:'', segundoApellido:'', fechaNacimiento:'',
-                                                                direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:''})
-    const [loader, setLoader] = useState(false);
+                                                                direccion:'', correo:'', telefonoFijo:'', numeroCelular:'', fechaIngresoAsociado:''});
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [listaAsociados, setListaAsociados] = useState([]);
     const [lineasCreditos, setLineasCreditos] = useState([]);   
     const [deshabilitado, setDeshabilitado] = useState(true); 
     const [modal, setModal] = useState({open: false});
+    const [loader, setLoader] = useState(false);
     
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))

@@ -439,6 +439,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/solicitud/credito/datos', [SolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/solicitud');
             Route::post('/consultar/datos/asociado', [SolicitudCreditoController::class, 'consultar']);
+            Route::get('/solicitud/credito/tipo/documento', [SolicitudCreditoController::class, 'tipoDocumento']);
+            Route::post('/consultar/datos/persona', [SolicitudCreditoController::class, 'persona']);
             Route::post('/registrar/solicitud/credito', [SolicitudCreditoController::class, 'salve']);
             Route::post('/simular/solicitud/credito', [SolicitudCreditoController::class, 'simular']);
 

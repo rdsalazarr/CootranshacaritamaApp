@@ -18,14 +18,13 @@ class GestionCobroCarteraController extends Controller
         $data            = DB::table('colocacion as c')->select('c.solcreid','c.coloid','lc.lincrenombre',DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"), 
                                 'c.colovalordesembolsado', 'c.colofechadesembolso', 'p.persdocumento','v.vehiplaca', 'v.vehinumerointerno',
                                 DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
-                                DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
                                 DB::raw("DATEDIFF(NOW(), c.colofechadesembolso) as diasMora"))
                                 ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                                 ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                 ->join('vehiculo as v', 'v.vehiid', '=', 'sc.vehiid')
                                 ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                 ->whereIn('c.coloid', function($query) use ($fechaActual) {
                                     $query->select('coloid')
                                         ->from('colocacionliquidacion')

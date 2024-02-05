@@ -17,9 +17,13 @@ class DesembolsarSolicitudCreditoController extends Controller
 {
     public function index()
     {
-        $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
+        try{
+            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
 
-        return response()->json(["tipoIdentificaciones" => $tipoIdentificaciones]);
+            return response()->json(['success' => true, "tipoIdentificaciones" => $tipoIdentificaciones]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function consultar(Request $request)
@@ -38,8 +42,7 @@ class DesembolsarSolicitudCreditoController extends Controller
                                     DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"))
-                                    ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                    ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                    ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                     ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
@@ -89,7 +92,7 @@ class DesembolsarSolicitudCreditoController extends Controller
             //Genero la observacion para almacenar en el estado de la solicitud de credito
             $descripcionCambioEstado = "La solicitud fue desembolsa con número de colocación ". $anioActual."-".$numeroColocacion ." en la fecha ".$fechaHoraActual.". ";
             if($valorAprobado > $valorPrestamo){
-                $descripcionCambioEstado .=  "A petición del asociado se disminuyó el monto aprobado, el cual paso de ".$valorAprobado." a ".$valorPrestamo.". ";
+                $descripcionCambioEstado .=  "A petición de la persona se disminuyó el monto aprobado, el cual paso de ".$valorAprobado." a ".$valorPrestamo.". ";
             }            
             $descripcionCambioEstado .= "Este proceso fue realizado por ".auth()->user()->usuanombre.".";
 

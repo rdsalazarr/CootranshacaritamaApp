@@ -9,7 +9,7 @@ import instance from '../../../layout/instance';
 import {Grid, Tab, Tabs} from '@mui/material';
 import ShowBotones from './showBotones';
 import Colocacion from './colocacion';
-import Asociado from './asociado';
+import Persona from './persona';
 
 export default function Show({id}){
 
@@ -89,7 +89,7 @@ export default function Show({id}){
     return (
         <Grid container spacing={2}>
             <Grid item xl={12} md={12} sm={12} xs={12}>
-                <Asociado data={formData} />
+                <Persona data={formData} />
             </Grid>
 
             {(formData.totalColocacion > 0)?

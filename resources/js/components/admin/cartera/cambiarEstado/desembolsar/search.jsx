@@ -11,7 +11,7 @@ import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 import VisualizarPdf from './visualizarPdf';
-import Asociado from '../../show/asociado';
+import Persona from '../../show/persona';
 
 ValidatorForm.addValidationRule('isTasaNominal', (value) => {
     // Verificar si el valor es un número válido en formato "10.50"
@@ -259,7 +259,7 @@ export default function Search(){
                         <Grid container spacing={2}>
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <Asociado data={formDataConsulta} />
+                                <Persona data={formDataConsulta} />
                             </Grid>
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>

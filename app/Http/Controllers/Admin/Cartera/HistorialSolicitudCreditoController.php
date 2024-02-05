@@ -10,16 +10,18 @@ class HistorialSolicitudCreditoController extends Controller
 {
     public function index()
     {
-        $data = DB::table('solicitudcredito as sc')
-                        ->select('sc.solcreid', 'p.persid', 'sc.solcrefechasolicitud','sc.solcredescripcion','sc.solcrenumerocuota',
-                        DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),'lc.lincrenombre as lineaCredito',
-                        DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                        ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                        ->join('persona as p', 'p.persid', '=', 'a.persid')
-                        ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                        ->orderBy('sc.solcreid')->get();
+        try{
+            $data = DB::table('solicitudcredito as sc')
+                            ->select('sc.solcreid', 'p.persid', 'sc.solcrefechasolicitud','sc.solcredescripcion','sc.solcrenumerocuota',
+                            DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),'lc.lincrenombre as lineaCredito',
+                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                            ->join('persona as p', 'p.persid', '=', 'sc.persid')
+                            ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
+                            ->orderBy('sc.solcreid')->get();
 
-        return response()->json(["data" => $data]);
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 }

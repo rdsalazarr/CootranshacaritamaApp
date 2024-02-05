@@ -17,10 +17,8 @@ class AprobarSolicitudCreditoController extends Controller
         $data = DB::table('solicitudcredito as sc')
                         ->select('sc.solcreid', 'p.persid', 'sc.solcrefechasolicitud','sc.solcredescripcion','sc.solcrenumerocuota',
                         DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),'lc.lincrenombre as lineaCredito',
-                        DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                        p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                        ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                        ->join('persona as p', 'p.persid', '=', 'a.persid')
+                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                        ->join('persona as p', 'p.persid', '=', 'sc.persid')
                         ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                         ->where('sc.tiesscid', 'R')
                         ->orderBy('sc.solcreid')->get();
@@ -50,13 +48,11 @@ class AprobarSolicitudCreditoController extends Controller
             $solicitudcredito           = DB::table('solicitudcredito as sc')
                                             ->select('sc.solcrenumerocuota','sc.solcretasa','p.perscorreoelectronico',
                                             DB::raw("CONCAT(FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
-                                            DB::raw("CONCAT( p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                                            ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                            ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                                            ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                             ->where('sc.solcreid', $solcreid )->first();
 
-            $nombreSolicitante          = $solicitudcredito->nombreAsociado;
+            $nombreSolicitante          = $solicitudcredito->nombrePersona;
             $valorCredito               = $solicitudcredito->valorSolicitado;
             $montoAprobado              = $solicitudcredito->valorSolicitado;
             $nombreGerente              = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
@@ -115,8 +111,7 @@ class AprobarSolicitudCreditoController extends Controller
                                     DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
                                     DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
                                     DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"))
-                                    ->join('asociado as a', 'a.asocid', '=', 'sc.asocid')
-                                    ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                    ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                     ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                     ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                                     ->join('tipoestadosolicitudcredito as tesc', 'tesc.tiesscid', '=', 'sc.tiesscid')
