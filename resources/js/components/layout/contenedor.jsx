@@ -167,7 +167,8 @@ const componenteMenu = [
     {   nombre: 'Atención usuario',
         icono : 'repeat_one_icon',
         itemMenu: [
-            {ruta : 'admin/caja/procesar',             menu: 'Gestionar',          icono : 'clean_hands_icon',   componente : <MovimientoCaja />},           
+            {ruta : 'admin/caja/procesar',             menu: 'Gestionar',          icono : 'clean_hands_icon',   componente : <MovimientoCaja />},  
+            {ruta : 'admin/caja/procesar',             menu: 'Pagar crédito',          icono : 'clean_hands_icon',   componente : <MovimientoCaja />},           
         ]
     },
     {   nombre: 'Informes',

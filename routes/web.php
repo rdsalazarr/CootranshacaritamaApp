@@ -83,7 +83,10 @@ use App\Http\Controllers\Admin\Despacho\ContratoServicioEspecialController;
 
 use App\Http\Controllers\Admin\Caja\CuentaContableController;
 use App\Http\Controllers\Admin\Caja\ProcesarMovimientoController;
+use App\Http\Controllers\Admin\Caja\ConsignacionBancariaController;
+use App\Http\Controllers\Admin\Caja\EntregarPagoCreditoController;
 use App\Http\Controllers\Admin\Caja\CerrarMovimientoController;
+
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -517,14 +520,17 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
 
             Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);
-            Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);
-
-            Route::get('/listar/consignacion/bancaria', [ProcesarMovimientoController::class, 'listConsignacion']);
-            Route::get('/consultar/datos/consignacion/bancaria', [ProcesarMovimientoController::class, 'datosConsignacion']);
-            Route::post('/registrar/consignacion/bancaria', [ProcesarMovimientoController::class, 'salveConsignacion']);
+            Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);           
 
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
             Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
+
+            Route::get('/listar/consignacion/bancaria', [ConsignacionBancariaController::class, 'index'])->middleware('security:admin/caja/consignar');
+            Route::get('/consultar/datos/consignacion/bancaria', [ConsignacionBancariaController::class, 'datosConsignacion']);
+            Route::post('/registrar/consignacion/bancaria', [ConsignacionBancariaController::class, 'salveConsignacion']);
+
+
+            //EntregarPagoCreditoController
         });
 
     });
