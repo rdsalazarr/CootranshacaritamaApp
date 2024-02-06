@@ -72,8 +72,9 @@ import RecibirPlanillas from "../admin/despacho/recibirPlanilla/list";
 
 import CuentaContable from "../admin/caja/cuentaContable/list";
 import MovimientoCaja from "../admin/caja/movimiento/verificar";
+import Consignacion from "../admin/caja/consignacion/list";
+import PagarCredito from "../admin/caja/pagarCredito/search";
 import CerrarCaja from "../admin/caja/cerrar/closed";
-
 
 const HeaderMenu = ({open, setOpen}) =>{
     return (
@@ -164,11 +165,11 @@ const componenteMenu = [
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
         ]
     },*/
-    {   nombre: 'Atención usuario',
-        icono : 'repeat_one_icon',
+    {   nombre: 'Procesos automáticos', 
+        icono : 'account_tree_icon',
         itemMenu: [
-            {ruta : 'admin/caja/procesar',             menu: 'Gestionar',          icono : 'clean_hands_icon',   componente : <MovimientoCaja />},  
-            {ruta : 'admin/caja/procesar',             menu: 'Pagar crédito',          icono : 'clean_hands_icon',   componente : <MovimientoCaja />},           
+            {ruta : 'admin/caja/procesar',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <MovimientoCaja />},  
+        
         ]
     },
     {   nombre: 'Informes',
@@ -179,7 +180,7 @@ const componenteMenu = [
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'repeat_one_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Consignar',            icono : 'account_balance_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Consignar2',            icono : 'price_check_icon',        componente : <EnConstruccion />},
-                         
+                                  
         ]
     } 
 ];
@@ -234,10 +235,10 @@ const menuComponente = [
     {id:46,componente : <RecibirPlanillas />},
     {id:47,componente : <ServicoEspecial />},
     {id:48,componente : <MovimientoCaja />},
-    {id:49,componente : <CerrarCaja />},   
+    {id:49,componente : <PagarCredito />}, 
+    {id:50,componente : <Consignacion />},
+    {id:51,componente : <CerrarCaja />},
 
-    {id:50,componente : <EnConstruccion />},
-    {id:51,componente : <EnConstruccion />},
     {id:52,componente : <EnConstruccion />},
     {id:53,componente : <EnConstruccion />},
     {id:54,componente : <EnConstruccion />},

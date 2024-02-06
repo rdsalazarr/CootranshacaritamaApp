@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import { TabPanel } from '../../../layout/general';
 import PagoCredito from "./pagarCredito/search";
-import Consignacion from "./consignacion/list";
 import Mensualidad from "./mensualidad";
 import Sancion from "./sancion";
 
@@ -27,8 +26,7 @@ export default function RegistrarMovimientos(){
                 variant={variantTab} >
                 <Tab label="Mensualidad" />
                 <Tab label="Pago crédito" />
-                <Tab label="Sanción" />
-                <Tab label="Consignación" />
+                <Tab label="Sanción" />         
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -42,11 +40,6 @@ export default function RegistrarMovimientos(){
             <TabPanel value={value} index={2}>
                 <Sancion />
             </TabPanel>
-
-            <TabPanel value={value} index={3}>
-                <Consignacion />
-            </TabPanel>
-
         </Box>
     )
 }

@@ -202,3 +202,20 @@ ALTER TABLE `persona` ADD `perstienefirmaelectronica` TINYINT(1) NOT NULL DEFAUL
 ALTER TABLE `solicitudcredito` CHANGE `asocid` `persid` INT(10) UNSIGNED NOT NULL COMMENT 'Identificador del asociado';
 
 ALTER TABLE `solicitudcredito` CHANGE `vehiid` `vehiid` INT(10) UNSIGNED NULL COMMENT 'Identificador del vehículo';
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(50, 10, 'Consignar', 'Consignar en bancos', 'admin/caja/consigarBanco', 'price_check_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(51, 10, 'Cerrar', 'Cerrar moviemiento de caja', 'admin/caja/cerrar', 'close_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(52, 11, 'Gestionar', 'Gestionar atención al usuario', 'admin/antencion/usuario/gestionar', 'clean_hands_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(50, 1, 50),
+(51, 1, 51),
+(52, 1, 52);
+
+UPDATE `funcionalidad` SET `funcnombre` = 'Pagar crédito', `functitulo` = 'Pagar desembolso de crédito', `funcruta` = 'admin/caja/pagarDesembolsoCredito', `funcicono` = 'account_balance_icon' WHERE `funcionalidad`.`funcid` = 49;
+UPDATE `funcionalidad` SET `funcicono` = 'price_check_icon' WHERE `funcionalidad`.`funcid` = 49; UPDATE `funcionalidad` SET `funcicono` = 'account_balance_icon' WHERE `funcionalidad`.`funcid` = 50;
+UPDATE `modulo` SET `modunombre` = 'Atención usuario', `moduicono` = 'repeat_one_icon' WHERE `modulo`.`moduid` = 11;
+UPDATE `funcionalidad` SET `funcruta` = 'admin/caja/entregarDesembolsoCredito' WHERE `funcionalidad`.`funcid` = 49;
+ALTER TABLE `colocacion` ADD `colocontabilizada` TINYINT(1) NULL DEFAULT '0' COMMENT 'Determina si la colocación ha sido contabilizada' AFTER `colonumerocuota`;
+INSERT INTO `cuentacontable` (`cueconid`, `cueconcodigo`, `cueconnombre`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES ('11', '120011', 'CXC DESEMBOLSOS', 'D', '1', '2024-02-06 09:14:53', '2024-02-06 09:14:53');

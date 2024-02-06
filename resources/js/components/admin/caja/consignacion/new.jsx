@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import NumberValidator from '../../../../layout/numberValidator';
+import NumberValidator from '../../../layout/numberValidator';
 import { Button, Grid, MenuItem, Stack}  from '@mui/material';
-import showSimpleSnackbar from '../../../../layout/snackBar';
-import {LoaderModal} from "../../../../layout/loader";
-import instance from '../../../../layout/instance';
+import showSimpleSnackbar from '../../../layout/snackBar';
+import {LoaderModal} from "../../../layout/loader";
+import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
 export default function New(){
@@ -34,7 +34,7 @@ export default function New(){
         instance.get('/admin/caja/consultar/datos/consignacion/bancaria').then(res=>{
             setEntidadFinancieras(res.entidadFinancieras);
             setLoader(false);
-        }) 
+        })
     }
 
     useEffect(()=>{inicio();}, []);
@@ -92,7 +92,7 @@ export default function New(){
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChange}
                     />
-                </Grid>                
+                </Grid>
                 
             </Grid>
 

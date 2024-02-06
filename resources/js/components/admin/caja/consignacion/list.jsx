@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import { ModalDefaultAuto } from '../../../../layout/modal';
-import TablaGeneral from '../../../../layout/tablaGeneral';
-import {LoaderModal} from "../../../../layout/loader";
-import instance from '../../../../layout/instance';
-import {Box, Card} from '@mui/material';
+import { ModalDefaultAuto } from '../../../layout/modal';
+import TablaGeneral from '../../../layout/tablaGeneral';
+import {LoaderModal} from "../../../layout/loader";
+import instance from '../../../layout/instance';
+import {Box, Typography} from '@mui/material';
 import New from "./new";
 
 export default function List(){
@@ -34,7 +34,9 @@ export default function List(){
     }
 
     return (
-        <Box className={'containerMedium'} >          
+        <Box className={'containerMedium'} >
+            <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar consignaciones</Typography>
+            </Box>   
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
@@ -53,7 +55,7 @@ export default function List(){
                 close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
-            />            
+            />
         </Box>
     )
 }

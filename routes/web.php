@@ -520,17 +520,23 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
 
             Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);
-            Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);           
+            Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);
 
-            Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
-            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
-
-            Route::get('/listar/consignacion/bancaria', [ConsignacionBancariaController::class, 'index'])->middleware('security:admin/caja/consignar');
+            Route::get('/listar/consignacion/bancaria', [ConsignacionBancariaController::class, 'index'])->middleware('security:admin/caja/consigarBanco');
             Route::get('/consultar/datos/consignacion/bancaria', [ConsignacionBancariaController::class, 'datosConsignacion']);
             Route::post('/registrar/consignacion/bancaria', [ConsignacionBancariaController::class, 'salveConsignacion']);
 
+            Route::get('/pagar/credito/tipo/documento', [EntregarPagoCreditoController::class, 'index'])->middleware('security:admin/caja/entregarDesembolsoCredito');
+            Route::post('/pagar/credito/consultar/persona', [EntregarPagoCreditoController::class, 'consultarPersona']);
+            Route::post('/pagar/credito/entregar/efectivo', [EntregarPagoCreditoController::class, 'entregarEfectivo']);
 
-            //EntregarPagoCreditoController
+            Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
+            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
+        });
+
+        Route::prefix('/antencion/usuario')->group(function(){
+            Route::get('/list/registrados', [ProcesarMovimientoController::class, 'index'])->middleware('security:admin/antencion/usuario/gestionar');
+
         });
 
     });

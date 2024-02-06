@@ -106,5 +106,13 @@ class CuentaContableSeeder extends Seeder
             'updated_at'       => $fechaHoraActual,
         ]);
 
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '11',
+            'cueconnombre'     => 'CXC DESEMBOLSOS',
+            'cueconnaturaleza' => 'D',
+            'cueconcodigo'     => '120011',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
     }
 }
