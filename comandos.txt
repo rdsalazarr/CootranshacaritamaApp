@@ -89,6 +89,7 @@ php artisan make:migration create_vehiculo_poliza
 php artisan make:migration create_vehiculo_soat
 php artisan make:migration create_vehiculo_tarjeta_operacion
 php artisan make:migration create_vehiculo_contrato
+php artisan make:migration create_vehiculo_contrato_firma
 php artisan make:migration create_vehiculo_contrato_asociado
 php artisan make:migration create_vehiculo_responsabilidad
 php artisan make:migration create_vehiculo_suspendido

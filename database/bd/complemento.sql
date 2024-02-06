@@ -195,7 +195,8 @@ INSERT INTO `cuentacontable` (`cueconid`, `cueconcodigo`, `cueconnombre`, `cueco
 (7, '120007', 'CXP PAGO SANCIÓN', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (8, '120008', 'CXP PAGO ENCOMIENDA', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (9, '120009', 'CXP PAGO ENCOMIENDA CONTRAENTREGA', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(10, '120010', 'CXP PAGO DE TIQUETE', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(10, '120010', 'CXP PAGO DE TIQUETE', 'C', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(11, '120011', 'CXC DESEMBOLSOS', 'D', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
 ALTER TABLE `persona` ADD `perstienefirmaelectronica` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determina si la persona tiene firma electrónica' AFTER `persrutafirma`;
@@ -219,3 +220,5 @@ UPDATE `modulo` SET `modunombre` = 'Atención usuario', `moduicono` = 'repeat_on
 UPDATE `funcionalidad` SET `funcruta` = 'admin/caja/entregarDesembolsoCredito' WHERE `funcionalidad`.`funcid` = 49;
 ALTER TABLE `colocacion` ADD `colocontabilizada` TINYINT(1) NULL DEFAULT '0' COMMENT 'Determina si la colocación ha sido contabilizada' AFTER `colonumerocuota`;
 INSERT INTO `cuentacontable` (`cueconid`, `cueconcodigo`, `cueconnombre`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES ('11', '120011', 'CXC DESEMBOLSOS', 'D', '1', '2024-02-06 09:14:53', '2024-02-06 09:14:53');
+
+ALTER TABLE `tiquete` ADD `tiquvalorestampilla` DECIMAL(10,0) NOT NULL AFTER `tiquvalortotal`, ADD `tiqucontabilizado` TINYINT(1) NOT NULL DEFAULT '0' AFTER `tiquvalorestampilla`;
