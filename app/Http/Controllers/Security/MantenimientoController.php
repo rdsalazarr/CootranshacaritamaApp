@@ -82,9 +82,92 @@ class MantenimientoController extends Controller
 
        dd($mensajeCorreo);      
     }
+
+    function calcularPagoCuotaMensualArray($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora) {
+
+
+        $generales  = new generales();  
+
+		// Calcular la fecha actual
+		$fechaActual = Carbon::now();
+
+        		// Calcular la cuota mensual
+		if ($tasaInteresMensual == 0.0) {
+			$valorCuota = $montoPrestamo / $plazo;
+		} else {
+			$tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+			$denominador = 1 - pow(1 + $tasaInteresMensual, -$plazo);    
+			$valorCuota = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+		}
+
+	
+		// Inicializar los valores de retorno
+		$resultado = [
+			'cuota' => null,
+			'mora' => 0,
+			'descuento' => 0
+		];
+	
+		// Verificar si la fecha de vencimiento es anterior a la fecha actual
+		if ($fechaVencimiento->lt($fechaActual)) {
+			// Calcular los días de mora
+			$diasMora = $fechaActual->diffInDays($fechaVencimiento);
+			
+			// Calcular el interés de mora
+			$interesMensual   = $interesMora / 100;
+			$interesDiario    = $interesMensual / Carbon::daysInMonth($fechaVencimiento->year, $fechaVencimiento->month);
+			$interesMoraTotal = $interesDiario * $montoPrestamo * $diasMora;
+	
+			// Actualizar el valor de la mora en el resultado
+			$resultado['mora'] = $interesMoraTotal;
+
+            $valorCuota += $interesMoraTotal;
+		} else {
+			// Calcular los días anticipados (días antes del vencimiento)
+			$diasAnticipados = $fechaVencimiento->diffInDays($fechaActual);
+			
+			// Calcular el descuento por pago anticipado
+			$descuentoDiario = $tasaInteresMensual / 100; // Utilizamos la tasa de interés mensual como descuento diario
+			$descuentoTotal = $descuentoDiario * $montoPrestamo * $diasAnticipados;
+	
+			// Actualizar el valor del descuento en el resultado
+			$resultado['descuento'] = $descuentoTotal;
+
+            $valorCuota -= $descuentoTotal;
+		}	
+
+	
+		// Actualizar el valor de la cuota en el resultado
+		$resultado['cuota'] = $generales->redondearMilSiguiente($valorCuota);
+	
+		return $resultado;
+	}
+
     
     public function Pdf()
     {
+        $colocacion = DB::table('colocacionliquidacion as cl')
+        ->select('cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechadesembolso',
+           'c.colotasa','c.colonumerocuota','c.colovalordesembolsado',
+            DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalCuotasPorPagar'),
+            DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NOT NULL) AS totalCuotasPagadas'))
+        ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
+        ->where('c.coloid', 1)
+        ->where('cl.colliqid', 1)
+        ->first();
+
+        
+        $montoPrestamo      = $colocacion->colovalordesembolsado ;
+        $tasaInteresMensual = $colocacion->colotasa ;
+        $plazo              = $colocacion->colonumerocuota ;
+        $fechaVencimiento   = $colocacion->colliqfechavencimiento ;
+        $interesMora        = '2' ;
+        
+
+        $this->calcularPagoCuotaMensualArray($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora);
+
+
+        /*
         
         $generarPdf = new generarPdf();
         $empresa              = $generarPdf->consultarEmpresa();
@@ -138,7 +221,7 @@ class MantenimientoController extends Controller
             $table->dateTime('comconfechahoracierre')->nullable()->comment('Fecha y hora en la cual se cierra el comprobante contable');
             $table->string('comconestado', 1)->default('A')->comment('Estado del comprobante contable');*/
 
-        $comprobantecontable = DB::table('comprobantecontable as cc')
+        /*$comprobantecontable = DB::table('comprobantecontable as cc')
                             ->select(DB::raw('DATE(cc.comconfechahora) as fechaComprobante'), 
                             DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),
                             'cc.comcondescripcion', 'a.agennombre', 'c.cajanumero')
@@ -1090,5 +1173,106 @@ class MantenimientoController extends Controller
  
         $generarPdf->contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $idInformacionPdf);
     }
+
+
+    function calcularPagoCuotaMensual1($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora)
+	{
+		$fechaActual = Carbon::now();
+		
+		if ($fechaVencimiento->lt($fechaActual)) {// Calcular días de mora
+			$diasMora = $fechaActual->diffInDays($fechaVencimiento);
+			// Cobrar intereses de mora
+			$interesMensual = $tasaInteresMensual / 100;
+			$interesDiario = $interesMensual / Carbon::daysInMonth($fechaVencimiento->year, $fechaVencimiento->month);
+			$interesMoraTotal = $interesDiario * $montoPrestamo * $diasMora;
+			// Sumar intereses de mora al monto del préstamo
+			$montoPrestamo += $interesMoraTotal;
+		} else {
+			// Calcular días adicionales
+			$diasAdicionales = $fechaVencimiento->diffInDays($fechaActual);
+			// Cobrar intereses adicionales
+			$interesAdicional = 0.02; // 2% diario
+			$interesAdicionalTotal = $interesAdicional * $montoPrestamo * $diasAdicionales;
+			// Sumar intereses adicionales al monto del préstamo
+			$montoPrestamo += $interesAdicionalTotal;
+		}
+
+		if ($tasaInteresMensual == 0.0) {
+			$valorCuota = $montoPrestamo / $plazo;
+		} else {
+			$tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+			$denominador = 1 - pow(1 + $tasaInteresMensual, -$plazo);
+			$valorCuota = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+		}
+
+		return $this->redonderarMilSiguiente($valorCuota);
+	}
+
+	function calcularPagoCuotaMensual ($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora) {
+
+		$fechaActual    = now();
+		$diasDiferencia = $fechaActual->diffInDays($fechaVencimiento);
+	
+		// Calcular la cuota mensual sin considerar la mora
+		if ($tasaInteresMensual == 0.0) {
+			$valorCuota = $montoPrestamo / $plazo;
+		} else {
+			$tasaInteresMensualDecimal = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+			$denominador = 1 - pow(1 + $tasaInteresMensualDecimal, -$plazo);    
+			$valorCuota = ($montoPrestamo * $tasaInteresMensualDecimal) / $denominador;
+		}
+
+		if ($fechaVencimiento->lt($fechaActual)) {	// Calcular los días de mora
+			$diasMora = $fechaActual->diffInDays($fechaVencimiento);			
+			$interesMoraTotal = $interesMora / 100 * $montoPrestamo * $diasMora;
+			$montoPrestamo += $interesMoraTotal;
+		} else { // Si la fecha de vencimiento es mayor a la fecha actual
+			// Calcular los intereses adicionales
+			$interesAdicional = 0.02 / 100; // 2% diario
+			
+			// Calcular los intereses adicionales
+			$interesAdicionalTotal = $interesAdicional * $montoPrestamo * $diasDiferencia;
+	
+			// Sumar intereses adicionales al monto del préstamo
+			$montoPrestamo += $interesAdicionalTotal;
+		}
+		
+		// Redondear y devolver el valor de la cuota
+		return $this->redonderarMilSiguiente($valorCuota);
+	}
+
+	function calcularPagoCuotaMensualFinal($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora) {
+		// Calcular la fecha actual
+		$fechaActual = now();
+	
+		// Verificar si la fecha de vencimiento es anterior a la fecha actual
+		if ($fechaVencimiento->lt($fechaActual)) {
+			// Calcular los días de mora
+			$diasMora = $fechaActual->diffInDays($fechaVencimiento);
+			
+			// Calcular el interés de mora
+			$interesMensual = $interesMora / 100;
+			$interesDiario = $interesMensual / Carbon::daysInMonth($fechaVencimiento->year, $fechaVencimiento->month);
+			$interesMoraTotal = $interesDiario * $montoPrestamo * $diasMora;
+	
+			// Sumar el interés de mora al monto del préstamo
+			$montoPrestamo += $interesMoraTotal;
+		} elseif ($fechaVencimiento->gt($fechaActual)) {
+			// Calcular la cuota mensual sin considerar la mora
+			if ($tasaInteresMensual == 0.0) {
+				$valorCuota = $montoPrestamo / $plazo;
+			} else {
+				$tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+				$denominador = 1 - pow(1 + $tasaInteresMensual, -$plazo);    
+				$valorCuota = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+			}
+			return $this->redondearMilSiguiente($valorCuota);
+		}
+	
+		// Redondear y devolver el valor de la cuota
+		return $this->redondearMilSiguiente($montoPrestamo);
+	}
+
+
 
 }

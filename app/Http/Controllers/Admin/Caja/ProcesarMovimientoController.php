@@ -359,33 +359,18 @@ class ProcesarMovimientoController extends Controller
 	{
         $this->validate(request(),['colocacionId' => 'required|numeric','liquidacionId' => 'required|numeric']);
 
-        $colocaciones = DB::table('colocacionliquidacion as cl')
-        ->select('c.colliqnumerocuota', 'lc.colliqvalorcuota', 'c.colliqfechavencimiento', 'Q.colliqfechavencimiento','Q.colliqid')
-        
-                                ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
-                                ->where('c.coloid', $request->colocacionId)
-                                ->where('cl.colliqid', $request->liquidacionId)
-                                ->first();
-
-
-                                $table->date('colliqfechapago')->nullable()->comment('Fecha de pago de la cuota de la colocación');
-                                $table->string('colliqnumerocomprobante', 10)->nullable()->comment('Número de comprobante de pago de la cuota de la colocación');
-                                $table->decimal('colliqvalorpagado', 12, 0)->nullable()->comment('Valor pagado en la cuota de la colocación');
-                                $table->decimal('colliqsaldocapital', 10, 0)->nullable()->comment('Saldo a capital de la colocación');
-                                $table->decimal('colliqvalorcapitalpagado', 10, 0)->nullable()->comment('Valor capital pagado la colocación');
-                                $table->decimal('colliqvalorinterespagado', 10, 0)->nullable()->comment('Valor interés pagado la colocación');
-                                $table->decimal('colliqvalorinteresmora', 10, 0)->nullable()->comment('Valor interés de mora pagado la colocación');
-
         try{
-            $colocacionLiquidacion = [];
+            $colocacionLiquidacion = [];            
+            $colocaciones = DB::table('colocacionliquidacion as cl')
+                            ->select('cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechadesembolso',
+                                 'c.colotasa','c.colonumerocuota','c.colovalordesembolsado',
+                                DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalCuotasPorPagar'),
+                                DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NOT NULL) AS totalCuotasPagadas'))
+                            ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
+                            ->where('c.coloid', $request->colocacionId)
+                            ->where('cl.colliqid', $request->liquidacionId)
+                            ->first();
 
-            $colocacionliquidacion 				           = ColocacionLiquidacion::findOrFail($request->liquidacionId);
-            $colocacionliquidacion->coloid                 = $coloid;
-            $colocacionliquidacion->colliqnumerocuota      = $cuota;
-            $colocacionliquidacion->colliqfechavencimiento = $fechaVencimiento;
-            $colocacionliquidacion->colliqvalorcuota       = $valorCuota;
-            $fechaActual                                   = $fechaVencimiento;
-            $colocacionliquidacion->save();
 
             
             return response()->json(['success' => true, "colocacionLiquidacion" => $colocacionLiquidacion]);
