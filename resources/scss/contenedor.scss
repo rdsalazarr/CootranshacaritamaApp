@@ -227,17 +227,18 @@ body{
   width: 100%;
   color: #666262;
   label {
-      line-height: 18px;
-      display: block;
-      font-weight: 600;
-      color: #6e6e6d;
+    line-height: 18px;
+    display: block;
+    font-weight: 600;
+    color: #6e6e6d;    
   }
   span {
-      line-height: 20px;
-      display: block;
-      font-weight: 300;
-      padding-top: 2px;
-      font-family: serif;
+    line-height: 20px;
+    display: block;
+    font-weight: 300;
+    padding-top: 2px;
+    font-family: serif;
+    
   }
   .textoRojo{
     color: $rojoOscuro;
@@ -249,6 +250,19 @@ body{
     font-weight: 600;
     color: #666262;
   }
+  .labelDeroration{
+    text-decoration: underline;
+    padding-bottom: 3px;
+  }
+}
+
+.columnaPagar{
+  background-color: #dedfe1c9;
+  text-align: center;
+  border-radius: 10px;
+  padding-bottom: 2px;
+  padding-top: 3px;
+  border-bottom: 4px solid #44ac34;
 }
 
 .frmTextoColor {

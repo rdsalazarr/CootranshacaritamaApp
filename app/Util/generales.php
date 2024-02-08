@@ -322,13 +322,15 @@ class generales
         $fechaActual         = Carbon::now();
         $fechaVencimiento    = Carbon::parse($fechaVencimiento);
         $interesMensual      = $montoPrestamo * ($tasaInteresMensual / 100);
+		$interesMensualTotal = 0;
         $valorCambioFechas   = 0;
         $totalInteresMora    = 0;
         $totalValorDescuento = 0;
 
         if($numeroDiasCambioFecha > 0){
             $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
-            $interesMensual   += $this->redonderarCienMasCercano($valorCambioFechas);
+            $valorCambioFechas = $this->redonderarCienMasCercano($valorCambioFechas);
+			$interesMensual    += $valorCambioFechas;
         }
 
         if ($fechaVencimiento->lt($fechaActual)) {//Tiene mora
@@ -338,13 +340,17 @@ class generales
         }else{
             $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
             $valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
-            $totalValorDescuento = $this->redonderarCienMasCercano($valorDescuento);
+            $totalValorDescuento = $this->redonderarCienMasCercano($valorDescuento - $valorCambioFechas);
         }
+		
+		$interesMensualTotal = ($interesMensual  + $totalInteresMora ) - $totalValorDescuento;
 
         $resultado = [
-			'valorIntereses'   => $interesMensual,
-			'valorInteresMora' => $totalInteresMora,
-			'valorDescuento'   => $totalValorDescuento
+			'valorIntereses'      => $interesMensual,
+			'valorInteresMora'    => $totalInteresMora,
+			'interesMensualTotal' => $interesMensualTotal,
+			'valorDescuento'      => $totalValorDescuento,
+			'valorCambioFechas'   => $valorCambioFechas
 		];
 
         return $resultado;

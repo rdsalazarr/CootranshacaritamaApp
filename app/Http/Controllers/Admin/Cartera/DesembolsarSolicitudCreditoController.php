@@ -158,7 +158,7 @@ class DesembolsarSolicitudCreditoController extends Controller
                 $colocacionliquidacion->colliqvalorcuota       = $valorCuota;
                 $fechaVencimiento                              = $generales->obtenerFechaMesSiguiente($fechaVencimiento);
                 $colocacionliquidacion->save();
-                $valorInteres           = $generales->calcularValorInteresMensual($saldoCapital, $tasaInteres);
+                $valorInteres                                  = $generales->calcularValorInteresMensual($saldoCapital, $tasaInteres);
             }
 
             DB::commit();

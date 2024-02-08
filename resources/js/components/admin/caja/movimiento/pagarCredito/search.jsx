@@ -31,6 +31,7 @@ export default function Search(){
 
     const consultarCredito = () =>{
         setLoader(true);
+        setDatosEncontrados(false);
         instance.post('/admin/caja/consultar/credito/asociado', formData).then(res=>{
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');

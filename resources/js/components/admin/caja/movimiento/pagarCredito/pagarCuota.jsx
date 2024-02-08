@@ -8,36 +8,92 @@ import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 
 export default function PagarCuota({data}){
-    const [formData, setFormData] = useState({idResponsabilidad:'', fechaCuota:'', valorAPagar:'', interesMoraMostrar:'', 
-                                            descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:'', totalAPagarMostrar:''});
 
-    const [entidadFinancieras, setEntidadFinancieras] = useState([]);
-    const [loader, setLoader]         = useState(false); 
-    const [habilitado, setHabilitado] = useState(true);
+    const [formData, setFormData] = useState({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',   
+                                            descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
+                                            descuentoAnticipadoMostrar:'', totalAPagarMostrar:'', interesCorrienteTotal: '', interesCorrienteTotalMostrar: '' });
+    const [pagoMensualidad, setPagoMensualidad] = useState([]);
+    const [pagoGeneral, setPagoGeneral] = useState([]);
+    const [habilitado, setHabilitado] = useState(true);    
     const [pagoTotal, setPagoTotal] = useState('N');
+    const [loader, setLoader] = useState(false);
+
+    const formatearNumero = (numero) =>{
+        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
+        return Number(numero).toLocaleString('es-CO', opciones);
+    }
 
     const handleChangeRadio = (event) => {
         setPagoTotal(event.target.value); 
         let newFormData = {...formData};
 
-    }  
+        if(event.target.value === 'S'){
+            newFormData.interesCorriente           = pagoGeneral.valorIntereses;
+            newFormData.interesMora                = pagoGeneral.valorInteresMora;
+            newFormData.descuentoAnticipado        = pagoGeneral.valorDescuento;
+            newFormData.totalAPagar                = pagoGeneral.totalAPagar;
+            newFormData.interesCorrienteTotal      = pagoGeneral.interesMensualTotal; 
+            newFormData.interesCorrienteMostrar    = formatearNumero(pagoGeneral.valorIntereses);
+            newFormData.interesMoraMostrar         = formatearNumero(pagoGeneral.valorInteresMora);
+            newFormData.descuentoAnticipadoMostrar = formatearNumero(pagoGeneral.valorDescuento);
+            newFormData.totalAPagarMostrar         = formatearNumero(pagoGeneral.totalAPagar);
+            newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoGeneral.interesMensualTotal);
+        }else{
+            newFormData.interesCorriente             = pagoMensualidad.valorIntereses;
+            newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
+            newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
+            newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;  
+            newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
+            newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
+            newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
+            newFormData.descuentoAnticipadoMostrar   = formatearNumero(pagoMensualidad.valorDescuento);
+            newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
+            newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
+        }
+        setFormData(newFormData);
+    }
 
     const handleSubmit = () =>{
         setLoader(true);
-        instance.post('/admin/caja/registrar/pago/cuota', formData).then(res=>{
+        let newFormData       = {...formData}
+        newFormData.pagoTotal = pagoTotal;
+        instance.post('/admin/caja/registrar/pago/cuota', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setHabilitado(false) : null; 
-            //(res.success) ? setFormData({entidadFinaciera:'', monto: '', descripcion: ''}) : null;
+            /*(res.success) ? setFormData({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',   
+                                        descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
+                                        descuentoAnticipadoMostrar:'', totalAPagarMostrar:''}) : null;*/
             setLoader(false);
         })
     }
 
     const inicio = () =>{
         setLoader(true);
-        instance.post('/admin/caja/calcular/valor/cuota', {colocacionId: data.coloid}).then(res=>{
-
-            //setEntidadFinancieras(res.entidadFinancieras);
+        let newFormData = {...formData}
+        instance.post('/admin/caja/calcular/valor/cuota', {colocacionId: data.coloid, liquidacionId: data.colliqid}).then(res=>{
+            if(!res.success){
+                showSimpleSnackbar(res.message, 'error');
+            }else{       
+                let pagoMensualidad                      = res.pagoMensualidad[0];
+                newFormData.fechaCuota                   = pagoMensualidad.fechaCuota;
+                newFormData.valorCuota                   = pagoMensualidad.valorCuota;
+                newFormData.interesCorriente             = pagoMensualidad.valorIntereses;
+                newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
+                newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
+                newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
+                newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;                
+                newFormData.valorCuotaMostrar            = formatearNumero(pagoMensualidad.valorCuota);
+                newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
+                newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
+                newFormData.descuentoAnticipadoMostrar   = formatearNumero(pagoMensualidad.valorDescuento);
+                newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
+                newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
+                setPagoMensualidad(res.pagoMensualidad[0]);
+                setPagoGeneral(res.pagoTotal[0]);
+                setFormData(newFormData);
+                setPagoTotal('N');
+            }        
             setLoader(false);
         })
     }
@@ -75,7 +131,7 @@ export default function PagarCuota({data}){
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='frmTexto'>
-                            <label>Valor solicitado</label>
+                            <label>Valor desembolso</label>
                             <span>{data.valorDesembolsado}</span>
                         </Box>
                     </Grid>
@@ -108,31 +164,49 @@ export default function PagarCuota({data}){
                         </Box>
                     </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Grid item xl={3} md={3} sm={6} xs={12}> 
                         <Box className='frmTexto'>
-                            <label>Valor a pagar</label>
-                            <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorAPagar}</span>
+                            <label>Valor cuota</label>
+                            <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorCuotaMostrar}</span>
                         </Box>
                     </Grid>
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <Box className='frmTexto'>
-                            <label>Interés mora </label>
-                            <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
+                            <label>Interés cuota</label>
+                            <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteMostrar}</span>
+                        </Box>
+                    </Grid>                 
+
+                    {(formData.interesMoraMostrar !== '0') ?
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Interés mora </label>
+                                <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
+                            </Box>
+                        </Grid>
+                    : null }
+
+                    {(formData.descuentoAnticipadoMostrar !== '0') ?
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                <label>Descuento anticipado</label>
+                                <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipadoMostrar}</span>
+                            </Box>
+                        </Grid>
+                    : null }
+
+                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Interés a pagar</label>
+                            <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteTotalMostrar}</span>
                         </Box>
                     </Grid>
 
                     <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Descuento anticipado</label>
-                            <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipado}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Total a pagar</label>
-                                <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
+                        <Box className='frmTexto columnaPagar'>
+                            <label className='labelDeroration'>Total a pagar</label>
+                            <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
                         </Box>
                     </Grid>
 

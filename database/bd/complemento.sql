@@ -227,3 +227,4 @@ ALTER TABLE `tiquete` ADD `tiquvalorestampilla` DECIMAL(10,0) NOT NULL AFTER `ti
 
 ALTER TABLE `colocacion` CHANGE `colofechahoraregistro` `colofechahoradesembolso` DATETIME NOT NULL COMMENT 'Fecha y hora actual en el que se registra la colocacion', CHANGE `colofechadesembolso` `colofechacolocacion` DATE NOT NULL COMMENT 'Fecha de desembolso del crédito';
 ALTER TABLE `lineacredito` ADD `lincreinteresmora` DECIMAL(6,2) NULL AFTER `lincretasanominal`;
+ALTER TABLE `colocacionliquidacion` ADD `colliqvalordescuentoanticipado` DECIMAL(10,0) NULL AFTER `colliqnumerocomprobante`;

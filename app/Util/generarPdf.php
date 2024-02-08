@@ -1656,9 +1656,9 @@ EOD;
 		PDF::SetFont('helvetica','B',11);//texto del contenido de la tabla	
 		PDF::Cell(12,5,'Nº',1,0,'C',true);
 		PDF::Cell(32,5,'Fecha Cuota',1,0,'R',true);
-		PDF::Cell(32,5,'Abono Capital',1,0,'R',true);
-        PDF::Cell(32,5,'Abono Intereses',1,0,'R',true);
 		PDF::Cell(32,5,'Valor Cuota',1,0,'R',true);
+		PDF::Cell(32,5,'Valor Intereses',1,0,'R',true);
+		PDF::Cell(32,5,'Abono Capital',1,0,'R',true);
         PDF::Cell(32,5,'Saldo Capital',1,0,'R',true);
 
 		PDF::Ln();
@@ -1685,9 +1685,9 @@ EOD;
 
 			PDF::Cell(12, 5, $numeroCuota, 1, 0, 'C', false);
 			PDF::Cell(32, 5, $fechaVencimiento, 1, 0, 'R');
+			PDF::Cell(32, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
+			PDF::Cell(32, 5, '$' . number_format($valorInteres, 0, '.', ','), 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($abonoCapital, 0, '.', ','), 1, 0, 'R');
-            PDF::Cell(32, 5, '$' . number_format($valorInteres, 0, '.', ','), 1, 0, 'R');
-            PDF::Cell(32, 5, '$' . number_format($valorCuota, 0, '.', ','), 1, 0, 'R');
             PDF::Cell(32, 5, '$' . number_format($saldoCapital, 0, '.', ','), 1, 0, 'R');
             PDF::Ln();
 			$valorInteres           = $generales->calcularValorInteresMensual($saldoCapital, $tasaNominal);

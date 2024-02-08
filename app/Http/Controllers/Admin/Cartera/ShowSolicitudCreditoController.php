@@ -206,7 +206,7 @@ class ShowSolicitudCreditoController extends Controller
 
     function generarPagare($request){
 
-        $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre',
+        $colocacion = DB::table('colocacion as c')->select('c.coloid', 'c.colovalordesembolsado','c.colotasa', 'c.colonumerocuota','lc.lincrenombre','lc.lincreinteresmora',
                                 DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),'c.colonumerodesembolso','c.coloanio', DB::raw('DATE(c.colofechahoradesembolso) as fechaRegistro'),
                                 'c.colofechacolocacion', 'sc.solcredescripcion','sc.solcrefechasolicitud', 'ti.tipidesigla','p.persdocumento','p.tipperid',
                                 'v.vehiplaca','v.vehinumerointerno',DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),
@@ -248,7 +248,7 @@ class ShowSolicitudCreditoController extends Controller
         $documento              = $colocacion->persdocumento;
         $tipoPersona            = $colocacion->tipperid;
         $documentoAsociado      = number_format($documento, 0, ',', '.');
-        $interesMoratorio       = '0';
+        $interesMoratorio       = $colocacion->lincreinteresmora;
         $valorEnLetras          = trim($convertirNumeroALetras->valorEnLetras($valorTotalCredito));
         $fechaLargaPrestamo     = $generales->formatearFecha($colocacion->fechaRegistro);  
         $fechaLargaDesembolso   = $generales->formatearFechaLargaPagare($colocacion->fechaRegistro);
