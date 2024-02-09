@@ -228,3 +228,8 @@ ALTER TABLE `tiquete` ADD `tiquvalorestampilla` DECIMAL(10,0) NOT NULL AFTER `ti
 ALTER TABLE `colocacion` CHANGE `colofechahoraregistro` `colofechahoradesembolso` DATETIME NOT NULL COMMENT 'Fecha y hora actual en el que se registra la colocacion', CHANGE `colofechadesembolso` `colofechacolocacion` DATE NOT NULL COMMENT 'Fecha de desembolso del crédito';
 ALTER TABLE `lineacredito` ADD `lincreinteresmora` DECIMAL(6,2) NULL AFTER `lincretasanominal`;
 ALTER TABLE `colocacionliquidacion` ADD `colliqvalordescuentoanticipado` DECIMAL(10,0) NULL AFTER `colliqnumerocomprobante`;
+
+UPDATE `migrations` SET `migration` = ' 2023_10_18_053317_create_movimiento_caja' WHERE `migrations`.`id` = 125;
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053317_create_movimiento_caja', '2');
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053318_create_comprobante_contable', '2'); 
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053319_create_comprobante_contable_detalle', '2');

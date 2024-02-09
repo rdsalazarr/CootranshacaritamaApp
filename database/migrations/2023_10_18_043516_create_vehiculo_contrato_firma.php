@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('vehconid')->unsigned()->comment('Identificador de la tabla vehiculo contrato');
             $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->string('vecofitoken', 20)->nullable()->comment('Token con el cual es firmado el contrato');
-            $table->datetime('vecofifechahorafirmado')->nullable()->comment('Fecha y hora de la cual se firma el contrato'); 
+            $table->datetime('vecofifechahorafirmado')->nullable()->comment('Fecha y hora de la cual se firma el contrato');
             $table->datetime('vecofifechahoranotificacion')->nullable()->comment('Fecha y hora de la cual se envio la notifiación del token');
             $table->datetime('vecofifechahoramaxvalidez')->nullable()->comment('Fecha y hora maxima de validez del token'); 
             $table->string('vecofimensajecorreo', 500)->nullable()->comment('Contendio de la información enviada al correo');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('vecofifirmado')->default(false)->comment('Determina si el contrato esta firmado');
             $table->timestamps();
             $table->foreign('vehconid')->references('vehconid')->on('vehiculocontrato')->onUpdate('cascade')->index('fk_vehconvecofi'); 
-            $table->foreign('persidGerente')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persvecofi');
+            $table->foreign('persid')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persvecofi');
         });
     }
 

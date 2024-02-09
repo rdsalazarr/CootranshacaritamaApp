@@ -1255,7 +1255,8 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (23, 4, 'Bandeja de radicado', 'Gestionar bandeja de radicado', 'admin/radicacion/documento/bandeja', 'content_paste_go_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (24, 5, 'Gestionar', 'Gestionar archivo histórico', 'admin/archivo/historico/gestionar', 'ac_unit_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (25, 5, 'Consultar', 'Gestionar consulta del archivo histórico', 'admin/archivo/historico/consultar', 'find_in_page_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(26, 6, 'Procesar', 'Procesar asociados', 'admin/gestionar/asociados', 'person_add_alt1_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(26, 6, 'Gestionar', 'Gestionar asociados', 'admin/gestionar/asociados', 'person_add_alt1_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
 (27, 6, 'Desvincular', 'Desvincular asociado', 'admin/gestionar/desvincularAsociado', 'person_remove_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (28, 6, 'Sancionar', 'Getionar sanciones asociado', 'admin/gestionar/sancionarAsociado', 'person_add_disabled_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (29, 6, 'Inactivos', 'Gestionar asociados inactivos', 'admin/gestionar/asociadosInactivos', 'person_off_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),

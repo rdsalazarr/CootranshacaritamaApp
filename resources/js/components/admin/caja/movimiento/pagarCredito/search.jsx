@@ -22,7 +22,12 @@ export default function Search(){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const modales     = [<PagarCuota data={modal.data} /> ];
+    const limpiarForm = () =>{
+        setFormData({tipoIdentificacion:'1', documento:''});
+       // setDatosEncontrados(false);
+    }
+
+    const modales     = [<PagarCuota data={modal.data} limpiarForm={limpiarForm} /> ];
     const tituloModal = ['Pagar cuota de crédito'];
 
     const edit = (data, tipo) =>{

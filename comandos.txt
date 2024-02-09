@@ -153,6 +153,9 @@ php artisan make:migration create_entidad_financiera
 php artisan make:migration create_consignacion_bancaria
 php artisan make:migration create_proceso_automatico
 
+php artisan make:migration create_tipo_solicitud
+php artisan make:migration create_tipo_medio_solicitud
+php artisan make:migration create_solicitud
 
 
 php artisan make:model Festivo
@@ -243,7 +246,7 @@ php artisan make:model Caja\ComprobanteContableDetalle
 php artisan make:model Caja\ComprobanteContable
 php artisan make:model Caja\MovimientoCaja
 
-
+php artisan make:model Radicacion\Solicitud
 php artisan make:model Asociado
 php artisan make:model Asociado\AsociadoVehiculo
 php artisan make:model Asociado\AsociadoSancion
@@ -268,6 +271,9 @@ php artisan make:model Despacho\Ruta
 php artisan make:model Despacho\RutaNodo
 php artisan make:model Despacho\TarifaTiquete
 php artisan make:model Despacho\PlanillaRuta
+php artisan make:model Vehiculos\VehiculoContratoFirma
+
+vehiculocontratofirma
 
 php artisan make:model Despacho\Encomienda
 php artisan make:model Despacho\PersonaServicio
@@ -326,6 +332,9 @@ php artisan make:seeder ConfiguracionEncomiendaSeeder
 php artisan make:seeder CajaSeeder
 php artisan make:seeder CuentaContableSeeder
 php artisan make:seeder ProcesoAutomaticoSeeder
+
+php artisan make:seeder TipoSolicitudSeeder
+php artisan make:seeder TipoMedioSolicitudSeeder
 
 
 php artisan make:request ActaRequests

@@ -1,20 +1,25 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
+
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
-import {Button, Grid, Stack, Box, MenuItem, Card} from '@mui/material';
+import { ValidatorForm} from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../../layout/snackBar';
+import { ModalDefaultAuto } from '../../../../layout/modal';
+import {Button, Grid, Stack, Box} from '@mui/material';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
+import VisualizarPdf from '../visualizarPdf';
 
-export default function PagarCuota({data}){
+export default function PagarCuota({data, limpiarForm}){
 
     const [formData, setFormData] = useState({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',   
                                             descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
                                             descuentoAnticipadoMostrar:'', totalAPagarMostrar:'', interesCorrienteTotal: '', interesCorrienteTotalMostrar: '' });
     const [pagoMensualidad, setPagoMensualidad] = useState([]);
+    const [abrirModal, setAbrirModal] = useState(false);
     const [pagoGeneral, setPagoGeneral] = useState([]);
-    const [habilitado, setHabilitado] = useState(true);    
+    const [habilitado, setHabilitado] = useState(true);
+    const [dataFactura, setDataFactura] = useState('');  
     const [pagoTotal, setPagoTotal] = useState('N');
     const [loader, setLoader] = useState(false);
 
@@ -64,6 +69,9 @@ export default function PagarCuota({data}){
             /*(res.success) ? setFormData({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',   
                                         descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
                                         descuentoAnticipadoMostrar:'', totalAPagarMostrar:''}) : null;*/
+            (res.success) ? setDataFactura(res.dataFactura) : null;
+            (res.success) ? setAbrirModal(true) : null;
+            (res.success) ? limpiarForm() : null;            
             setLoader(false);
         })
     }
@@ -74,7 +82,7 @@ export default function PagarCuota({data}){
         instance.post('/admin/caja/calcular/valor/cuota', {colocacionId: data.coloid, liquidacionId: data.colliqid}).then(res=>{
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');
-            }else{       
+            }else{
                 let pagoMensualidad                      = res.pagoMensualidad[0];
                 newFormData.fechaCuota                   = pagoMensualidad.fechaCuota;
                 newFormData.valorCuota                   = pagoMensualidad.valorCuota;
@@ -82,7 +90,7 @@ export default function PagarCuota({data}){
                 newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
                 newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
                 newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
-                newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;                
+                newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
                 newFormData.valorCuotaMostrar            = formatearNumero(pagoMensualidad.valorCuota);
                 newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
                 newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
@@ -93,7 +101,7 @@ export default function PagarCuota({data}){
                 setPagoGeneral(res.pagoTotal[0]);
                 setFormData(newFormData);
                 setPagoTotal('N');
-            }        
+            }
             setLoader(false);
         })
     }
@@ -176,7 +184,7 @@ export default function PagarCuota({data}){
                             <label>Interés cuota</label>
                             <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteMostrar}</span>
                         </Box>
-                    </Grid>                 
+                    </Grid>
 
                     {(formData.interesMoraMostrar !== '0') ?
                         <Grid item xl={3} md={3} sm={6} xs={12}>
@@ -220,6 +228,15 @@ export default function PagarCuota({data}){
                     </Stack>
                 </Grid>
             </ValidatorForm>
+
+            <ModalDefaultAuto
+                title   = {'Visualizar factura en PDF del pago de crédito'} 
+                content = {<VisualizarPdf dataFactura={dataFactura} />} 
+                close   = {() =>{setAbrirModal(false);}} 
+                tam     = 'smallFlot'
+                abrir   = {abrirModal}
+            />
+
         </Fragment>
     )
 }

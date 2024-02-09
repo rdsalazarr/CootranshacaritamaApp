@@ -38,7 +38,7 @@ return new class extends Migration
             $table->foreign('tipmedid')->references('tipmedid')->on('tipomedio')->onUpdate('cascade')->index('fk_tipmedradoen');
             $table->foreign('tierdeid')->references('tierdeid')->on('tipoestadoraddocentrante')->onUpdate('cascade')->index('fk_tierderadoen');
             $table->foreign('depaid')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_deparadoen');
-            $table->foreign('muniid')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_muniradoen');           
+            $table->foreign('muniid')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_muniradoen');
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_radoen');  
         });
     }
