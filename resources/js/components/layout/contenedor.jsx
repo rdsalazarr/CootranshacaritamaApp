@@ -76,6 +76,8 @@ import Consignacion from "../admin/caja/consignacion/list";
 import PagarCredito from "../admin/caja/pagarCredito/search";
 import CerrarCaja from "../admin/caja/cerrar/closed";
 
+import ProcesosAutomaticos from "../admin/procesos/list";
+
 const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
@@ -168,7 +170,7 @@ const componenteMenu = [
     {   nombre: 'Procesos automáticos', 
         icono : 'account_tree_icon',
         itemMenu: [
-            {ruta : 'admin/caja/procesar',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <MovimientoCaja />},  
+            {ruta : 'admin/procesos/automaticos',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <ProcesosAutomaticos />},  
         
         ]
     },
@@ -240,7 +242,7 @@ const menuComponente = [
     {id:51,componente : <CerrarCaja />},
 
     {id:52,componente : <EnConstruccion />},
-    {id:53,componente : <EnConstruccion />},
+    {id:53,componente : <ProcesosAutomaticos />},
     {id:54,componente : <EnConstruccion />},
     {id:55,componente : <EnConstruccion />},
     {id:56,componente : <EnConstruccion />},

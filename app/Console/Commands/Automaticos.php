@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Commands\funcionesProcesoAutomaticos;
 use App\Models\Conductor\ConductorCambioEstado;
 use App\Models\Vehiculos\VehiculoCambioEstado;
+use App\Models\Procesos\ProcesosAutomaticos;
 use App\Models\Conductor\Conductor;
 use App\Models\Vehiculos\Vehiculo;
 use Illuminate\Console\Command;
@@ -35,20 +37,22 @@ class Automaticos
         echo"Notificación de proceso automaticos realizado en la fecha ".$fechaHoraActual.", y enviado al correo ".$email."\r\n";
     }
  
-    public static function suspenderConductor()
+    public static function suspenderConductor($ejecucionManual = false)
     {    
-        $notificar       = new notificar();
-        $fechaHoraActual = Carbon::now();
-        $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $fechaSuspencion = Carbon::now()->addDays(1)->toDateString();
-        $estado          = 'S';
-        $mensaje         = '';
-        $mensajeCorreo   = '';
+        $funcionesGenerales = new funcionesGenerales();
+        $notificar          = new notificar();
+        $fechaHoraActual    = Carbon::now();
+        $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
+        $fechaActual        = ($ejecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoLicencias") : $fechaHoraActual->format('Y-m-d');
+        $estado             = 'S';
+        $mensaje            = '';
+        $mensajeCorreo      = '';
+        $success           = false;
         DB::beginTransaction();
 		try {
 
-            $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionConductor')->first();
-            $empresa            = $this->consultarInfoEmpresa();
+            $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionConductor')->first();   
+            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -103,15 +107,24 @@ class Automaticos
                 $mensajeCorreo .= $mensaje.'<br>';
             }
 
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(1);
+            $procesoAutomatico->proautfechaejecucion = $fechaActual;
+            $procesoAutomatico->save();
+
             DB::commit();
+            $success  = true;
         } catch (Exception $error){
             DB::rollback();
             $mensaje       = "Ocurrio un error al suspender el conductor por falta de licencia en la fecha ".$fechaActual."\r\n";
             $mensajeCorreo = $mensaje.'<br>';
         }
-
-        echo $mensaje;
-        return $mensajeCorreo.'<br>';
+        
+        if($ejecucionManual){
+            return ['success' => $success, 'message' => $mensaje];
+        }else{
+            echo $mensaje;
+            return $mensajeCorreo.'<br>';
+        }
     }
 
     public static function suspenderVehiculosSoat()
@@ -525,7 +538,7 @@ class Automaticos
         return $mensajeCorreo.'<br>';
     }
 
-    public static function consultarInfoEmpresa()
+    function consultarInfoEmpresa()
     {
         return DB::table('empresa as e')->select('e.emprcorreo',
                         DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))

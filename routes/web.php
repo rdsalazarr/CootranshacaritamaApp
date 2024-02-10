@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\Persona\PersonaController;
 use App\Http\Controllers\Admin\Persona\DatosPersonaController;
 use App\Http\Controllers\Admin\Festivo\FestivoController;
 use App\Http\Controllers\Admin\Dependencia\DependenciaController;
+use App\Http\Controllers\Admin\Procesos\ProcesosAutomaticosController;
 use App\Http\Controllers\Util\DownloadFileController;
 use App\Http\Controllers\Util\EliminarAchivosController;
 use App\Http\Controllers\Admin\Exportar\RegistrosController;
@@ -264,6 +265,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/asociado/sancionar/salve', [SancionarController::class, 'salve']);
 
         Route::get('/asociado/inactivos', [AsociadoInactivosController::class, 'index'])->middleware('security:admin/gestionar/asociadosInactivos');
+
+        Route::get('/procesos/automaticos/dia', [ProcesosAutomaticosController::class, 'index'])->middleware('security:admin/procesos/automaticos');
+        Route::post('/procesos/automaticos/ejecutar', [ProcesosAutomaticosController::class, 'ejecutar']);
 
         Route::prefix('/producion/documental')->group(function(){
 
