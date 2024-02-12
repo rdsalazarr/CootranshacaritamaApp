@@ -272,6 +272,7 @@ php artisan make:model Despacho\RutaNodo
 php artisan make:model Despacho\TarifaTiquete
 php artisan make:model Despacho\PlanillaRuta
 php artisan make:model Vehiculos\VehiculoContratoFirma
+php artisan make:model Procesos\Automaticos
 
 vehiculocontratofirma
 

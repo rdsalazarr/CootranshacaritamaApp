@@ -64,17 +64,17 @@ class ProcesoAutomaticoSeeder extends Seeder
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '6',
-            'proautnombre'         => 'VencimientoCuotasCreditos',
+            'proautnombre'         => 'LevantarSancionVehiculo',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
-        ]);
+        ]); 
 
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '7',
-            'proautnombre'         => 'SuspenderConductor',
+            'proautnombre'         => 'NotificarVencimientoLicencia',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
@@ -83,17 +83,16 @@ class ProcesoAutomaticoSeeder extends Seeder
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '8',
-            'proautnombre'         => 'SuspenderVehiculosSoat',
+            'proautnombre'         => 'NotificarVencimientoVehiculosSoat',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
         ]);
 
-
         DB::table('procesoautomatico')->insert([
             'proautid'             => '9',
-            'proautnombre'         => 'SuspenderVehiculosCRT',
+            'proautnombre'         => 'NotificarVencimientoVehiculosCRT',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
@@ -102,7 +101,7 @@ class ProcesoAutomaticoSeeder extends Seeder
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '10',
-            'proautnombre'         => 'SuspenderVehiculosPolizas',
+            'proautnombre'         => 'NotificarVencimientoVehiculosPolizas',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
@@ -111,7 +110,7 @@ class ProcesoAutomaticoSeeder extends Seeder
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '11',
-            'proautnombre'         => 'SuspenderVehiculosTarjetaOperacion',
+            'proautnombre'         => 'NotificarVencimientoVehiculosTarjetaOperacion',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
@@ -120,11 +119,13 @@ class ProcesoAutomaticoSeeder extends Seeder
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '12',
-            'proautnombre'         => 'LevantarSancionVehiculo',
+            'proautnombre'         => 'VencimientoCuotasCreditos',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
         ]);
+
+      
     }
 }

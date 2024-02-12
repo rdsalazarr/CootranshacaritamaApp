@@ -233,3 +233,9 @@ UPDATE `migrations` SET `migration` = ' 2023_10_18_053317_create_movimiento_caja
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053317_create_movimiento_caja', '2');
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053318_create_comprobante_contable', '2'); 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053319_create_comprobante_contable_detalle', '2');
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(53, 11, 'Verificar', 'Verificar proceso automáticos del dia', 'admin/procesos/automaticos', 'spellcheck_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(53, 1, 53);
