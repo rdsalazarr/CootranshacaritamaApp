@@ -235,7 +235,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (NULL, '2023_10_18_053319_create_comprobante_contable_detalle', '2');
 
 INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
-(53, 11, 'Verificar', 'Verificar proceso automáticos del dia', 'admin/procesos/automaticos', 'spellcheck_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(53, 11, 'Verificar', 'Verificar proceso automáticos del dia', 'admin/procesosAutomaticos', 'spellcheck_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (53, 1, 53);
+
+ALTER TABLE `procesoautomatico` ADD `proautclasephp` VARCHAR(50) NULL AFTER `proauttipo`;
+ALTER TABLE `procesoautomatico` ADD `proautmetodo` VARCHAR(50) NULL AFTER `proautfechaejecucion`;

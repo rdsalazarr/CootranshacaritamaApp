@@ -16,6 +16,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
+import StartIcon from '@mui/icons-material/Start';
 import SaveIcon from '@mui/icons-material/Save';
 import showSimpleSnackbar from './snackBar';
 import RelojDigital from './relojDigital';
@@ -1040,6 +1041,80 @@ export function EntregarEncomienda({data, cerrarModal}){
                     startIcon={<SaveIcon />}> Continuar
                 </Button>
             </Grid>
+
+        </Grid>
+    )   
+}
+
+export function EjecutarProcesoAutomatico({data, cerrarModal}){
+    const [fechaEjecucion, setFechaEjecucion] = useState(data.fechaActual);   
+    const [habilitado, setHabilitado] = useState(true);
+    const [loader, setLoader] = useState(false);
+
+    const continuar = () =>{
+        setLoader(true);
+        instance.post('/admin/procesos/automaticos/ejecutar', {codigo: data.proautid}).then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? setHabilitado(false) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }    
+
+    return (
+        <Grid container spacing={2}>
+            <Box style={{width: '20%', margin: 'auto'}}>
+                <Grid item xl={12} md={12} sm={12} xs={12}>
+                    <Box className='animate__animated animate__rotateIn'>
+                        <Avatar style={{marginTop: '0.8em', width:'90px', height:'90px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={enviarRadicado} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                    </Box>
+                </Grid>
+            </Box>
+
+            {(data.esFechaActual === 'NO') ? 
+                <Fragment>
+                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>
+                            Antes de proceder a ejecutar el proceso automático para la fecha {fechaEjecucion}, asegúrese de haber revisado y corregido los errores por el cual no se ejecutó el proceso.
+                        </p>
+
+                        <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.5em', textAlign: 'center'}}>
+                            ¿Desea continuar con la ejecución de este proceso?
+                        </p>
+                    </Grid>
+
+                    <Grid item xl={6} md={6} sm={6} xs={6}>
+                        <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                            startIcon={<ClearIcon />}> Cancelar
+                        </Button>
+                    </Grid> 
+
+                    <Grid item xl={6} md={6} sm={6} xs={6}>
+                        <Button onClick={continuar} className='modalBtn' disabled={(habilitado) ? false : true}
+                            startIcon={<StartIcon />}> Continuar
+                        </Button>
+                    </Grid>
+                </Fragment>
+            : 
+                <Fragment>
+                     <Grid item xl={12} md={12} sm={12} xs={12}>
+                        <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'center'}}>
+                            Ya hay un registro existente para este proceso con la fecha {fechaEjecucion}.
+                        </p>
+                    </Grid>
+
+                    <Grid item xl={6} md={6} sm={6} xs={6}>
+                        <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                            startIcon={<ClearIcon />}> Cancelar
+                        </Button>
+                    </Grid> 
+
+                </Fragment>
+                }
 
         </Grid>
     )

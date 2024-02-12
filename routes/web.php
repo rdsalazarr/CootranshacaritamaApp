@@ -266,7 +266,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/asociado/inactivos', [AsociadoInactivosController::class, 'index'])->middleware('security:admin/gestionar/asociadosInactivos');
 
-        Route::get('/procesos/automaticos/dia', [ProcesosAutomaticosController::class, 'index'])->middleware('security:admin/procesos/automaticos');
+        Route::post('/procesos/automaticos', [ProcesosAutomaticosController::class, 'index'])->middleware('security:admin/procesosAutomaticos');
         Route::post('/procesos/automaticos/ejecutar', [ProcesosAutomaticosController::class, 'ejecutar']);
 
         Route::prefix('/producion/documental')->group(function(){

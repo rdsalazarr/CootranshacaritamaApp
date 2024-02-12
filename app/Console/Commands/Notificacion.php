@@ -69,7 +69,7 @@ class Notificacion
                 $mensajeCorreo    .= $mensaje.'<br>';
             }
 
-            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(6);
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(7);
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 

@@ -170,7 +170,7 @@ const componenteMenu = [
     {   nombre: 'Procesos automáticos', 
         icono : 'account_tree_icon',
         itemMenu: [
-            {ruta : 'admin/procesos/automaticos',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <ProcesosAutomaticos />},  
+            {ruta : 'admin/procesosAutomaticos',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <ProcesosAutomaticos />},  
         
         ]
     },

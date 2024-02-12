@@ -15,8 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\NotificarVencimiento',
-        'App\Console\Commands\ProcesosAutomaticos',
+        'App\Console\Commands\ProcesoDia',
+        'App\Console\Commands\ProcesoNoche',
     ];
 
     /**
@@ -26,8 +26,8 @@ class Kernel extends ConsoleKernel
     {
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $schedule->command('notificar:vencimiento')->dailyAt('06:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');
-        $schedule->command('procesos:automaticos')->dailyAt('06:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');
+        $schedule->command('procesos:dia')->dailyAt('06:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');
+        $schedule->command('procesos:noche')->dailyAt('20:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');
     }
 
     /**

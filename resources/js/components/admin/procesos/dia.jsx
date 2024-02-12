@@ -1,11 +1,10 @@
 import React, {useState, useEffect} from 'react';
+import {EjecutarProcesoAutomatico} from '../../layout/modalFijas';
 import TablaGeneral from '../../layout/tablaGeneral';
 import { ModalDefaultAuto } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
-import Eliminar from '../../layout/modalFijas';
 import instance from '../../layout/instance';
 import { Box} from '@mui/material';
-import Noche from "./noche";
 
 export default function List(){
 
@@ -13,19 +12,21 @@ export default function List(){
     const [data, setData] = useState([]);
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
-    const modales = [
-                        <Noche tipo={'I'}  />,
-                    ];
+    const cerrarModal = () =>{
+        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    }
 
-    const tituloModal = ['Nueva agencia'];
+    const modales     = [ <EjecutarProcesoAutomatico data={modal.data} cerrarModal={cerrarModal}/> ];
+    const tituloModal = ['Ejecutar proceso día'];
 
-    const edit = (data, tipo) =>{      
+
+    const edit = (data, tipo) =>{
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'smallFlot' });
     }
 
     const inicio = () =>{
         setLoader(true);
-        instance.get('/admin/procesos/automaticos/dia').then(res=>{
+        instance.post('/admin/procesos/automaticos', {tipo:'D'}).then(res=>{
             setData(res.data);
             setLoader(false);
         })
@@ -45,7 +46,7 @@ export default function List(){
                     titulo={['Nombre proceso','Fecha de ejecución','Tipo de proceso', 'Ejecutar']}
                     ver={["proautnombre","proautfechaejecucion","tipoProceso",]}
                     accion={[
-                        {tipo: 'B', icono : 'add',    color: 'red',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'done_all_icon',    color: 'red',  funcion : (data)=>{edit(data,0)} },
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />

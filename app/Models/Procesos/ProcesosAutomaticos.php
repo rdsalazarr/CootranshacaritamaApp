@@ -11,5 +11,5 @@ class ProcesosAutomaticos extends Model
 
     protected $table      = 'procesoautomatico';
     protected $primaryKey = 'proautid';
-    protected $fillable   = ['proautnombre','proautfechaejecucion','proauttipo'];
+    protected $fillable   = ['proautnombre','proautclasephp','proautmetodo','proautfechaejecucion','proauttipo'];
 }
