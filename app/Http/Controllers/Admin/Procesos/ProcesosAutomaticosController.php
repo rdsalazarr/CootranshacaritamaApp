@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Procesos;
 
+use App\Console\Commands\Notificacion;
 use App\Http\Controllers\Controller;
 use App\Console\Commands\Noche;
 use App\Console\Commands\Dia;
@@ -18,7 +19,7 @@ class ProcesosAutomaticosController extends Controller
             $data = DB::table('procesoautomatico')
                                 ->select('proautid', 'proautnombre', 'proautfechaejecucion',
                                     DB::raw("if(proauttipo = 'D', 'Diurno', 'Nocturno') as tipoProceso"),
-                                    DB::raw("IF(proautfechaejecucion = CURDATE(), 'SI', 'NO') as esFechaActual"),
+                                    DB::raw("IF(proautfechaejecucion >= CURDATE(), 'SI', 'NO') as esFechaActual"),
                                     DB::raw("CURDATE() as fechaActual"))
                                 ->where('proauttipo', $request->tipo)
                                 ->orderBy('proautid')
@@ -35,18 +36,37 @@ class ProcesosAutomaticosController extends Controller
         $this->validate(request(),['codigo' => 'required|numeric']);
 
         try {
-            $procesoautomatico = DB::table('procesoautomatico')->select('proautmetodo','proautclasephp')->where('proautid', $request->codigo)->first();
+            $clases = [
+                'Dia'          => new Dia(),
+                'Noche'        => new Noche(),
+                'Notificacion' => new Notificacion(),
+            ];
+
+            $procesoautomatico = DB::table('procesoautomatico')
+                                        ->select('proautmetodo','proautclasephp',
+                                        DB::raw("IF(proautfechaejecucion > CURDATE(), 'SI', 'NO') as esFechaActualMayor"))
+                                        ->where('proautid', $request->codigo)->first();
             if ($procesoautomatico) {
-                $metodoPhp         = $procesoautomatico->proautmetodo;
-                $clasePhp          = $procesoautomatico->proautclasephp;
-                //dd($metodoPhp,  $clasePhp);
-                //$datosRetornados   = Dia::suspenderConductor(true);
-                $datosRetornados   = $metodoPhp::$clasePhp(true);//Tener en cuenta que el metodo y el tipo de proceso esta dinamico
-                $success           = $datosRetornados['success'];
-                $message           = $datosRetornados['message'];
+                $fechaActualMayor = $procesoautomatico->esFechaActualMayor;
+                $nombreClase      = $procesoautomatico->proautclasephp;
+                $nombreMetodo     = $procesoautomatico->proautmetodo;
+
+                if($fechaActualMayor === 'SI'){
+                    return response()->json(['success' => false, 'message' => 'No se puede ejecutar un proceso para una fecha posterior a la actual']);
+                }
+
+                if (array_key_exists($nombreClase, $clases)) {
+                    $instanciaClase  = $clases[$nombreClase];
+                    $datosRetornados = $instanciaClase::$nombreMetodo(true);//Tener en cuenta que el metodo y el tipo de proceso esta dinamico
+                    $success         = $datosRetornados['success'];
+                    $message         = $datosRetornados['message'];
+                } else {
+                    $success = false;
+                    $message = "La clase $nombreClase no fue encontrada";
+                }
             }else{
                 $success = false;
-                $message = "El proceso automático no fue encontrado.";
+                $message = "El proceso automático no fue encontrado";
             }
         	return response()->json(['success' => $success, 'message' => $message]);
 		} catch (Exception $error){

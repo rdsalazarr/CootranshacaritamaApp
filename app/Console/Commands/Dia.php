@@ -111,8 +111,8 @@ class Dia
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
-            DB::commit();
-            $success  = true;
+            $success = true;
+            DB::commit();            
         } catch (Exception $error){
             DB::rollback();
             $mensaje       = "Ocurrio un error al suspender el conductor por falta de licencia en la fecha ".$fechaActual."\r\n";
@@ -200,6 +200,7 @@ class Dia
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -289,6 +290,7 @@ class Dia
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -378,6 +380,7 @@ class Dia
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -467,6 +470,7 @@ class Dia
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -553,6 +557,7 @@ class Dia
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();

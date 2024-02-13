@@ -414,6 +414,8 @@ php artisan make:controller Admin\Caja\CuentaContableController
 php artisan make:controller Admin\Caja\ConsignacionBancariaController
 php artisan make:controller Admin\Caja\EntregarPagoCreditoController
 
+php artisan make:controller Admin\AtencionUsuario\GestionarSolicitudController
+
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 

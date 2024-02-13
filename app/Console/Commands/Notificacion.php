@@ -73,6 +73,7 @@ class Notificacion
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -139,6 +140,7 @@ class Notificacion
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -205,9 +207,10 @@ class Notificacion
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
-        DB::rollback();
+            DB::rollback();
             $mensaje       = "Ocurrio un error al notificar vencimiento de CRT en la fecha ".$fechaActual."\r\n";
             $mensajeCorreo = $mensaje.'<br>';
         }
@@ -272,6 +275,7 @@ class Notificacion
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -338,6 +342,7 @@ class Notificacion
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
@@ -419,6 +424,7 @@ class Notificacion
             $procesoAutomatico->proautfechaejecucion = $fechaActual;
             $procesoAutomatico->save();
 
+            $success = true;
             DB::commit();
         } catch (Exception $error){
             DB::rollback();

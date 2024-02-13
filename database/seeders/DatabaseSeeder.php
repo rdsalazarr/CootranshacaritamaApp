@@ -56,9 +56,9 @@ class DatabaseSeeder extends Seeder
         $this->call(ConfiguracionEncomiendaSeeder::class);
         $this->call(CajaSeeder::class);
         $this->call(CuentaContableSeeder::class);
-        $this->call(ProcesoAutomaticoSeeder::class);*/
-
+        $this->call(ProcesoAutomaticoSeeder::class);
         $this->call(TipoMedioSolicitudSeeder::class);
-        $this->call(TipoSolicitudSeeder::class);        
+        $this->call(TipoSolicitudSeeder::class);*/ 
+        $this->call(ProcesoAutomaticoSeeder::class);
     }
 }

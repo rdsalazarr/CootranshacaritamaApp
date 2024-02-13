@@ -76,7 +76,11 @@ import Consignacion from "../admin/caja/consignacion/list";
 import PagarCredito from "../admin/caja/pagarCredito/search";
 import CerrarCaja from "../admin/caja/cerrar/closed";
 
+import GestionarSolicitud from "../admin/atencionUsuario/solicitud/list";
+
 import ProcesosAutomaticos from "../admin/procesos/list";
+
+
 
 const HeaderMenu = ({open, setOpen}) =>{
     return (
@@ -166,14 +170,14 @@ const componenteMenu = [
             {ruta : 'admin/despacho/otros2',            menu: 'Otros',            icono : 'traffic_icon',        componente : <EnConstruccion />},
             {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
         ]
-    },*/
+    },
     {   nombre: 'Procesos automáticos', 
         icono : 'account_tree_icon',
         itemMenu: [
             {ruta : 'admin/procesosAutomaticos',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <ProcesosAutomaticos />},  
         
         ]
-    },
+    },*/
     {   nombre: 'Informes',
         icono : 'assessment_icon',
         itemMenu: [
@@ -241,8 +245,9 @@ const menuComponente = [
     {id:50,componente : <Consignacion />},
     {id:51,componente : <CerrarCaja />},
 
-    {id:52,componente : <EnConstruccion />},
+    {id:52,componente : <GestionarSolicitud />},
     {id:53,componente : <ProcesosAutomaticos />},
+
     {id:54,componente : <EnConstruccion />},
     {id:55,componente : <EnConstruccion />},
     {id:56,componente : <EnConstruccion />},

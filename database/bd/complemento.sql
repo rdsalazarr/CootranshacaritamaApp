@@ -242,3 +242,6 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 
 ALTER TABLE `procesoautomatico` ADD `proautclasephp` VARCHAR(50) NULL AFTER `proauttipo`;
 ALTER TABLE `procesoautomatico` ADD `proautmetodo` VARCHAR(50) NULL AFTER `proautfechaejecucion`;
+
+
+UPDATE `funcionalidad` SET `funcruta` = 'admin/antencion/usuario/solicitud' WHERE `funcionalidad`.`funcid` = 52; UPDATE `funcionalidad` SET `moduid` = '12' WHERE `funcionalidad`.`funcid` = 53;

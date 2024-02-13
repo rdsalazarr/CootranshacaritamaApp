@@ -88,6 +88,8 @@ use App\Http\Controllers\Admin\Caja\ConsignacionBancariaController;
 use App\Http\Controllers\Admin\Caja\EntregarPagoCreditoController;
 use App\Http\Controllers\Admin\Caja\CerrarMovimientoController;
 
+use App\Http\Controllers\Admin\AtencionUsuario\GestionarSolicitudController;
+
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -127,6 +129,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/antencion/usuario/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/archivo/historico/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/produccion/documental/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/radicacion/documento/{id}', [DashboardController::class, 'index']);
@@ -539,8 +542,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/antencion/usuario')->group(function(){
-            Route::get('/list/registrados', [ProcesarMovimientoController::class, 'index'])->middleware('security:admin/antencion/usuario/gestionar');
-
+            Route::get('/listar/registrados', [GestionarSolicitudController::class, 'index'])->middleware('security:admin/antencion/usuario/solicitud');
+            Route::post('/listar/datos', [GestionarSolicitudController::class, 'datos']);
+            Route::post('/salve/datos', [GestionarSolicitudController::class, 'salve']);
         });
 
     });

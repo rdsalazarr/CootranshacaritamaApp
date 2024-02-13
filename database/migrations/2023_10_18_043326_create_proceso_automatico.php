@@ -15,7 +15,6 @@ return new class extends Migration
             $table->smallIncrements('proautid')->unsigned()->comment('Identificador de la tabla proceso automático');
             $table->string('proautnombre', 50)->comment('Nombre del proceso automático');
             $table->string('proautclasephp', 50)->comment('Nombre de la clase del proceso automático en PHP');
-            $table->string('proautclasephp', 50)->comment('Nombre de la clase del proceso automático en PHP');
             $table->string('proautmetodo', 50)->comment('Método en PHP de la clase del proceso automático');
             $table->date('proautfechaejecucion')->comment('Fecha de ejecución del proceso automático');
             $table->string('proauttipo', 1)->default('D')->comment('Tipo de proceso dia o noche');           
