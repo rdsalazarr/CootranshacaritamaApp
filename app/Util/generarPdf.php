@@ -869,20 +869,19 @@ class generarPdf
 
 	function headerFormato($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
         PDF::setHeaderCallback(function($pdf) use ($titulo, $version, $numeroFormato, $fechaFormato, $areaFormato, $sigla, $logoEmpresa){
-			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,20,5,20,19);
+			PDF::Image('archivos/logoEmpresa/'.$logoEmpresa,12,5,22,23);
             PDF::Ln(4);
-            PDF::MultiCell(21, 21, '', 1, 'C', false, 0);
-            PDF::Cell(92, 7, $titulo, 'TRB', 0, 'C');
-            PDF::Cell(24, 7, 'Versión: '.$version, 'TRB', 0, 'C');
-            PDF::Cell(40, 7, 'Código: '.$numeroFormato, 'TRB', 0, 'C');
+            PDF::MultiCell(23, 25, '', 1, 'C', false, 0);
+         	PDF::MultiCell(100, 11, $titulo, 'TRB', 'C', false, 0);
+			PDF::MultiCell(24, 11, 'Versión: '.$version, 'TRB', 'C', false, 0);
+			PDF::MultiCell(40, 11, 'Código: '.$numeroFormato, 'TRB', 'C', false, 1);
+          	PDF::MultiCell(23, 7, '', 0, 'C', false, 0);
+			PDF::MultiCell(100, 7, $sigla, 'RB', 'C', false, 0);
+   			PDF::MultiCell(64, 7, '  Fecha: '.$fechaFormato, 'RB', 'C', false, 0);
             PDF::Ln(7);
-            PDF::Cell(21, 7, '', 0, 0, 'C');
-            PDF::Cell(92, 7, $sigla, 'RB', 0, 'C');
-            PDF::Cell(64, 7, '  Fecha: '.$fechaFormato, 'RB', 0, 'L');
-            PDF::Ln(7);
-            PDF::Cell(21, 7, '', 0, 0, 'L');
-            PDF::Cell(92, 7, $areaFormato, 'RB', 0, 'C');
-			PDF::Cell(64, 7, '  Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'RB', 0, 'L');
+            PDF::Cell(23, 7, '', 0, 0, 'L');       
+		    PDF::MultiCell(100, 7, $areaFormato, 'RB', 'C', false, 0);
+			PDF::Cell(64, 7, 'Página ' . PDF::getAliasNumPage() . ' de ' . PDF::getAliasNbPages(),'RB', 0, 'R');
 		});
     }
 
@@ -2037,25 +2036,25 @@ EOD;
 
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
-		PDF::SetMargins(20, 36, 14);
+		PDF::SetMargins(12, 36, 12);
 		PDF::AddPage('P', 'Letter');
 		PDF::SetAutoPageBreak(true, 30);
 		PDF::SetY(16);
 		PDF::Ln(20);
 		PDF::SetFont('helvetica', 'B', 13);
-		PDF::Cell(176, 4, "FORMATO SOLICITUD DE CRÉDITO", 0, 0, 'C');
+		PDF::Cell(188, 4, "FORMATO SOLICITUD DE CRÉDITO", 0, 0, 'C');
 		PDF::Ln(12);
 		PDF::SetFont('helvetica', '', 11);
 
         PDF::Cell(40, 4, "NOMBRE:", 0, 0, 'L');
-        PDF::Cell(76, 4, $nombrePersona,0, 0, 'L');
+        PDF::Cell(88, 4, $nombrePersona,0, 0, 'L');
 		PDF::Cell(26, 4, "CC:", 0, 0, 'L');
         PDF::Cell(40, 4, number_format($documentoAsociado,0,',','.'), 0, 0, 'L');
         PDF::Ln(5);
 
 		if($tipoPersona === 'A'){
 			PDF::Cell(40, 4, "VEHÍCULO:", 0, 0, 'L');
-			PDF::Cell(76, 4,  $vehiculo,0, 0, 'L');
+			PDF::Cell(88, 4,  $vehiculo,0, 0, 'L');
 			PDF::Cell(26, 4, "NÚMERO:", 0, 0, 'L');
 			PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L'); 
 			PDF::Ln(5);
@@ -2064,7 +2063,7 @@ EOD;
 			PDF::Cell(76, 4, $placaVehiculo,0, 0, 'L');
 		}else{
 			PDF::Cell(40, 4, "RESPALDO", 0, 0, 'L');
-			PDF::Cell(76, 4, "POR LIBRANZA",0, 0, 'L');
+			PDF::Cell(88, 4, "POR LIBRANZA",0, 0, 'L');
 		}
 
         PDF::Cell(26, 4, "PAGARÉ Nº:", 0, 0, 'L');
@@ -2072,13 +2071,13 @@ EOD;
         PDF::Ln(5);       
 
         PDF::Cell(40, 4, "VALOR CUOTA:", 0, 0, 'L');
-        PDF::Cell(76, 4, '$ '.number_format($valorCuota,0,',','.') ,0, 0, 'L');
+        PDF::Cell(88, 4, '$ '.number_format($valorCuota,0,',','.') ,0, 0, 'L');
         PDF::Cell(26, 4, "TIEMPO:", 0, 0, 'L');
         PDF::Cell(40, 4, $tiempoCredito.' MESES', 0, 0, 'L');
         PDF::Ln(5);
 
 		PDF::Cell(40, 4, "TIPO DE CRÉDITO:", 0, 0, 'L');
-		PDF::MultiCell(76, 4, $tipoCredito, 0, 'L', 0, 0, '', '', true);
+		PDF::MultiCell(88, 4, $tipoCredito, 0, 'L', 0, 0, '', '', true);
 		PDF::Cell(26, 4, "MONTO:", 0, 0, 'L');
 		PDF::MultiCell(40, 5, '$ '.number_format($montoCredito,0,',','.'), 0, 'L', 0, 1, '', '', true);
 		PDF::Ln(12);
@@ -2086,24 +2085,24 @@ EOD;
         PDF::Cell(40, 4, "CONCEPTO Y/O OBJETO DEL CRÉDITO: ", 0, 0, 'L');
         PDF::Ln(12);
 
-        PDF::MultiCell(55, 10, 'ESTADO', 1, 'C', false, 0);
-        PDF::Cell(60, 5, 'AL DÍA', 1, 0, 'C');
-        PDF::Cell(60, 5, 'MORA', 1, 0, 'C');
+        PDF::MultiCell(52, 10, 'ESTADO', 1, 'C', false, 0);
+        PDF::Cell(65, 5, 'AL DÍA', 1, 0, 'C');
+        PDF::Cell(65, 5, 'MORA', 1, 0, 'C');
         PDF::Ln(5);
-        PDF::Cell(55, 5, '', 0, 0, 'C');
-        PDF::Cell(60, 5, 'X', 'LRB', 0, 'C');
-        PDF::Cell(60, 5, '', 'LRB', 0, 'C');
+        PDF::Cell(52, 5, '', 0, 0, 'C');
+        PDF::Cell(65, 5, 'X', 'LRB', 0, 'C');
+        PDF::Cell(65, 5, '', 'LRB', 0, 'C');
         PDF::Ln(12);
 
         PDF::MultiCell(0, 10, 'NOTA: SE APRUEBA POR  ORDEN DE CONSEJO DE ADMINSITRACION Y GERENCIA.', 0, '', 0);
         PDF::MultiCell(0, 10, 'SE SUSCRIBE EN LA CIUDAD DE OCAÑA A LOS '.$fechaDesembolso, 0, '', 0);
 
         PDF::Ln(8);
-		PDF::Cell(130, 4, '', '', 0, 'L');
+		PDF::Cell(142, 4, '', '', 0, 'L');
 		PDF::MultiCell(30, 30, '', 1, 'C', false, 1);
 		PDF::Cell(80, 4, 'DEUDOR ', 'T', 0, 'L');
-		PDF::Cell(50, 4, '', '', 0, 'L');
-		PDF::Cell(30, 4, 'HUELLA', '', 0, 'L');
+		PDF::Cell(62, 4, '', 0, 0, 'L');
+		PDF::Cell(30, 4, 'HUELLA', 0, 0, 'C');
 		PDF::Ln(4);
 		PDF::Cell(80, 4, 'C.C. ', 0, 0, 'L');
         PDF::Ln(12);
@@ -2112,29 +2111,29 @@ EOD;
         PDF::Cell(50, 4, "",'B', 0, 'L');
         PDF::Cell(4, 4, "",0, 0, 'L');
         PDF::Cell(32, 4, "ACTA NÚMERO:", 0, 0, 'L');
-        PDF::Cell(39, 4, "", "B", 0, 'L');  
+        PDF::Cell(51, 4, "", "B", 0, 'L');  
         PDF::Ln(12);
 
         PDF::Cell(60, 4, "APROBADO POR:", 0, 0, 'L');
         PDF::Ln(12); 
         PDF::Cell(60, 4, "GERENTE:", 0, 0, 'L');
-        PDF::Cell(115, 4, "",'B', 0, 'L');
+        PDF::Cell(127, 4, "",'B', 0, 'L');
         PDF::Ln(12);
         PDF::Cell(60, 4, "PRESIDENTE DEL COMITÉ:",0, 0, 'L');
-        PDF::Cell(115, 4, "",'B', 0, 'L');
+        PDF::Cell(127, 4, "",'B', 0, 'L');
         PDF::Ln(12);
         PDF::Cell(60, 4, "MIEMBRO DEL COMITÉ :", 0, 0, 'L');   
-        PDF::Cell(115, 4, "",'B', 0, 'L');
+        PDF::Cell(127, 4, "",'B', 0, 'L');
         PDF::Ln(12);
 
         PDF::Cell(32, 4, " Observaciones:", 0, 0, 'L');
-        PDF::Cell(143, 4, "",'B', 0, 'L');
+        PDF::Cell(155, 4, "",'B', 0, 'L');
         PDF::Ln(5);
-        PDF::Cell(175, 4, "",'B', 0, 'L');
+        PDF::Cell(187, 4, "",'B', 0, 'L');
         PDF::Ln(5);
-        PDF::Cell(175, 4, "",'B', 0, 'L');
+        PDF::Cell(187, 4, "",'B', 0, 'L');
         PDF::Ln(4);
-        PDF::Cell(175, 4, "",'B', 0, 'L');
+        PDF::Cell(187, 4, "",'B', 0, 'L');
         PDF::Ln(4);
 
 		$tituloPdf = $titulo.'.pdf';
@@ -3328,7 +3327,7 @@ EOD;
 		PDF::SetY(20); 
 		PDF::SetFont('helvetica','B',12);
 		PDF::Ln(16);
-		PDF::Cell(254,5,'COMPROBANTE CONTABLE',0,0,'L'); 
+		PDF::Cell(254,5,'COMPROBANTE CONTABLE',0,0,'L');
 		PDF::Ln(8);
         PDF::SetFont('helvetica','',10);
 		PDF::Cell(38,4,'Número comprobante: ',0,0,'L');
@@ -3348,7 +3347,7 @@ EOD;
         PDF::Cell(8,4,$numeroCaja,0,0,'L');
         PDF::Ln(6);
         PDF::SetFont('helvetica','',10); 
-        PDF::Cell(38,5,'Concepto: ',0,0,'L'); 
+        PDF::Cell(38,5,'Concepto: ',0,0,'L');
         PDF::MultiCell(216, 0, $conceptoComprobante."\n", 0, 'J', 0);
 		PDF::SetFont('helvetica','',12); 
 		PDF::Ln(8);
@@ -3396,5 +3395,172 @@ EOD;
 		}else{
 			PDF::output($tituloPdf, $metodo);
 		}
-	}	
+	}
+
+	function generarFormatoSolicitud($arrayDatos){
+		$tipoIdentificacion     = $arrayDatos['tipoIdentificacion'];
+		$documentoIdentidad     = $arrayDatos['documentoIdentidad'];
+		$nombresSolicitante     = $arrayDatos['nombresSolicitante'];
+		$apellidosSolicitante   = $arrayDatos['apellidosSolicitante'];
+		$nombreCompleto         = $nombresSolicitante.' '.$apellidosSolicitante;
+		$direccionSolicitante   = $arrayDatos['direccionSolicitante'];
+		$telefonoSolicitante    = $arrayDatos['telefonoSolicitante'];
+		$correoSolicitante      = $arrayDatos['correoSolicitante'];
+		$tipoSolicitud          = $arrayDatos['tipoSolicitud'];
+		$tipoMedio              = $arrayDatos['tipoMedio'];
+		$fechaRegistro          = $arrayDatos['fechaRegistro'];
+		$fechaIncidente         = $arrayDatos['fechaIncidente'];
+		$conductorInvolucrado   = $arrayDatos['conductorInvolucrado'];
+		$vehiculoInvolucrado    = $arrayDatos['vehiculoInvolucrado'];
+		$motivoSolicitud        = $arrayDatos['motivoSolicitud'];
+		$observacionesSolicitud = $arrayDatos['observacionesSolicitud'];
+		$metodo                 = $arrayDatos['metodo'];
+	
+		$empresa                = $this->consultarEmpresa();
+		$direccionEmpresa 	    = $empresa->emprdireccion;	
+		$barrioEmpresa    	    = $empresa->emprbarrio;
+		$telefonoEmpresa  	    = $empresa->emprtelefonofijo;
+		$celularEmpresa   	    = $empresa->emprtelefonocelular;
+		$urlEmpresa       	    = $empresa->emprurl;
+		$nombreEmpresa          = $empresa->emprnombre;
+		$siglaEmpresa           = $empresa->emprsigla;
+		$nit                    = $empresa->nit;
+		$personeriaJuridica     = $empresa->emprpersoneriajuridica;
+		$logoEmpresa            = $empresa->emprlogo;
+
+		$mensajeFormato         = 'Con el fin de mejorar cada dia en la prestacion de nuestros servicios y/o Producto suministrado, ';
+        $mensajeFormato         .= 'solicitamos diligenciar este formato con la finalidad de conocer, tramitar y dar solucion a las ';
+        $mensajeFormato         .= 'peticiones, quejas, reclamos, sugerencias y/o felicitaciones presentadas por usted(s).';
+        $titulo                 = 'Formato de recepción de peticiones, quejas, reclarmos, sugerencias y felicitaciones';
+		$tituloPdf              = 'Formato_PQRS';
+        $tituloFormato          = 'PETICIÓN, QUEJA, RECLAMO, SUGERENCIA Y/O FELICITACIÓN';
+        $versionFormato         = '02'; 
+        $numeroFormato          = 'F-GC-10'; 
+        $fechaFormato           = '08/11/2016'; 
+        $areaFormato            = 'GESTIÓN CALIDAD';
+
+        PDF::SetAuthor('IMPLESOFT');
+		PDF::SetCreator('ERP '.$siglaEmpresa);
+		PDF::SetSubject($titulo);
+		PDF::SetKeywords('Solicitud, Queja, Reclamo, Sugerencia, Felicitación, Formato, '.$siglaEmpresa);
+        PDF::SetTitle($titulo);
+
+		PDF::SetProtection(array('copy'), '', null, 0, null);
+		$this->headerFormato($tituloFormato, $versionFormato, $numeroFormato, $fechaFormato, $areaFormato, $siglaEmpresa, $logoEmpresa);
+		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
+
+        PDF::SetPrintHeader(true);
+		PDF::SetPrintFooter(true);
+        PDF::SetMargins(12, 30 , 12);
+		PDF::AddPage('P', 'Letter');
+		PDF::SetAutoPageBreak(true, 30);
+		PDF::SetY(32);
+
+        PDF::SetTextColor(179,179,180);
+        PDF::SetFont('helvetica','I',9);
+        PDF::MultiCell(0,3,$mensajeFormato."\n",0,'J',0);
+        PDF::SetTextColor(0);
+
+		PDF::Ln(4);
+        PDF::SetFillColor(232, 231, 231);
+        PDF::SetFont('helvetica','B',11);
+        PDF::Cell(188,4,'INFORMACIÓN DEL USUARIO',1,0,'',true);
+        PDF::Ln(8);
+
+        PDF::Cell(44,4,'Tipo de identificación:',0,0,'');
+        PDF::SetFont('helvetica','',11);
+        PDF::Cell(60,4,$tipoIdentificacion,0,0,'');
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(26,4,'Documento: ',0,0,'');
+        PDF::SetFont('helvetica','',11);
+        PDF::Cell(58,4,$documentoIdentidad,0,0,'');
+        PDF::Ln(4);
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Nombres (s): ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(60,4,substr($nombresSolicitante, 0, 23),0,0,'');
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(26,4,'Apellido (s): ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(58,4,substr($apellidosSolicitante, 0, 23),0,0,'');
+        PDF::Ln(4);
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Correo electrónico: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(60,4,substr($correoSolicitante, 0, 27),0,0,'');
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(26,4,'Teléfono: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(58,4,$telefonoSolicitante,0,0,'');
+        PDF::Ln(4);
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Dirección: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::MultiCell(144, 4, $direccionSolicitante, 0, 'L', false, 1);
+        PDF::Ln(4);
+        PDF::SetFillColor(232, 231, 231);
+        PDF::SetFont('helvetica','B',11);
+        PDF::Cell(188,4,'INFORMACIÓN DE LA SOLICITUD',1,0,'',true);
+        PDF::Ln(8);
+
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Tipo de solicitud: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(60,4,$tipoSolicitud,0,0,'');
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(42,4,'Tipo de medio: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(40,4,$tipoMedio,0,0,'');
+        PDF::Ln(5);
+
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Fecha de registro: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(60,4,$fechaRegistro,0,0,'');
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(42,4,'Fecha de incidente:',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::Cell(40,4,$fechaIncidente,0,0,'');
+        PDF::Ln(5);
+
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Conductor: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::MultiCell(144, 4, $conductorInvolucrado, 0, 'L', false, 1);
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Vehículo: ',0,0,'');
+        PDF::SetFont('helvetica','',12);
+        PDF::MultiCell(144, 4, $vehiculoInvolucrado, 0, 'L', false, 1);
+        PDF::Ln(8);
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Motivo: ',0,0,'');
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',12);
+        PDF::MultiCell(188,4,$motivoSolicitud."\n",0,'J');
+
+        PDF::Ln(8);
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(44,4,'Observaciones: ',0,0,'');
+        PDF::Ln(5);
+        PDF::SetFont('helvetica','',12);
+        PDF::MultiCell(188,4,$observacionesSolicitud."\n",0,'J');
+
+        PDF::Ln(12);
+        PDF::SetFont('helvetica','I',12);
+        PDF::MultiCell(188,4,$nombreCompleto."\n",0,'J');
+        PDF::SetFont('helvetica','B',12);
+        PDF::Cell(90,4,'FIRMA DE QUIEN PRESENTA LA SOLICITUD ','T',0,'L');
+
+		$tituloPdf = $tituloPdf.'.pdf';
+		if($metodo === 'S'){
+			return base64_encode(PDF::output($tituloPdf, 'S'));
+		}else if($metodo === 'F'){//Descargamos la copia en temporal
+			$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
+			fopen($rutaCarpeta, "w+");
+			PDF::output($rutaCarpeta, 'F');
+			return $rutaCarpeta;
+		}else{
+			PDF::output($tituloPdf, $metodo);
+		}
+	}
 }

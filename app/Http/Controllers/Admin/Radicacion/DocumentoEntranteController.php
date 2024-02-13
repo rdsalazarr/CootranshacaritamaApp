@@ -169,13 +169,8 @@ class DocumentoEntranteController extends Controller
                     return response()->json(['success' => false, 'message'=> 'Este documento PDF está encriptado y no puede ser procesado']);
                 }
             }
-
-            $personaRadicado   = DB::table('personaradicadocumento')->select('peradoid')
-                                        ->where('tipideid', $request->tipoIdentificacion)
-                                        ->where('peradodocumento', $request->numeroIdentificacion)->first();
         
-            $peradoid          = ($personaRadicado !== null)? $personaRadicado->peradoid : '000';
-
+            $peradoid                                       = ($request->personaId !== '000')? $request->personaId : '000';
             $personaradicadocumento                         = ($peradoid != '000') ? PersonaRadicaDocumento::findOrFail($peradoid) : new PersonaRadicaDocumento();
             $personaradicadocumento->tipideid               = $request->tipoIdentificacion;
             $personaradicadocumento->peradodocumento        = $request->numeroIdentificacion;
@@ -189,8 +184,7 @@ class DocumentoEntranteController extends Controller
             $personaradicadocumento->peradocodigodocumental = $request->codigoDocumental;
             $personaradicadocumento->save();
 
-            if($request->tipo === 'I'){
-                //Consulto el ultimo identificador de la persona 
+            if($request->tipo === 'I' and $request->personaId === '000'){//Consulto el ultimo identificador de la persona
                 $perRadDocumentoMaxConsecutio  = PersonaRadicaDocumento::latest('peradoid')->first();
                 $peradoid                      = $perRadDocumentoMaxConsecutio->peradoid;
             }
@@ -199,7 +193,7 @@ class DocumentoEntranteController extends Controller
             if($request->tipo === 'I'){
                 $radicaciondocumentoentrante->tierdeid                   = $estado;
                 $radicaciondocumentoentrante->usuaid                     = Auth::id();
-                $radicaciondocumentoentrante->radoenconsecutivo          = $this->obtenerConsecutivo($anioActual);
+                $radicaciondocumentoentrante->radoenconsecutivo          = DocumentoEntrante::obtenerConsecutivo($anioActual);
                 $radicaciondocumentoentrante->radoenanio                 = $anioActual;
                 $radicaciondocumentoentrante->radoenfechahoraradicado    = $fechaHoraActual;
                 $radicaciondocumentoentrante->radoenfechamaximarespuesta = $funcion->obtenerFechaMaxima(15, Carbon::now()->format('Y-m-d'));
@@ -306,8 +300,7 @@ class DocumentoEntranteController extends Controller
                 $dataCopias   = [];
                 $dataRadicado = DB::table('radicaciondocumentoentrante as rde')
                                     ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
-                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto',
-                                            DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid AND radoedescopia = true) AS totalCopias'))
+                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto')
                                     ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                                     ->join('radicaciondocentdependencia as rded', function($join)
                                         {
@@ -316,18 +309,9 @@ class DocumentoEntranteController extends Controller
                                         })
                                     ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                     ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
-                                    ->where('rde.radoenid', $radoenid)->first();
-
-                if($dataRadicado->totalCopias > 0){
-                    $dataCopias =  DB::table('radicaciondocentdependencia as rded')
-                                        ->select('d.depenombre as dependencia','d.depecorreo')
-                                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
-                                        ->where('rded.radoenid', $radoenid)
-                                        ->where('rded.radoedescopia', true)->get();
-                }
+                                    ->where('rde.radoenid', $radoenid)->first();        
 
                 $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
-                //$funcion->reducirPesoPDF($rutaPdf, $rutaPdf);
             }
 
             DB::commit();
@@ -491,12 +475,4 @@ class DocumentoEntranteController extends Controller
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al consultar => '.$e->getMessage()]);
         }
     }
-
-    public function obtenerConsecutivo($anioActual)
-	{
-		$consecutivoRadicado = DB::table('radicaciondocumentoentrante')->select('radoenconsecutivo as consecutivo')
-								->where('radoenanio', $anioActual)->orderBy('radoenid', 'desc')->first();
-        $consecutivo = ($consecutivoRadicado === null) ? 1 : $consecutivoRadicado->consecutivo + 1;
-		return str_pad( $consecutivo,  4, "0", STR_PAD_LEFT);
-	}
 }

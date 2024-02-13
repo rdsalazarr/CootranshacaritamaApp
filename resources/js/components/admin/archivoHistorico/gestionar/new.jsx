@@ -18,15 +18,15 @@ export default function New({data, tipo}){
                                                 entidadProductora: '', resumenDocumento: '', observacion: '',  tipo:tipo,            archivos:[]
                                             });
 
+    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_ARCHIVO_HISTORICO);
+    const [tipoEstanteArchivadores, setTipoEstanteArchivadores] = useState([]);
+    const [tipoCarpetaUbicaciones, setTipoCarpetaUbicaciones] = useState([]);
+    const [tipoCajaUbicaciones, setTipoCajaUbicaciones] = useState([]);
+    const [totalAdjuntoSubido , setTotalAdjuntoSubido] = useState(0);
+    const [tipoDocumentales, setTipoDocumentales ] = useState([]);
+    const [digitalizados, setDigitalizados] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
     const [loader, setLoader] = useState(false);
-    const [tipoDocumentales, setTipoDocumentales ] = useState([]);
-    const [tipoEstanteArchivadores, setTipoEstanteArchivadores] = useState([]);
-    const [tipoCajaUbicaciones, setTipoCajaUbicaciones] = useState([]);
-    const [tipoCarpetaUbicaciones, setTipoCarpetaUbicaciones] = useState([]);
-    const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_ARCHIVO_HISTORICO);
-    const [totalAdjuntoSubido , setTotalAdjuntoSubido] = useState(0);
-    const [digitalizados, setDigitalizados] = useState([]);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
@@ -46,10 +46,8 @@ export default function New({data, tipo}){
     }
 
     const onFilesError = (error, file) => {
-        let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
-        ReactDOM.unmountComponentAtNode(document.getElementById("snake"));
-        ReactDOM.render(<SimpleSnackbar msg={msj} icon={'error'} />,
-        document.getElementById("snake"));
+        let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message;
+        showSimpleSnackbar(msj, 'error');
     }
 
     const handleSubmit = () =>{

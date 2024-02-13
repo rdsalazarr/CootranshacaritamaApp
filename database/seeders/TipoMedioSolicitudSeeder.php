@@ -35,7 +35,7 @@ class TipoMedioSolicitudSeeder extends Seeder
 
         DB::table('tipomediosolicitud')->insert([
             'timesoid'     => 'OT',
-            'timesonombre' => 'OTRO:'
+            'timesonombre' => 'OTRO'
         ]);
     }
 }

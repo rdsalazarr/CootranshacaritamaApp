@@ -76,10 +76,8 @@ export default function New({data, tipo}){
     }
 
     const onFilesError = (error, file) => {
-        let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
-        ReactDOM.unmountComponentAtNode(document.getElementById("snake"));
-        ReactDOM.render(<SimpleSnackbar msg={msj} icon={'error'} />,
-        document.getElementById("snake"));
+        let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message;
+        showSimpleSnackbar(msj, 'error');
     }
 
     const handleSubmit = () =>{

@@ -25,19 +25,15 @@ class DependenciaController extends Controller
 
     public function datos(Request $request)
 	{ 
-        $this->validate(request(),[
-            'codigo' => 'required',
-            'tipo'  => 'required|max:1'
-        ]);
+        $this->validate(request(),['codigo' => 'required', 'tipo'  => 'required|max:1']);
 
-		$personas = DB::table('persona')
-                        ->select('persid','carlabid',DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre),' ',
-                        persprimerapellido,' ',if(perssegundoapellido is null ,' ', perssegundoapellido)) as nombrePersona"))
-                        ->where('persactiva', true)
-                        ->whereNotIn('persid', [1])
-                        ->orderBy('persprimernombre')->orderBy('perssegundonombre')
-                        ->orderBy('persprimerapellido')->orderBy('perssegundoapellido')->get();
-
+		$personas               = DB::table('persona')
+                                    ->select('persid','carlabid', DB::raw("CONCAT(persprimernombre,' ',IFNULL(perssegundonombre,''),' ',persprimerapellido,' ',IFNULL(perssegundoapellido,'')) as nombrePersona"))
+                                    ->where('persactiva', true)
+                                    ->whereNotIn('persid', [1])
+                                    ->where('tipperid', 'E')
+                                    ->orderBy('nombrePersona')->get();
+  
         $seriesdocumentales    = DB::table('seriedocumental')->select('serdocid','serdocnombre')->where('serdocactiva', true)->orderBy('serdocnombre')->get();        
         $subseriesdocumentales = DB::table('subseriedocumental')->select('susedoid','serdocid','susedonombre')->where('susedoactiva', true)->orderBy('susedonombre')->get();
 
@@ -52,8 +48,8 @@ class DependenciaController extends Controller
                                                 ->orderBy('sd.serdocnombre')->orderBy('ssd.susedonombre')->get();
 
             $dependenciapersonas    = DB::table('dependenciapersona as dp')
-                                                ->select('dp.depperid','dp.depperdepeid','dp.depperpersid',DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
+                                                ->select('dp.depperid','dp.depperdepeid','dp.depperpersid',
+                                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                                 ->join('persona as p', 'p.persid', '=', 'dp.depperpersid')
                                                 ->where('dp.depperdepeid', $request->codigo )
                                                 ->orderBy('nombrePersona')->get();  

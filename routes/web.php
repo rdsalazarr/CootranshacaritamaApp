@@ -542,8 +542,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/antencion/usuario')->group(function(){
-            Route::get('/listar/registrados', [GestionarSolicitudController::class, 'index'])->middleware('security:admin/antencion/usuario/solicitud');
+            Route::post('/listar/solicitud', [GestionarSolicitudController::class, 'index'])->middleware('security:admin/antencion/usuario/solicitud');
             Route::post('/listar/datos', [GestionarSolicitudController::class, 'datos']);
+            Route::post('/consultar/persona', [GestionarSolicitudController::class, 'consultarPersona']);
             Route::post('/salve/datos', [GestionarSolicitudController::class, 'salve']);
         });
 
@@ -556,4 +557,3 @@ Route::get('/Mantenimiento', [MantenimientoController::class, 'down']);
 Route::get('/Up/Mantenimiento', [MantenimientoController::class, 'up']);
 Route::get('/Correo', [MantenimientoController::class, 'email']);
 Route::get('/Generar/Pdf', [MantenimientoController::class, 'Pdf']);
-Route::get('/Contrato/Pdf', [MantenimientoController::class, 'contrato']);
