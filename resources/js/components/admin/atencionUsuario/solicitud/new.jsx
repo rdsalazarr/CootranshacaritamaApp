@@ -22,10 +22,11 @@ import 'dayjs/locale/es';
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState({ codigo: (tipo === 'U') ? data.id : '000',
-                                                tipoIdentificacion: '', numeroIdentificacion: '', primerNombre: '',      segundoNombre: '',      primerApellido: '', 
-                                                segundoApellido: '',    direccionFisica: '',      correoElectronico: '', numeroContacto: '',     tipoSolicitud: '',
-                                                tipoMedio: '',          vehiculoId: '',           conductorId: '',       observacionGeneral: '', motivoSolicitud: '',
-                                                fechaHoraIncidente:'',  personaId: '',            tipo:tipo,             archivos:[]
+                                                tipoIdentificacion: '', numeroIdentificacion: '', primerNombre: '',      segundoNombre: '',            primerApellido: '', 
+                                                segundoApellido: '',    direccionFisica: '',      correoElectronico: '', numeroContacto: '',           tipoSolicitud: '',
+                                                tipoMedio: '',          vehiculoId: '',           conductorId: '',       observacionGeneral: '',       motivoSolicitud: '',
+                                                fechaHoraIncidente:'',  personaId: '',            tipo:tipo,             tipoIdentificacionNombre: '', tipoSolicitudNombre: '',
+                                                vehiculoNombre: '',     conductorNombre: '',      tipoMedioNombre:'',    archivos:[]
                                             });
 
     const [totalAdjunto, setTotalAdjunto] = useState(import.meta.env.VITE_TOTAL_FILES_RADICADO);
@@ -82,10 +83,22 @@ export default function New({data, tipo}){
     }
 
     const handleSubmit = () =>{
-        console.log(formData.fechaHoraIncidente);
+        let newFormData                      = {...formData}
+        const tipoIdentificacionFiltrado     = tipoIdentificaciones.filter((tpIdentificacion) => tpIdentificacion.tipideid == formData.tipoIdentificacion);
+        const tipoSolicitudFiltrado          = tipoSolicitudes.filter((tpSolicitud) => tpSolicitud.tipsolid == formData.tipoSolicitud);
+        const tipoMedioSolicitudFiltrado     = tipoMedios.filter((tpMedio) => tpMedio.timesoid == formData.tipoMedio);
+        const vehiculosFiltrado              = vehiculos.filter((vehic) => vehic.vehiid == formData.vehiculoId);
+        const condutorFiltrado               = conductores.filter((cond) => cond.condid == formData.conductorId);
+
+        newFormData.tipoIdentificacionNombre = tipoIdentificacionFiltrado[0].tipidenombre;
+        newFormData.tipoSolicitudNombre      = tipoSolicitudFiltrado[0].tipsolnombre;
+        newFormData.tipoMedioNombre          = tipoMedioSolicitudFiltrado[0].timesonombre;
+        newFormData.vehiculoNombre           = (vehiculosFiltrado.length > 0) ? vehiculosFiltrado[0].nombreVehiculo : '';
+        newFormData.conductorNombre          = (condutorFiltrado.length > 0) ? condutorFiltrado[0].nombreConductor : '';
+
 
        // setLoader(true);
-        instance.post('/admin/antencion/usuario/salve/datos', formData).then(res=>{
+        instance.post('/admin/antencion/usuario/salve/datos', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 

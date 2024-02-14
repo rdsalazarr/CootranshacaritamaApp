@@ -1147,7 +1147,11 @@ EOD;
         $tcpdf->SetCreator('ERP '.$siglaEmpresa);
         $tcpdf->SetTitle($consecutivo);
         $tcpdf->SetSubject('Formato de registro de radicado externo');
-        $tcpdf->SetKeywords('Radicacion, '.$consecutivo);  
+        $tcpdf->SetKeywords('Radicacion, '.$consecutivo);
+
+		//dd($rutaCarpeta.'/'.$nombreFile);
+		//D:\Laravel\CootranshacaritamaApp\public/archivos/radicacion/documentoEntrante/2024/598_578-circular.pdf
+		//'D:/Laravel/CootranshacaritamaApp/public/archivos/radicacion/documentoEntrante/2024/14815_2024_Formato_PQRS.pdf'
   
         try {
             $pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
@@ -3414,6 +3418,8 @@ EOD;
 		$vehiculoInvolucrado    = $arrayDatos['vehiculoInvolucrado'];
 		$motivoSolicitud        = $arrayDatos['motivoSolicitud'];
 		$observacionesSolicitud = $arrayDatos['observacionesSolicitud'];
+		$anioRadicado           = $arrayDatos['anioRadicado'];
+		$nombreArchivo          = $arrayDatos['nombreArchivo'];		
 		$metodo                 = $arrayDatos['metodo'];
 	
 		$empresa                = $this->consultarEmpresa();
@@ -3521,17 +3527,23 @@ EOD;
         PDF::Cell(42,4,'Fecha de incidente:',0,0,'');
         PDF::SetFont('helvetica','',12);
         PDF::Cell(40,4,$fechaIncidente,0,0,'');
-        PDF::Ln(5);
+        PDF::Ln(6);
 
-        PDF::SetFont('helvetica','B',12);
-        PDF::Cell(44,4,'Conductor: ',0,0,'');
-        PDF::SetFont('helvetica','',12);
-        PDF::MultiCell(144, 4, $conductorInvolucrado, 0, 'L', false, 1);
-        PDF::SetFont('helvetica','B',12);
-        PDF::Cell(44,4,'Vehículo: ',0,0,'');
-        PDF::SetFont('helvetica','',12);
-        PDF::MultiCell(144, 4, $vehiculoInvolucrado, 0, 'L', false, 1);
-        PDF::Ln(8);
+		if($conductorInvolucrado !== null ){
+			PDF::SetFont('helvetica','B',12);
+			PDF::Cell(44,4,'Conductor: ',0,0,'');
+			PDF::SetFont('helvetica','',12);
+			PDF::MultiCell(144, 4, $conductorInvolucrado, 0, 'L', false, 1);
+		}
+
+		if($conductorInvolucrado !== null ){			
+			PDF::SetFont('helvetica','B',12);
+			PDF::Cell(44,4,'Vehículo: ',0,0,'');
+			PDF::SetFont('helvetica','',12);
+			PDF::MultiCell(144, 4, $vehiculoInvolucrado, 0, 'L', false, 1);
+		}     
+
+        PDF::Ln(4);
         PDF::SetFont('helvetica','B',12);
         PDF::Cell(44,4,'Motivo: ',0,0,'');
         PDF::Ln(5);
@@ -3554,11 +3566,17 @@ EOD;
 		$tituloPdf = $tituloPdf.'.pdf';
 		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
-		}else if($metodo === 'F'){//Descargamos la copia en temporal
+		}else if($metodo === 'T'){//Descargamos la copia en temporal
 			$rutaCarpeta = sys_get_temp_dir().'/'.$tituloPdf;
 			fopen($rutaCarpeta, "w+");
 			PDF::output($rutaCarpeta, 'F');
 			return $rutaCarpeta;
+		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
+			$rutaCarpeta  = public_path().'/archivos/radicacion/documentoEntrante/'.$anioRadicado;
+			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
+			$rutaPdf      = $rutaCarpeta.'/'.$nombreArchivo;
+			PDF::output($rutaPdf, 'F');
+			return $rutaPdf;
 		}else{
 			PDF::output($tituloPdf, $metodo);
 		}

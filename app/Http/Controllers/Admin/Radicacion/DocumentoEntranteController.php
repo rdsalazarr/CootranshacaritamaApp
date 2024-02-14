@@ -300,7 +300,8 @@ class DocumentoEntranteController extends Controller
                 $dataCopias   = [];
                 $dataRadicado = DB::table('radicaciondocumentoentrante as rde')
                                     ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
-                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto')
+                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto',
+                                            DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid AND radoedescopia = true) AS totalCopias'))
                                     ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                                     ->join('radicaciondocentdependencia as rded', function($join)
                                         {
@@ -309,7 +310,15 @@ class DocumentoEntranteController extends Controller
                                         })
                                     ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                     ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
-                                    ->where('rde.radoenid', $radoenid)->first();        
+                                    ->where('rde.radoenid', $radoenid)->first();
+
+                if($dataRadicado->totalCopias > 0){
+                    $dataCopias =  DB::table('radicaciondocentdependencia as rded')
+                                        ->select('d.depenombre as dependencia','d.depecorreo')
+                                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                                        ->where('rded.radoenid', $radoenid)
+                                        ->where('rded.radoedescopia', true)->get();
+                }
 
                 $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
             }

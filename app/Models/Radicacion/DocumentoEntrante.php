@@ -4,6 +4,7 @@ namespace App\Models\Radicacion;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class DocumentoEntrante extends Model
 {

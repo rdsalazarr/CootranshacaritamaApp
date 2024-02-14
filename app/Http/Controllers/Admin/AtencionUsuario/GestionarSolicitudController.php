@@ -146,71 +146,78 @@ class GestionarSolicitudController extends Controller
 
         DB::beginTransaction();
         try {
-            
-            $estado              = '1'; //Recibido
-            $fechaHoraActual     = Carbon::now();
-            $anioActual          = Carbon::now()->year;
-            $fechaActual         = $fechaHoraActual->format('Y-m-d');
-            $funcion 		     = new generales();
-            $generarPdf          = new generarPdf();
-            $radoenid            = $request->codigo; 
 
+
+           /*  $anioActual              = Carbon::now()->year;         
+            $rutaCarpeta             = public_path().'/archivos/radicacion/documentoEntrante/'.$anioActual;
+            $rutaPdf        = $rutaCarpeta.'/14815_2024_Formato_PQRS.pdf';
+            $nombreArchivo = '14815_2024_Formato_PQRS.pdf';
+            $dataCopias     = [];
+            $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
+                                ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                        'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto')
+                                ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                                ->join('radicaciondocentdependencia as rded', function($join)
+                                    {
+                                        $join->on('rded.radoenid', '=', 'rde.radoenid');
+                                        $join->where('rded.radoedescopia', false);
+                                    })
+                                ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                                ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
+                                ->where('rde.radoenid', 5)->first();        
+            $generarPdf              = new generarPdf();
+            $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivo, $dataRadicado, $dataCopias, true);
+
+            dd("voy aca ");*/
+
+            $estado                  = '1'; //Recibido
+            $fechaHoraActual         = Carbon::now();
+            $anioActual              = Carbon::now()->year;
+            $fechaActual             = $fechaHoraActual->format('Y-m-d');
+            $funcion 		         = new generales();
+            $generarPdf              = new generarPdf();
+            $radoenid                = $request->codigo;
+            $numeroAleatorio         = rand(1000, 100000);
+            $nombreArchivo           = $numeroAleatorio.''.$anioActual.'_Formato_PQRS.pdf';
+            $rutaCarpeta             = public_path().'/archivos/radicacion/documentoEntrante/'.$anioActual;
+            $personaEntregaDocumento = mb_strtoupper($request->primerNombre.' '.$request->segundoNombre.' '.$request->primerApellido.' '.$request->segundoApellido,'UTF-8');
+            $asuntoRadicado          = 'Se registró una queja por parte de '.$personaEntregaDocumento;
+            $asuntoRadicado          .= ($request->vehiculoNombre !== null) ?', en la que también se vio involucrado el vehículo '.$request->vehiculoNombre : ',';
+            $asuntoRadicado          .= ($request->conductorNombre !== null) ?', y el conductor '.$request->conductorNombre : '.';
+            $asuntoRadicado          .= ' Este proceso fue radicado por '.auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
+    
             //Genero el PDF que voy se va a radicar
             $arrayDatos = [ 
-                "tipoIdentificacion"     => $tipoIdentificacion,
-                "documentoIdentidad"     => $request->numeroIdentificacion,
-                "nombresSolicitante"     => $request->primerNombre.' '.$request->segundoNombre,
-                "apellidosSolicitante"   => $request->primerApellido.' '.$request->segundoApellido,
-                "direccionSolicitante"   => $request->direccionFisica,
-                "telefonoSolicitante"    => $request->numeroContacto,
-                "correoSolicitante"      => $request->correoElectronico,
-                "tipoSolicitud"          => $tipoSolicitud,
-                "tipoMedio"              => $tipoMedio,
-                "fechaRegistro"          => $fechaActual,
-                "fechaIncidente"         => $request->$fechaIncidente,
-                "conductorInvolucrado"   => $conductorInvolucrado,
-                "vehiculoInvolucrado"    => $vehiculoInvolucrado,
-                "motivoSolicitud"        => $request->motivoSolicitud,
-                "observacionesSolicitud" => $request->observacionGeneral,
-                "metodo"                 => 'F'
-            ];
-    
-    
-            $generarPdf->generarFormatoSolicitud($arrayDatos);
-
-
-            $dependencia =  DB::table('empresa as e')->select('d.depeid','d.depecorreo',
+                    "tipoIdentificacion"     => $request->tipoIdentificacionNombre,
+                    "documentoIdentidad"     => $request->numeroIdentificacion,
+                    "nombresSolicitante"     => $request->primerNombre.' '.$request->segundoNombre,
+                    "apellidosSolicitante"   => $request->primerApellido.' '.$request->segundoApellido,
+                    "direccionSolicitante"   => $request->direccionFisica,
+                    "telefonoSolicitante"    => $request->numeroContacto,
+                    "correoSolicitante"      => $request->correoElectronico,
+                    "tipoSolicitud"          => $request->tipoSolicitudNombre,
+                    "tipoMedio"              => $request->tipoMedioNombre,
+                    "fechaRegistro"          => $fechaActual,
+                    "fechaIncidente"         => $request->fechaHoraIncidente,
+                    "conductorInvolucrado"   => $request->conductorNombre,
+                    "vehiculoInvolucrado"    => $request->vehiculoNombre,
+                    "motivoSolicitud"        => $request->motivoSolicitud,
+                    "observacionesSolicitud" => $request->observacionGeneral,
+                    "anioRadicado"           => $anioActual,
+                    "nombreArchivo"          => $nombreArchivo,
+                    "metodo"                 => 'F'
+                ];    
+            
+            $dependencia    =  DB::table('empresa as e')->select('d.depeid','d.depecorreo',
                                     DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
                                     ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                                     ->leftjoin('dependencia as d', 'd.depejefeid', '=', 'p.persid')
                                     ->where('emprid', '1')->first();
             $dependenciaId = $dependencia->depeid;
-            $asuntoRadicado = 'Queja radicada por el usuario';
-
-
-            $nombreOriginalPdf    = '';
-            $nombreArchivoPdf     = '';
-            $debeRadicarDocumento = false;
-            if($request->hasFile('pdfRadicar')){
-                $numeroAleatorio = rand(100, 1000);
-                $rutaCarpeta       = public_path().'/archivos/radicacion/documentoEntrante/'.$anioActual;
-                $carpetaServe      = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-				$file              = $request->file('pdfRadicar')[0];
-				$nombreOriginalPdf = $file->getclientOriginalName();
-				$filename          = pathinfo($nombreOriginalPdf, PATHINFO_FILENAME);
-				$extension         = pathinfo($nombreOriginalPdf, PATHINFO_EXTENSION);
-				$nombreArchivoPdf  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
-				$file->move($rutaCarpeta, $nombreArchivoPdf);
-                //Verifico que el archivo lo pueda radicar
-                $verificarPdf         = $generarPdf->validarPuedeAbrirPdf($rutaCarpeta.'/'.$nombreArchivoPdf);
-                $debeRadicarDocumento = true;
-                if(!$verificarPdf){
-                    unlink($rutaCarpeta.'/'.$nombreArchivoPdf);//Elimina el archivo de la carpeta
-                    DB::rollback();
-                    return response()->json(['success' => false, 'message'=> 'Este documento PDF está encriptado y no puede ser procesado']);
-                }
+            if($dependenciaId === null){
+                return response()->json(['success' => false, 'message'=> 'No se encontró una dependencia asignada a la persona que se está designando como gerente de la cooperativa']);
             }
-        
+            
             $peradoid                                       = ($request->personaId !== '000') ? $request->personaId : '000';
             $personaradicadocumento                         = ($peradoid != '000') ? PersonaRadicaDocumento::findOrFail($peradoid) : new PersonaRadicaDocumento();
             $personaradicadocumento->tipideid               = $request->tipoIdentificacion;
@@ -223,8 +230,7 @@ class GestionarSolicitudController extends Controller
             $personaradicadocumento->peradotelefono         = $request->numeroContacto; 
             $personaradicadocumento->peradocorreo           = $request->correoElectronico;
             $personaradicadocumento->save();
-            $personaEntregaDocumento                        = mb_strtoupper($request->primerNombre.' '.$request->segundoNombre.' '.$request->primerApellido.' '.$request->segundoApellido,'UTF-8');
-
+   
             if($request->tipo === 'I' and $request->personaId === '000'){//Consulto el ultimo identificador de la persona 
                 $perRadDocumentoMaxConsecutio  = PersonaRadicaDocumento::latest('peradoid')->first();
                 $peradoid                      = $perRadDocumentoMaxConsecutio->peradoid;
@@ -241,14 +247,14 @@ class GestionarSolicitudController extends Controller
             }
 
             $radicaciondocumentoentrante->peradoid                      = $peradoid;
-            $radicaciondocumentoentrante->tipmedid                      = $request->tipoMedio;
-            $radicaciondocumentoentrante->depaid                        = $request->departamento;
-            $radicaciondocumentoentrante->muniid                        = $request->municipio;
+            $radicaciondocumentoentrante->tipmedid                      = 1;//lo marco como impreso
+            $radicaciondocumentoentrante->depaid                        = 18;//Marco por defecto a norte de santander
+            $radicaciondocumentoentrante->muniid                        = 804;//Marco por defecto a ocaña
             $radicaciondocumentoentrante->radoenfechadocumento          = $fechaActual;
             $radicaciondocumentoentrante->radoenfechallegada            = $fechaActual;
             $radicaciondocumentoentrante->radoenpersonaentregadocumento = $personaEntregaDocumento;
             $radicaciondocumentoentrante->radoenasunto                  = $asuntoRadicado;
-            $radicaciondocumentoentrante->radoentieneanexo              = $request->tieneAnexos;
+            $radicaciondocumentoentrante->radoentieneanexo              = ($request->hasFile('archivos')) ? 1 : 0;
             $radicaciondocumentoentrante->radoenobservacion             = $request->observacionGeneral;
             $radicaciondocumentoentrante->save();
 
@@ -261,17 +267,23 @@ class GestionarSolicitudController extends Controller
                 $radicaciondocentdependencia->radoenid = $radoenid;
                 $radicaciondocentdependencia->depeid   = $dependenciaId;//Se debe marcar por defecto gerencia
                 $radicaciondocentdependencia->save();
-            }
 
-
-            if($nombreOriginalPdf  !== ''){
                 $radicaciondocentanexo                            = new DocumentoEntranteAnexo();
                 $radicaciondocentanexo->radoenid                  = $radoenid;
-                $radicaciondocentanexo->radoeanombreanexooriginal = $nombreOriginalPdf;
-                $radicaciondocentanexo->radoeanombreanexoeditado  = $nombreArchivoPdf;
-                $radicaciondocentanexo->radoearutaanexo           = Crypt::encrypt($nombreArchivoPdf);
+                $radicaciondocentanexo->radoeanombreanexooriginal = $nombreArchivo;
+                $radicaciondocentanexo->radoeanombreanexoeditado  = $nombreArchivo;
+                $radicaciondocentanexo->radoearutaanexo           = Crypt::encrypt($nombreArchivo);
                 $radicaciondocentanexo->radoearequiereradicado    = true;
                 $radicaciondocentanexo->save();
+
+                //Almaceno la trazabilidad del radicado
+                $radicaciondocentcambioestado 					 = new DocumentoEntranteCambioEstado();
+                $radicaciondocentcambioestado->radoenid          = $radoenid;
+                $radicaciondocentcambioestado->tierdeid          = $estado;
+                $radicaciondocentcambioestado->radeceusuaid      = Auth::id();
+                $radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
+                $radicaciondocentcambioestado->radeceobservacion = 'Documento radicado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+                $radicaciondocentcambioestado->save();
             }
 
             //Registramos los adjuntos
@@ -312,33 +324,17 @@ class GestionarSolicitudController extends Controller
             $solicitud->vehiid                  = $request->vehiculoId;
             $solicitud->condid                  = $request->conductorId; 
             $solicitud->solifechahoraincidente  = $request->fechaHoraIncidente;
-            $solicitud->solimotivo              = $request->motivo;
+            $solicitud->solimotivo              = $request->motivoSolicitud;
             $solicitud->soliobservacion         = $request->observacionGeneral;
-
-            //$solicitud->solinombreanexooriginal = $radoenid;
-           // $solicitud->solinombreanexoeditado  = $radoenid;
-            //$solicitud->solirutaanexo           = $radoenid;
             $solicitud->save();
 
-
-            if($request->tipo === 'I'){
-                //Almaceno la trazabilidad del radicado
-                $radicaciondocentcambioestado 					 = new DocumentoEntranteCambioEstado();
-                $radicaciondocentcambioestado->radoenid          = $radoenid;
-                $radicaciondocentcambioestado->tierdeid          = $estado;
-                $radicaciondocentcambioestado->radeceusuaid      = Auth::id();
-                $radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
-                $radicaciondocentcambioestado->radeceobservacion = 'Documento radicado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
-                $radicaciondocentcambioestado->save();
-            }
-
-            if($debeRadicarDocumento){//Radico el documento
-                $rutaPdf      = $rutaCarpeta.'/'.$nombreArchivoPdf;
-                $dataCopias   = [];
-                $dataRadicado = DB::table('radicaciondocumentoentrante as rde')
+            if($request->tipo === 'I'){//Radico el documento
+                $rutaPdfRadicar = $generarPdf->generarFormatoSolicitud($arrayDatos);//Descargamos el pdf para radicarlo
+                $rutaPdf        = $rutaCarpeta.'/'.$nombreArchivo;
+                $dataCopias     = [];
+                $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
                                     ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
-                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto',
-                                            DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid AND radoedescopia = true) AS totalCopias'))
+                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto')
                                     ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                                     ->join('radicaciondocentdependencia as rded', function($join)
                                         {
@@ -347,43 +343,10 @@ class GestionarSolicitudController extends Controller
                                         })
                                     ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
                                     ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
-                                    ->where('rde.radoenid', $radoenid)->first();
+                                    ->where('rde.radoenid', $radoenid)->first();        
 
-                if($dataRadicado->totalCopias > 0){
-                    $dataCopias =  DB::table('radicaciondocentdependencia as rded')
-                                        ->select('d.depenombre as dependencia','d.depecorreo')
-                                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
-                                        ->where('rded.radoenid', $radoenid)
-                                        ->where('rded.radoedescopia', true)->get();
-                }
-
-                $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivoPdf, $dataRadicado, $dataCopias, true);
-                //$funcion->reducirPesoPDF($rutaPdf, $rutaPdf);
+               // $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivo, $dataRadicado, $dataCopias, true);
             }
-
-
-            $arrayDatos = [ 
-                "tipoIdentificacion"     => $tipoIdentificacion,
-                "documentoIdentidad"     => $documentoIdentidad,
-                "nombresSolicitante"     => $nombresSolicitante,
-                "apellidosSolicitante"   => $apellidosSolicitante,
-                "direccionSolicitante"   => $direccionSolicitante,
-                "telefonoSolicitante"    => $telefonoSolicitante,
-                "correoSolicitante"      => $correoSolicitante,
-                "tipoSolicitud"          => $tipoSolicitud,
-                "tipoMedio"              => $tipoMedio,
-                "fechaRegistro"          => $fechaRegistro,
-                "fechaIncidente"         => $fechaIncidente,
-                "conductorInvolucrado"   => $conductorInvolucrado,
-                "vehiculoInvolucrado"    => $vehiculoInvolucrado,
-                "motivoSolicitud"        => $motivoSolicitud,
-                "observacionesSolicitud" => $observacionesSolicitud,
-                "metodo"                 => 'F'
-            ];
-    
-    
-            $generarPdf->generarFormatoSolicitud($arrayDatos);
-
 
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', 'idRadicado' => $radoenid]);
