@@ -24,9 +24,6 @@ return new class extends Migration
             $table->string('solimotivo', 2000)->comment('Motivo que contiene la solicitud');
             $table->string('soliobservacion', 1000)->nullable()->comment('Observaciones a la solicitud');
             $table->boolean('soliradicado')->default(false)->comment('Determina si la solicitud tiene radicado');
-            $table->string('solinombreanexooriginal', 200)->nullable()->comment('Nombre original con el cual se ha subido el anexo a la solicitud');
-            $table->string('solinombreanexoeditado', 200)->nullable()->comment('Nombre con el cual se ha subido el anexo de la solicitud pero editado');
-            $table->string('solirutaanexo', 500)->nullable()->comment('Ruta enfuscada del anexo a la solicitud');
             $table->timestamps();
             $table->foreign('radoenid')->references('radoenid')->on('radicaciondocumentoentrante')->onUpdate('cascade')->index('fk_radoensoli');
             $table->foreign('peradoid')->references('peradoid')->on('personaradicadocumento')->onUpdate('cascade')->index('fk_peradosoli');

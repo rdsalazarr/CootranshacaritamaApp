@@ -10,7 +10,7 @@ export default function Persona({data}){
         <Grid container spacing={2}>
             <Grid item xl={12} md={12} sm={12} xs={12}>
                 <Box className='divisionFormulario'>
-                    Información del la persona que radica el documento
+                    Información del la persona
                 </Box>
             </Grid>   
 

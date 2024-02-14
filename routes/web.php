@@ -546,6 +546,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/listar/datos', [GestionarSolicitudController::class, 'datos']);
             Route::post('/consultar/persona', [GestionarSolicitudController::class, 'consultarPersona']);
             Route::post('/salve/datos', [GestionarSolicitudController::class, 'salve']);
+            Route::post('/show/solicitud', [GestionarSolicitudController::class, 'show']);
         });
 
     });

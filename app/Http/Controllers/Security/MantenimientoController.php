@@ -363,7 +363,35 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {
-        $tipoIdentificacion     = 'Cédula de ciudadania';
+
+        $generarPdf = new generarPdf();
+        $rutaCarpeta             = public_path().'/archivos/radicacion/documentoEntrante/2024/';
+        $nombreArchivo = 'prueba_01.pdf';
+        $rutaPdf        = $rutaCarpeta.'/'.$nombreArchivo;
+                $dataCopias     = [];
+                $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
+                                    ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo', 'rde.radoenasunto as asunto')
+                                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                                    ->join('radicaciondocentdependencia as rded', function($join)
+                                        {
+                                            $join->on('rded.radoenid', '=', 'rde.radoenid');
+                                            $join->where('rded.radoedescopia', false);
+                                        })
+                                    ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                                    ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
+                                    ->where('rde.radoenid', 4)->first();
+
+                                    $dataCopias =  DB::table('radicaciondocentdependencia as rded')
+                                    ->select('d.depenombre as dependencia','d.depecorreo')
+                                    ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                                    ->where('rded.radoenid', 4)
+                                    ->where('rded.radoedescopia', true)->get();
+
+                $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivo, $dataRadicado, $dataCopias, false);
+
+
+        /*$tipoIdentificacion     = 'Cédula de ciudadania';
         $documentoIdentidad     = '1.978.917';
         $nombresSolicitante     = 'RAMÓN DAVID';
         $apellidosSolicitante   = 'SALAZAR RINCÓN';
@@ -398,11 +426,13 @@ class MantenimientoController extends Controller
             "vehiculoInvolucrado"    => $vehiculoInvolucrado,
             "motivoSolicitud"        => $motivoSolicitud,
             "observacionesSolicitud" => $observacionesSolicitud,
+            "anioRadicado"           => '2024',
+            "nombreArchivo"          => 'prueba.pdf',
             "metodo"                 => 'I'
         ];
 
 
-        $generarPdf->generarFormatoSolicitud($arrayDatos);
+        $generarPdf->generarFormatoSolicitud($arrayDatos);*/
 
 
         /*$generales  = new generales();  

@@ -254,6 +254,14 @@ body{
     text-decoration: underline;
     padding-bottom: 3px;
   }
+  .longText{
+    text-align: justify;
+    overflow: auto;
+    max-height: 10em;
+    min-height: 3em;
+    overflow-x: hidden;
+    padding-right: 10px;
+  }
 }
 
 .columnaPagar{

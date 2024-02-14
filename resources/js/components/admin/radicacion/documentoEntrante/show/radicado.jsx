@@ -140,7 +140,7 @@ export default function Radicado({data}){
             <Grid item xl={12} md={12} sm={12} xs={12}>
                 <Box className='frmTexto'>
                     <label>Motivo de la solicitud</label>
-                    <span>{data.descripcion}</span>
+                    <span className="longText">{data.descripcion}</span>
                 </Box>
             </Grid>
 

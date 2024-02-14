@@ -11,7 +11,6 @@ class Solicitud extends Model
 
     protected $table      = 'solicitud';
     protected $primaryKey = 'soliid';
-    protected $fillable   = ['peradoid','radoenid','tipsolid','timesoid','vehiid','condid',
-                            'solifechahoraregistro','solifechahoraincidente','solimotivo','soliobservacion',
-                            'soliradicado','solinombreanexooriginal','solinombreanexoeditado','solirutaanexo'];
+    protected $fillable   = ['peradoid','radoenid','tipsolid','timesoid','vehiid','condid','solifechahoraregistro',
+                            'solifechahoraincidente','solimotivo','soliobservacion','soliradicado'];
 }

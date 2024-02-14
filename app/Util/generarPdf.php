@@ -1139,109 +1139,113 @@ EOD;
 		$urlEmpresa     = $empresa->emprurl;
 		$nombreEmpresa  = $empresa->emprnombre;
 		$siglaEmpresa   = $empresa->emprsigla;
+		$logoEmpresa    = $empresa->emprlogo;
 
 		$documentoRadicado = true;
         $mensajeRadicar    = '';     
-		$tcpdf =new FPDI();
-        $tcpdf->SetAuthor('IMPLESOFT');
-        $tcpdf->SetCreator('ERP '.$siglaEmpresa);
-        $tcpdf->SetTitle($consecutivo);
-        $tcpdf->SetSubject('Formato de registro de radicado externo');
-        $tcpdf->SetKeywords('Radicacion, '.$consecutivo);
+		$fpdi = new FPDI();
+        $fpdi->SetAuthor('IMPLESOFT');
+        $fpdi->SetCreator('ERP '.$siglaEmpresa);
+        $fpdi->SetTitle($consecutivo);
+        $fpdi->SetSubject('Formato de registro de radicado externo');
+        $fpdi->SetKeywords('Radicacion, '.$consecutivo);
 
-		//dd($rutaCarpeta.'/'.$nombreFile);
-		//D:\Laravel\CootranshacaritamaApp\public/archivos/radicacion/documentoEntrante/2024/598_578-circular.pdf
-		//'D:/Laravel/CootranshacaritamaApp/public/archivos/radicacion/documentoEntrante/2024/14815_2024_Formato_PQRS.pdf'
-  
         try {
-            $pageCount = $tcpdf->setSourceFile($rutaCarpeta.'/'.$nombreFile);
+            $pageCount = $fpdi->setSourceFile($rutaCarpeta.'/'.$nombreFile);
 		} catch (Exception $e) {
             $mensajeRadicar    = 'El documento no se pudo abrir por las siguientes causas => '. $e->getMessage();
             $documentoRadicado = false;
 		}
 
         for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-			$tcpdf->addPage();
+			$fpdi->addPage();
 
 			try {
-				$templateId = $tcpdf->importPage($pageNo);
-				$tcpdf->useTemplate($templateId, 0, 0, 210);
+				$templateId = $fpdi->importPage($pageNo);
+				$fpdi->useTemplate($templateId, 0, 0, 210);
 			} catch (Exception $e) {
                 $mensajeRadicar    = 'El documento no se pudo impotar por las siguientes causas => '. $e->getMessage();
                 $documentoRadicado = false;
 			}
 
-            $tcpdf->SetFillColor(255, 255, 255);
-            $tcpdf->SetFont('Helvetica','B',6);
-            $tcpdf->SetY(8);
-            $tcpdf->Cell(115,1,'',0,0,'',false);
-            $tcpdf->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
-            $tcpdf->Ln(3);
-            $tcpdf->SetFont('Helvetica','',7);
-            $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(12,3,'Radicado: ','L',0,'',true);
-            $tcpdf->Cell(70,3,$consecutivo,'R',0,'',true);
-            $tcpdf->Ln(3);
-            $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(12,3,'Fecha: ','L',0,'',true);
-            $tcpdf->Cell(70,3,$fecha,'R',0,'',true);
-            $tcpdf->Ln(3);
-            $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(12,3,'Destino: ','L',0,'',true);
-            $tcpdf->Cell(70,3,substr($dependencia, 0, 47),'R',0,'',true);
+            $fpdi->SetFillColor(255, 255, 255);
+            $fpdi->SetFont('Helvetica','B',6);
+            $fpdi->SetY(8);
+			
+            $fpdi->Cell(115,1,'',0,0,'',false);
+            $fpdi->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
+            $fpdi->Ln(3);
+            $fpdi->SetFont('Helvetica','',7);
+            $fpdi->Cell(115,3,'',0,0,'');
+            $fpdi->Cell(12,3,'Radicado: ','L',0,'',true);
+            $fpdi->Cell(70,3,$consecutivo,'R',0,'',true);
+            $fpdi->Ln(3);
+            $fpdi->Cell(115,3,'',0,0,'');
+            $fpdi->Cell(12,3,'Fecha: ','L',0,'',true);
+            $fpdi->Cell(70,3,$fecha,'R',0,'',true);
+            $fpdi->Ln(3);
+            $fpdi->Cell(115,3,'',0,0,'');
+            $fpdi->Cell(12,3,'Destino: ','L',0,'',true);
+            $fpdi->Cell(70,3,substr($dependencia, 0, 47),'R',0,'',true);
             if($correo !=''){
-                $tcpdf->Ln(3);
-                $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(12,3,'Correo: ','L',0,'',true);
-                $tcpdf->Cell(70,3,$correo,'R',0,'',true);
+                $fpdi->Ln(3);
+                $fpdi->Cell(115,3,'',0,0,'');
+                $fpdi->Cell(12,3,'Correo: ','L',0,'',true);
+                $fpdi->Cell(70,3,$correo,'R',0,'',true);
             }
-            $tcpdf->Ln(3);
-            $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(12,3,'Usuario: ','L',0,'',true);
-            $tcpdf->Cell(70,3,$funcionario,'R',0,'',true);
-            $tcpdf->Ln(3);
-            $tcpdf->SetFont('Helvetica','',6);
-            $tcpdf->Cell(115,3,'',0,0,'');
-            $tcpdf->Cell(82,3,$urlEmpresa,'LBR',0,'R',true);
-            $tcpdf->Ln(8);
+            $fpdi->Ln(3);
+            $fpdi->Cell(115,3,'',0,0,'');
+            $fpdi->Cell(12,3,'Usuario: ','L',0,'',true);
+            $fpdi->Cell(70,3,$funcionario,'R',0,'',true);
+            $fpdi->Ln(3);
+            $fpdi->SetFont('Helvetica','',6);
+            $fpdi->Cell(115,3,'',0,0,'');
+            $fpdi->Cell(82,3,$urlEmpresa,'LBR',0,'R',true);
+            $fpdi->Ln(8);
+
+			//Montamos el logo al radicado
+			$fpdi->Image('archivos/logoEmpresa/'.$logoEmpresa, 190, 12, 15, 10);
 
             //Genero las copias solo en la pagina uno
             if(count($dataCopia) > 0 and $pageNo === 1){
-                $tcpdf->SetFont('Helvetica','B',6);
-                $tcpdf->Cell(115,1,'',0,0,'',false);
-                $tcpdf->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
-                $tcpdf->Ln(3);            
-                $tcpdf->SetFont('Helvetica','',7);
-                $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(12,3,'Radicado: ','L',0,'',true);
-                $tcpdf->Cell(70,3,$consecutivo,'R',0,'',true);
-                $tcpdf->Ln(3);
-                $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(12,3,'Fecha: ','L',0,'',true);
-                $tcpdf->Cell(70,3,$fecha,'R',0,'',true);
-                $tcpdf->Ln(3);
+                $fpdi->SetFont('Helvetica','B',6);
+                $fpdi->Cell(115,1,'',0,0,'',false);
+                $fpdi->Cell(82,3,$nombreEmpresa,'LTR',0,'C',true);
+                $fpdi->Ln(3);            
+                $fpdi->SetFont('Helvetica','',7);
+                $fpdi->Cell(115,3,'',0,0,'');
+                $fpdi->Cell(12,3,'Radicado: ','L',0,'',true);
+                $fpdi->Cell(70,3,$consecutivo,'R',0,'',true);
+                $fpdi->Ln(3);
+                $fpdi->Cell(115,3,'',0,0,'');
+                $fpdi->Cell(12,3,'Fecha: ','L',0,'',true);
+                $fpdi->Cell(70,3,$fecha,'R',0,'',true);
+                $fpdi->Ln(3);
 
                 foreach($dataCopia as $copia){
-                    $tcpdf->Cell(115,3,'',0,0,'');
-                    $tcpdf->Cell(12,3,'Copia: ','L',0,'',true);
-                    $tcpdf->Cell(60,4,$copia->dependencia,0,0,'',true);
-                    $tcpdf->Ln(3);
+                    $fpdi->Cell(115,3,'',0,0,'');
+                    $fpdi->Cell(12,3,'Copia: ','L',0,'',true);
+                    $fpdi->Cell(70,4,$copia->dependencia,'R',0,'',true);
+                    $fpdi->Ln(3);
                 }
 
                 if($correo !=''){
-                    $tcpdf->Cell(115,3,'',0,0,'');
-                    $tcpdf->Cell(12,3,'Correo: ','L',0,'',true);
-                    $tcpdf->Cell(70,3,$correo,'R',0,'',true);
+                    $fpdi->Cell(115,3,'',0,0,'');
+                    $fpdi->Cell(12,3,'Correo: ','L',0,'',true);
+                    $fpdi->Cell(70,3,$correo,'R',0,'',true);
                 }
-                $tcpdf->Ln(3);
-                $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(12,3,'Usuario: ','L',0,'',true);
-                $tcpdf->Cell(70,3,$funcionario,'R',0,'',true);
-                $tcpdf->Ln(3);
-                $tcpdf->SetFont('Helvetica','',6);
-                $tcpdf->Cell(115,3,'',0,0,'');
-                $tcpdf->Cell(82,3,$urlEmpresa,'LBR',0,'R',true);
-                $tcpdf->Ln(12);
+                $fpdi->Ln(3);
+                $fpdi->Cell(115,3,'',0,0,'');
+                $fpdi->Cell(12,3,'Usuario: ','L',0,'',true);
+                $fpdi->Cell(70,3,$funcionario,'R',0,'',true);
+                $fpdi->Ln(3);
+                $fpdi->SetFont('Helvetica','',6);
+                $fpdi->Cell(115,3,'',0,0,'');
+                $fpdi->Cell(82,3,$urlEmpresa,'LBR',0,'R',true);
+                $fpdi->Ln(12);
+
+				//Montamos el logo al radicado
+				$fpdi->Image('archivos/logoEmpresa/'.$logoEmpresa, 190, 38, 15, 10);
             }
         }
 
@@ -1250,10 +1254,10 @@ EOD;
 		    $nombrePDF = $rutaCarpeta.'/'.$nombreFile;
             $metodo    = 'F';
         }else{
-            $metodo    = 'S';
+            $metodo    = 'I';
         }
 
-        $pdfGenerado = $tcpdf->Output($nombrePDF, $metodo);
+        $pdfGenerado = $fpdi->Output($nombrePDF, $metodo);
 
         $datos = array(
                     'documentoRadicado' => $documentoRadicado,
@@ -3451,7 +3455,6 @@ EOD;
 		PDF::SetKeywords('Solicitud, Queja, Reclamo, Sugerencia, Felicitación, Formato, '.$siglaEmpresa);
         PDF::SetTitle($titulo);
 
-		PDF::SetProtection(array('copy'), '', null, 0, null);
 		$this->headerFormato($tituloFormato, $versionFormato, $numeroFormato, $fechaFormato, $areaFormato, $siglaEmpresa, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
 
@@ -3536,7 +3539,7 @@ EOD;
 			PDF::MultiCell(144, 4, $conductorInvolucrado, 0, 'L', false, 1);
 		}
 
-		if($conductorInvolucrado !== null ){			
+		if($vehiculoInvolucrado !== null ){			
 			PDF::SetFont('helvetica','B',12);
 			PDF::Cell(44,4,'Vehículo: ',0,0,'');
 			PDF::SetFont('helvetica','',12);

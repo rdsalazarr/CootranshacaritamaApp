@@ -58,8 +58,7 @@ class Dia
 
             $conductorLicencias = DB::table('conductorlicencia as cl')
                                     ->select('cl.condid', 'cl.conlicfechavencimiento', 'cl.conlicnumero', 'p.perscorreoelectronico',
-                                        DB::raw("CONCAT(p.persprimernombre, ' ', IFNULL(p.perssegundonombre, ''), ' ',
-                                            p.persprimerapellido, ' ', IFNULL(p.perssegundoapellido, '')) as nombreConductor"))
+                                        DB::raw("CONCAT(p.persprimernombre, ' ', IFNULL(p.perssegundonombre, ''), ' ',p.persprimerapellido, ' ', IFNULL(p.perssegundoapellido, '')) as nombreConductor"))
                                     ->join('conductor as c', 'c.condid', '=', 'cl.condid')
                                     ->join('persona as p', 'p.persid', '=', 'c.persid')
                                     ->whereDate('cl.conlicfechavencimiento', '<', $fechaActual)

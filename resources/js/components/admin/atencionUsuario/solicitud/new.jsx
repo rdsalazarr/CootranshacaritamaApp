@@ -1,14 +1,14 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import {Button, Grid, MenuItem, Box, Stack, FormGroup, FormControlLabel, Checkbox, Avatar, Autocomplete, createFilterOptions } from '@mui/material';
+import {Button, Grid, MenuItem, Box, Stack, Avatar, Autocomplete, createFilterOptions } from '@mui/material';
 import {TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import {ButtonFileImg, ButtonFilePdf, ContentFile} from "../../../layout/files";
+import {ButtonFileImg, ContentFile} from "../../../layout/files";
 import showSimpleSnackbar from '../../../layout/snackBar';
-import { ModalDefaultAuto } from '../../../layout/modal';
 import WarningIcon from '@mui/icons-material/Warning';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 import Files from "react-files";
+import Anexos from './anexos';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -16,12 +16,11 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import TextField from '@mui/material/TextField';
 import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'dayjs/locale/es';
-import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 
 export default function New({data, tipo}){
 
-    const [formData, setFormData] = useState({ codigo: (tipo === 'U') ? data.id : '000',
+    const [formData, setFormData] = useState({ codigoSolicitud: (tipo === 'U') ? data.solicitudId : '000', codigoRadicado: (tipo === 'U') ? data.idRadicado : '000',
                                                 tipoIdentificacion: '', numeroIdentificacion: '', primerNombre: '',      segundoNombre: '',            primerApellido: '', 
                                                 segundoApellido: '',    direccionFisica: '',      correoElectronico: '', numeroContacto: '',           tipoSolicitud: '',
                                                 tipoMedio: '',          vehiculoId: '',           conductorId: '',       observacionGeneral: '',       motivoSolicitud: '',
@@ -34,6 +33,7 @@ export default function New({data, tipo}){
     const [totalAdjuntoSubido , setTotalAdjuntoSubido] = useState(0);
     const [tipoSolicitudes, setTipoSolicitudes] = useState([]);
     const [fechaActual, setFechaActual] = useState(new Date());
+    const [anexosRadicado, setAnexosRadicado] = useState([]);
     const [conductores, setConductores] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
     const [esEmpresa, setEsEmpresa] = useState(false);
@@ -89,33 +89,59 @@ export default function New({data, tipo}){
         const tipoMedioSolicitudFiltrado     = tipoMedios.filter((tpMedio) => tpMedio.timesoid == formData.tipoMedio);
         const vehiculosFiltrado              = vehiculos.filter((vehic) => vehic.vehiid == formData.vehiculoId);
         const condutorFiltrado               = conductores.filter((cond) => cond.condid == formData.conductorId);
-
         newFormData.tipoIdentificacionNombre = tipoIdentificacionFiltrado[0].tipidenombre;
         newFormData.tipoSolicitudNombre      = tipoSolicitudFiltrado[0].tipsolnombre;
         newFormData.tipoMedioNombre          = tipoMedioSolicitudFiltrado[0].timesonombre;
         newFormData.vehiculoNombre           = (vehiculosFiltrado.length > 0) ? vehiculosFiltrado[0].nombreVehiculo : '';
         newFormData.conductorNombre          = (condutorFiltrado.length > 0) ? condutorFiltrado[0].nombreConductor : '';
 
-
        // setLoader(true);
         instance.post('/admin/antencion/usuario/salve/datos', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-           /* (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', responsable:'', departamento: '', municipio: '', nombre:'', direccion:'', correo:'',
-                                                                    telefonoCelular:'', telefonoFijo:'', estado:'1', tipo:tipo}) : null;*/
+            (formData.tipo === 'I' && res.success) ? setFormData({codigoSolicitud: formData.codigoSolicitud, codigoRadicado: formData.codigoSolicitud,
+                                                tipoIdentificacion: '', numeroIdentificacion: '', primerNombre: '',      segundoNombre: '',            primerApellido: '', 
+                                                segundoApellido: '',    direccionFisica: '',      correoElectronico: '', numeroContacto: '',           tipoSolicitud: '',
+                                                tipoMedio: '',          vehiculoId: '',           conductorId: '',       observacionGeneral: '',       motivoSolicitud: '',
+                                                fechaHoraIncidente:'',  personaId: '',            tipo:tipo,             tipoIdentificacionNombre: '', tipoSolicitudNombre: '',
+                                                vehiculoNombre: '',     conductorNombre: '',      tipoMedioNombre:'',    archivos:[]}) : null;
             setLoader(false);
         })
-
     }
 
     const inicio = () =>{ 
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/antencion/usuario/listar/datos', {codigo: formData.codigo, tipo: formData.tipo}).then(res=>{
+        instance.post('/admin/antencion/usuario/listar/datos', {solicitudId: formData.codigoSolicitud, radicadoId: formData.codigoSolicitud, tipo: formData.tipo}).then(res=>{
             newFormData.fechaHoraIncidente = res.fechaHoraActual;
+            const totalAnexos              = res.anexosRadicados
+
+            if(tipo === 'U'){
+                let solicitud                    = res.data;
+                newFormData.personaId            = solicitud.peradoid;
+                newFormData.tipoIdentificacion   = solicitud.tipideid;
+                newFormData.numeroIdentificacion = solicitud.peradodocumento;
+                newFormData.primerNombre         = solicitud.peradoprimernombre;
+                newFormData.segundoNombre        = solicitud.peradosegundonombre;
+                newFormData.primerApellido       = solicitud.peradoprimerapellido;
+                newFormData.segundoApellido      = solicitud.peradosegundoapellido;
+                newFormData.direccionFisica      = solicitud.peradodireccion;
+                newFormData.correoElectronico    = solicitud.peradocorreo;
+                newFormData.numeroContacto       = solicitud.peradotelefono;
+                newFormData.tipoSolicitud        = solicitud.tipsolid;
+                newFormData.tipoMedio            = solicitud.timesoid;
+                newFormData.vehiculoId           = solicitud.vehiid;
+                newFormData.conductorId          = solicitud.condid;
+                newFormData.observacionGeneral   = solicitud.soliobservacion;
+                newFormData.motivoSolicitud      = solicitud.solimotivo;
+                newFormData.fechaHoraIncidente   = solicitud.solifechahoraincidente;
+            }
+
             setTipoIdentificaciones(res.tipoIdentificaciones);
+            setTotalAdjuntoSubido(totalAnexos.length);
             setTipoSolicitudes(res.tipoSolicitudes);
+            setAnexosRadicado(res.anexosRadicados);
             setConductores(res.conductores);
             setTipoMedios(res.tipoMedios);
             setVehiculos(res.vehiculos);
@@ -134,16 +160,16 @@ export default function New({data, tipo}){
             setLoader(true);
             instance.post('/admin/antencion/usuario/consultar/persona', {tipoIdentificacion:tpIdentificacion, numeroIdentificacion: formData.numeroIdentificacion}).then(res=>{
                 if(res.success){
-                    newFormData.personaId       = res.data.peradoid;
-                    newFormData.primerNombre    = res.data.peradoprimernombre;
-                    newFormData.segundoNombre   = (res.data.peradosegundonombre !== undefined) ? res.data.peradosegundonombre : '';
-                    newFormData.primerApellido  = (res.data.peradoprimerapellido !== undefined) ? res.data.peradoprimerapellido : '';
-                    newFormData.segundoApellido = (res.data.peradosegundoapellido !== undefined) ? res.data.peradosegundoapellido : '';
-                    newFormData.direccionFisica = (res.data.peradodireccion !== undefined) ? res.data.peradodireccion : '';
+                    newFormData.personaId         = res.data.peradoid;
+                    newFormData.primerNombre      = res.data.peradoprimernombre;
+                    newFormData.segundoNombre     = (res.data.peradosegundonombre !== undefined) ? res.data.peradosegundonombre : '';
+                    newFormData.primerApellido    = (res.data.peradoprimerapellido !== undefined) ? res.data.peradoprimerapellido : '';
+                    newFormData.segundoApellido   = (res.data.peradosegundoapellido !== undefined) ? res.data.peradosegundoapellido : '';
+                    newFormData.direccionFisica   = (res.data.peradodireccion !== undefined) ? res.data.peradodireccion : '';
                     newFormData.correoElectronico = (res.data.peradocorreo !== undefined) ? res.data.peradocorreo : '';
                     newFormData.numeroContacto    = (res.data.peradotelefono !== undefined) ? res.data.peradotelefono : '';
                 }else{
-                    newFormData.personaId         = '';
+                    newFormData.personaId         = '000';
                     newFormData.primerNombre      = '';
                     newFormData.segundoNombre     = '';
                     newFormData.primerApellido    = '';
@@ -168,14 +194,14 @@ export default function New({data, tipo}){
     return (
         <Box>
             <ValidatorForm onSubmit={handleSubmit} >
-                
+
                 <Grid container spacing={2} >
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <Box className='divisionFormulario'>
                             Información del solicitante
                         </Box> 
                     </Grid>
-        
+
                     <Grid item xl={3} md={3} sm={6} xs={12}>
                         <SelectValidator
                             name={'tipoIdentificacion'}
@@ -411,7 +437,6 @@ export default function New({data, tipo}){
                                     value={formData.conductorId}
                                     placeholder="Consulte el conductor aquí..." />}
                         />
-
                     </Grid>
 
                     <Grid item xl={6} md={6} sm={6} xs={12}>
@@ -442,6 +467,12 @@ export default function New({data, tipo}){
                         />
                     </Grid>
                 </Grid>
+
+                { (tipo === 'U' && anexosRadicado.length > 0 ) ?
+                    <Grid item md={12} xl={12} sm={12} xs={12} >
+                        <Anexos data={anexosRadicado} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
+                    </Grid>
+                : null }
 
                 {((tipo=== 'I') || (tipo=== 'U' && (totalAdjunto - totalAdjuntoSubido) > 0) )  ?
                     <Grid container spacing = {2} style={{ transition: 'all .2s ease-in-out'}}>

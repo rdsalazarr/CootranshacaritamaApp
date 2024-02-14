@@ -22,86 +22,90 @@ class GestionarSolicitudController extends Controller
     public function index(Request $request)
 	{
 		$this->validate(request(),['tipo' => 'required']);
-         
-        $consulta   = DB::table('radicaciondocumentoentrante as rde')
-                    ->select('rde.radoenid as id', 'rde.radoenfechahoraradicado as fechaRadicado','rde.radoenasunto as asunto',
-                        DB::raw("CONCAT(rde.radoenanio,' - ', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
-                        DB::raw("CONCAT(prd.peradoprimernombre,' ',if(prd.peradosegundonombre is null ,'', prd.peradosegundonombre),' ', prd.peradoprimerapellido,' ',if(prd.peradosegundoapellido is null ,' ', prd.peradosegundoapellido)) as nombrePersonaRadica"))
-                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
-                    ->join('radicaciondocentdependencia as rded', function($join)
-                        {
-                            $join->on('rded.radoenid', '=', 'rde.radoenid');
-                            $join->where('rded.radoedescopia', false); 
-                        })
-                    ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
-                    ->join('tipoestadoraddocentrante as terde', 'terde.tierdeid', '=', 'rde.tierdeid');
 
-                    if($request->tipo === 'PRODUCIR')
-                        $consulta = $consulta->where('rde.tierdeid', 1);
-
-                    if($request->tipo === 'VERIFICAR')
-                        $consulta = $consulta->where('rde.tierdeid', '!=', 1);
-
-                    if($request->tipo === 'HISTORICO')
-                        $consulta = $consulta->where('rde.radoenanio', '!=', Carbon::now()->year);
-
-                $data = $consulta->orderBy('rde.radoenid', 'Desc')->get();
-
-        return response()->json(["data" => $data]);
-    }
-
-    public function datos(Request $request)
-	{
-        $this->validate(request(),['tipo' => 'required', 'codigo' => 'required']);	
-		$codigo            = $request->codigo;
-		$tipo              = $request->tipo;
-        $data              = []; 
-        $anexosRadicados   = [];
-        if($tipo === 'U'){
-            $data   = DB::table('radicaciondocumentoentrante as rde')
-                        ->select('rde.peradoid','rde.tipmedid','rde.tierdeid','rde.depaid','rde.muniid','rded.depeid','rded.radoedid','rde.radoenfechadocumento',
-                                'rde.radoenfechallegada','rde.radoenpersonaentregadocumento','rde.radoenasunto','rde.radoentieneanexo',
-                                'rde.radoendescripcionanexo','rde.radoentienecopia','rde.radoenobservacion',
-                                'prd.tipideid','prd.peradodocumento','prd.peradoprimernombre','prd.peradosegundonombre','prd.peradoprimerapellido',
-                                'prd.peradosegundoapellido', 'prd.peradodireccion','prd.peradotelefono','prd.peradocorreo','prd.peradocodigodocumental',
-                                DB::raw('(SELECT COUNT(radoedid) AS radoedid FROM radicaciondocentdependencia WHERE radoenid = rde.radoenid AND radoedescopia = true) AS totalCopias'),
-                                DB::raw('(SELECT COUNT(radoeaid) AS radoeaid FROM radicaciondocentanexo WHERE radoenid = rde.radoenid AND radoearequiereradicado = false ) AS totalAnexos'))
+        try{
+            $consulta   = DB::table('solicitud as s')
+                        ->select('s.soliid as solicitudId', 'rde.radoenid as idRadicado', 's.solifechahoraregistro as fechaRadicado',
+                            DB::raw('SUBSTRING(s.solimotivo, 1, 200) AS asunto'),'ts.tipsolnombre as tipoSolicitud',
+                            DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),'d.depenombre as dependencia','terde.tierdenombre as estado',
+                            DB::raw("CONCAT(prd.peradoprimernombre,' ',IFNULL(prd.peradosegundonombre,''),' ',prd.peradoprimerapellido,' ',IFNULL(prd.peradosegundoapellido,'')) as nombrePersonaRadica"))
+                        ->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 's.radoenid')
                         ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
                         ->join('radicaciondocentdependencia as rded', function($join)
                             {
                                 $join->on('rded.radoenid', '=', 'rde.radoenid');
                                 $join->where('rded.radoedescopia', false); 
                             })
-                        ->where('rde.radoenid', $codigo)->first();
+                        ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                        ->join('tiposolicitud as ts', 'ts.tipsolid', '=', 's.tipsolid')
+                        ->join('tipoestadoraddocentrante as terde', 'terde.tierdeid', '=', 'rde.tierdeid')
+                        ->where('usuaid', Auth::id());
 
-            $anexosRadicados  =  DB::table('radicaciondocentanexo as rdea')
-                                ->select('rdea.radoeaid as id','rdea.radoeanombreanexooriginal as nombreOriginal','rdea.radoeanombreanexoeditado as nombreEditado',
-                                'rdea.radoearutaanexo as rutaAnexo',DB::raw("if(rdea.radoearequiereradicado = 1 ,'Sí', 'No') as radicarDocumento"), 'rde.radoenanio as anio',
-                                DB::raw("CONCAT('archivos/radicacion/documentoEntrante/',rde.radoenanio,'/', rdea.radoearutaanexo) as rutaDescargar"))
-                                ->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 'rdea.radoenid')
-                                ->where('rdea.radoenid', $codigo)->get();
+                        if($request->tipo === 'GESTIONAR')
+                            $consulta = $consulta->where('rde.tierdeid', 1);
+
+                        if($request->tipo === 'HISTORICO')
+                            $consulta = $consulta->whereIn('rde.tierdeid', [2,3,4]);
+
+                $data = $consulta->orderBy('rde.radoenid', 'Desc')->get();
+
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
+    }
 
-        $fechaHoraActual       = Carbon::now()->format('Y-m-d h:m:s');
-        $tipoMedios            = DB::table('tipomediosolicitud')->select('timesoid','timesonombre')->orderBy('timesonombre')->get();
-		$tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
-        $tipoSolicitudes       = DB::table('tiposolicitud')->select('tipsolid','tipsolnombre')->orderBy('tipsolnombre')->get();
-        $vehiculos             = DB::table('vehiculo as v')->select('v.vehiid', DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
-                                ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                ->where('v.tiesveid', 'A')
-                                ->where('v.agenid', auth()->user()->agenid)->get();
+    public function datos(Request $request)
+	{
+        $this->validate(request(),['tipo' => 'required', 'solicitudId' => 'required']);	
+		$solicitudId     = $request->solicitudId;
+        $radicadoId      = $request->radicadoId;
+		$tipo            = $request->tipo;
+        $data            = [];
+        $anexosRadicados = [];
 
-        $conductores           = DB::table('conductorvehiculo as cv')
-                                    ->select('c.condid',
-                                    DB::raw("CONCAT(p.persdocumento,' ', p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreConductor"))
-                                    ->join('conductor as c', 'c.condid', '=', 'cv.condid')
-                                    ->join('persona as p', 'p.persid', '=', 'c.persid')
-                                    ->where('c.tiescoid', 'A')->get();
+        try{
 
-        return response()->json(["fechaHoraActual" => $fechaHoraActual, "tipoMedios"      => $tipoMedios,     "tipoIdentificaciones" => $tipoIdentificaciones, 
-                                "tipoSolicitudes"  => $tipoSolicitudes,	"vehiculos"       => $vehiculos,      "conductores"          => $conductores,
-                                "data"             => $data,            "anexosRadicados" => $anexosRadicados ]);
-	}
+            if($tipo === 'U'){
+                $data   = DB::table('solicitud as s')
+                            ->select('s.peradoid','s.radoenid','s.tipsolid','s.timesoid','s.vehiid','s.condid', 's.solifechahoraincidente','s.solimotivo',
+                                    's.soliobservacion','s.soliradicado','prd.tipideid','prd.peradodocumento','prd.peradoprimernombre','prd.peradosegundonombre',
+                                    'prd.peradoprimerapellido','prd.peradosegundoapellido', 'prd.peradodireccion','prd.peradotelefono','prd.peradocorreo')
+                            ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 's.peradoid')
+                            ->where('s.soliid', $solicitudId)->first();
+
+                $anexosRadicados  =  DB::table('radicaciondocentanexo as rdea')
+                                    ->select('rdea.radoeaid as id','rdea.radoeanombreanexooriginal as nombreOriginal','rdea.radoeanombreanexoeditado as nombreEditado',
+                                    'rdea.radoearutaanexo as rutaAnexo',DB::raw("if(rdea.radoearequiereradicado = 1 ,'Sí', 'No') as radicarDocumento"), 'rde.radoenanio as anio',
+                                    DB::raw("CONCAT('archivos/radicacion/documentoEntrante/',rde.radoenanio,'/', rdea.radoearutaanexo) as rutaDescargar"))
+                                    ->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 'rdea.radoenid')
+                                    ->where('rdea.radoenid', $radicadoId)
+                                    ->where('rdea.radoearequiereradicado', false)->get();
+            }
+
+            $fechaHoraActual       = Carbon::now()->format('Y-m-d h:m:s');
+            $tipoMedios            = DB::table('tipomediosolicitud')->select('timesoid','timesonombre')->orderBy('timesonombre')->get();
+            $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->orderBy('tipidenombre')->get();
+            $tipoSolicitudes       = DB::table('tiposolicitud')->select('tipsolid','tipsolnombre')->orderBy('tipsolnombre')->get();
+            $vehiculos             = DB::table('vehiculo as v')->select('v.vehiid', DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"))
+                                    ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                                    ->where('v.tiesveid', 'A')
+                                    ->where('v.agenid', auth()->user()->agenid)->get();
+
+            $conductores           = DB::table('conductorvehiculo as cv')
+                                        ->select('c.condid',
+                                        DB::raw("CONCAT(p.persdocumento,' ', p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreConductor"))
+                                        ->join('conductor as c', 'c.condid', '=', 'cv.condid')
+                                        ->join('persona as p', 'p.persid', '=', 'c.persid')
+                                        ->where('c.tiescoid', 'A')->get();
+
+            return response()->json(['success'             => true,                  "fechaHoraActual"  => $fechaHoraActual,  "tipoMedios"     => $tipoMedios,
+                                    "tipoIdentificaciones" => $tipoIdentificaciones, "tipoSolicitudes"  => $tipoSolicitudes, "vehiculos"       => $vehiculos,
+                                    "conductores"          => $conductores,          "data"             => $data,            "anexosRadicados" => $anexosRadicados ]);
+         }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
+   }
 
     public function consultarPersona(Request $request)
 	{
@@ -119,7 +123,8 @@ class GestionarSolicitudController extends Controller
     public function salve(Request $request)
 	{
 	    $this->validate(request(),[
-                'codigo'                  => 'required',
+                'codigoSolicitud'         => 'required',
+                'codigoRadicado'          => 'required',
                 'tipo'                    => 'required',
                 'tipoIdentificacion'      => 'required|numeric',
                 'numeroIdentificacion'    => 'required|string|max:15',
@@ -146,48 +151,26 @@ class GestionarSolicitudController extends Controller
 
         DB::beginTransaction();
         try {
-
-
-           /*  $anioActual              = Carbon::now()->year;         
-            $rutaCarpeta             = public_path().'/archivos/radicacion/documentoEntrante/'.$anioActual;
-            $rutaPdf        = $rutaCarpeta.'/14815_2024_Formato_PQRS.pdf';
-            $nombreArchivo = '14815_2024_Formato_PQRS.pdf';
-            $dataCopias     = [];
-            $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
-                                ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
-                                        'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto')
-                                ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
-                                ->join('radicaciondocentdependencia as rded', function($join)
-                                    {
-                                        $join->on('rded.radoenid', '=', 'rde.radoenid');
-                                        $join->where('rded.radoedescopia', false);
-                                    })
-                                ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
-                                ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
-                                ->where('rde.radoenid', 5)->first();        
-            $generarPdf              = new generarPdf();
-            $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivo, $dataRadicado, $dataCopias, true);
-
-            dd("voy aca ");*/
-
             $estado                  = '1'; //Recibido
             $fechaHoraActual         = Carbon::now();
             $anioActual              = Carbon::now()->year;
             $fechaActual             = $fechaHoraActual->format('Y-m-d');
             $funcion 		         = new generales();
             $generarPdf              = new generarPdf();
-            $radoenid                = $request->codigo;
+            $soliid                  = $request->codigoSolicitud;
+            $radoenid                = $request->codigoRadicado;
             $numeroAleatorio         = rand(1000, 100000);
             $nombreArchivo           = $numeroAleatorio.''.$anioActual.'_Formato_PQRS.pdf';
             $rutaCarpeta             = public_path().'/archivos/radicacion/documentoEntrante/'.$anioActual;
             $personaEntregaDocumento = mb_strtoupper($request->primerNombre.' '.$request->segundoNombre.' '.$request->primerApellido.' '.$request->segundoApellido,'UTF-8');
-            $asuntoRadicado          = 'Se registró una queja por parte de '.$personaEntregaDocumento;
+            $asuntoRadicado          = 'Se registró una '.$request->tipoSolicitudNombre.' por parte de '.$personaEntregaDocumento;
             $asuntoRadicado          .= ($request->vehiculoNombre !== null) ?', en la que también se vio involucrado el vehículo '.$request->vehiculoNombre : ',';
             $asuntoRadicado          .= ($request->conductorNombre !== null) ?', y el conductor '.$request->conductorNombre : '.';
             $asuntoRadicado          .= ' Este proceso fue radicado por '.auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
     
-            //Genero el PDF que voy se va a radicar
-            $arrayDatos = [ 
+            if($request->tipo === 'I'){
+                //Genero el PDF que voy se va a radicar
+                $arrayDatos = [ 
                     "tipoIdentificacion"     => $request->tipoIdentificacionNombre,
                     "documentoIdentidad"     => $request->numeroIdentificacion,
                     "nombresSolicitante"     => $request->primerNombre.' '.$request->segundoNombre,
@@ -206,18 +189,19 @@ class GestionarSolicitudController extends Controller
                     "anioRadicado"           => $anioActual,
                     "nombreArchivo"          => $nombreArchivo,
                     "metodo"                 => 'F'
-                ];    
-            
-            $dependencia    =  DB::table('empresa as e')->select('d.depeid','d.depecorreo',
-                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
-                                    ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                    ->leftjoin('dependencia as d', 'd.depejefeid', '=', 'p.persid')
-                                    ->where('emprid', '1')->first();
-            $dependenciaId = $dependencia->depeid;
-            if($dependenciaId === null){
-                return response()->json(['success' => false, 'message'=> 'No se encontró una dependencia asignada a la persona que se está designando como gerente de la cooperativa']);
+                ];
+
+                $dependencia    =  DB::table('empresa as e')->select('d.depeid','d.depecorreo',
+                                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
+                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                                        ->leftjoin('dependencia as d', 'd.depejefeid', '=', 'p.persid')
+                                        ->where('emprid', '1')->first();
+                $dependenciaId = $dependencia->depeid;
+                if($dependenciaId === null){
+                    return response()->json(['success' => false, 'message'=> 'No se encontró una dependencia asignada a la persona que se está designando como gerente de la cooperativa']);
+                }
             }
-            
+
             $peradoid                                       = ($request->personaId !== '000') ? $request->personaId : '000';
             $personaradicadocumento                         = ($peradoid != '000') ? PersonaRadicaDocumento::findOrFail($peradoid) : new PersonaRadicaDocumento();
             $personaradicadocumento->tipideid               = $request->tipoIdentificacion;
@@ -244,17 +228,17 @@ class GestionarSolicitudController extends Controller
                 $radicaciondocumentoentrante->radoenanio                 = $anioActual;
                 $radicaciondocumentoentrante->radoenfechahoraradicado    = $fechaHoraActual;
                 $radicaciondocumentoentrante->radoenfechamaximarespuesta = $funcion->obtenerFechaMaxima(15, Carbon::now()->format('Y-m-d'));
+                $radicaciondocumentoentrante->tipmedid                   = 1;//lo marco como impreso
+                $radicaciondocumentoentrante->depaid                     = 18;//Marco por defecto a norte de santander
+                $radicaciondocumentoentrante->muniid                     = 804;//Marco por defecto a ocaña
+                $radicaciondocumentoentrante->radoenfechadocumento       = $fechaActual;
+                $radicaciondocumentoentrante->radoenfechallegada         = $fechaActual;
+                $radicaciondocumentoentrante->radoentieneanexo           = ($request->hasFile('archivos')) ? 1 : 0;
             }
 
             $radicaciondocumentoentrante->peradoid                      = $peradoid;
-            $radicaciondocumentoentrante->tipmedid                      = 1;//lo marco como impreso
-            $radicaciondocumentoentrante->depaid                        = 18;//Marco por defecto a norte de santander
-            $radicaciondocumentoentrante->muniid                        = 804;//Marco por defecto a ocaña
-            $radicaciondocumentoentrante->radoenfechadocumento          = $fechaActual;
-            $radicaciondocumentoentrante->radoenfechallegada            = $fechaActual;
             $radicaciondocumentoentrante->radoenpersonaentregadocumento = $personaEntregaDocumento;
             $radicaciondocumentoentrante->radoenasunto                  = $asuntoRadicado;
-            $radicaciondocumentoentrante->radoentieneanexo              = ($request->hasFile('archivos')) ? 1 : 0;
             $radicaciondocumentoentrante->radoenobservacion             = $request->observacionGeneral;
             $radicaciondocumentoentrante->save();
 
@@ -284,6 +268,25 @@ class GestionarSolicitudController extends Controller
                 $radicaciondocentcambioestado->radecefechahora   = $fechaHoraActual;
                 $radicaciondocentcambioestado->radeceobservacion = 'Documento radicado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $radicaciondocentcambioestado->save();
+
+                //Radico el documento
+                $rutaPdfRadicar = $generarPdf->generarFormatoSolicitud($arrayDatos);//Descargamos el pdf para radicarlo
+                $rutaPdf        = $rutaCarpeta.'/'.$nombreArchivo;
+                $dataCopias     = [];
+                $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
+                                    ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo', 'rde.radoenasunto as asunto')
+                                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                                    ->join('radicaciondocentdependencia as rded', function($join)
+                                        {
+                                            $join->on('rded.radoenid', '=', 'rde.radoenid');
+                                            $join->where('rded.radoedescopia', false);
+                                        })
+                                    ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
+                                    ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
+                                    ->where('rde.radoenid', $radoenid)->first();
+
+                $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivo, $dataRadicado, $dataCopias, true);
             }
 
             //Registramos los adjuntos
@@ -311,14 +314,13 @@ class GestionarSolicitudController extends Controller
 				}
 			}
 
-//soliid
-            $solicitud 					        = new Solicitud();
+            $solicitud       = ($request->tipo === 'U') ? Solicitud::findOrFail($soliid) : new Solicitud();
             if($request->tipo === 'I'){
-                $solicitud->solifechahoraregistro   = $fechaHoraActual;
-                $solicitud->soliradicado            = true;
+                $solicitud->solifechahoraregistro = $fechaHoraActual;
+                $solicitud->soliradicado          = true;
+                $solicitud->radoenid              = $radoenid;
             }
             $solicitud->peradoid                = $peradoid;
-            $solicitud->radoenid                = $radoenid;
             $solicitud->tipsolid                = $request->tipoSolicitud;
             $solicitud->timesoid                = $request->tipoMedio;
             $solicitud->vehiid                  = $request->vehiculoId;
@@ -328,26 +330,6 @@ class GestionarSolicitudController extends Controller
             $solicitud->soliobservacion         = $request->observacionGeneral;
             $solicitud->save();
 
-            if($request->tipo === 'I'){//Radico el documento
-                $rutaPdfRadicar = $generarPdf->generarFormatoSolicitud($arrayDatos);//Descargamos el pdf para radicarlo
-                $rutaPdf        = $rutaCarpeta.'/'.$nombreArchivo;
-                $dataCopias     = [];
-                $dataRadicado   = DB::table('radicaciondocumentoentrante as rde')
-                                    ->select('rde.radoenfechahoraradicado  as fechaRadicado', DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
-                                            'd.depenombre as dependencia','u.usuaalias as usuario', 'prd.peradocorreo  as correo',    'rde.radoenasunto as asunto')
-                                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
-                                    ->join('radicaciondocentdependencia as rded', function($join)
-                                        {
-                                            $join->on('rded.radoenid', '=', 'rde.radoenid');
-                                            $join->where('rded.radoedescopia', false);
-                                        })
-                                    ->join('dependencia as d', 'd.depeid', '=', 'rded.depeid')
-                                    ->join('usuario as u', 'u.usuaid', '=', 'rde.usuaid')
-                                    ->where('rde.radoenid', $radoenid)->first();        
-
-               // $generarPdf->radicarDocumentoExterno($rutaCarpeta, $nombreArchivo, $dataRadicado, $dataCopias, true);
-            }
-
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', 'idRadicado' => $radoenid]);
 		} catch (Exception $error){
@@ -355,4 +337,39 @@ class GestionarSolicitudController extends Controller
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
 	}
+
+    public function show(Request $request)
+	{
+        $this->validate(request(),['codigo' => 'required']);
+        try{
+
+            $solicitud   = DB::table('solicitud as s')
+                        ->select('s.radoenid','ti.tipidenombre as tipoIdentificacion','ts.tipsolnombre as tipoSolicitud','tms.timesonombre as tipoMedio',
+                                 DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
+                                 DB::raw("CONCAT(p.persdocumento,' ', p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreConductor"),
+                                's.solifechahoraincidente','s.solimotivo','s.solifechahoraregistro',
+                                's.soliobservacion','s.soliradicado','prd.tipideid','prd.peradodocumento','prd.peradoprimernombre','prd.peradosegundonombre',
+                                'prd.peradoprimerapellido','prd.peradosegundoapellido', 'prd.peradodireccion','prd.peradotelefono','prd.peradocorreo')
+                        ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 's.peradoid')
+                        ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'prd.tipideid')
+                        ->join('tiposolicitud as ts', 'ts.tipsolid', '=', 's.tipsolid')
+                        ->join('tipomediosolicitud as tms', 'tms.timesoid', '=', 's.timesoid')
+                        ->leftJoin('vehiculo as v', 'v.vehiid', '=', 's.vehiid')
+                        ->leftJoin('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                        ->leftJoin('conductor as c', 'c.condid', '=', 's.condid')
+                        ->leftJoin('persona as p', 'p.persid', '=', 'c.persid')
+                        ->where('s.soliid', $request->codigo)->first();
+
+            $anexosRadicados  =  DB::table('radicaciondocentanexo as rdea')
+                        ->select('rdea.radoeaid as id','rdea.radoeanombreanexooriginal as nombreOriginal','rdea.radoeanombreanexoeditado as nombreEditado',
+                        'rdea.radoearutaanexo as rutaAnexo',DB::raw("if(rdea.radoearequiereradicado = 1 ,'Sí', 'No') as radicarDocumento"), 'rde.radoenanio as anio',
+                        DB::raw("CONCAT('archivos/radicacion/documentoEntrante/',rde.radoenanio,'/', rdea.radoearutaanexo) as rutaDescargar"))
+                        ->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 'rdea.radoenid')
+                        ->where('rdea.radoenid', $solicitud->radoenid)->get();
+        
+            return response()->json(['success' => true, "solicitud" => $solicitud, "anexos" => $anexosRadicados]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
+    }
 }

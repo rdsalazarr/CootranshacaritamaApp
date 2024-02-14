@@ -276,7 +276,7 @@ export default function New({data, tipo}){
                     newFormData.numeroContacto          = (res.data.peradotelefono !== undefined) ? res.data.peradotelefono : '';
                     newFormData.personaEntregaDocumento = (res.data.radoenpersonaentregadocumento !== undefined) ? res.data.radoenpersonaentregadocumento : '';
                 }else{
-                    newFormData.personaId               = '';
+                    newFormData.personaId               = '000';
                     newFormData.primerNombre            = '';
                     newFormData.segundoNombre           = '';
                     newFormData.primerApellido          = '';
