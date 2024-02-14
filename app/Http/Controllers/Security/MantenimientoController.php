@@ -364,7 +364,18 @@ class MantenimientoController extends Controller
     public function Pdf()
     {
 
-        $generarPdf = new generarPdf();
+        /*$fechaHoraActual = Carbon::now();
+        $fechaActual     = $fechaHoraActual->format('Y-m-d');
+
+        dd($fechaActual);*/
+        $generales  = new generales();  
+
+        $fechasSiguientes = $generales->obtenerFechasCompromisoVehiculo('2024-07-03');
+
+        dd($fechasSiguientes);
+
+        
+        /*$generarPdf = new generarPdf();
         $rutaCarpeta             = public_path().'/archivos/radicacion/documentoEntrante/2024/';
         $nombreArchivo = 'prueba_01.pdf';
         $rutaPdf        = $rutaCarpeta.'/'.$nombreArchivo;

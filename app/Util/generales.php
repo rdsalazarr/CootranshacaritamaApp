@@ -389,35 +389,64 @@ class generales
 
 	function obtenerFechasCompromisoVehiculo($fecha)
     {
-        // Convertir la fecha a un objeto Carbon
-        $fechaCarbon = Carbon::parse($fecha);
-		$fechas      = [];
+        $fechaInicial = Carbon::parse($fecha);
 
-        // Generar fechas para los próximos 12 meses
-        for ($i = 1; $i <= 12; $i++) {
-            $fechaSiguiente = $fechaCarbon->copy()->addMonths($i)->day(5);
-            $fechas[]       = $fechaSiguiente->format('Y-m-d');
-        }
+		/*if ($fechaInicial->month === 1 && $fechaInicial->day >= 1 && $fechaInicial->day <= 5) {
+			$fechaInicial->day(1); // Establecer el día como 1 de enero
+		} else {
+			$fechaInicial->addMonth(); // Agregar un mes
+		}*/
 
+		/*$fechaInicial->addMonth();
+		$fechas       = [];
+		$ultimoMes    = Carbon::create($fechaInicial->year, 12, 1);
+
+		while ($fechaInicial->lte($ultimoMes)) {
+		while ($fechaInicial->lte($ultimoMes)) {
+			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d');
+			$fechaInicial->addMonth();
+		}*/
+
+
+		//$fechaInicial = Carbon::parse($fecha);
+
+		// Verificar si la fecha está entre el 1 y el 5 de enero
+		/*if ($fechaInicial->month === 1 && $fechaInicial->day >= 1 && $fechaInicial->day <= 5) {
+			$fechaInicial->day(1); // Establecer el día como 1 de enero
+		} else {
+			$fechaInicial->addMonth(); // Agregar un mes
+		}*/
+	
+		/*$fechas = [];
+		$ultimoMes = Carbon::create($fechaInicial->year, 12, 1);
+	
+		while ($fechaInicial->lte($ultimoMes)) {
+			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d');
+			$fechaInicial->addMonth();
+		}*/
+
+
+		
+
+		// Verificar si la fecha está entre el 1 y el 5 de enero
+		/*if ($fechaInicial->month === 1 && $fechaInicial->day >= 1 && $fechaInicial->day <= 5) {
+			//$fechas[] = $fechaInicial->copy()->day(1)->format('Y-m-d'); // Agregar el 1 de enero
+
+			$fechaInicial->day(1); // Establecer el día como 1 de enero
+		}else {
+			$fechaInicial->addMonth(); // Agregar un mes
+		}*/
+
+	
+		$fechaInicial = Carbon::parse($fecha);
+		$fechas = [];
+		for ($i = $fechaInicial->month; $i <= 12; $i++) {
+			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d'); // Añadir el 5 de cada mes
+			$fechaInicial->addMonth();
+		}
+	
         return $fechas;
     }
-
-	/*public static function obtenerFechasSiguientes($fecha)
-    {
-        // Convertir la fecha a un objeto Carbon
-        $fechaCarbon = Carbon::parse($fecha);
-		$fechas      = [];
-
-        // Generar fechas para los próximos 12 meses
-        for ($i = 1; $i <= 12; $i++) {
-            $fechaSiguiente = $fechaCarbon->copy()->addMonths($i)->day(5);
-            $fechas[]       = $fechaSiguiente->format('Y-m-d');
-        }
-
-        return $fechas;
-    }
-
-	$fechasSiguientes = generales::obtenerFechasSiguientes('2023-12-12');*/
 
 	function definirRangoNotificacion()
     {
