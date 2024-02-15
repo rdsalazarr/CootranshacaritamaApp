@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Home\FrondController;
+use App\Http\Controllers\Home\FirmarContratoController;
 use App\Http\Controllers\Home\VerificarDocumentosController;
 use App\Http\Controllers\Admin\Menu\RolController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -96,6 +97,7 @@ Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
+Route::get('/firmar/contrato/asociado/{id}', [FirmarContratoController::class, 'index']);
 Route::get('/verificar/contrato/servicio/especial/{id}', [VerificarDocumentosController::class, 'servicioEspecial']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
 Route::post('/consultar/contrato/servicio/especial', [VerificarDocumentosController::class, 'consultarServicioEspecial']);

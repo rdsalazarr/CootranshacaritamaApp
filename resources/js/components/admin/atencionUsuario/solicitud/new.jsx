@@ -95,7 +95,7 @@ export default function New({data, tipo}){
         newFormData.vehiculoNombre           = (vehiculosFiltrado.length > 0) ? vehiculosFiltrado[0].nombreVehiculo : '';
         newFormData.conductorNombre          = (condutorFiltrado.length > 0) ? condutorFiltrado[0].nombreConductor : '';
 
-       // setLoader(true);
+        setLoader(true);
         instance.post('/admin/antencion/usuario/salve/datos', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);

@@ -4,6 +4,7 @@ import { Button, Grid, MenuItem, Stack, Box, Autocomplete, createFilterOptions} 
 import {ButtonFileImg, ContentFile} from "../../../layout/files";
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
+import ErrorIcon from '@mui/icons-material/Error';
 import instance from '../../../layout/instance';
 import SaveIcon from '@mui/icons-material/Save';
 import Files from "react-files";
@@ -15,23 +16,23 @@ export default function New({data, tipo}){
                                              numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',       numeroMotor: '', 
                                              numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
                                              serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '',
-                                             asociado:''
+                                             asociado:'',         personaId: '',      firmaElectronia:'NO'
                                             });
-
     
-    const [loader, setLoader] = useState(false);
-    const [agencias, setAgencias] = useState([]);
-    const [asociados, setAsociados] = useState([]);
-    const [habilitado, setHabilitado] = useState(true);
-    const [fotoVehiculo, setFotoVehiculo] = useState('');
-    const [tipoVehiculos, setTipoVehiculos] = useState([]);    
+    const [tipoCombustibleVehiculos, setTipoCombustibleVehiculos] = useState([]);
+    const [tipoCarroceriaVehiculos, setTipoCarroceriaVehiculos] = useState([]);
+    const [tipoReferenciaVehiculos, setTipoReferenciaVehiculos] = useState([]);
+    const [poseeFirmaElectronica, setPoseeFirmaElectronica] = useState('NO');
+    const [tipoModalidadVehiculos, setTipoModalidadVehiculos] = useState([]);
+    const [formDataFile, setFormDataFile] = useState({ archivos : []});
     const [tipoColorVehiculos, setTipoColorVehiculos] = useState([]);
     const [tipoMarcaVehiculos, setTipoMarcaVehiculos] = useState([]);
-    const [formDataFile, setFormDataFile] = useState({ archivos : []});
-    const [tipoModalidadVehiculos, setTipoModalidadVehiculos] = useState([]);
-    const [tipoReferenciaVehiculos, setTipoReferenciaVehiculos] = useState([]);
-    const [tipoCarroceriaVehiculos, setTipoCarroceriaVehiculos] = useState([]);
-    const [tipoCombustibleVehiculos, setTipoCombustibleVehiculos] = useState([]); 
+    const [tipoVehiculos, setTipoVehiculos] = useState([]);
+    const [fotoVehiculo, setFotoVehiculo] = useState('');
+    const [habilitado, setHabilitado] = useState(true);
+    const [asociados, setAsociados] = useState([]);
+    const [agencias, setAgencias] = useState([]);
+    const [loader, setLoader] = useState(false);
     
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -54,6 +55,15 @@ export default function New({data, tipo}){
         showSimpleSnackbar(msj, 'error');
     }
 
+    const verificarFirmaElectronica = () =>{
+        let newFormData             = {...formData};
+        const asociadosFiltrados    = asociados.filter(asoc => asoc.asocid === formData.asociado);
+        newFormData.personaId       = asociadosFiltrados[0].persid;
+        newFormData.firmaElectronia = asociadosFiltrados[0].tieneFirmaElectronica;
+        setPoseeFirmaElectronica(asociadosFiltrados[0].tieneFirmaElectronica);
+        setFormData(newFormData);
+    }
+
     const handleSubmit = () =>{
         let newFormData        = {...formData};
         newFormData.fotografia = (formDataFile.archivos.length > 0) ? formDataFile.archivos[0] : '';
@@ -66,7 +76,8 @@ export default function New({data, tipo}){
                                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',         fechaIngreso: '', 
                                                                 numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',      numeroMotor: '', 
                                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
-                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '', asociado:'' }) : null;
+                                                                serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '',
+                                                                asociado:'',         personaId: '',      firmaElectronia:'NO' }) : null;
 
             setLoader(false);
         })
@@ -475,6 +486,7 @@ export default function New({data, tipo}){
                                 setFormData({...formData, asociado: newInputValue.asocid})
                             }
                         }}
+                        onBlur={verificarFirmaElectronica}
                         renderInput={(params) =>
                             <TextValidator {...params}
                                 label="Consultar asociado"
@@ -555,6 +567,15 @@ export default function New({data, tipo}){
                                     shrink: true,
                                 }}
                             />
+                        </Grid>
+
+                        <Grid item xl={9} md={9} sm={6} xs={12}>
+                            {(poseeFirmaElectronica === 'SI') ?
+                                <Box className='mensajeAdvertencia'>
+                                    <ErrorIcon />
+                                    <p>Nota: El sistema enviará un correo electrónico a las personas involucradas en la firma del contrato.</p>
+                                </Box>
+                            : null}
                         </Grid>
 
                     </Fragment>

@@ -278,11 +278,11 @@ class generales
 			$denominador        = 1 - pow(1 + $tasaInteresMensual, - $plazo);	
 			$valorCuota         = ($montoPrestamo * $tasaInteresMensual) / $denominador;
 		}
-		return $this->redonderarMilSiguiente($valorCuota);
+		return $this->redondearMilSiguiente($valorCuota);
 	}
 
 	function calcularValorInteresMensual($valorSolicitado, $tasaNominal){
-		return $this->redonderarCienMasCercano($valorSolicitado * ($tasaNominal / 100));
+		return $this->redondearCienMasCercano($valorSolicitado * ($tasaNominal / 100));
 	}
 
 	function calcularTasaEfectivaAnual($tasaNominalMensual) {
@@ -292,11 +292,11 @@ class generales
 		return $tea;
 	}
 
-	function redonderarMilSiguiente($valor){
+	function redondearMilSiguiente($valor){
 		return ceil($valor/1000)*1000;
 	}
 
-	function redonderarCienMasCercano($valor){
+	function redondearCienMasCercano($valor){
 		return round($valor/100.0,0)*100;
 	}
 
@@ -329,18 +329,18 @@ class generales
 
         if($numeroDiasCambioFecha > 0){
             $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
-            $valorCambioFechas = $this->redonderarCienMasCercano($valorCambioFechas);
+            $valorCambioFechas = $this->redondearCienMasCercano($valorCambioFechas);
 			$interesMensual    += $valorCambioFechas;
         }
 
         if ($fechaVencimiento->lt($fechaActual)) {//Tiene mora
             $diasMora         = $fechaActual->diffInDays($fechaVencimiento);
             $interesMora      = $montoPrestamo * ($interesMora / 100) * ($diasMora / 365);
-            $totalInteresMora = $this->redonderarCienMasCercano($interesMora); 
+            $totalInteresMora = $this->redondearCienMasCercano($interesMora); 
         }else{
             $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
             $valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
-            $totalValorDescuento = $this->redonderarCienMasCercano($valorDescuento - $valorCambioFechas);
+            $totalValorDescuento = $this->redondearCienMasCercano($valorDescuento - $valorCambioFechas);
         }
 		
 		$interesMensualTotal = ($interesMensual  + $totalInteresMora ) - $totalValorDescuento;
@@ -389,63 +389,25 @@ class generales
 
 	function obtenerFechasCompromisoVehiculo($fecha)
     {
-        $fechaInicial = Carbon::parse($fecha);
-
-		/*if ($fechaInicial->month === 1 && $fechaInicial->day >= 1 && $fechaInicial->day <= 5) {
-			$fechaInicial->day(1); // Establecer el día como 1 de enero
-		} else {
-			$fechaInicial->addMonth(); // Agregar un mes
-		}*/
-
-		/*$fechaInicial->addMonth();
-		$fechas       = [];
-		$ultimoMes    = Carbon::create($fechaInicial->year, 12, 1);
-
-		while ($fechaInicial->lte($ultimoMes)) {
-		while ($fechaInicial->lte($ultimoMes)) {
-			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d');
-			$fechaInicial->addMonth();
-		}*/
-
-
-		//$fechaInicial = Carbon::parse($fecha);
-
-		// Verificar si la fecha está entre el 1 y el 5 de enero
-		/*if ($fechaInicial->month === 1 && $fechaInicial->day >= 1 && $fechaInicial->day <= 5) {
-			$fechaInicial->day(1); // Establecer el día como 1 de enero
-		} else {
-			$fechaInicial->addMonth(); // Agregar un mes
-		}*/
-	
-		/*$fechas = [];
-		$ultimoMes = Carbon::create($fechaInicial->year, 12, 1);
-	
-		while ($fechaInicial->lte($ultimoMes)) {
-			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d');
-			$fechaInicial->addMonth();
-		}*/
-
-
-		
-
-		// Verificar si la fecha está entre el 1 y el 5 de enero
-		/*if ($fechaInicial->month === 1 && $fechaInicial->day >= 1 && $fechaInicial->day <= 5) {
-			//$fechas[] = $fechaInicial->copy()->day(1)->format('Y-m-d'); // Agregar el 1 de enero
-
-			$fechaInicial->day(1); // Establecer el día como 1 de enero
-		}else {
-			$fechaInicial->addMonth(); // Agregar un mes
-		}*/
-
-	
 		$fechaInicial = Carbon::parse($fecha);
-		$fechas = [];
+		$fechaInicial = ($fechaInicial->day >= 5) ? $fechaInicial->addMonth() : $fechaInicial;
+		$fechas       = [];
 		for ($i = $fechaInicial->month; $i <= 12; $i++) {
 			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d'); // Añadir el 5 de cada mes
 			$fechaInicial->addMonth();
 		}
-	
+
         return $fechas;
+    }
+
+	function obtenerPrimerValorMensualidad($fechaContrato, $valorCompromiso)
+    {
+		$fechaInicial = Carbon::parse($fechaContrato);
+		$fechaFinal   = ($fechaInicial->day > 5) ? $fechaInicial->copy()->addMonthsNoOverflow(1)->startOfMonth()->day(5) : $fechaInicial->copy()->startOfMonth()->day(5);
+		$totalDias    = $fechaInicial->diffInDays($fechaFinal);
+		$primerPago   = ($valorCompromiso / 30) * $totalDias;
+
+		return $this->redondearCienMasCercano($primerPago);		
     }
 
 	function definirRangoNotificacion()
@@ -476,8 +438,8 @@ class generales
             $totalPagar           = $cuotaSostenimiento - $descuentoTotal;    
             return [
                 'mora'       => 0,
-                'descuento'  => $this->redonderarCienMasCercano($descuentoTotal),
-                'totalPagar' => $this->redonderarCienMasCercano($totalPagar),
+                'descuento'  => $this->redondearCienMasCercano($descuentoTotal),
+                'totalPagar' => $this->redondearCienMasCercano($totalPagar),
             ];
         } elseif ($fechaActual->gt($fechaCompromiso)) {
             // Si la fecha actual es mayor a la fecha de compromiso
@@ -489,8 +451,8 @@ class generales
             $totalPagar      = $cuotaSostenimiento + $moraTotal;
             return [
                 'descuento'  => 0,
-                'mora'       => $this->redonderarCienMasCercano($moraTotal),
-                'totalPagar' => $this->redonderarCienMasCercano($totalPagar),
+                'mora'       => $this->redondearCienMasCercano($moraTotal),
+                'totalPagar' => $this->redondearCienMasCercano($totalPagar),
             ];
         } else {
             // Si la fecha actual es igual a la fecha de compromiso

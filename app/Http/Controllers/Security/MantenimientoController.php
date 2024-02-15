@@ -67,9 +67,11 @@ class MantenimientoController extends Controller
 
         $rutaPdf            = public_path().'/archivos/radicacion/documentoEntrante/2023/270_1978917-cccoopigon.pdf';
 
-        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innocoid', 2)->first();
-        
-        $buscar          = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlSistema','nombreGerente');
+        //$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innocoid', 2)->first();
+        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'solicitaFirmaContratoAsociado')->first();
+
+
+        $buscar          = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlFirmaContrato','nombreGerente');
         $remplazo        = Array($siglaCooperativa, $nombreUsuario,  $usuarioSistema, $nombreEmpresa, $contrasenaSistema, $urlSistema,$nombreGerente); 
         $asunto          = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
         $msg             = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido); 
@@ -78,7 +80,7 @@ class MantenimientoController extends Controller
         $enviarcopia     = 0;
         $enviarpiepagina = 1;
 
-        $mensajeCorreo = ', '.$notificar->correo([$email], $asunto, $msg, [$rutaPdf], $emailEmpresa, $enviarcopia, $enviarpiepagina);
+        $mensajeCorreo = ', '.$notificar->correo([$email], $asunto, $msg, [], $emailEmpresa, $enviarcopia, $enviarpiepagina);
 
        dd($mensajeCorreo);      
     }
@@ -370,7 +372,9 @@ class MantenimientoController extends Controller
         dd($fechaActual);*/
         $generales  = new generales();  
 
-        $fechasSiguientes = $generales->obtenerFechasCompromisoVehiculo('2024-07-03');
+        $fechasSiguientes = $generales->obtenerPrimerValorMensualidad('2024-01-15', 105000);
+
+        //$fechasSiguientes = $generales->obtenerFechasCompromisoVehiculo('2024-02-04');
 
         dd($fechasSiguientes);
 
