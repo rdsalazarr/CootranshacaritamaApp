@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Despacho;
 use App\Models\Despacho\PersonaServicio;
 use App\Models\Despacho\TiquetePuesto;
 use App\Http\Controllers\Controller;
+use App\Models\Caja\MovimientoCaja;
 use App\Models\Despacho\Tiquete;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
@@ -62,6 +63,7 @@ class TiqueteController extends Controller
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
         try{
+            $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
             $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
             $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
             $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre')
@@ -120,7 +122,7 @@ class TiqueteController extends Controller
 
             return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"          => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
                                     "municipios"             => $municipios,           "distribucionVehiculos"  => $distribucionVehiculos, "tiquete"        => $tiquete,  
-                                    "tiquetePuestos"         => $tiquetePuestos,       "tiquetePuestosPlanilla" => $tiquetePuestosPlanilla ]);
+                                    "tiquetePuestos"         => $tiquetePuestos,       "tiquetePuestosPlanilla" => $tiquetePuestosPlanilla, "cajaAbierta"   => $cajaAbierta]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }

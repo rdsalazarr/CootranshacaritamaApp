@@ -18,7 +18,7 @@ return new class extends Migration
             $table->tinyInteger('depaiddestino')->unsigned()->comment('Identificador del departamento de destino de la ruta');
             $table->smallInteger('muniiddestino')->unsigned()->comment('Identificador del municipio de destino de la ruta');
             $table->decimal('rutavalorestampilla', 6, 0)->default(0)>comment('Valor de la estampilla para la ruta');
-            $table->boolean('rutatienenodos')->default(false)->comment('Determina si la ruta tiene nodos');            
+            $table->boolean('rutatienenodos')->default(false)->comment('Determina si la ruta tiene nodos');
             $table->boolean('rutaactiva')->default(true)->comment('Determina si la ruta se encuentra activa');
             $table->timestamps();
             $table->unique(['depaidorigen','muniidorigen','depaiddestino','muniiddestino'],'uk_ruta');

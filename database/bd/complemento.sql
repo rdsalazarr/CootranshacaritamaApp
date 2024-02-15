@@ -245,3 +245,8 @@ ALTER TABLE `procesoautomatico` ADD `proautmetodo` VARCHAR(50) NULL AFTER `proau
 
 
 UPDATE `funcionalidad` SET `funcruta` = 'admin/antencion/usuario/solicitud' WHERE `funcionalidad`.`funcid` = 52; UPDATE `funcionalidad` SET `moduid` = '12' WHERE `funcionalidad`.`funcid` = 53;
+
+
+ALTER TABLE `ruta` ADD `rutavalorestampilla` DECIMAL(6,0) NOT NULL DEFAULT '0' COMMENT 'Valor de la estampilla para la ruta' AFTER `muniiddestino`;
+ALTER TABLE `tarifatiquete` ADD `tartiqvalorseguro` DECIMAL(6,0) NOT NULL DEFAULT '0' COMMENT 'Valor del seguro para el tiquete' AFTER `tartiqvalor`;
+ALTER TABLE `tiquete` ADD `tiquvalorseguro` DECIMAL(6,0) NULL COMMENT 'Valor del seguro para el tiquete' AFTER `tiquvalorestampilla`;

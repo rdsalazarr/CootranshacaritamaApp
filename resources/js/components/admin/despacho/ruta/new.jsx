@@ -1,6 +1,7 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell, Autocomplete, createFilterOptions} from '@mui/material';
+import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
@@ -10,8 +11,8 @@ import AddIcon from '@mui/icons-material/Add';
 export default function New({data, tipo}){
     const [formData, setFormData] = useState(
                                 (tipo !== 'I') ? {codigo:data.rutaid,  departamentoOrigen:data.depaidorigen, municipioOrigen: data.muniidorigen, departamentoDestino: data.depaiddestino, 
-                                        municipioDestino:data.muniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, tipo:tipo 
-                                    } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', tipo:tipo
+                                        municipioDestino:data.muniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, valorEstampilla: data.rutavalorestampilla, tipo:tipo 
+                                    } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:0, tipo:tipo
                                 });
    
     const [formDataAdicionarNodo, setFormDataAdicionarNodo] = useState({municipioId:'', nombreMunicipio: ''});
@@ -41,7 +42,7 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo === 'I' && res.success) ? setRutaNodos([]) : null; 
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:0, tipo:tipo}) : null;
             setLoader(false);
         })
     }
@@ -171,7 +172,7 @@ export default function New({data, tipo}){
         <ValidatorForm onSubmit={handleSubmit}>
             <Grid container spacing={2}>
 
-                <Grid item xl={4} md={4} sm={4} xs={12}>
+                <Grid item xl={4} md={4} sm={6} xs={12}>
                     <SelectValidator
                         name={'departamentoOrigen'}
                         value={formData.departamentoOrigen}
@@ -190,7 +191,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>
 
-                <Grid item xl={8} md={8} sm={8} xs={12}>
+                <Grid item xl={6} md={6} sm={6} xs={12}>
                     <SelectValidator
                         name={'municipioOrigen'}
                         value={formData.municipioOrigen}
@@ -208,6 +209,19 @@ export default function New({data, tipo}){
                         })}
                     </SelectValidator>
                 </Grid>
+
+                <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <NumberValidator fullWidth
+                        id={"valorEstampilla"}
+                        name={"valorEstampilla"}
+                        label={"Valor de estampilla"}
+                        value={formData.valorEstampilla}
+                        type={'numeric'}
+                        require={['required', 'maxStringLength:6']}
+                        error={['Campo obligatorio','Número máximo permitido es el 999999']}
+                        onChange={handleChange}
+                    />
+                </Grid> 
 
                 <Grid item xl={3} md={3} sm={3} xs={12}>
                     <SelectValidator
@@ -318,8 +332,8 @@ export default function New({data, tipo}){
                         </Grid> 
 
                         <Grid item xl={2} md={2} sm={12} xs={12}>
-                            <Button type={"button"} className={'modalBtn'} 
-                                startIcon={<AddIcon />} onClick={() => {adicionarFilaNodo()}}> {"Agregar"}
+                            <Button type={"button"} className={'modalBtnBuscar'} 
+                                startIcon={<AddIcon className='icono' />} onClick={() => {adicionarFilaNodo()}}> {"Agregar"}
                             </Button>
                         </Grid>
 

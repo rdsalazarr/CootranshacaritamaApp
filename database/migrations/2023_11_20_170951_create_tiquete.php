@@ -27,8 +27,9 @@ return new class extends Migration
             $table->decimal('tiqucantidad', 4, 0)->comment('Cantidad de puesto en el tiquete');
             $table->decimal('tiquvalortiquete', 10, 0)->comment('Valor del tiquete');
             $table->decimal('tiquvalordescuento', 10, 0)->nullable()->comment('Valor de descuento del tiquete');
-            $table->decimal('tiquvalorestampilla', 10, 0)->nullable()->comment('Valor de la estampilla del tiquete');
-            $table->decimal('tiquvalorfondoreposicion', 10, 0)->comment('Valor del fondo de reposición del tiquete');
+            $table->decimal('tiquvalorseguro', 6, 0)->nullable()->comment('Valor del seguro para el tiquete');
+            $table->decimal('tiquvalorestampilla', 6, 0)->nullable()->comment('Valor de la estampilla del tiquete');
+            $table->decimal('tiquvalorfondoreposicion', 6, 0)->comment('Valor del fondo de reposición del tiquete');
             $table->decimal('tiquvalortotal', 10, 0)->comment('Valor total del tiquete');
             $table->boolean('tiqucontabilizado')->default(false)->comment('Determina si el tiquete ha sido contabilizado'); 
             $table->timestamps();

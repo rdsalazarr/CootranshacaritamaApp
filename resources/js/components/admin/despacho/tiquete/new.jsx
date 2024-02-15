@@ -30,13 +30,14 @@ export default function New({data, tipo}){
     const [formDataPuesto, setFormDataPuesto] = useState([]);
     const [planillaRutas, setPlanillaRutas] = useState([]);
     const [puestoMarcado, setPuestoMarcado] = useState([]);
+    const [cajaAbierta, setCajaAbierta] = useState(false);
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
     const [dataPuestos, setDataPuestos] = useState([]);
     const [esEmpresa, setEsEmpresa] = useState(false);
     const [municipios, setMunicipios] = useState([]);
     const [idTiquete , setIdTiquete] = useState(0);
-    const [loader, setLoader] = useState(false);    
+    const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -89,6 +90,8 @@ export default function New({data, tipo}){
             showSimpleSnackbar('Por favor, seleccione al menos un puesto del vehículo', 'error');
             return;
         }
+
+        (!cajaAbierta) ? showSimpleSnackbar('Advertencia: No se ha encontrado ninguna caja abierta para el día de hoy. Sin embargo, aún es posible vender tiquetes', 'warning') : null;
 
         setLoader(true);
         instance.post('/admin/despacho/tiquete/salve', newFormData).then(res=>{
@@ -260,9 +263,14 @@ export default function New({data, tipo}){
             setDistribucionVehiculos(res.distribucionVehiculos);
             setTipoIdentificaciones(res.tipoIdentificaciones);
             setTarifaTiquetes(res.tarifaTiquetes);
+            setPuestoMarcado(res.tiquetePuestos);
             setPlanillaRutas(res.planillaRutas);
-            setMunicipios(res.municipios);
-            setPuestoMarcado(res.tiquetePuestos);           
+            setCajaAbierta(res.cajaAbierta);
+            setMunicipios(res.municipios);            
+           
+            if(!res.cajaAbierta){             
+                showSimpleSnackbar('Advertencia: No se ha encontrado ninguna caja abierta para el día de hoy. Sin embargo, aún es posible vender tiquetes', 'warning');
+            }      
 
             if(tipo === 'U'){
                 let tiquete                             = res.tiquete;
