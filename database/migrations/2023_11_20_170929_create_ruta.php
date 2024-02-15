@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('ruta', function (Blueprint $table) {
             $table->increments('rutaid')->unsigned()->comment('Identificador de la tabla ruta');
-            $table->tinyInteger('depaidorigen')->unsigned()->nullable()->comment('Identificador del departamento de origen de la ruta');
-            $table->smallInteger('muniidorigen')->unsigned()->nullable()->comment('Identificador del municipio de origen de la ruta');
-            $table->tinyInteger('depaiddestino')->unsigned()->nullable()->comment('Identificador del departamento de destino de la ruta');
-            $table->smallInteger('muniiddestino')->unsigned()->nullable()->comment('Identificador del municipio de destino de la ruta'); 
-            $table->boolean('rutatienenodos')->default(false)->comment('Determina si la ruta tiene nodos');
+            $table->tinyInteger('depaidorigen')->unsigned()->comment('Identificador del departamento de origen de la ruta');
+            $table->smallInteger('muniidorigen')->unsigned()>comment('Identificador del municipio de origen de la ruta');
+            $table->tinyInteger('depaiddestino')->unsigned()->comment('Identificador del departamento de destino de la ruta');
+            $table->smallInteger('muniiddestino')->unsigned()->comment('Identificador del municipio de destino de la ruta');
+            $table->decimal('rutavalorestampilla', 6, 0)->default(0)>comment('Valor de la estampilla para la ruta');
+            $table->boolean('rutatienenodos')->default(false)->comment('Determina si la ruta tiene nodos');            
             $table->boolean('rutaactiva')->default(true)->comment('Determina si la ruta se encuentra activa');
             $table->timestamps();
             $table->unique(['depaidorigen','muniidorigen','depaiddestino','muniiddestino'],'uk_ruta');
