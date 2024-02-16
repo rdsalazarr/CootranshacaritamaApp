@@ -4,6 +4,7 @@ import {Box, Grid, Button, Avatar, List, ListItem, ListItemAvatar, ListItemText,
 import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import verificarDocumentos from "../../../images/verificarDocumentos.jpg";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { ThemeProvider } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
@@ -15,10 +16,11 @@ import Loader from "../layout/loader";
 import "../../../scss/app.scss";
 
 export default function Verificar(){
-    const [loader, setLoader] = useState(true); 
-    const [data, setData] = useState([]);
-    const [rutaDescarga, setRutaDescarga] = useState('');
+
     const [rutaDocumento, setRutaDocumento] = useState('');
+    const [rutaDescarga, setRutaDescarga] = useState('');
+    const [loader, setLoader] = useState(true);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         instance.post('/consultar/documento', {id: window.id}).then(res=>{
@@ -82,7 +84,7 @@ export default function Verificar(){
                             {datosDocumento('Dirigido a: ', data.nombredirigido, <PersonIcon />)}
                         </Grid>
 
-                        {(rutaDocumento !== null)?  <Link href={rutaDescarga} ><Button type={"submit"} style={{width: '96%', marginBottom: '1em'}} >Descargar documento</Button> </Link> : null }
+                        {(rutaDocumento !== null)?  <Link href={rutaDescarga} ><Button type={"submit"} style={{width: '96%', marginBottom: '1em'}} startIcon={<FileDownloadIcon />}>Descargar documento</Button> </Link> : null }
 
                     </Grid>
                     <Grid item xl={6} md={6} sm={12} xs={12}>

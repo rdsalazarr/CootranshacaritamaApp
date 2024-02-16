@@ -27,10 +27,12 @@ export function Header(){
 }
 
 export function Footer(){
+    var fechaActual = new Date();
+    var añoActual   = fechaActual.getFullYear();
     return (
         <Box className='piePagina'>
             <Box className='container'>
-                <span>COOTRANSHACARITAMA | Todos los derechos reservados | Copyright © 2023</span>
+                <span>COOTRANSHACARITAMA | Todos los derechos reservados | Copyright © {añoActual}</span>
                 <span className='implesoft'>Diseño y desarrollo <a href="http://implesoft.com/" target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft.com</a></span>
             </Box>
         </Box>

@@ -71,14 +71,13 @@ export default function New({data, tipo}){
         instance.post('/admin/direccion/transporte/vehiculo/salve', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
+            (formData.tipo !== 'I' && res.success) ? (setHabilitado(false), setPoseeFirmaElectronica('NO')) : null; 
             (formData.tipo === 'I' && res.success) ? setFormData({codigo: '000',     tipoVehiculo: '',   tipoReferencia: '', tipoMarca: '',       tipoCombustible: '', 
                                                                 tipoModalidad: '',   tipoCarroceria: '', tipoColor: '',      agencia: '',         fechaIngreso: '', 
                                                                 numeroInterno: '',   placa: '',          modelo: '',         cilindraje: '',      numeroMotor: '', 
                                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
                                                                 serieRegrabado: '0', observacion: '',    fotografia: '',     tipo:tipo,           fechaInicialContrato: '',
                                                                 asociado:'',         personaId: '',      firmaElectronia:'NO' }) : null;
-
             setLoader(false);
         })
     }

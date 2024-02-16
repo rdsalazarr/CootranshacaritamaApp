@@ -20,8 +20,7 @@ class EmpresaController extends Controller
                             'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular','emprhorarioatencion',
                             'emprurl', 'emprcodigopostal', 'emprlogo','emprpersoneriajuridica',
                             DB::raw("CONCAT(emprtelefonocelular,' ', emprtelefonofijo ) as telefonos"),
-                            DB::raw("CONCAT('$url/archivos/logoEmpresa/', emprlogo ) as imagen")
-                            )->get(); 
+                            DB::raw("CONCAT('$url/archivos/logoEmpresa/', emprlogo ) as imagen") )->get(); 
 
         return response()->json(["data" => $data]);
     }

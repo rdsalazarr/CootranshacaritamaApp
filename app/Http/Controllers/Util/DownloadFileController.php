@@ -96,4 +96,19 @@ class DownloadFileController extends Controller
 		   return redirect('/error/url');
 		} 
     }
+
+    public function contrato($ruta){
+        try {
+	    	$ruta    = Crypt::decrypt($ruta);
+            $carpeta = '/archivos/vehiculo/';
+            $file = public_path().$carpeta.$ruta;
+            if (file_exists($file)) {
+                return response()->download($file, $ruta);
+            } else {
+                return redirect('/archivoNoEncontrado'.$carpeta.$ruta);
+            }
+		} catch (DecryptException $e) {
+		   return redirect('/error/url');
+		}
+    }
 }

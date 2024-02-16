@@ -1872,9 +1872,9 @@ EOD;
 		if($metodo === 'S'){
 			return base64_encode(PDF::output($tituloPdf, 'S'));
 		}else if($metodo === 'F'){//Descargamos la copia en el servidor	
-			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placa;
+			$rutaCarpeta  = public_path().'/archivos/vehiculo/'.$placaVehiculo;
 			$carpetaServe = (is_dir($rutaCarpeta)) ? $rutaCarpeta : File::makeDirectory($rutaCarpeta, $mode = 0775, true, true);
-			$rutaPdf      = $rutaCarpeta.'/'.$numeroContrato.'.pdf';
+			$rutaPdf      = $rutaCarpeta.'/Contrato_'.$numeroContrato.'.pdf';
 			PDF::output($rutaPdf, 'F');
 			return $rutaPdf;
 		}else{

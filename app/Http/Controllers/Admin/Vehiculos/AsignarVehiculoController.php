@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Exception, File, Auth, DB, URL;
 use App\Models\Vehiculos\Vehiculo;
 use App\Util\redimencionarImagen;
+use App\Util\GenerarContrato;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use App\Util\generales;
@@ -76,105 +77,10 @@ class AsignarVehiculoController extends Controller
 
     public function showPdf(Request $request)
 	{
-	    $this->validate(request(),['vehiculoId' => 'required', 'idPersona' => 'required', 'idContrato' => 'required']);
+	    $this->validate(request(),['idContrato' => 'required']);
 
         try {
-            $vehiculoId       = $request->vehiculoId;
-            $idPersona       = $request->idPersona;
-            $idContrato       = $request->idContrato;
-            $generales        = new generales();  
-            $generarPdf       = new generarPdf();
-            $vehiculoContrato = DB::table('vehiculocontrato as vc')
-                                    ->select('vc.vehconid','vc.vehconfechainicial','vc.vehconfechafinal', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
-                                    'v.vehinumerointerno','v.vehiplaca','v.timoveid','tmv.timovecuotasostenimiento','tmv.timovedescuentopagoanticipado','tmv.timoverecargomora',
-                                    'p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
-                                    'pe.persdocumento as documentoGerente', DB::raw("CONCAT(pe.persprimernombre,' ',if(pe.perssegundonombre is null ,'', pe.perssegundonombre),' ',
-                                    pe.persprimerapellido,' ',if(pe.perssegundoapellido is null ,' ', pe.perssegundoapellido)) as nombreGerente"),'me.muninombre as nombreMunicipioExpedicion')
-                                    ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
-                                    ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
-                                    ->join('asociado as a', 'a.asocid', '=', 'vc.asocid')
-                                    ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                    ->join('persona as pe', 'pe.persid', '=', 'vc.persidgerente')
-                                    ->join('empresa as e', 'e.persidrepresentantelegal', '=', 'pe.persid')
-                                    ->join('municipio as me', function($join)
-                                    {
-                                        $join->on('me.munidepaid', '=', 'p.persdepaidexpedicion');
-                                        $join->on('me.muniid', '=', 'p.persmuniidexpedicion'); 
-                                    })
-                                    ->where('vc.vehiid', $vehiculoId)
-                                    ->where('p.persid', $idPersona)
-                                    ->where('vc.vehconid', $idContrato)
-                                    ->first();
-
-            if($vehiculoContrato->timoveid === 'E' ){
-                $idInformacionPdf = 'contratoModalidadEspecial';
-            }else  if($vehiculoContrato->timoveid === 'I'){
-                $idInformacionPdf = 'contratoModalidadIntermunicipal';
-            }else  if($vehiculoContrato->timoveid === 'C'){
-                $idInformacionPdf = 'contratoModalidadColectivo';
-            } else {
-                $idInformacionPdf = 'contratoModalidadMixto';
-            }
-
-            $informacionPDF                 = DB::table('informaciongeneralpdf')->select('ingpdftitulo','ingpdfcontenido')->where('ingpdfnombre', $idInformacionPdf)->first();
-            $fechaFirmaContrato             = $generales->formatearFecha($vehiculoContrato->vehconfechainicial);
-            $cuotaSostenimientoAdmon        = number_format($vehiculoContrato->timovecuotasostenimiento, 0, ',', '.') ;
-            $descuentoPagoAnualAnticipado   = $vehiculoContrato->timovedescuentopagoanticipado;
-            $recargoCuotaSostenimientoAdmon = $vehiculoContrato->timoverecargomora;
-            $nombreGerente                  = $vehiculoContrato->nombreAsociado;
-            $documentoGerente               = number_format($vehiculoContrato->persdocumento, 0, ',', '.');
-            $ciudadExpDocumentoGerente      = $vehiculoContrato->nombreMunicipioExpedicion;;
-            $numeroContrato                 = $vehiculoContrato->numeroContrato;
-            $fechaContrato                  = $generales->formatearFechaContrato($vehiculoContrato->vehconfechainicial);
-            $tipoContrato                   = $vehiculoContrato->timoveid;
-
-            $identificacionAsociado         = '';
-            $nombreAsociado                 = '';
-            $direccionAsociado              = '';
-            $telefonoAsociado               = '';
-            $correoAsociado                 = '';
-            $nombreGerenteFirma             = $nombreGerente;
-            $documentoGerenteFirma          = 'C.C. '.$documentoGerente;
-            $arrayFirmas                    = [];
-        
-            $identificacionAsociado .= number_format($vehiculoContrato->persdocumento, 0, ',', '.').', ';
-            $nombreAsociado         .= trim($vehiculoContrato->nombreAsociado).', ';
-            $direccionAsociado      .= $vehiculoContrato->persdireccion.', ';
-            $telefonoAsociado       .= ($vehiculoContrato->persnumerocelular !== null ) ? $vehiculoContrato->persnumerocelular.', ': '';
-            $correoAsociado         .= ($vehiculoContrato->perscorreoelectronico !== null ) ? $vehiculoContrato->perscorreoelectronico.', ': ''; 
-
-            $firmasContrato = [
-                    "nombreGerente"     => $nombreGerenteFirma,
-                    "nombreAsociado"    => $vehiculoContrato->nombreAsociado,
-                    "documentoGerente"  => $documentoGerenteFirma,
-                    "documentoAsociado" => 'C.C. '.number_format($vehiculoContrato->persdocumento, 0, ',', '.'),
-                    "direccionAsociado" => $vehiculoContrato->persdireccion
-                ];
-
-            array_push($arrayFirmas, $firmasContrato); 
-
-            $arrayDatos = [ "titulo"           => 'Contrato número '.$numeroContrato,
-                            "numeroContrato"   => $numeroContrato,
-                            "placaVehiculo"    => $vehiculoContrato->vehiplaca,
-                            "numeroInterno"    => $vehiculoContrato->vehinumerointerno,
-                            "propietarios"     => substr($nombreAsociado, 0, -2),
-                            "identificaciones" => substr($identificacionAsociado, 0, -2),
-                            "direcciones"      => substr($direccionAsociado, 0, -2),
-                            "telefonos"        => substr($telefonoAsociado, 0, -2),
-                            "correos"          => substr($correoAsociado, 0, -2),
-                            "metodo"           => 'S'
-                        ];
-
-                       
-
-            $buscar     = Array('documentoGerente', 'nombreGerente', 'ciudadExpDocumentoGerente', 'cuotaSostenimientoAdmon','descuentoPagoAnualAnticipado',
-                                'recargoCuotaSostenimientoAdmon','fechaFirmaContrato','fechaContrato');
-            $remplazo   = Array($documentoGerente, $nombreGerente, $ciudadExpDocumentoGerente, $cuotaSostenimientoAdmon, $descuentoPagoAnualAnticipado,
-                                $recargoCuotaSostenimientoAdmon, $fechaFirmaContrato, $fechaContrato); 
-            $contenido  = str_replace($buscar,$remplazo,$informacionPDF->ingpdfcontenido);
-            $data       = $generarPdf->contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $tipoContrato);
-		    return response()->json(["data" => $data]);
+		    return response()->json(['success' => true, "data" => GenerarContrato::vehiculo($request->idContrato)]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}

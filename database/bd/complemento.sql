@@ -250,3 +250,13 @@ UPDATE `funcionalidad` SET `funcruta` = 'admin/antencion/usuario/solicitud' WHER
 ALTER TABLE `ruta` ADD `rutavalorestampilla` DECIMAL(6,0) NOT NULL DEFAULT '0' COMMENT 'Valor de la estampilla para la ruta' AFTER `muniiddestino`;
 ALTER TABLE `tarifatiquete` ADD `tartiqvalorseguro` DECIMAL(6,0) NOT NULL DEFAULT '0' COMMENT 'Valor del seguro para el tiquete' AFTER `tartiqvalor`;
 ALTER TABLE `tiquete` ADD `tiquvalorseguro` DECIMAL(6,0) NULL COMMENT 'Valor del seguro para el tiquete' AFTER `tiquvalorestampilla`;
+
+
+(29, 'solicitudTokeFirmaContratoAsociado', 'Solicitud de token de verificación para el firmado del contrato numeroContrato', '<p style=\"text-align: justify;\">Estimado <strong>nombreAsociado</strong>, para avanzar con el proceso de firma electr&oacute;nica del contrato n&uacute;mero <strong>numeroContrato</strong>, es necesario que ingrese el siguiente c&oacute;digo de verificaci&oacute;n:</p>\r\n<p style=\"text-align: justify;\"><em>C&oacute;digo de Verificaci&oacute;n: <strong>tokenAcceso</strong></em></p>\r\n<p style=\"text-align: justify;\"><br>Tenga en cuenta que este token de verificaci&oacute;n ser&aacute; v&aacute;lido durante los pr&oacute;ximos <strong>tiempoToken </strong>minutos. Si transcurre este tiempo sin completar el proceso, deber&aacute; solicitar un nuevo token.</p>\r\n<p style=\"text-align: justify;\">Por favor, acceda a nuestra plataforma y proporcione el token que le hemos proporcionado. Luego, haga clic en el bot&oacute;n de firma para completar el proceso.</p>\r\n<p style=\"text-align: justify;\">Gracias por su colaboraci&oacute;n y compromiso con la seguridad de nuestros servicios.</p>\r\n<p style=\"text-align: justify;\">&nbsp;<br>Atentamente,&nbsp;</p>\r\n<p style=\"text-align: justify;\"><em><strong>nombreGerente</strong></em><br><em>COOPERATIVA DE TRANSPORTADORES HACARITAMA</em></p>', 1, 0, '2024-02-16 16:54:19', '2024-02-16 16:54:19');
+
+INSERT INTO `informacionnotificacioncorreo` (`innocoid`, `innoconombre`, `innocoasunto`, `innococontenido`, `innocoenviarpiepagina`, `innocoenviarcopia`, `created_at`, `updated_at`) VALUES
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+ (54, 7, 'Firmar contrato', 'Firmar contrato de vehículo', ' admin/direccion/transporte/firmarContratos', 'post_add_icon', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(54, 1, 54);

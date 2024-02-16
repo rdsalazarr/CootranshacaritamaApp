@@ -390,6 +390,7 @@ php artisan make:controller Admin\Vehiculos\VehiculoController
 php artisan make:controller Admin\Vehiculos\ConsultarController
 php artisan make:controller Admin\Vehiculos\TipoModalidadController
 php artisan make:controller Admin\Vehiculos\SuspenderController
+php artisan make:controller Admin\Vehiculos\FirmarContratoController
 
 php artisan make:controller Admin\Asociado\AsociadoController
 php artisan make:controller Admin\Asociado\DesvincularAsociadoController

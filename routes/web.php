@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Home\FrondController;
-use App\Http\Controllers\Home\FirmarContratoController;
+use App\Http\Controllers\Home\FirmarContratoPersonaController;
 use App\Http\Controllers\Home\VerificarDocumentosController;
 use App\Http\Controllers\Admin\Menu\RolController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -52,6 +52,11 @@ use App\Http\Controllers\Admin\Radicacion\BandejaRadicadoDocumentoEntranteContro
 use App\Http\Controllers\Admin\Archivo\HistoricoController;
 use App\Http\Controllers\Admin\Archivo\HistoricoShowController;
 use App\Http\Controllers\Admin\Archivo\HistoricoConsultarController;
+use App\Http\Controllers\Admin\Conductor\ConductorController;
+use App\Http\Controllers\Admin\Asociado\AsociadoController;
+use App\Http\Controllers\Admin\Asociado\SancionarController;
+use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
+use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
 use App\Http\Controllers\Admin\Vehiculos\TipoVehiculoController;
 use App\Http\Controllers\Admin\Vehiculos\TipoReferenciaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoCarroceriaController;
@@ -59,11 +64,7 @@ use App\Http\Controllers\Admin\Vehiculos\TipoModalidadController;
 use App\Http\Controllers\Admin\Vehiculos\TipoMarcaController;
 use App\Http\Controllers\Admin\Vehiculos\TipoColorController;
 use App\Http\Controllers\Admin\Vehiculos\VehiculoController;
-use App\Http\Controllers\Admin\Asociado\AsociadoController;
-use App\Http\Controllers\Admin\Asociado\SancionarController;
-use App\Http\Controllers\Admin\Asociado\DesvincularAsociadoController;
-use App\Http\Controllers\Admin\Asociado\AsociadoInactivosController;
-use App\Http\Controllers\Admin\Conductor\ConductorController;
+use App\Http\Controllers\Admin\Vehiculos\FirmarContratoController;
 use App\Http\Controllers\Admin\Vehiculos\SuspenderController;
 use App\Http\Controllers\Admin\Vehiculos\AsignarVehiculoController;
 use App\Http\Controllers\Admin\Vehiculos\DistribucionVehiculosController;
@@ -97,10 +98,15 @@ Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
 Route::match(array('GET', 'POST'),'/logout',[LoginController::class, 'logout'])->name('logout');
 Route::get('/verificar/documento/{id}', [VerificarDocumentosController::class, 'documental']);
-Route::get('/firmar/contrato/asociado/{id}/{id2}', [FirmarContratoController::class, 'index']);
+Route::get('/firmar/contrato/asociado/{id}/{id2}', [FirmarContratoPersonaController::class, 'index']);
+Route::post('/consultar/informacion/contrato/asociado', [FirmarContratoPersonaController::class, 'infoContrato']);
+Route::post('/descargar/contrato/asociado', [FirmarContratoPersonaController::class, 'downloadContrato']);
+Route::post('/solicitar/token/firmar/contrato/asociado', [FirmarContratoPersonaController::class, 'solicitarToken']);
+Route::post('/salve/firmar/contrato/asociado', [FirmarContratoPersonaController::class, 'salveFirma']);
 Route::get('/verificar/contrato/servicio/especial/{id}', [VerificarDocumentosController::class, 'servicioEspecial']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
 Route::post('/consultar/contrato/servicio/especial', [VerificarDocumentosController::class, 'consultarServicioEspecial']);
+Route::get('/download/contrato/vehiculo/{ruta}', [DownloadFileController::class, 'contrato']);
 Route::get('/download/certificado/{documento}/{ruta}', [DownloadFileController::class, 'certificado']);
 Route::get('/download/digitalizados/{anyo}/{ruta}', [DownloadFileController::class, 'digitalizados']);
 Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
@@ -439,9 +445,12 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/listar/tarjeta/operacion', [AsignarVehiculoController::class, 'listTarjetaOperacion']);
             Route::post('/tarjeta/operacion/salve', [AsignarVehiculoController::class, 'salveTarjetaOperacion']);
 
-            Route::get('/list/tipos/vehiculos', [DistribucionVehiculosController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/list/tipos/vehiculos', [DistribucionVehiculosController::class, 'index'])->middleware('security:admin/direccion/transporte/distribucionVehiculos');
             Route::post('/list/distribucion/vehiculo', [DistribucionVehiculosController::class, 'datos']);
-            Route::post('/salve/distribucion/vehiculo', [DistribucionVehiculosController::class, 'salve']);//security:admin/direccion/transporte/distribucionVehiculos 
+            Route::post('/salve/distribucion/vehiculo', [DistribucionVehiculosController::class, 'salve']);
+
+            Route::post('/list/contrato/vehiculos', [FirmarContratoController::class, 'index'])->middleware('security:admin/direccion/transporte/firmarContratos');
+             
         });
 
         Route::prefix('/cartera')->group(function(){

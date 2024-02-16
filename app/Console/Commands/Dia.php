@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Conductor\ConductorCambioEstado;
 use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Procesos\ProcesosAutomaticos;
-use App\Console\Commands\funcionesGenerales;
+use App\Console\Commands\FuncionesGenerales;
 use App\Models\Conductor\Conductor;
 use App\Models\Vehiculos\Vehiculo;
 use Illuminate\Console\Command;
@@ -39,11 +39,10 @@ class Dia
  
     public static function suspenderConductor($esEjecucionManual = false)
     {    
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoLicencias") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoLicencias") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -52,7 +51,7 @@ class Dia
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionConductor')->first();   
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -124,11 +123,10 @@ class Dia
 
     public static function suspenderVehiculosSoat($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoSoat") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoSoat") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -137,7 +135,7 @@ class Dia
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -213,11 +211,10 @@ class Dia
 
     public static function suspenderVehiculosCRT($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoCRT") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoCRT") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -226,7 +223,7 @@ class Dia
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -303,11 +300,10 @@ class Dia
 
     public static function suspenderVehiculosPolizas($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoPolizas") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoPolizas") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -316,7 +312,7 @@ class Dia
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -393,11 +389,10 @@ class Dia
 
     public static function suspenderVehiculosTarjetaOperacion($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoTarjetaOperacion") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoTarjetaOperacion") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -406,7 +401,7 @@ class Dia
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculo')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -483,11 +478,10 @@ class Dia
 
     public static function levantarSancionVehiculo($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("LevantarSancionVehiculo") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("LevantarSancionVehiculo") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -496,7 +490,7 @@ class Dia
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionLevantamientoSuspension')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 

@@ -3,6 +3,7 @@ import React, {useEffect, useState, Fragment } from 'react';
 import {Box, Grid, Button, Avatar, List, ListItem, ListItemAvatar, ListItemText,Link } from '@mui/material';
 import verificarDocumentos from "../../../images/verificarDocumentos.jpg";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import { ThemeProvider } from '@mui/material/styles';
@@ -15,9 +16,10 @@ import Loader from "../layout/loader";
 import "../../../scss/app.scss";
 
 export default function ServicioEspecial(){
-    const [loader, setLoader] = useState(false); 
-    const [data, setData] = useState([]);
+
     const [rutaDescarga, setRutaDescarga] = useState('');
+    const [loader, setLoader] = useState(true);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
        instance.post('/consultar/contrato/servicio/especial', {id: window.id}).then(res=>{
@@ -79,7 +81,7 @@ export default function ServicioEspecial(){
                             {datosDocumento('Destino: ', data.coseesdestino, <FmdGoodIcon />)}
                         </Grid>
 
-                        <Link href={rutaDescarga} ><Button type={"submit"} style={{width: '96%', marginBottom: '1em'}} >Descargar documento</Button> </Link>
+                        <Link href={rutaDescarga} ><Button type={"submit"} style={{width: '96%', marginBottom: '1em'}} startIcon={<FileDownloadIcon />} >Descargar documento</Button> </Link>
 
                     </Grid>
                     <Grid item xl={6} md={6} sm={12} xs={12}>

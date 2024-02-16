@@ -55,6 +55,7 @@ import Conductor from "../admin/vehiculos/conductor/list";
 import AsignarVehiculo from "../admin/vehiculos/asignar/search";
 import SuspenderVehiculo from "../admin/vehiculos/suspender/search";
 import DistribucionVehiculo from "../admin/vehiculos/tipos/vehiculo/distribucion";
+import FirmarContrato from "../admin/vehiculos/contrato/list";
 
 import LineaCredito from "../admin/cartera/lineaCredito/list";
 import SolicitudCredito from "../admin/cartera/solicitudCredito/search";
@@ -77,10 +78,7 @@ import PagarCredito from "../admin/caja/pagarCredito/search";
 import CerrarCaja from "../admin/caja/cerrar/closed";
 
 import GestionarSolicitud from "../admin/atencionUsuario/solicitud/list";
-
 import ProcesosAutomaticos from "../admin/procesos/list";
-
-
 
 const HeaderMenu = ({open, setOpen}) =>{
     return (
@@ -248,7 +246,8 @@ const menuComponente = [
     {id:52,componente : <GestionarSolicitud />},
     {id:53,componente : <ProcesosAutomaticos />},
 
-    {id:54,componente : <EnConstruccion />},
+    {id:54,componente : <FirmarContrato />},
+
     {id:55,componente : <EnConstruccion />},
     {id:56,componente : <EnConstruccion />},
     {id:57,componente : <EnConstruccion />},

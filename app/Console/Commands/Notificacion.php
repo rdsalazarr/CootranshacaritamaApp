@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Console\Commands\funcionesGenerales;
+use App\Console\Commands\FuncionesGenerales;
 use App\Models\Procesos\ProcesosAutomaticos;
 use Illuminate\Console\Command;
 use App\Util\generales;
@@ -21,12 +21,11 @@ class Notificacion
  
     public static function vencimientoLicencias($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $generales          = new generales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechasNotificacion = $generales->definirRangoNotificacion();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("NotificarVencimientoLicencia") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("NotificarVencimientoLicencia") : $fechaHoraActual->format('Y-m-d');
         $mensaje            = '';
         $mensajeCorreo      = '';
         $success            = false;
@@ -34,7 +33,7 @@ class Notificacion
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoLicencia' )->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -87,12 +86,11 @@ class Notificacion
 
     public static function vencimientoSoat($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $generales          = new generales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechasNotificacion = $generales->definirRangoNotificacion();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("NotificarVencimientoVehiculosSoat") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("NotificarVencimientoVehiculosSoat") : $fechaHoraActual->format('Y-m-d');
         $mensaje            = '';
         $mensajeCorreo      = '';
         $success            = false;
@@ -100,7 +98,7 @@ class Notificacion
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoSoat')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -154,12 +152,11 @@ class Notificacion
 
     public static function vencimientoCRT($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $generales          = new generales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechasNotificacion = $generales->definirRangoNotificacion();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("NotificarVencimientoVehiculosCRT") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("NotificarVencimientoVehiculosCRT") : $fechaHoraActual->format('Y-m-d');
         $mensaje            = '';
         $mensajeCorreo      = '';
         $success            = false;
@@ -167,7 +164,7 @@ class Notificacion
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoCRT')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -221,12 +218,11 @@ class Notificacion
 
     public static function vencimientoPolizas($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $generales          = new generales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechasNotificacion = $generales->definirRangoNotificacion();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("NotificarVencimientoVehiculosPolizas") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("NotificarVencimientoVehiculosPolizas") : $fechaHoraActual->format('Y-m-d');
         $mensaje            = '';
         $mensajeCorreo      = '';
         $success            = false;
@@ -234,7 +230,7 @@ class Notificacion
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoPolizas')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -289,12 +285,11 @@ class Notificacion
 
     public static function VencimientoTarjetaOperacion($esEjecucionManual = false)
     {
-        $funcionesGenerales = new funcionesGenerales();
         $generales          = new generales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechasNotificacion = $generales->definirRangoNotificacion();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("NotificarVencimientoVehiculosTarjetaOperacion") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("NotificarVencimientoVehiculosTarjetaOperacion") : $fechaHoraActual->format('Y-m-d');
         $mensaje            = '';
         $mensajeCorreo      = '';
         $success            = false;
@@ -302,7 +297,7 @@ class Notificacion
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoTarjetaOperacion')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
@@ -367,10 +362,9 @@ class Notificacion
                                 Carbon::now()->subDays(50)->toDateString(),
                                 Carbon::now()->subDays(60)->toDateString(),
                             ];
-        
-        $funcionesGenerales = new funcionesGenerales();
+
         $fechaHoraActual    = Carbon::now();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoCuotasCreditos") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoCuotasCreditos") : $fechaHoraActual->format('Y-m-d');
         $mensaje            = '';
         $mensajeCorreo      = '';
         $success            = false;
@@ -379,7 +373,7 @@ class Notificacion
         try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarVencimientoCuotaCredito')->first();
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 

@@ -66,7 +66,7 @@ class notificar
 	function htmlCorreo($body,$piePagina) {
 		$msj = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>';
 		$msj .='<div style="border:1px solid #e4e4e4;border-radius:5px; width: 98%;">';	
-		$msj .='<div style="background-color:#44ac34; text-align:center; font-weight:bold; color:#fdfdfd; font-size: 15px; margin-top: -4px;"> Notificación del CRM COOTRANSHACARITAMA </div>';
+		$msj .='<div style="background-color:#44ac34; text-align:center; font-weight:bold; color:#fdfdfd; font-size: 15px; margin-top: -4px;"> Notificación del ERP COOTRANSHACARITAMA </div>';
 		$msj .='<div style="margin-top:5px; padding:8px; text-align:justify;">'; 
 		$msj .= $body;
 		$msj .='</div>

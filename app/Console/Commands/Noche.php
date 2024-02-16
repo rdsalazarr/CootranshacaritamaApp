@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Conductor\ConductorCambioEstado;
 use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Procesos\ProcesosAutomaticos;
-use App\Console\Commands\funcionesGenerales;
+use App\Console\Commands\FuncionesGenerales;
 use App\Models\Conductor\Conductor;
 use App\Models\Vehiculos\Vehiculo;
 use Illuminate\Console\Command;
@@ -39,11 +39,10 @@ class Noche
  
     public static function prueba($esEjecucionManual = false)
     {    
-        $funcionesGenerales = new funcionesGenerales();
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
         $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? $funcionesGenerales->consultarFechaProceso("VencimientoLicencias") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("VencimientoLicencias") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -52,7 +51,7 @@ class Noche
 		try {
 
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionConductor')->first();   
-            $empresa            = $funcionesGenerales->consultarInfoEmpresa();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
