@@ -143,7 +143,7 @@ class VehiculoController extends Controller
 			}else{
 				$rutaFotografia = $request->rutaFotoOld;
 			}
-            
+
             $vehiculo->asocid                = $request->asociado;
             $vehiculo->tipvehid              = $request->tipoVehiculo;
             $vehiculo->tireveid              = $request->tipoReferencia;
@@ -171,7 +171,7 @@ class VehiculoController extends Controller
             $vehiculo->save();
 
             if($request->tipo === 'I'){
-                $representante               =  DB::table('empresa as e')->select('e.emprcorreo','p.persid','p.perscorreoelectronico'.
+                $representante               =  DB::table('empresa as e')->select('e.emprcorreo','p.persid','p.perscorreoelectronico',
                                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
                                                 ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                                                 ->where('emprid', '1')->first();
@@ -182,7 +182,7 @@ class VehiculoController extends Controller
                 $fechaHoraActual              = Carbon::now();
                 $anioActual                   = $fechaHoraActual->year;
                 $fechaInicialContrato         = Carbon::parse($request->fechaInicialContrato);
-                $fechaInicialContratoAdiciona = $fechaInicialContrato->addYear();
+                $fechaInicialContratoAdiciona = $fechaInicialContrato->endOfYear();
                 $fechaFinalContrato           = $fechaInicialContratoAdiciona->toDateString();	
                 $vehiculoMaxConsecutio        = Vehiculo::latest('vehiid')->first();
                 $vehiid                       = $vehiculoMaxConsecutio->vehiid;
@@ -207,6 +207,10 @@ class VehiculoController extends Controller
                 $vehiculocontrato->vehconobservacion  = 'Se ha generado el contrato del vehículo por primera vez. Este procedimiento fue llevado a cabo por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $vehiculocontrato->save();
 
+                $vehiculoContratoMaxConsecutio = VehiculoContrato::latest('vehconid')->first();
+                $vehconid                      = $vehiculoContratoMaxConsecutio->vehconid;
+
+
                 $tipoModalidadVehiculo   = DB::table('tipomodalidadvehiculo')->select('timovecuotasostenimiento')->where('timoveid', $request->tipoModalidad)->first();
                 $fechasCompromisos       = $funcion->obtenerFechasCompromisoVehiculo($request->fechaInicialContrato);
                 $valorMensualidadInicial = $funcion->obtenerPrimerValorMensualidad($request->fechaInicialContrato, $tipoModalidadVehiculo->timovecuotasostenimiento);
@@ -222,13 +226,13 @@ class VehiculoController extends Controller
                 //Creamos la firma de los contratos
                 if($request->firmaElectronia === 'SI'){
                     $vehiculocontratofirma = new VehiculoContratoFirma();
-                    $vehiculocontratofirma->vehconid = $vehiid;
+                    $vehiculocontratofirma->vehconid = $vehconid;
                     $vehiculocontratofirma->persid   = $representante->persid;
                     $vehiculocontratofirma->save();
 
                     //firma del asociado
                     $vehiculocontratofirma = new VehiculoContratoFirma();
-                    $vehiculocontratofirma->vehconid = $vehiid;
+                    $vehiculocontratofirma->vehconid = $vehconid;
                     $vehiculocontratofirma->persid   = $request->personaId;
                     $vehiculocontratofirma->save();
 
@@ -237,15 +241,15 @@ class VehiculoController extends Controller
                     $vecofiid              = $contratoMaxConsecutio->vecofiid;
                     $nombreUsuario         = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
                     $persona               = DB::table('persona')
-                                            ->select('perscorreoelectronico',DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))                                     
+                                            ->select('perscorreoelectronico',DB::raw("CONCAT(persprimernombre,' ',IFNULL(perssegundonombre,''),' ',persprimerapellido,' ',IFNULL(perssegundoapellido,'')) as nombreAsociado"))                                     
                                             ->where('persid', $request->personaId)->first();
                     $correoAsociado        = $persona->perscorreoelectronico;
                     $nombreAsociado        = $persona->nombreAsociado;
-                    $urlFirmaContrato      = asset('firmar/contrato/asociado/'.Crypt::encrypt($vecofiid));
+                    $urlFirmaContrato      = asset('firmar/contrato/asociado/'.Crypt::encrypt($vehconid).'/'.Crypt::encrypt($vecofiid));
 
                     //Notificamos a al gerente y al asociado
                     $notificar         = new notificar();
-                    $informacioncorreos = DB::table('informacionnotificacioncorreo')->whereIn('innoconombre', ['solicitaFirmaContratoGerente', 'solicitaFirmaContratoAsociado'])->first();
+                    $informacioncorreos = DB::table('informacionnotificacioncorreo')->whereIn('innoconombre', ['solicitaFirmaContratoGerente', 'solicitaFirmaContratoAsociado'])->get();
                     foreach($informacioncorreos as $informacioncorreo){
                         $buscar             = Array('numeroContrato', 'nombreGerente', 'nombreUsuario', 'nombreAsociado', 'urlFirmaContrato');
                         $remplazo           = Array($numeroContrato, $nombreGerente,  $nombreUsuario, $nombreAsociado, $urlFirmaContrato); 

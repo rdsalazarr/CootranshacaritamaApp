@@ -19,7 +19,8 @@ export default function New({data, tipo}){
                                               correo:'',               telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
                                               departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planilla:'',
                                               valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
-                                              valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '', tipo:tipo});
+                                              valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '', 
+                                              valorSeguro:'',          valorSeguroMostrar:'',          tipo:tipo});
     
     const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral' + 'Venta');
     const [distribucionVehiculos, setDistribucionVehiculos] = useState([]);
@@ -30,6 +31,7 @@ export default function New({data, tipo}){
     const [formDataPuesto, setFormDataPuesto] = useState([]);
     const [planillaRutas, setPlanillaRutas] = useState([]);
     const [puestoMarcado, setPuestoMarcado] = useState([]);
+    const [tomarSeguro, setTomarSeguro] = useState(false);
     const [cajaAbierta, setCajaAbierta] = useState(false);
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
@@ -37,8 +39,8 @@ export default function New({data, tipo}){
     const [esEmpresa, setEsEmpresa] = useState(false);
     const [municipios, setMunicipios] = useState([]);
     const [idTiquete , setIdTiquete] = useState(0);
-    const [loader, setLoader] = useState(false);
-
+    const [loader, setLoader] = useState(false);    
+    
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -51,6 +53,10 @@ export default function New({data, tipo}){
         setEnviarTiquete(e.target.checked);
     }
 
+    const handleChangeTomarSeguro= (e) => {
+        setTomarSeguro(e.target.checked);
+    }    
+
     const handleChangePuesto = (e) =>{
         let newFormDataPuesto = [...formDataPuesto];
         (e.target.checked) ? newFormDataPuesto.push({tivedipuesto: parseInt(e.target.value)}) :
@@ -61,16 +67,18 @@ export default function New({data, tipo}){
 
     const calcularValorTiquete = (cantidadPuesto) =>{
         let newFormData                         = {...formData}
-        const planillaRutasFiltradas            = planillaRutas.filter(planilla => planilla.plarutid === newFormData.planilla);
-        let rutaId                              = planillaRutasFiltradas[0].rutaid;
-        let depaIdDestino                       = planillaRutasFiltradas[0].depaiddestino;
-        let muniIdDestino                       = planillaRutasFiltradas[0].muniiddestino;
+        let rutaId                              = formData.planilla;
+        let depaIdDestino                       = formData.departamentoDestino;
+        let muniIdDestino                       = formData.municipioDestino;
         const tarifaTiquetesFiltradas           = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.depaiddestino === depaIdDestino && tt.muniiddestino === muniIdDestino);
         let valorTiquete                        = tarifaTiquetesFiltradas[0].tartiqvalor;
             valorTiquete                        = valorTiquete * cantidadPuesto;
         let fondoReposicion                     = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
         let valorFondoReposicion                = (valorTiquete * fondoReposicion) / 100;
         let valorTotalTiquete                   = Number(valorTiquete) - Number(newFormData.valorDescuento);
+
+
+
         newFormData.valorTiquete                = Number(valorTiquete) - Number(newFormData.valorDescuento);
         newFormData.valorFondoReposicion        = valorFondoReposicion;
         newFormData.valorTotal                  = valorTotalTiquete;
@@ -104,7 +112,8 @@ export default function New({data, tipo}){
                             correo:'',               telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
                             departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planilla:'',
                             valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
-                            valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: 0, tipo:tipo});
+                            valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: 0, 
+                            valorSeguro:'',          valorSeguroMostrar:'',          tipo:tipo });
                 setDataPuestos([]);
             }
 
@@ -156,6 +165,7 @@ export default function New({data, tipo}){
         let newFormData               = {...formData}
         let valorTiquete              = 0;
         let fondoTeposicion           = 0;
+        let valorSeguro               = 0;
         const planillaRutasFiltradas  = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
         let rutaId                    = planillaRutasFiltradas[0].rutaid;
         let vehiculoId                = planillaRutasFiltradas[0].vehiid;
@@ -186,13 +196,16 @@ export default function New({data, tipo}){
             newFormData.departamentoDestino         = depaIdDestino;
             newFormData.municipioDestino            = muniIdDestino;
             valorTiquete                            = tarifaTiquetesFiltradas[0].tartiqvalor;
+            valorSeguro                             = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
             fondoTeposicion                         = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
             let valorFondoReposicion                = (valorTiquete * fondoTeposicion) / 100;
+            newFormData.valorSeguro                 = valorSeguro;
             newFormData.valorTiquete                = valorTiquete;
             newFormData.valorFondoReposicion        = valorFondoReposicion;
+            newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
             newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
             newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
-  
+
             let municipiosDestino = [];
             municipios.forEach(function(muni){ 
                 if(muni.munidepaid === depaIdDestino){
@@ -214,6 +227,41 @@ export default function New({data, tipo}){
             setMunicipiosDestino(municipiosDestino);
             setLoader(false);
         })
+    }
+
+    const consultarValorTiqueteDestino = (e) =>{
+        let newFormData     = {...formData}
+        let valorTiquete    = 0;
+        let fondoTeposicion = 0;
+        let valorSeguro     = 0;
+        let rutaId          = formData.planilla
+        let depaIdDestino   = formData.departamentoDestino
+
+        const tarifaTiquetesFiltradas = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.depaiddestino === depaIdDestino && tt.muniiddestino === e.target.value);
+        if(tarifaTiquetesFiltradas.length > 0){
+            valorTiquete                            = tarifaTiquetesFiltradas[0].tartiqvalor;
+            valorSeguro                             = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
+            fondoTeposicion                         = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+        }else{
+            showSimpleSnackbar("No se han gestionado valores para el nodo de la ruta seleccionada", 'error');
+        }
+      
+        let valorFondoReposicion                = (valorTiquete * fondoTeposicion) / 100;
+        newFormData.valorSeguro                 = valorSeguro;
+        newFormData.valorTiquete                = valorTiquete;
+        newFormData.valorFondoReposicion        = valorFondoReposicion;
+        newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
+        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
+        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+        newFormData.municipioDestino            = e.target.value;
+
+        //Estas mal no realiza bien el proceso
+
+        let valorTotalTiquete                   = Number(valorTiquete) - Number(formData.valorDescuento);
+
+        newFormData.valorTotalTiquete           = formatearNumero(valorTotalTiquete);
+        
+        setFormData(newFormData);
     }
 
     const distribucionVehiculo = (distribucionVehiculo, puestosVendidos, puestosVendidosGeneral = []) => {
@@ -245,7 +293,7 @@ export default function New({data, tipo}){
         return Number(numero).toLocaleString('es-CO', opciones);
     }
  
-    const calcularValorTotal = (e) =>{
+    const calcularValorTotalDescuento = (e) =>{
         let newFormData               = {...formData}
         let valorDescuento            = (e.target.name === 'valorDescuento' ) ? e.target.value : formData.valorDescuento;
         let valorTiquete              = newFormData.valorTiquete
@@ -387,17 +435,32 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange} 
+                            onChange={consultarValorTiqueteDestino}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosDestino.map(res=>{
-                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Grid item md={3} xl={3} sm={6} xs={12} style={{textAlign:'center'}}>
+                        <FormControlLabel
+                            control={<Switch name={'tomarSeguro'} 
+                            value={tomarSeguro} onChange={handleChangeTomarSeguro} 
+                            color="secondary" checked={(tomarSeguro) ? true : false}/>} 
+                            label="Tomar seguro"
+                        />
                     </Grid>
+                    
+                    {(tomarSeguro) ?
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Box className='frmTextoColor'>
+                                <label>Valor seguro:  $ </label>
+                                <span className='textoRojo'>{'\u00A0'+ formData.valorSeguroMostrar}</span>
+                            </Box>
+                        </Grid>
+                    : null}
 
                 </Grid>
 
@@ -473,7 +536,7 @@ export default function New({data, tipo}){
                                     type={'numeric'}
                                     require={['maxStringLength:8']}
                                     error={['Número máximo permitido es el 99999999']}
-                                    onChange={calcularValorTotal}
+                                    onChange={calcularValorTotalDescuento}
                                 />
                             </Grid> 
 

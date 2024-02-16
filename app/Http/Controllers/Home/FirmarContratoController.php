@@ -11,18 +11,19 @@ use App\Util\encrypt;
 use App\Models\User;
 use DB, URL;
 
-class VerificarDocumentosController extends Controller
+class FirmarContratoController extends Controller
 {
-	public function index($id)
+	public function index($id, $id2)
 	{
 		//Verifico las variables
 		try {
-	    	$idFirma = Crypt::decrypt($id); 
+	    	$contratoId = Crypt::decrypt($id); 
+			$idFirma    = Crypt::decrypt($id2); 
 		} catch (DecryptException $e) {
 		   return redirect('/error/url');
 		}
 
-        dd(idFirma);
+        dd($contratoId, $idFirma);
 
 
 

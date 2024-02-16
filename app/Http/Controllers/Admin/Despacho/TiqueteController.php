@@ -64,14 +64,14 @@ class TiqueteController extends Controller
 
         try{
             $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
-            $municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
+            //$municipios           = DB::table('municipio')->select('muniid','munidepaid','muninombre')->where('munihacepresencia', true)->orderBy('muninombre')->get();
             $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
             $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre')
                                         ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
                                         ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
 
             $tarifaTiquetes         = DB::table('tarifatiquete as tt')
-                                        ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion')
+                                        ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion','tt.tartiqvalorseguro')
                                         ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')->get();
 
             $planillaRutas        = DB::table('planillaruta as pr')
