@@ -270,7 +270,7 @@ body{
   border-radius: 10px;
   padding-bottom: 2px;
   padding-top: 3px;
-  border-bottom: 4px solid #44ac34;
+  border-bottom: 4px solid $verdeOscuro;
 }
 
 .frmTextoColor {
@@ -313,6 +313,7 @@ body{
   p{
     text-align: justify;
     padding-left: 10px;
+    padding-right: 10px;
   }
 }
 
@@ -503,7 +504,7 @@ body{
 }
 
 .cardNotificacion{
-  border-bottom: 4px solid #44ac34;
+  border-bottom: 4px solid $verdeOscuro;
   h5{
     font-size: 1.5em ;
     font-weight: 600;

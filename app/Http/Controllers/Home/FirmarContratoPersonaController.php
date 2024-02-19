@@ -129,7 +129,7 @@ class FirmarContratoPersonaController extends Controller
                                         ->where('tofipeutilizado', false)->where('persid', $personaId)->get();
 
             foreach($tokenfirmas as $tokenfirma){
-                $tokenfirmapersonaUpdate = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
+                $tokenfirmapersonaUpdate                  = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
                 $tokenfirmapersonaUpdate->tofipeutilizado = true;
                 $tokenfirmapersonaUpdate->save();
             }
@@ -212,7 +212,7 @@ class FirmarContratoPersonaController extends Controller
             $tokenfirma->save();
 
             //Marco como relizado el proceso de la firma
-            $vehiculocontratofirma = VehiculoContratoFirma::findOrFail($firmaId);
+            $vehiculocontratofirma                              = VehiculoContratoFirma::findOrFail($firmaId);
             $vehiculocontratofirma->vecofifirmado               = true;
             $vehiculocontratofirma->vecofifechahorafirmado      = $fechaHoraActual;
             $vehiculocontratofirma->vecofitoken                 = $tokenfirma->tofipetoken;

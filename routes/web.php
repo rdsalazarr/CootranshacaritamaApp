@@ -450,7 +450,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/salve/distribucion/vehiculo', [DistribucionVehiculosController::class, 'salve']);
 
             Route::post('/list/contrato/vehiculos', [FirmarContratoController::class, 'index'])->middleware('security:admin/direccion/transporte/firmarContratos');
-             
+            Route::post('/solicitar/token', [FirmarContratoController::class, 'solicitarToken']);
+            Route::post('/firmar/contrato', [FirmarContratoController::class, 'salveFirma']);
+            Route::post('/verificar/total/firma/contrato', [FirmarContratoController::class, 'verificarFirma']);
+            Route::post('/visualizar/contrato/PDF', [FirmarContratoController::class, 'contratoPdf']);
         });
 
         Route::prefix('/cartera')->group(function(){

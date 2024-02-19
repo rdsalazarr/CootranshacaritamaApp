@@ -173,10 +173,10 @@ class FirmarDocumentosController extends Controller
 
     //Funcion que firma el documento
 	public function procesar(Request $request){
-        $this->validate(request(),['id'            => 'required|numeric', 
-                                  'token'          => 'required|string|min:4|max:20',
-                                  'tokenId'        => 'required',
-                                  'firma'          => 'required|numeric'
+        $this->validate(request(),['id'     => 'required|numeric', 
+                                  'token'   => 'required|string|min:4|max:20',
+                                  'tokenId' => 'required',
+                                  'firma'   => 'required|numeric'
                                 ]);
 
         $codoprid             = $request->id;
@@ -237,12 +237,12 @@ class FirmarDocumentosController extends Controller
             $correoDependencia = $infodocumento->depecorreo;
 
             //Actualizo los datos
-            $tokenfirma = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
+            $tokenfirma                  = TokenFirmaPersona::findOrFail($tokenfirma->tofipeid);
             $tokenfirma->tofipeutilizado = true;
             $tokenfirma->save();
 
 			//Marco como relizado el proceso de la firma
-			$codigodocumentalprocesofirma = CodigoDocumentalProcesoFirma::findOrFail($codopfid);
+			$codigodocumentalprocesofirma                              = CodigoDocumentalProcesoFirma::findOrFail($codopfid);
 		    $codigodocumentalprocesofirma->codopffirmado               = true;
             $codigodocumentalprocesofirma->codopffechahorafirmado      = $fechaHoraActual;
             $codigodocumentalprocesofirma->codopftoken                 = $tokenfirma->tofipetoken;

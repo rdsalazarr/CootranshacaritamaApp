@@ -410,14 +410,14 @@ export function AnularDocumento({id, ruta, cerrarModal}){
     )
 }
 
-export function FirmarDocumento({id, cerrarModal}){
+export function FirmarDocumento({id, cerrarModal, urlDatos, urlSalve}){
 
     const [formData, setFormData] = useState({id: id, tokenId:'',  token: ''});
-    const [loader, setLoader] = useState(false);
-    const [habilitado, setHabilitado] = useState(true);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [mensaje, setMensaje] = useState('');
     const [tiempoRestante, setTiempoRestante] = useState(0);
+    const [habilitado, setHabilitado] = useState(true);
+    const [loader, setLoader] = useState(false);
+    const [mensaje, setMensaje] = useState('');
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -425,12 +425,10 @@ export function FirmarDocumento({id, cerrarModal}){
 
     const continuar = () =>{
         setLoader(true);
-        instance.post('/admin/firmar/documento/procesar', formData).then(res=>{
+        instance.post(urlSalve, formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? setHabilitado(false) : null;
-            (res.success) ? setTiempoRestante(0) : null;
-            (res.success) ? setFormData({id: id,tokenId:'', token: '' }) : null;
+            (res.success) ? (setHabilitado(false), setTiempoRestante(0), setFormData({id: id,tokenId:'', token: '' }) ) : null;
             setLoader(false);
         })
     }
@@ -438,7 +436,7 @@ export function FirmarDocumento({id, cerrarModal}){
     const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
-        instance.post('/admin/firmar/documento/solicitar/token', {id: id}).then(res=>{
+        instance.post(urlDatos, {id: id}).then(res=>{
             if(res.success){
                 newFormData.firma   = res.firma;
                 newFormData.tokenId = res.idToken;
@@ -1255,16 +1253,16 @@ export function FirmarContratoAsociado({contratoId, firmaId, cerrarModal, verifi
     )
 }
 
-export function CerrarCaja({data, cerrarModal, mostrarComprobante}){
+export function CerrarCaja({saldoCerrar, cerrarModal, mostrarComprobante}){
     const [habilitado, setHabilitado] = useState(true);
     const [loader, setLoader] = useState(false);
 
     const continuar = () =>{
         setLoader(true);   
-        instance.post('/admin/caja/cerrar/movimiento/salve', {idValor: movimientoCaja.saldoCerrar}).then(res=>{
+        instance.post('/admin/caja/cerrar/movimiento/salve', {idValor: saldoCerrar}).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? mostrarComprobante(res.dataFactura) : null;
+            (res.success) ? (mostrarComprobante(res.dataFactura), setHabilitado(false)) : null;
             setLoader(false);
         })
     }

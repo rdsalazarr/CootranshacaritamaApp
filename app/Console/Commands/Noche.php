@@ -53,9 +53,7 @@ class Noche
             $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionConductor')->first();   
             $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
-            $nombreGerente      = $empresa->nombreGerente;
-
-            
+            $nombreGerente      = $empresa->nombreGerente;            
 
             $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(1);
             $procesoAutomatico->proautfechaejecucion = $fechaActual;

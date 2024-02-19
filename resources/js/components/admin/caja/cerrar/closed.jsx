@@ -50,7 +50,7 @@ export default function Closed(){
 
     const buttons = [
             <Button key="1" startIcon={<FileDownloadIcon />} onClick={() => {descargarFile()}}>Descargar excel</Button>,
-            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {edit('CerrarCaja', 0)}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
+            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {edit(movimientoCaja.saldoCerrar, 0)}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
         ];
 
     const inicio = () =>{

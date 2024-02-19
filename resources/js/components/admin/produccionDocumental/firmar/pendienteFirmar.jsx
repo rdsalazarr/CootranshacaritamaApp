@@ -32,7 +32,7 @@ export default function PendienteFirmar(){
                     <Citacion tipo={'U'} id={modal.data.citacionId} ruta='JEFE' />,
                     <Constancia tipo={'U'} id={modal.data.constanciaId} ruta='JEFE' />,
                     <Oficio tipo={'U'} id={modal.data.oficioId} ruta='JEFE' />,
-                    <FirmarDocumento id={modal.data.codoprid} cerrarModal={cerrarModal} />,
+                    <FirmarDocumento id={modal.data.codoprid} cerrarModal={cerrarModal} urlDatos = '/admin/firmar/documento/solicitar/token' urlSalve = '/admin/firmar/documento/procesar' />,
                     <VisualizarPdf data={modal.data} /> ];
 
     const tituloModal = ['Editar el tipo documental',

@@ -1,15 +1,15 @@
-$menu   : #fafafa;
-$verde  : #44ac34;
-$blanco : white;
-$gris   : #717171;
-$rojo   : #f33602;
+$verdeClaro : var(--verdeClaro);
+$verdeOscuro: var(--verdeOscuro);
+$grisClaro  : var(--grisClaro);
+$grisOscuro : var(--grisOscuro);
+$rojoOscuro : var(--rojoOscuro);
 
 .headerAdmon{
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: $verde;
+    background-color: $verdeOscuro;
     display: flex;
     flex-direction: row;
     height: 3.5em;
@@ -23,7 +23,7 @@ $rojo   : #f33602;
             color: #fdfdfd;
             text-align: center;
             padding-right: 15%;
-            text-shadow: 1px 1px #80c900, 1.2px 1.2px #80c900;
+            text-shadow: 1px 1px $verdeClaro, 1.2px 1.2px $verdeClaro;
         }
     }
     .colAdmonRight{

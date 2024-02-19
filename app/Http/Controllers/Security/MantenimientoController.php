@@ -65,10 +65,10 @@ class MantenimientoController extends Controller
         $emailEmpresa      = '';
         $nombreGerente     = 'Luis manuel Ascanio'; 
 
-        $rutaPdf            = public_path().'/archivos/radicacion/documentoEntrante/2023/270_1978917-cccoopigon.pdf';
+        //$rutaPdf            = public_path().'/archivos/radicacion/documentoEntrante/2023/270_1978917-cccoopigon.pdf';
 
         //$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innocoid', 2)->first();
-        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'solicitaFirmaContratoAsociado')->first();
+        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'solicitudTokeFirmaContratoGerente')->first();
 
 
         $buscar          = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlFirmaContrato','nombreGerente');

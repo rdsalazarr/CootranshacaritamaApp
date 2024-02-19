@@ -153,14 +153,13 @@ $rojoOscuro : var(--rojoOscuro);
 
 @media (max-width: 600px) {
   .modalCenter { 
-    .smallFlot { 
-      width: 80% !important; 
+      .smallFlot { 
+        width: 80% !important; 
+      }
+    }
+    .modalBtn{ 
+    .floatBtnRojo{
+      float: none;
     }
   }
-  .modalBtn{ 
-  .floatBtnRojo{
-    float: none;
-  }
-}
-
 }
