@@ -197,12 +197,12 @@ class PlanillaRutaController extends Controller
                                 ->select(
                                 DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortiquete, 0)) as valorTiquete"),
                                 DB::raw("CONCAT('$ ', FORMAT(t.tiquvalordescuento, 0)) as valorDescuento"),
+                                DB::raw("CONCAT('$ ', FORMAT(t.tiquvalorseguro, 0)) as valorSeguro"),
                                 DB::raw("CONCAT('$ ', FORMAT(t.tiquvalorfondoreposicion, 0)) as valorValorfondoReposicion"),
                                 DB::raw("CONCAT('$ ', FORMAT(t.tiquvalortotal, 0)) as valorTotalTiquete"),
                                 DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                                 'mde.muninombre as municipioDestino', 'a.agennombre as nombreAgencia', 
-                                DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
-                                            ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombreCliente"))
+                                 DB::raw("CONCAT(ps.perserprimernombre,' ',IFNULL(ps.persersegundonombre,''),' ',ps.perserprimerapellido,' ',IFNULL(ps.persersegundoapellido,'')) as nombreCliente"))
                                 ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                                 ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
                                 ->join('municipio as mde', function($join)
@@ -226,12 +226,20 @@ class PlanillaRutaController extends Controller
 
         DB::beginTransaction();
         try {
+
+            $tiquete = DB::table('tiquete')
+                        ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'))
+                        ->where('plarutid', $request->codigo)
+                        ->where('tiqucontabilizado', 0)
+                        ->groupBy('plarutid')
+                        ->first();
+
             $fechaHoraActual = Carbon::now();
             $fechaActual     = $fechaHoraActual->format('Y-m-d');
             $cajaAbierta     = MovimientoCaja::verificarCajaAbierta();
 
-            if(!$cajaAbierta){
-                return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible registrar una encomienda sin antes haber abierto la caja para el día de hoy']);
+            if($tiquete and !$cajaAbierta){
+                return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible despachar un vehículo sin antes haber abierto la caja para el día de hoy']);
             }
 
             //Verifico que el conductor y el vehiculo no este suspendido
@@ -266,23 +274,23 @@ class PlanillaRutaController extends Controller
                 $encomiendacambioestado->save();
             }
 
+            if($tiquete){
+                //Se realiza la contabilizacion
+                $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = 1;//Caja
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizar;
+                $comprobantecontabledetalle->save();
 
-            //Se realiza la contabilizacion
-            /*$comprobanteContableId                     = ComprobanteContable::obtenerId($fechaActual);
-            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 1;//Caja
-            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-            $comprobantecontabledetalle->cocodemonto     = $valorTotalTiquete;
-            $comprobantecontabledetalle->save();
-
-            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 10; //CXP PAGO TIQUETE
-            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-            $comprobantecontabledetalle->cocodemonto     = $valorTotalTiquete;
-            $comprobantecontabledetalle->save();*/
-
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = 10; //CXP PAGO TIQUETE
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizar;
+                $comprobantecontabledetalle->save();
+            }
 
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

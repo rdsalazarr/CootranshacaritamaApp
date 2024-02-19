@@ -68,6 +68,8 @@ export default function Show({data}){
             newFormData.valorTiqueteMostrar         = formatearNumero(tiquete.tiquvalortiquete);
             newFormData.valorFondoReposicionMostrar = formatearNumero(tiquete.tiquvalorfondoreposicion);
             newFormData.valorTotalTiquete           = formatearNumero(tiquete.tiquvalortotal);
+            newFormData.valorSeguro                 = formatearNumero(tiquete.tartiqvalorseguro);
+
             setEsEmpresa((tiquete.tipideid === 5) ? true : false);
             setFormData(newFormData);
             distribucionVehiculo(res.distribucionVehiculo, res.tiquetePuestos);
@@ -104,6 +106,13 @@ export default function Show({data}){
                 </Grid>
 
                 <Grid item xl={3} md={3} sm={6} xs={12}>
+                </Grid>
+
+                <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Box className='frmTextoColor'>
+                        <label>Seguro: $</label>
+                        <span className='textoRojo'>{'\u00A0'+ formData.valorSeguro}</span>
+                    </Box>
                 </Grid>
             </Grid>
 

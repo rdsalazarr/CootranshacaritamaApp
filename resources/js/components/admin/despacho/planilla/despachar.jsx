@@ -203,6 +203,7 @@ export default function Despachar({data}){
                                                 <TableCell>Número tiquete</TableCell>
                                                 <TableCell>Destino</TableCell>
                                                 <TableCell>Valor tiquete</TableCell>
+                                                <TableCell>Valor seguro</TableCell>
                                                 <TableCell>Valor descuento</TableCell>
                                                 <TableCell>Valor fondo reposición</TableCell>
                                                 <TableCell>Valor total tiquete</TableCell>
@@ -231,6 +232,10 @@ export default function Despachar({data}){
 
                                                     <TableCell>
                                                         {tiq['valorTiquete']}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {tiq['valorSeguro']}
                                                     </TableCell>
 
                                                     <TableCell>

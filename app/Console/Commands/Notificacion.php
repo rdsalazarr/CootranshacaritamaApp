@@ -383,7 +383,6 @@ class Notificacion
                                     DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                     ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                                     ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                          
                                     ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                     ->whereIn('cl.colliqfechavencimiento', $fechasNotificacion)
                                     ->whereNull('cl.colliqfechapago')

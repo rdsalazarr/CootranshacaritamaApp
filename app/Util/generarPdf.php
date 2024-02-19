@@ -3003,6 +3003,8 @@ EOD;
 		$valorTiquete       = $arrayDatos['valorTiquete'];
 		$descuentoTiquete   = $arrayDatos['descuentoTiquete'];
 		$valorTotalTiquete  = $arrayDatos['valorTotalTiquete'];
+		$valorSeguro        = $arrayDatos['valorSeguro'];
+		$valorEstampilla    = $arrayDatos['valorEstampilla'];
 		$numeroPuestos      = $arrayDatos['numeroPuestos'];
 		$nombreCliente      = $arrayDatos['nombreCliente'];
 		$direccionCliente   = $arrayDatos['direccionCliente'];
@@ -3077,9 +3079,23 @@ EOD;
 		PDF::Cell(38, 3,'$ '.$valorTiquete, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(18, 3,"Descuento:", 0, 0,'L'); 
-		PDF::Cell(38, 3,'$ '.$descuentoTiquete, 0, 0,'L');
-		PDF::Ln(3);
+		if($descuentoTiquete > 0){
+			PDF::Cell(18, 3,"Descuento:", 0, 0,'L'); 
+			PDF::Cell(38, 3,'$ '.$descuentoTiquete, 0, 0,'L');
+			PDF::Ln(3);
+		}
+
+		if($valorSeguro > 0){
+			PDF::Cell(18, 3,"Seguro:", 0, 0,'L'); 
+			PDF::Cell(38, 3,'$ '.$valorSeguro, 0, 0,'L');
+			PDF::Ln(3);
+		}
+
+		if($valorEstampilla > 0){
+			PDF::Cell(18, 3,"Estampilla:", 0, 0,'L'); 
+			PDF::Cell(38, 3,'$ '.$valorEstampilla, 0, 0,'L');
+			PDF::Ln(3);
+		}
 
 		PDF::Cell(18, 3,"Valor total:", 0, 0,'L'); 
 		PDF::Cell(38, 3,'$ '.$valorTotalTiquete, 0, 0,'L');

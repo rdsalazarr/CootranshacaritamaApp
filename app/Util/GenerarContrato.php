@@ -14,8 +14,8 @@ class GenerarContrato
         $vehiculoContrato = DB::table('vehiculocontrato as vc')
                         ->select('vc.vehconid','vc.vehconfechainicial','vc.vehconfechafinal', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
                         'v.vehinumerointerno','v.vehiplaca','v.timoveid','tmv.timovecuotasostenimiento','tmv.timovedescuentopagoanticipado','tmv.timoverecargomora',
-                        'p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
+                        'p.persdocumento', 'p.persdireccion', 'p.perscorreoelectronico','p.persnumerocelular', 
+                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),
                         'pe.persdocumento as documentoGerente', DB::raw("CONCAT(pe.persprimernombre,' ',if(pe.perssegundonombre is null ,'', pe.perssegundonombre),' ',
                         pe.persprimerapellido,' ',if(pe.perssegundoapellido is null ,' ', pe.perssegundoapellido)) as nombreGerente"),'me.muninombre as nombreMunicipioExpedicion')
                         ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
@@ -31,6 +31,10 @@ class GenerarContrato
                         })                                
                         ->where('vc.vehconid', $contratoId)
                         ->first();
+        $empresa =  DB::table('empresa as e')->select('e.emprcorreo','p.persdocumento',
+                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
+                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+                        ->where('emprid', '1')->first();
 
         if($vehiculoContrato->timoveid === 'E' ){
             $idInformacionPdf = 'contratoModalidadEspecial';
@@ -49,8 +53,8 @@ class GenerarContrato
         $cuotaSostenimientoAdmon        = number_format($vehiculoContrato->timovecuotasostenimiento, 0, ',', '.') ;
         $descuentoPagoAnualAnticipado   = $vehiculoContrato->timovedescuentopagoanticipado;
         $recargoCuotaSostenimientoAdmon = $vehiculoContrato->timoverecargomora;
-        $nombreGerente                  = $vehiculoContrato->nombreAsociado;
-        $documentoGerente               = number_format($vehiculoContrato->persdocumento, 0, ',', '.');
+        $nombreGerente                  = $empresa->nombreGerente;
+        $documentoGerente               = number_format($empresa->persdocumento, 0, ',', '.');
         $ciudadExpDocumentoGerente      = $vehiculoContrato->nombreMunicipioExpedicion;;
         $numeroContrato                 = $vehiculoContrato->numeroContrato;
         $fechaContrato                  = $generales->formatearFechaContrato($vehiculoContrato->vehconfechainicial);

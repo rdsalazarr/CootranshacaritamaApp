@@ -44,7 +44,7 @@ class FirmarContratoPersonaController extends Controller
                                     ->select('vc.vehconid', DB::raw("if(vcf.vecofifirmado = 1 ,'SI', 'NO') as contratoFirmado"),
                                     DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
                                     DB::raw("CONCAT(v.vehiplaca,'/Contrato_',vc.vehconanio,vc.vehconnumero,'.pdf' ) as rutaPdfContrato"),
-                                    DB::raw('(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 WHERE vcf1.vehconid = vc.vehconid and vcf1.vecofifirmado = 0) AS totalFirmas'),
+                                    DB::raw('(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 WHERE vcf1.vehconid = vc.vehconid ) AS totalFirmas'),
                                     DB::raw('(SELECT COUNT(vcf2.vecofiid) FROM vehiculocontratofirma as vcf2 WHERE vcf2.vehconid = vc.vehconid and vcf2.vecofifirmado = 1) AS totalFirmasRealizadas'))	
                                     ->join('vehiculocontratofirma as vcf', 'vcf.vehconid', '=', 'vc.vehconid')
                                     ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
@@ -195,7 +195,7 @@ class FirmarContratoPersonaController extends Controller
             $fechaHoraActual = Carbon::now();
             $tokenfirma      = DB::table('tokenfirmapersona')
                                     ->select('tofipetoken','tofipefechahoranotificacion','tofipefechahoramaxvalidez', 'tofipemensajecorreo','tofipemensajecelular','tofipeid',
-                                            DB::raw("(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 INNER JOIN vehiculocontrato as vc ON vc.vehconid = vcf1.vehconid WHERE vcf1.vehconid = '$contratoId' and vcf1.vecofifirmado = 0) AS totalFirmas"),
+                                            DB::raw("(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 INNER JOIN vehiculocontrato as vc ON vc.vehconid = vcf1.vehconid WHERE vcf1.vehconid = '$contratoId') AS totalFirmas"),
                                             DB::raw("(SELECT COUNT(vcf2.vecofiid) FROM vehiculocontratofirma as vcf2 INNER JOIN vehiculocontrato as vc ON vc.vehconid = vcf2.vehconid WHERE vcf2.vehconid = '$contratoId' and vcf2.vecofifirmado = 1) AS totalFirmasRealizadas"))
                                     ->where('tofipeutilizado', false)
                                     ->where('tofipetoken', $token)
@@ -222,7 +222,7 @@ class FirmarContratoPersonaController extends Controller
             $vehiculocontratofirma->vecofimensajecelular        = $tokenfirma->tofipemensajecelular;
             $vehiculocontratofirma->save();
 
-            if($tokenfirma->totalFirmas === $tokenfirma->totalFirmasRealizadas ){
+            if($tokenfirma->totalFirmas === $tokenfirma->totalFirmasRealizadas + 1){
                 GenerarContrato::vehiculo($contratoId, 'F');//Descargo el contrato
             }
 

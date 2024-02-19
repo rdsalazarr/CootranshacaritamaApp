@@ -7,6 +7,7 @@ import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import instanceFile from '../../../layout/instanceFile';
 import VisualizarPdf from '../movimiento/visualizarPdf';
+import {CerrarCaja} from '../../../layout/modalFijas';
 import {LoaderModal} from "../../../layout/loader";
 import CloseIcon from '@mui/icons-material/Close';
 import instance from '../../../layout/instance';
@@ -15,13 +16,30 @@ import CajaNoAbierta from "./cajaNoAbierta";
 export default function Closed(){
 
     const [movimientoCaja, setMovimientoCaja] = useState({saldoInicial:'',valorDebito:'',valorCredito:'', saldoCerrar:'', saldoCerrarFormateado:''});
+    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
     const [deshabilitarBoton, setDeshabilitarBoton] = useState(true);
     const [nombreUsuario, setNombreUsuario] = useState('');
     const [cajaAbierta, setCajaAbierta] = useState(true);
-    const [abrirModal, setAbrirModal] = useState(false);
-    const [dataFactura, setDataFactura] = useState('');
     const [loader, setLoader] = useState(true);
-    const [data, setData]     = useState([]); 
+    const [data, setData]     = useState([]);
+
+    const cerrarModal = () =>{
+        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    }
+
+    const mostrarComprobante = (dataFactura) =>{
+        edit(dataFactura, 1);
+    }
+
+    const modales     = [<CerrarCaja dataFactura={modal.data} cerrarModal={cerrarModal} mostrarComprobante={mostrarComprobante} />, 
+                        <VisualizarPdf dataFactura={modal.data} />  ];
+
+    const tituloModal = ['Cerrar caja para el día de hoy',
+                        'Visualizar comprobante contable en PDF'];
+
+    const edit = (data, tipo) =>{
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0) ? 'smallFlot' : 'mediumFlot'});
+    }
 
     const descargarFile = () =>{
         setLoader(true);
@@ -30,20 +48,9 @@ export default function Closed(){
         })
     }
 
-    const cerrarCaja = () =>{
-        setLoader(true);   
-        instance.post('/admin/caja/cerrar/movimiento/salve', {idValor: movimientoCaja.saldoCerrar}).then(res=>{
-            let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.message, icono);
-            (res.success) ? setDataFactura(res.dataFactura) : null;
-            (res.success) ? setAbrirModal(true) : null;
-            setLoader(false);
-        })
-    }
-
     const buttons = [
             <Button key="1" startIcon={<FileDownloadIcon />} onClick={() => {descargarFile()}}>Descargar excel</Button>,
-            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {cerrarCaja()}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
+            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {edit('CerrarCaja', 0)}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
         ];
 
     const inicio = () =>{
@@ -150,12 +157,13 @@ export default function Closed(){
                     </Grid>
 
                     <ModalDefaultAuto
-                        title   = {'Visualizar comprobante contable en PDF'} 
-                        content = {<VisualizarPdf dataFactura={dataFactura} />} 
-                        close   = {() =>{(setAbrirModal(false), setDeshabilitarBoton(false))}} 
-                        tam     = 'mediumFlot'
-                        abrir   = {abrirModal}
+                        title   = {modal.titulo}
+                        content = {modales[modal.vista]}
+                        close   = {() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), setDeshabilitarBoton(false), inicio();}}
+                        tam     = {modal.tamano}
+                        abrir   = {modal.open}
                     />
+
               </Fragment>
             : 
                 <CajaNoAbierta usuario={nombreUsuario} />
