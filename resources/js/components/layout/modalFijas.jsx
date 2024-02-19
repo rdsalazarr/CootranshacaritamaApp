@@ -406,7 +406,7 @@ export function AnularDocumento({id, ruta, cerrarModal}){
                 </Grid>
 
             </Grid>
-        </ValidatorForm> 
+        </ValidatorForm>
     )
 }
 
