@@ -97,10 +97,11 @@ class DownloadFileController extends Controller
 		} 
     }
 
-    public function contrato($ruta){
+    public function contrato($placa, $ruta){
         try {
-	    	$ruta    = Crypt::decrypt($ruta);
-            $carpeta = '/archivos/vehiculo/';
+	    	$placa   = Crypt::decrypt($placa);
+            $ruta    = Crypt::decrypt($ruta);
+            $carpeta = '/archivos/vehiculo/'.$placa.'/';
             $file = public_path().$carpeta.$ruta;
             if (file_exists($file)) {
                 return response()->download($file, $ruta);

@@ -57,7 +57,7 @@ export default function FirmarContrato(){
     const inicio = () =>{
         setLoader(true);
         instance.post('/consultar/informacion/contrato/asociado', {firmaId: window.firmaId}).then(res=>{
-            (res.success) ? (setData(res.data), setContratoFirmado(res.data.contratoFirmado), setRutaDescarga('/download/contrato/vehiculo/'+res.rutaPdfContrato), setTiempoToken(res.tiempoToken)) : null;
+            (res.success) ? (setData(res.data), setContratoFirmado(res.data.contratoFirmado), setRutaDescarga('/download/contrato/vehiculo/'+res.placaVehiculo+'/'+res.rutaPdfContrato), setTiempoToken(res.tiempoToken)) : null;
             setLoader(false);
         })
     }
@@ -116,7 +116,7 @@ export default function FirmarContrato(){
                                     <Grid container spacing={3}>
                                         <Grid item xl={6} md={6} sm={12} xs={12}>
                                             <Link href={rutaDescarga} ><Button type={"submit"}  style={{width: '96%', marginBottom: '1em'}}
-                                                startIcon={<FileDownloadIcon />} onClick={() => {descargarContrato()}} >Descargar contrato</Button>
+                                                startIcon={<FileDownloadIcon />} >Descargar contrato </Button>
                                             </Link>
                                         </Grid>
                                     </Grid>

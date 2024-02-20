@@ -1716,33 +1716,35 @@ EOD;
 			PDF::output($tituloPdf, $metodo);
 		}
 	}
-	
-	function contratoVehiculo($arrayDatos, $contenido, $arrayFirmas, $tipoContrato){
 
-		$titulo            = $arrayDatos['titulo'];
-		$numeroContrato    = $arrayDatos['numeroContrato'];
-		$placaVehiculo     = $arrayDatos['placaVehiculo'];
-		$numeroInterno     = $arrayDatos['numeroInterno'];
-		$propietarios      = $arrayDatos['propietarios'];
-		$identificaciones  = $arrayDatos['identificaciones'];
-		$direcciones       = $arrayDatos['direcciones'];
-		$telefonos         = $arrayDatos['telefonos'];
-		$correos           = $arrayDatos['correos'];
-		$metodo            = $arrayDatos['metodo'];
+	function contratoVehiculo($arrayDatos, $contenido, $tipoContrato, $firmasContrato){
 
-		$empresa            = $this->consultarEmpresa();
-		$direccionEmpresa 	= $empresa->emprdireccion;
-		$ciudadEmpresa    	= $empresa->muninombre;
-		$barrioEmpresa    	= $empresa->emprbarrio;
-		$telefonoEmpresa  	= $empresa->emprtelefonofijo;
-		$celularEmpresa   	= $empresa->emprtelefonocelular;
-		$urlEmpresa       	= $empresa->emprurl;
-		$nombreEmpresa      = $empresa->emprnombre;
-		$lemaEmpresa        = $empresa->emprlema;
-		$siglaEmpresa       = $empresa->emprsigla;
-		$nit                = $empresa->nit;
-		$personeriaJuridica = $empresa->emprpersoneriajuridica;
-		$logoEmpresa        = $empresa->emprlogo;
+		$titulo                 = $arrayDatos['titulo'];
+		$numeroContrato         = $arrayDatos['numeroContrato'];
+		$placaVehiculo          = $arrayDatos['placaVehiculo'];
+		$numeroInterno          = $arrayDatos['numeroInterno'];
+		$nombreAsociado         = $arrayDatos['nombreAsociado'];
+		$documentoAsociado      = $arrayDatos['documentoAsociado'];
+		$direccionAsociado      = $arrayDatos['direccionAsociado'];
+		$telefonoAsociado       = $arrayDatos['telefonoAsociado'];
+		$correoAsociado         = $arrayDatos['correoAsociado'];
+		$firmadoElectonicamente = $arrayDatos['firmadoElectonicamente'];
+		$mensajeAsuntoPdf       = $arrayDatos['mensajeAsuntoPdf'];
+		$metodo                 = $arrayDatos['metodo'];
+
+		$empresa                 = $this->consultarEmpresa();
+		$direccionEmpresa 	     = $empresa->emprdireccion;
+		$ciudadEmpresa    	     = $empresa->muninombre;
+		$barrioEmpresa    	     = $empresa->emprbarrio;
+		$telefonoEmpresa  	     = $empresa->emprtelefonofijo;
+		$celularEmpresa   	     = $empresa->emprtelefonocelular;
+		$urlEmpresa       	     = $empresa->emprurl;
+		$nombreEmpresa           = $empresa->emprnombre;
+		$lemaEmpresa             = $empresa->emprlema;
+		$siglaEmpresa            = $empresa->emprsigla;
+		$nit                     = $empresa->nit;
+		$personeriaJuridica      = $empresa->emprpersoneriajuridica;
+		$logoEmpresa             = $empresa->emprlogo;
 
 		if($tipoContrato === 'E'){
 		   $nombreTipoContrato = 'Especial';
@@ -1757,14 +1759,14 @@ EOD;
         PDF::SetAuthor('IMPLESOFT'); 
 		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
-		PDF::SetKeywords('Contrato, Vehículo, '.$nombreTipoContrato.', '.$siglaEmpresa.', '.$numeroContrato );
+		PDF::SetKeywords('Contrato, Vehículo, '.$nombreTipoContrato.', '.$siglaEmpresa.' , '.$mensajeAsuntoPdf.' Contrato número '.$numeroContrato );
         PDF::SetTitle($titulo);	
 
 		//Encabezado y pie de pagina del pdf
 		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
 
-		//PDF::SetProtection(array('copy'), '', null, 0, null);
+		PDF::SetProtection(array('copy'), '', null, 0, null);
 		PDF::SetPrintHeader(true);
 		PDF::SetPrintFooter(true);
 		PDF::SetMargins(20, 36, 15);
@@ -1815,29 +1817,29 @@ EOD;
 		PDF::Cell(136, 4, $numeroInterno, 0, 0, 'L');
 		PDF::Ln(5);
 		PDF::SetFont('helvetica', '', 11);
-		PDF::Cell(40, 4, 'Propietarios:', 0, 0, 'L');
+		PDF::Cell(40, 4, 'Propietario:', 0, 0, 'L');
 		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $propietarios, 0, 0, 'L');
+		PDF::Cell(136, 4, $nombreAsociado, 0, 0, 'L');
 		PDF::Ln(5);
 		PDF::SetFont('helvetica', '', 11);
 		PDF::Cell(40, 4, 'Identificación:', 0, 0, 'L');
 		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $identificaciones, 0, 0, 'L');
+		PDF::Cell(136, 4, $documentoAsociado, 0, 0, 'L');
 		PDF::Ln(5);
 		PDF::SetFont('helvetica', '', 11);
 		PDF::Cell(40, 4, 'Dirección:', 0, 0, 'L');
 		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $direcciones, 0, 0, 'L');
+		PDF::Cell(136, 4, $direccionAsociado, 0, 0, 'L');
 		PDF::Ln(5);
 		PDF::SetFont('helvetica', '', 11);
 		PDF::Cell(40, 4, 'Teléfono:', 0, 0, 'L');
 		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $telefonos, 0, 0, 'L');
+		PDF::Cell(136, 4, $telefonoAsociado, 0, 0, 'L');
 		PDF::Ln(5);
 		PDF::SetFont('helvetica', '', 11);
 		PDF::Cell(40, 4, 'Correo Electrónico:', 0, 0, 'L');
 		PDF::SetFont('helvetica', 'B', 11);
-		PDF::Cell(136, 4, $correos, 0, 0, 'L');
+		PDF::Cell(136, 4, $correoAsociado, 0, 0, 'L');
 		PDF::Ln(12);
 		PDF::SetFont('helvetica', '', 9);
 		PDF::writeHTML($contenido, true, false, true, false, '');
@@ -1848,25 +1850,46 @@ EOD;
 		PDF::Cell(80, 4, 'El PROPIETARIO', 0, 0, 'L');
 		PDF::Ln(20);
 
-		$contador = 0;
-		foreach($arrayFirmas as $arrayFirma){
-			$top = ($contador === 0) ? 'T': '';		
-			PDF::Cell(78, 4, $arrayFirma['nombreGerente'], $top, 0, 'L');
-			PDF::Cell(20, 4, '', 0, 0, 'L');
-			PDF::Cell(78, 4, $arrayFirma['nombreAsociado'], 'T', 0, 'L');
-			PDF::Ln(5);
-			PDF::Cell(78, 4, $arrayFirma['documentoGerente'], 0, 0, 'L');
-			PDF::Cell(20, 4, '', 0, 0, 'L');	
-			PDF::Cell(78, 4, $arrayFirma['documentoAsociado'], 0, 0, 'L');
-			PDF::Ln(5);
-			PDF::Cell(78, 4, '', 0, 0, 'L');
-			PDF::Cell(20, 4, '', 0, 0, 'L');
-			PDF::SetFont('helvetica', '', 9);
-			PDF::Cell(78, 4, $arrayFirma['direccionAsociado'], 0, 0, 'L');
-			PDF::SetFont('helvetica', 'B', 10);
-			PDF::Ln(16);
-			$contador ++;
-		}	
+		if($firmadoElectonicamente){
+			$posicionY      = PDF::GetY();
+			$contadorImagen = 0;
+			foreach($firmasContrato as $firmaElectronica){
+				$mensajeFirma     = $firmaElectronica['mensajeFirma'];
+				if($contadorImagen == 0){
+					PDF::Image('images/logoFirmaElectronica.png', 20, $posicionY - 7,20,20);
+					PDF::SetFont('helvetica', '', 8);
+					PDF::Cell(20, 4, '', 0, 0, 'L');
+					$posicionY1 = PDF::GetY();
+					$posicionX1 = PDF::GetX();
+					PDF::MultiCell(60, 4, $mensajeFirma."\n", 0, 'J', false, 1);
+					$contadorImagen += 1;
+				}else{
+					PDF::Image('images/logoFirmaElectronica.png', 110, $posicionY -7,20,20);
+					PDF::SetFont('helvetica', '', 8);
+					PDF::Cell(20, 4, '', 0, 0, 'L');
+					PDF::SetXY($posicionX1 + 90, $posicionY1);
+					PDF::MultiCell(60, 4, $mensajeFirma."\n", 0, 'J', false, 1);
+					$contadorImagen = 0;
+				}
+			}
+		}
+
+		$contadorFirma = 0;
+		foreach($firmasContrato as $firmaContrato){
+			$nombrePersona    = $firmaContrato['nombrePersona'];
+		    $documentoPersona = $firmaContrato['documentoPersona'];
+			if($contadorFirma == 0){
+				PDF::Cell(80, 4, '', 'T', 0, 'L');
+				PDF::SetFont('helvetica', 'B', 10);
+			    PDF::writeHTMLCell(86, 4, 24, '', "<b>".$nombrePersona."</b><br>".$documentoPersona."<br>", 0, 0, 0, true, 'J');
+				$contadorFirma += 1;
+			}else{
+				PDF::Cell(80, 4, '', 'T', 0, 'L');
+				PDF::SetFont('helvetica', 'B', 10);	
+			    PDF::writeHTMLCell(86, 4, 112, '', "<b>".$nombrePersona."</b><br>".$documentoPersona."<br>", 0, 0, 0, true, 'J');
+				$contadorFirma = 0;
+			}
+		}
 
 		$tituloPdf = $titulo.'.pdf';
 		if($metodo === 'S'){
@@ -1948,7 +1971,7 @@ EOD;
 		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo.' '.$documento);
 		PDF::SetKeywords('Colocación, Vehículo, '.$siglaEmpresa.', '.$numeroPagare.', '.$documento.', '.$titulo);
-        PDF::SetTitle($titulo);	
+        PDF::SetTitle($titulo);
 
 		$this->headerDocumento($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);
 		$this->footerDocumental($direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa);
@@ -2066,7 +2089,7 @@ EOD;
 			PDF::Cell(26, 4, "NÚMERO:", 0, 0, 'L');
 			PDF::Cell(40, 4, $numeroVehiculo, 0, 0, 'L'); 
 			PDF::Ln(5);
-	
+
 			PDF::Cell(40, 4, "PLACA:", 0, 0, 'L');
 			PDF::Cell(76, 4, $placaVehiculo,0, 0, 'L');
 		}else{

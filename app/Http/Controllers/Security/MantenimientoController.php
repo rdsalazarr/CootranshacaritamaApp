@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use setasign\Fpdi\Fpdi;
 use App\Util\generarPdf;
 use App\Util\generales;
+use App\Util\GenerarContrato;
+
 use App\Util\convertirNumeroALetras;
 
 class MantenimientoController extends Controller
@@ -366,17 +368,19 @@ class MantenimientoController extends Controller
     public function Pdf()
     {
 
+       // GenerarContrato::vehiculo(6, 'I');
+
         /*$fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
 
         dd($fechaActual);*/
-        $generales  = new generales();  
+       /* $generales  = new generales();  
 
         $fechasSiguientes = $generales->obtenerPrimerValorMensualidad('2024-01-15', 105000);
 
         //$fechasSiguientes = $generales->obtenerFechasCompromisoVehiculo('2024-02-04');
 
-        dd($fechasSiguientes);
+        dd($fechasSiguientes);*/
 
         
         /*$generarPdf = new generarPdf();

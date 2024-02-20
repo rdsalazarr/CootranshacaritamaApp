@@ -42,18 +42,19 @@ class FirmarContratoPersonaController extends Controller
         try {
             $vehiculoContrato = DB::table('vehiculocontrato as vc')
                                     ->select('vc.vehconid', DB::raw("if(vcf.vecofifirmado = 1 ,'SI', 'NO') as contratoFirmado"),
-                                    DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
-                                    DB::raw("CONCAT(v.vehiplaca,'/Contrato_',vc.vehconanio,vc.vehconnumero,'.pdf' ) as rutaPdfContrato"),
+                                    DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),'v.vehiplaca',
+                                    DB::raw("CONCAT('Contrato_',vc.vehconanio,vc.vehconnumero,'.pdf' ) as rutaPdfContrato"),
                                     DB::raw('(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 WHERE vcf1.vehconid = vc.vehconid ) AS totalFirmas'),
                                     DB::raw('(SELECT COUNT(vcf2.vecofiid) FROM vehiculocontratofirma as vcf2 WHERE vcf2.vehconid = vc.vehconid and vcf2.vecofifirmado = 1) AS totalFirmasRealizadas'))	
                                     ->join('vehiculocontratofirma as vcf', 'vcf.vehconid', '=', 'vc.vehconid')
                                     ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
                                     ->where('vcf.vecofiid', $firmaId)->first();
 
+            $placaVehiculo   = Crypt::encrypt($vehiculoContrato->vehiplaca);
             $rutaPdfContrato = Crypt::encrypt($vehiculoContrato->rutaPdfContrato);
             $tiempoToken     = 5;
 
-            return response()->json(['success' => true, "data" => $vehiculoContrato, "tiempoToken" => $tiempoToken, "rutaPdfContrato" => $rutaPdfContrato ]);
+            return response()->json(['success' => true, "data" => $vehiculoContrato, "tiempoToken" => $tiempoToken, "placaVehiculo" => $placaVehiculo, "rutaPdfContrato" => $rutaPdfContrato ]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}

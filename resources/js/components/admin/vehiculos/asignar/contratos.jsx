@@ -1,5 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import {Grid, Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
+import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { ModalDefaultAuto } from '../../../layout/modal';
@@ -7,21 +8,23 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import ShowPersona from '../../persona/show';
 import VisualizarPdf from './visualizarPdf';
+import EnviarCorreo from './enviarCorreo';
 
 export default function Contratos({id}){
-   
-    const [loader, setLoader] = useState(false);
-    const [listaContratos, setListaContratos] = useState([]);
-    const [modal, setModal] = useState({open: false, vista:2, idPersona:'', titulo: '', tamano:'mediumFlot'});
 
-    const tituloModal = ['Visualizar información del asociado','Generar PDF del contrato'];
+    const [modal, setModal] = useState({open: false, vista:2, data:[], idPersona:'', titulo: '', tamano:'mediumFlot'});
+    const [listaContratos, setListaContratos] = useState([]);
+    const [loader, setLoader] = useState(false); 
+
+    const tituloModal = ['Visualizar información del asociado','Generar PDF del contrato','Reenviar correo de notificación de firma de contrato'];
     const modales     = [
                             <ShowPersona id={modal.idPersona} frm={'ASOCIADO'} />,
-                            <VisualizarPdf idPersona={modal.idPersona} vehiculoId={id} idContrato={modal.idContrato}/>
+                            <VisualizarPdf idPersona={modal.idPersona} vehiculoId={id} idContrato={modal.idContrato}/>,
+                            <EnviarCorreo data={modal.data} />
                         ];
 
-    const edit = (tipo, idPersona, idContrato) =>{
-       setModal({open: true, vista: tipo, idPersona:idPersona, idContrato:idContrato, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' :  'mediumFlot'});
+    const edit = (tipo, idPersona, idContrato, data) =>{
+       setModal({open: true, vista: tipo, data:data, idPersona:idPersona, idContrato:idContrato, titulo: tituloModal[tipo], tamano: (tipo === 0 ) ? 'bigFlot' : ( (tipo === 1) ? 'mediumFlot' : 'smallFlot')});
     }
 
     const inicio = () =>{
@@ -52,6 +55,7 @@ export default function Contratos({id}){
                                 <TableCell>Nombre del asociado </TableCell>
                                 <TableCell style={{width: '10%'}} className='cellCenter'>Visualizar </TableCell>
                                 <TableCell style={{width: '10%'}} className='cellCenter'>Ver contrato </TableCell>
+                                <TableCell style={{width: '10%'}} className='cellCenter'>Reenviar correo </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -76,17 +80,22 @@ export default function Contratos({id}){
 
                                     <TableCell className='cellCenter'>
                                         <VisibilityIcon key={'iconDelete'+a} className={'icon top green'}
-                                            onClick={() => {edit(0, asoc['persid'], asoc['vehconid'])}}
+                                            onClick={() => {edit(0, asoc['persid'], asoc['vehconid'], asoc)}}
                                         ></VisibilityIcon>
                                     </TableCell>
 
                                     <TableCell className='cellCenter'>
-                                        {(asoc['estado'] !== 'I')?
-                                            <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top orange'}
-                                                onClick={() => {edit(1, asoc['persid'], asoc['vehconid'])}}
-                                            ></PictureAsPdfIcon>
-                                        : null}
+                                        <PictureAsPdfIcon key={'iconDelete'+a} className={'icon top orange'}
+                                            onClick={() => {edit(1, asoc['persid'], asoc['vehconid'], asoc)}}
+                                        ></PictureAsPdfIcon>
                                     </TableCell>
+
+                                    <TableCell className='cellCenter'>
+                                        <AlternateEmailIcon key={'iconDelete'+a} className={'icon top red'}
+                                            onClick={() => {edit(2, asoc['persid'], asoc['vehconid'], asoc)}}
+                                        ></AlternateEmailIcon>
+                                    </TableCell>
+
                                 </TableRow>
                                 );
                             })

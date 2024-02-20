@@ -106,7 +106,7 @@ Route::post('/salve/firmar/contrato/asociado', [FirmarContratoPersonaController:
 Route::get('/verificar/contrato/servicio/especial/{id}', [VerificarDocumentosController::class, 'servicioEspecial']);
 Route::post('/consultar/documento', [VerificarDocumentosController::class, 'consultarDocumento']);
 Route::post('/consultar/contrato/servicio/especial', [VerificarDocumentosController::class, 'consultarServicioEspecial']);
-Route::get('/download/contrato/vehiculo/{ruta}', [DownloadFileController::class, 'contrato']);
+Route::get('/download/contrato/vehiculo/{placa}/{ruta}', [DownloadFileController::class, 'contrato']);
 Route::get('/download/certificado/{documento}/{ruta}', [DownloadFileController::class, 'certificado']);
 Route::get('/download/digitalizados/{anyo}/{ruta}', [DownloadFileController::class, 'digitalizados']);
 Route::get('/download/adjunto/radicado/{anyo}/{ruta}', [DownloadFileController::class, 'radicadoEntrante']);
@@ -434,6 +434,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/informacion/vehiculo', [AsignarVehiculoController::class, 'consultarVehiculo']);
             Route::post('/listar/contratos/vehiculo', [AsignarVehiculoController::class, 'listarContratos']);
             Route::post('/asociados/imprimir/contrato', [AsignarVehiculoController::class, 'showPdf']);
+            Route::post('/reenviar/correo/contrato/vehiculo', [AsignarVehiculoController::class, 'reenviarCorreo']);
             Route::post('/listar/conductores', [AsignarVehiculoController::class, 'listCondutores']);
             Route::post('/conductores/salve', [AsignarVehiculoController::class, 'salveConductor']);
             Route::post('/listar/soat', [AsignarVehiculoController::class, 'listSoat']);

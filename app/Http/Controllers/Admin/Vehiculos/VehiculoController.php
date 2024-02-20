@@ -8,7 +8,6 @@ use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Vehiculos\VehiculoContrato;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Controllers\Controller;
-
 use Exception, Auth, File, DB, URL;
 use App\Models\Vehiculos\Vehiculo;
 use App\Util\redimencionarImagen;
@@ -84,11 +83,11 @@ class VehiculoController extends Controller
                             ->where('vehiid', $request->codigo)->first();
 		}
 
-        return response()->json(['success' => true, 'tipovehiculos' => $tipovehiculos,   'tiporeferenciavehiculos'  => $tiporeferenciavehiculos, 
-                                'tipomarcavehiculos'       => $tipomarcavehiculos,       'tipocarroceriavehiculos'  => $tipocarroceriavehiculos,
-                                'tipocolorvehiculos'       => $tipocolorvehiculos,       'agencias'                 => $agencias,
-                                'tipocombustiblevehiculos' => $tipocombustiblevehiculos, 'tipomodalidadvehiculos'   => $tipomodalidadvehiculos,
-                                'vehiculo' => $vehiculo ,                                'asociados'                => $asociados]);
+        return response()->json(['success' => true,       'tipovehiculos' => $tipovehiculos, 'tiporeferenciavehiculos' => $tiporeferenciavehiculos, 
+                                'tipomarcavehiculos'       => $tipomarcavehiculos,           'tipocarroceriavehiculos' => $tipocarroceriavehiculos,
+                                'tipocolorvehiculos'       => $tipocolorvehiculos,           'agencias'                => $agencias,
+                                'tipocombustiblevehiculos' => $tipocombustiblevehiculos,     'tipomodalidadvehiculos'  => $tipomodalidadvehiculos,
+                                'vehiculo'                 => $vehiculo ,                    'asociados'               => $asociados]);
 	}
 
     public function salve(Request $request)
@@ -175,7 +174,7 @@ class VehiculoController extends Controller
                                                 DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
                                                 ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                                                 ->where('emprid', '1')->first();
-                
+
                 $correoEmpresa                = $representante->emprcorreo;
                 $nombreGerente                = $representante->nombreGerente;
                 $correoGerente                = $representante->perscorreoelectronico;
@@ -225,13 +224,13 @@ class VehiculoController extends Controller
                 
                 //Creamos la firma de los contratos
                 if($request->firmaElectronia === 'SI'){
-                    $vehiculocontratofirma = new VehiculoContratoFirma();
+                    $vehiculocontratofirma           = new VehiculoContratoFirma();
                     $vehiculocontratofirma->vehconid = $vehconid;
                     $vehiculocontratofirma->persid   = $representante->persid;
                     $vehiculocontratofirma->save();
 
                     //firma del asociado
-                    $vehiculocontratofirma = new VehiculoContratoFirma();
+                    $vehiculocontratofirma           = new VehiculoContratoFirma();
                     $vehiculocontratofirma->vehconid = $vehconid;
                     $vehiculocontratofirma->persid   = $request->personaId;
                     $vehiculocontratofirma->save();
@@ -252,7 +251,7 @@ class VehiculoController extends Controller
                     $informacioncorreos = DB::table('informacionnotificacioncorreo')->whereIn('innoconombre', ['solicitaFirmaContratoGerente', 'solicitaFirmaContratoAsociado'])->get();
                     foreach($informacioncorreos as $informacioncorreo){
                         $buscar             = Array('numeroContrato', 'nombreGerente', 'nombreUsuario', 'nombreAsociado', 'urlFirmaContrato');
-                        $remplazo           = Array($numeroContrato, $nombreGerente,  $nombreUsuario, $nombreAsociado, $urlFirmaContrato); 
+                        $remplazo           = Array($numeroContrato, $nombreGerente,  $nombreUsuario, $nombreAsociado, $urlFirmaContrato);
                         $asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
                         $msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
                         $enviarcopia        = $informacioncorreo->innocoenviarcopia;

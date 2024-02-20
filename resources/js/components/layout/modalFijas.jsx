@@ -1123,7 +1123,7 @@ export function FirmarContratoAsociado({contratoId, firmaId, cerrarModal, verifi
     const [tiempoRestante, setTiempoRestante] = useState(0);
     const [habilitado, setHabilitado] = useState(true);
     const [loader, setLoader] = useState(false);
-    const [mensaje, setMensaje] = useState('');   
+    const [mensaje, setMensaje] = useState('');
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))

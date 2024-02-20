@@ -212,7 +212,7 @@ class FirmarContratoController extends Controller
             $data  = DB::table('vehiculocontratofirma as vcf')
                             ->select('vehconid',
                                     DB::raw("(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 WHERE vcf1.vehconid = vcf.vehconid) AS totalFirmas"),
-                                    DB::raw("(SELECT COUNT(vcf2.vecofiid) FROM vehiculocontratofirma as vcf2 WHERE vcf2.vehconid = vcf.vehconid and vcf2.vecofifirmado = 1) AS totalFirmasRealizadas"))       
+                                    DB::raw("(SELECT COUNT(vcf2.vecofiid) FROM vehiculocontratofirma as vcf2 WHERE vcf2.vehconid = vcf.vehconid and vcf2.vecofifirmado = 1) AS totalFirmasRealizadas"))
                             ->where('vcf.vecofiid', $request->codigo)
                             ->first();
 
@@ -236,36 +236,6 @@ class FirmarContratoController extends Controller
 
             $rutaContrato = public_path().$vehiculoContrato->rutaPdfContrato;
             $data         =  file_exists($rutaContrato) ? base64_encode(file_get_contents($rutaContrato)) : 'El archivo no existe';
-
-            
-
-            /* $data = base64_encode(file_get_contents($filePath));
-
-
-            dd($vehiculoContrato->rutaPdfContrato);
-
-            //dd( storage_path('app/archivos/vehiculo/JKL025/Contrato_20240003.pdf'));
-
-$filePath = public_path().'/archivos/vehiculo/JKL025/Contrato_20240003.pdf';
-if (file_exists($filePath)) {
-    if (is_readable($filePath)) {
-        // El archivo existe y es legible
-        $archivoPDF = base64_encode(file_get_contents($filePath));
-       // dd($archivoPDF);
-    } else {
-        dd("El archivo no es legible.");
-    }
-} else {
-    dd("El archivo no existe.");
-}*/
-
-
-          //  $archivoPDF = Storage::get(storage_path('app/archivos/vehiculo/JKL025/Contrato_20240003.pdf')); //'/archivos/vehiculo/JKL025/Contrato_20240003.pdf'
-           
-//dd( $archivoPDF);
-            // Devolver el contenido del archivo como una respuesta HTTP con tipo MIME 'application/pdf'
-           // return response($archivoPDF, 200)->header('Content-Type', 'application/pdf');
-
            return response()->json(['success' => true, 'data' => $data]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
