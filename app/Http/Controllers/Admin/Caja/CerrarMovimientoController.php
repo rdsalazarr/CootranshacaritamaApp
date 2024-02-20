@@ -6,6 +6,7 @@ use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Caja\ComprobanteContable;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Despacho\Tiquete;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use Exception, Auth, DB;
@@ -37,7 +38,7 @@ class CerrarMovimientoController extends Controller
                                                 INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
                                                 INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
                                                 INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
-                                                WHERE cc.cueconnaturaleza ='D'
+                                                WHERE cc.cueconnaturaleza = 'D'
                                                 AND mc.usuaid = '$idUsuario'
                                                 AND mc.cajaid = '$cajaId'
                                                 AND cct.agenid = '$agenciaId'
@@ -48,12 +49,17 @@ class CerrarMovimientoController extends Controller
                                                 INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
                                                 INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
                                                 INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
-                                                WHERE cc.cueconnaturaleza ='C'
+                                                WHERE cc.cueconnaturaleza = 'C'
                                                 AND mc.usuaid = '$idUsuario'
                                                 AND mc.cajaid = '$cajaId'
                                                 AND cct.agenid = '$agenciaId'
                                                 AND DATE(mc.movcajfechahoraapertura) = '$fechaActual'
-                                            ) AS valorCredito") )
+                                            ) AS valorCredito"),
+                                        DB::raw("(SELECT SUM(t.tiquvalortotal)
+                                                    FROM tiquete as t
+                                                    WHERE t.tiqucontabilizado = 0
+                                                    AND t.usuaid = '$idUsuario'
+                                                ) AS saldoTiquete") )
                                         ->join('comprobantecontable as cc', 'cc.movcajid', '=', 'mc.movcajid')
                                         ->whereDate('movcajfechahoraapertura', $fechaActual)
                                         ->where('mc.usuaid', $idUsuario)
@@ -233,4 +239,48 @@ class CerrarMovimientoController extends Controller
                     ->orderBy('cc.cueconid')
                     ->get();
     }
+
+    public function tiquete(Request $request)
+	{ 
+        DB::beginTransaction();
+        try {        
+
+            $tiquetes = DB::table('tiquete')
+                                ->select('tiquid', 'tiquvalortotal')
+                                ->where('usuaid', Auth::id())
+                                ->where('tiqucontabilizado', 0)
+                                ->get();
+
+            $valorContabilizar = 0;
+            $fechaHoraActual   = Carbon::now();
+            $fechaActual       = $fechaHoraActual->format('Y-m-d');
+            foreach($tiquetes as $tiqueteEstado){
+                $valorContabilizar                      += $tiqueteEstado->tiquvalortotal;
+                $tiqueteContabilizado                   = Tiquete::findOrFail($tiqueteEstado->tiquid); 
+                $tiqueteContabilizado->tiqucontabilizado = true;
+                $tiqueteContabilizado->save();
+            }
+
+            $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
+            $comprobantecontabledetalle->save();
+
+            $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+            $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+            $comprobantecontabledetalle->cueconid        = 10; //CXP PAGO TIQUETE
+            $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+            $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
+            $comprobantecontabledetalle->save();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Proceso realizado con éxito']);
+        } catch (Exception $error){
+            DB::rollback();
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
+        }
+    }    
 }

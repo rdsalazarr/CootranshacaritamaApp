@@ -7,6 +7,7 @@ import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import instanceFile from '../../../layout/instanceFile';
 import VisualizarPdf from '../movimiento/visualizarPdf';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm'
 import {CerrarCaja} from '../../../layout/modalFijas';
 import {LoaderModal} from "../../../layout/loader";
 import CloseIcon from '@mui/icons-material/Close';
@@ -15,7 +16,7 @@ import CajaNoAbierta from "./cajaNoAbierta";
 
 export default function Closed(){
 
-    const [movimientoCaja, setMovimientoCaja] = useState({saldoInicial:'',valorDebito:'',valorCredito:'', saldoCerrar:'', saldoCerrarFormateado:''});
+    const [movimientoCaja, setMovimientoCaja] = useState({saldoInicial:'',valorDebito:'',valorCredito:'', saldoCerrar:'', saldoCerrarFormateado:'', saldoTiquete:''});
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
     const [deshabilitarBoton, setDeshabilitarBoton] = useState(true);
     const [nombreUsuario, setNombreUsuario] = useState('');
@@ -48,6 +49,16 @@ export default function Closed(){
         })
     }
 
+    const contabilizarTiquete = () =>{
+        setLoader(true);
+        instance.post('/admin/caja/contabilizar/tiquetes').then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? inicio() : null;
+            setLoader(false);
+        })
+    }
+
     const buttons = [
             <Button key="1" startIcon={<FileDownloadIcon />} onClick={() => {descargarFile()}}>Descargar excel</Button>,
             <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {edit(movimientoCaja.saldoCerrar, 0)}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
@@ -64,6 +75,7 @@ export default function Closed(){
                 newMovimientoCaja.valorCredito          = formatearNumero(movimientocaja.valorCredito);
                 newMovimientoCaja.saldoCerrarFormateado = formatearNumero(parseInt(movimientocaja.movcajsaldoinicial) + parseInt((movimientocaja.valorDebito === null) ? 0 : movimientocaja.valorDebito ));
                 newMovimientoCaja.saldoCerrar           = parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito);
+                newMovimientoCaja.saldoTiquete          = formatearNumero(movimientocaja.saldoTiquete);
                 setMovimientoCaja(newMovimientoCaja);
                 setData(res.data);
             }else{
@@ -143,6 +155,25 @@ export default function Closed(){
                                         </Box>
                                     </Card>
                                 </Grid>
+
+                                {(movimientoCaja.saldoTiquete > 0) ?
+                                    <Fragment>
+                                        <Grid item xl={3} md={3} sm={6} xs={12}> 
+                                            <Card className='cardNotificacion'>
+                                                <Typography component={'h5'} >Tiquetes vendidos</Typography>
+                                                <Box className='cardBox'>
+                                                    <AttachMoneyIcon className='cardIcono'></AttachMoneyIcon>
+                                                    <Typography component={'h4'} >{movimientoCaja.saldoTiquete}</Typography>
+                                                </Box>
+                                            </Card>
+                                        </Grid>
+
+                                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                                            <Button key="1" startIcon={<LocalAtmIcon />} onClick={() => {contabilizarTiquete()}}>Contabilizar tiquete</Button>,
+                                        </Grid>
+                                    </Fragment>
+                                : null }
+
                             </Grid>
                         </Grid>
 
@@ -152,7 +183,7 @@ export default function Closed(){
                             >
                                 {buttons}
                             </ButtonGroup>
-                        </Grid>
+                        </Grid>                       
 
                     </Grid>
 

@@ -9,6 +9,7 @@ use App\Models\Despacho\PlanillaRuta;
 use App\Http\Controllers\Controller;
 use App\Models\Despacho\Encomienda;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Despacho\Tiquete;
 use Illuminate\Http\Request;
 use Exception, DB, Auth;
 use App\Util\generarPdf;
@@ -275,6 +276,19 @@ class PlanillaRutaController extends Controller
             }
 
             if($tiquete){
+
+                $tiquetes = DB::table('tiquete')
+                                ->select('tiquid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'))
+                                ->where('plarutid', $request->codigo)
+                                ->where('tiqucontabilizado', 0)
+                                ->get();
+
+                foreach($tiquetes as $tiqueteEstado){
+                    $tiqueteContabilizado                   = Tiquete::findOrFail($tiqueteEstado->tiquid); 
+                    $tiqueteContabilizado->tiqucontabilizado = true;
+                    $tiqueteContabilizado->save();
+                }
+
                 //Se realiza la contabilizacion
                 $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();

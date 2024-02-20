@@ -10,7 +10,8 @@ import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 
 export default function AbrirCaja({saldoAnterior, usuario, caja}){
-    const [formData, setFormData] = useState({saldoInicial: (saldoAnterior !== null) ? saldoAnterior.toString() : ''});
+
+    const [formData, setFormData] = useState({saldoInicial: (saldoAnterior !== 0) ? saldoAnterior.toString() : ''});
 
     const formatearNumero = (numero) =>{
         const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };

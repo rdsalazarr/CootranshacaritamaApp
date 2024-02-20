@@ -552,7 +552,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/pagar/credito/entregar/efectivo', [EntregarPagoCreditoController::class, 'entregarEfectivo']);
 
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
-            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
+            Route::post('/contabilizar/tiquetes', [CerrarMovimientoController::class, 'tiquete']);
+            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);            
         });
 
         Route::prefix('/antencion/usuario')->group(function(){
