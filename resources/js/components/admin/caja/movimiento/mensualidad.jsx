@@ -1,7 +1,8 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
-import { Button, Grid, Stack, Icon, Autocomplete, createFilterOptions, Box, Card} from '@mui/material';
+import { Button, Grid, Stack, Autocomplete, createFilterOptions, Box, Card} from '@mui/material';
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
+import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,39 +15,55 @@ export default function Mensualidad(){
 
     const [datosEncontrados, setDatosEncontrados] = useState(false);
     const [formData, setFormData] = useState({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMoraMostrar:'', 
-                                            descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:''});
+                                            descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:'', totalAbono:''});
     const [pagoMensualidad, setPagoMensualidad] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
     const [pagoGeneral, setPagoGeneral] = useState([]);
     const [dataFactura, setDataFactura] = useState('');
-    const [pagoTotal, setPagoTotal] = useState('N');
+    const [formaPago, setFormaPago] = useState('M');
     const [vehiculos, setVehiculos] = useState([]);
-    const [loader, setLoader] = useState(false);    
+    const [loader, setLoader] = useState(false);
+
+    const handleChange = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
 
     const handleChangeRadio = (event) => {
-        setPagoTotal(event.target.value); 
+        setFormaPago(event.target.value);
         let newFormData = {...formData};
 
-        if(event.target.value === 'S'){
+        if(event.target.value === 'T'){
             newFormData.idResponsabilidad   = pagoGeneral.idResponsabilidad;
             newFormData.fechaCompromiso     = pagoGeneral.fechaCompromiso;
             newFormData.valorAPagar         = pagoGeneral.valorAPagar;
+            newFormData.valorAPagarMostrar  = pagoGeneral.valorAPagarMostrar;
             newFormData.interesMoraMostrar  = pagoGeneral.interesMoraMostrar;
             newFormData.descuentoAnticipado = pagoGeneral.descuentoAnticipado;
             newFormData.valorDesAnticipado  = pagoGeneral.valorDesAnticipado;
             newFormData.totalAPagarMostrar  = pagoGeneral.totalAPagarMostrar;
+            newFormData.totalAPagar         = pagoGeneral.totalAPagar;
             newFormData.interesMora         = pagoGeneral.interesMora;
-        }else{
+            newFormData.totalAbono          = pagoGeneral.totalAbono; 
+        }
+
+        if(event.target.value === 'M'){
             newFormData.idResponsabilidad   = pagoMensualidad.idResponsabilidad;
             newFormData.fechaCompromiso     = pagoMensualidad.fechaCompromiso;
             newFormData.valorAPagar         = pagoMensualidad.valorAPagar;
+            newFormData.valorAPagarMostrar  = pagoMensualidad.valorAPagarMostrar;
             newFormData.interesMoraMostrar  = pagoMensualidad.interesMoraMostrar;
             newFormData.descuentoAnticipado = pagoMensualidad.descuentoAnticipado;
-            newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
             newFormData.valorDesAnticipado  = pagoMensualidad.valorDesAnticipado;
+            newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
             newFormData.totalAPagar         = pagoMensualidad.totalAPagar;
             newFormData.interesMora         = pagoMensualidad.interesMora;
+            newFormData.totalAbono          = pagoMensualidad.totalAbono;            
         }
+
+        if(event.target.value === 'P'){
+            newFormData.totalAPagar         = pagoMensualidad.totalAPagar.toString();
+        }
+
         setFormData(newFormData);
     }
 
@@ -70,14 +87,16 @@ export default function Mensualidad(){
                 newFormData.idResponsabilidad   = pagoMensualidad.idResponsabilidad;
                 newFormData.fechaCompromiso     = pagoMensualidad.fechaCompromiso;
                 newFormData.valorAPagar         = pagoMensualidad.valorAPagar;
+                newFormData.valorAPagarMostrar  = pagoMensualidad.valorAPagarMostrar;
                 newFormData.interesMoraMostrar  = pagoMensualidad.interesMoraMostrar;
                 newFormData.descuentoAnticipado = pagoMensualidad.descuentoAnticipado;
                 newFormData.totalAPagarMostrar  = pagoMensualidad.totalAPagarMostrar;
                 newFormData.valorDesAnticipado  = pagoMensualidad.valorDesAnticipado;
                 newFormData.interesMora         = pagoMensualidad.interesMora;
                 newFormData.totalAPagar         = pagoMensualidad.totalAPagar;
+                newFormData.totalAbono          = pagoMensualidad.totalAbono; 
                 setFormData(newFormData);
-                setPagoTotal('N');
+                setFormaPago('M');
             }
             setLoader(false);
         })
@@ -86,13 +105,13 @@ export default function Mensualidad(){
     const registrarPago = () =>{
         setLoader(true);
         let newFormData       = {...formData}
-        newFormData.pagoTotal = pagoTotal;
+        newFormData.formaPago = formaPago;
         instance.post('/admin/caja/registrar/mensualidad', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (res.success) ? setDatosEncontrados(false) : null;
             (res.success) ? setFormData({vehiculoId:'', idResponsabilidad:'', fechaCompromiso:'', valorAPagar:'', interesMoraMostrar:'', 
-                                        descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:''}) : null;
+                                        descuentoAnticipado:'', valorDesAnticipado:'', interesMora:'', totalAPagar:'', totalAbono:''}) : null;
             (res.success) ? setDataFactura(res.dataFactura) : null;
             (res.success) ? setAbrirModal(true) : null;
             setLoader(false);
@@ -117,9 +136,9 @@ export default function Mensualidad(){
         <Fragment>
             <ValidatorForm onSubmit={consultarVehiculo}>
                 <Box className={'containerSmall'}>
-                    <Card className={'cardContainer'}>
+                    <Card className={'cardContainer'} >
                         <Grid container spacing={2}>
-                            <Grid item xl={9} md={9} sm={8} xs={8}>
+                            <Grid item xl={9} md={9} sm={8} xs={8} style={{padding: '8px'}}>
                                 <Autocomplete
                                     id="vehiculo"
                                     style={{height: "26px", width: "100%"}}
@@ -159,77 +178,108 @@ export default function Mensualidad(){
 
             {(datosEncontrados) ?
                 <Box style={{marginTop: '2em'}}>
-                    <Card style={{margin: 'auto', width:'70%', padding: '5px'}}>
-                        <Grid container spacing={2} >
+                    <ValidatorForm onSubmit={registrarPago}>
+                        <Card style={{margin: 'auto', width:'70%', padding: '5px'}}>
+                            <Grid container spacing={2} >
 
-                           <Grid item md={3} xl={3} sm={6} xs={12} >
-                                <FormControl>
-                                    <FormLabel className='labelRadio'>Pago total</FormLabel>
-                                        <RadioGroup
-                                            row
-                                            name="pagoTotal"
-                                            value={pagoTotal}
-                                            onChange={handleChangeRadio}
-                                        >
-                                        <FormControlLabel value="N" control={<Radio color="success"/>} label="No" />
-                                        <FormControlLabel value="S" control={<Radio color="success"/>} label="Sí" />
-                                    </RadioGroup>
-                                </FormControl>
+                            <Grid item md={5} xl={5} sm={6} xs={12} >
+                                    <FormControl>
+                                        <FormLabel className='labelRadio'>Forma de pago</FormLabel>
+                                            <RadioGroup
+                                                row
+                                                name="formaPago"
+                                                value={formaPago}
+                                                onChange={handleChangeRadio}
+                                            >
+                                            <FormControlLabel value="M" control={<Radio color="success"/>} label="Mensual" />
+                                            <FormControlLabel value="P" control={<Radio color="success"/>} label="Parcial" />
+                                            <FormControlLabel value="T" control={<Radio color="success"/>} label="Total" />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </Grid>
+
+                                <Grid item md={3} xl={3} sm={6} xs={12} >
+                                    <Box className='frmTexto'>
+                                        <label>Fecha compromiso: </label>
+                                        <span >{'\u00A0'+ formData.fechaCompromiso}</span>
+                                    </Box>
+                                </Grid>
+
+                                {(formaPago === 'P') ?
+                                    <Fragment>
+                                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                                            <NumberValidator fullWidth
+                                                id={"totalAPagar"}
+                                                name={"totalAPagar"}
+                                                label={"Total a pagar"}
+                                                value={formData.totalAPagar}
+                                                type={'numeric'}
+                                                require={['required', 'maxStringLength:9']}
+                                                error={['Campo obligatorio','Número máximo permitido es el 999999999']}
+                                                onChange={handleChange}
+                                            />
+                                        </Grid>
+
+                                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                                            <Box className='frmTexto'>
+                                                <label>Total en abono</label>
+                                                <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.totalAbono}</span>
+                                            </Box>
+                                        </Grid>
+
+                                    </Fragment>
+                                :
+                                    <Fragment>
+                                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                                            <Box className='frmTexto'>
+                                                <label>Valor a pagar</label>
+                                                <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorAPagarMostrar}</span>
+                                            </Box>
+                                        </Grid>
+
+                                        {(formData.interesMoraMostrar > 0) ? 
+                                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                                <Box className='frmTexto'>
+                                                    <label>Interés mora </label>
+                                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
+                                                </Box>
+                                            </Grid>
+                                        : null}
+
+                                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                                            <Box className='frmTexto'>
+                                                <label>Descuento anticipado</label>
+                                                <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipado}</span>
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                                            <Box className='frmTexto'>
+                                                <label>Total a pagar</label>
+                                                <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
+                                            </Box>
+                                        </Grid>
+                                    </Fragment>
+                                 }
+
                             </Grid>
 
-                            <Grid item md={3} xl={3} sm={6} xs={12} >
-                                <Box className='frmTexto'>
-                                    <label>Fecha compromiso: </label>
-                                    <span >{'\u00A0'+ formData.fechaCompromiso}</span>
-                                </Box>
-                            </Grid>
-
-                            <Grid item xl={3} md={3} sm={6} xs={12}>
-                                <Box className='frmTexto'>
-                                    <label>Valor a pagar</label>
-                                    <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorAPagar}</span>
-                                </Box>
-                            </Grid>
-
-                            <Grid item xl={3} md={3} sm={6} xs={12}>
-                                <Box className='frmTexto'>
-                                    <label>Interés mora </label>
-                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
-                                </Box>
-                            </Grid>
-
-                            <Grid item xl={3} md={3} sm={6} xs={12}>
-                                <Box className='frmTexto'>
-                                    <label>Descuento anticipado</label>
-                                    <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipado}</span>
-                                </Box>
-                            </Grid>
-
-                            <Grid item xl={3} md={3} sm={6} xs={12}>
-                                <Box className='frmTexto'>
-                                    <label>Total a pagar</label>
-                                     <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
-                                </Box>
-                            </Grid>
-
-                            <Grid item xl={3} md={3} sm={6} xs={12}></Grid>
-
-                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <Grid container direction="row"  justifyContent="right">
                                 <Stack direction="row" spacing={2}>
-                                    <Button type={"button"} className={'modalBtn'}  onClick={registrarPago}
+                                    <Button type={"submit"} className={'modalBtn'} 
                                         startIcon={<SaveIcon />}> Guardar
                                     </Button>
                                 </Stack>
                             </Grid>
 
-                        </Grid>
-                    </Card>
+                        </Card>
+                    </ValidatorForm>
                 </Box>
             : null }
 
             <ModalDefaultAuto
-                title   = {'Visualizar factura en PDF de la mensualidad'} 
-                content = {<VisualizarPdf dataFactura={dataFactura} />} 
+                title   = {'Visualizar factura en PDF de la mensualidad'}
+                content = {<VisualizarPdf dataFactura={dataFactura} />}
                 close   = {() =>{setAbrirModal(false);}} 
                 tam     = 'smallFlot'
                 abrir   = {abrirModal}

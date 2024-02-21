@@ -7,12 +7,19 @@ use Illuminate\Http\Request;
 use App\Util\notificar;
 use DB, PDF, Auth, URL, Artisan;
 use Carbon\Carbon;
-use setasign\Fpdi\Fpdi;
+
 use App\Util\generarPdf;
 use App\Util\generales;
 use App\Util\GenerarContrato;
 
 use App\Util\convertirNumeroALetras;
+
+
+use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Caja\ComprobanteContable;
+use App\Models\Caja\MovimientoCaja;
+
+
 
 class MantenimientoController extends Controller
 {
@@ -70,7 +77,7 @@ class MantenimientoController extends Controller
         //$rutaPdf            = public_path().'/archivos/radicacion/documentoEntrante/2023/270_1978917-cccoopigon.pdf';
 
         //$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innocoid', 2)->first();
-        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'solicitudTokeFirmaContratoGerente')->first();
+        $informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarPagoMensualidadCompletada')->first();
 
 
         $buscar          = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlFirmaContrato','nombreGerente');
@@ -367,6 +374,111 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {
+        $notificar       = new notificar();
+
+        $fechaHoraActual = Carbon::now();
+        $fechaActual     = $fechaHoraActual->format('Y-m-d');
+        
+        $searcComprobanteContables = DB::table('comprobantecontable')->select('comconid', 'usuaid','agenid','cajaid')->whereDate('comconestado', 'A')->get();
+        foreach($searcComprobanteContables as $searcComprobanteContable){
+            $comconid  = $searcComprobanteContable->comconid;
+            $idUsuario = $searcComprobanteContable->usuaid;
+            $agenciaId = $searcComprobanteContable->agenid;
+            $cajaId    = $searcComprobanteContable->cajaid;
+
+            //movimientocaja as mc
+            $comprobanteContableId = DB::table('comprobantecontable as cc')
+                                        ->select('cc.comconid', 'cc.movcajid', 'cc.comcondescripcion', 'a.agennombre', 'c.cajanumero','u.usuaalias',
+                                        DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 
+                                        DB::raw('DATE(cc.comconfechahora) as fechaComprobante'), 
+                                        DB::raw("(SELECT movcajsaldoinicial from movimientocaja 
+                                                        where date(movcajfechahoraapertura) = '$fechaActual' 
+                                                        and usuaid = '$idUsuario' 
+                                                        and cajaid = '$cajaId') as saldoInicial"),
+                                        DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),
+                                        DB::raw("(SELECT SUM(ccd.cocodemonto)
+                                                FROM comprobantecontabledetalle as ccd
+                                                INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
+                                                INNER JOIN comprobantecontable as cct ON cct.comconid = ccd.comconid
+                                                INNER JOIN movimientocaja as mc ON mc.movcajid = cct.movcajid
+                                                WHERE cc.cueconnaturaleza = 'D'
+                                                AND mc.usuaid = '$idUsuario'
+                                                AND mc.cajaid = '$cajaId'
+                                                AND cct.agenid = '$agenciaId'
+                                                AND DATE(mc.movcajfechahoraapertura) = '$fechaActual'
+                                            ) AS valorDebito"))
+                                        ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
+                                        ->join('caja as c', 'c.cajaid', '=', 'cc.cajaid')
+                                        ->join('usuario as u', 'u.usuaid', '=', 'cc.usuaid')
+                                        ->whereDate('cc.comconfechahora', $fechaActual)
+                                        ->where('cc.usuaid', $idUsuario)
+                                        ->where('cc.agenid', $agenciaId)
+                                        ->where('cc.cajaid', $cajaId)
+                                        ->first(); 
+
+            $nombreUsuario         = $comprobanteContableId->nombreUsuario;
+            $correoUsuario         = $comprobanteContableId->usuaalias;
+            $nuemeroComprobante    = $comprobanteContableId->numeroComprobante;
+            $fechaComprobante      = $comprobanteContableId->fechaComprobante;
+            $nombreAgencia         = $comprobanteContableId->agennombre;
+            $numeroCaja            = $comprobanteContableId->cajanumero;
+            $conceptoComprobante   = $comprobanteContableId->comcondescripcion;
+            $saldoCajaCerrar       = $comprobanteContableId->saldoInicial + $comprobanteContableId->valorDebito;
+            $movimientoCajaId      = $comprobanteContableId->movcajid;
+            $comprobanteContableId = $comprobanteContableId->comconid;
+
+            $comprobantecontable                        = ComprobanteContable::findOrFail($comprobanteContableId);
+            $comprobantecontable->comconfechahoracierre = $fechaHoraActual;
+            $comprobantecontable->comconestado          = 'C';
+            //$comprobantecontable->save();
+
+            $comprobanteContableDetalles = DB::table('comprobantecontabledetalle')->select('cocodeid')->whereDate('comconid', $comconid)->get();
+            foreach($comprobanteContableDetalles as $comprobanteContableDetalleId){
+                $comprobantecontabledetalle                       = ComprobanteContableDetalle::findOrFail($comprobanteContableDetalleId->cocodeid);
+                $comprobantecontabledetalle->cocodecontabilizado = true;
+               // $comprobantecontabledetalle->save();
+            }
+
+            $movimientocaja                        = MovimientoCaja::findOrFail($movimientoCajaId);
+            $movimientocaja->movcajfechahoracierre = $fechaHoraActual;
+            $movimientocaja->movcajsaldofinal      = $saldoCajaCerrar;
+           // $movimientocaja->save();
+
+            $arrayDatos = [ 
+                    "nombreUsuario"       => $nombreUsuario,
+                    "nuemeroComprobante"  => $nuemeroComprobante,
+                    "fechaComprobante"    => $fechaComprobante,
+                    "nombreAgencia"       => $nombreAgencia,
+                    "numeroCaja"          => $numeroCaja,
+                    "conceptoComprobante" => $conceptoComprobante,
+                    "mensajeImpresion"    => 'Documento impreso el dia '.$fechaHoraActual,
+                    "metodo"              => 'F'
+                ];
+
+            $generarPdf = new generarPdf();
+            $rutaPdf    = []; 
+            $dataFactura = $generarPdf->generarComprobanteContable($arrayDatos, MovimientoCaja::obtenerMovimientosContablesPdf($fechaActual, $idUsuario, $agenciaId, $cajaId));
+            array_push($rutaPdf, $dataFactura);
+
+            $nombreGerente = 'Pedro quintero';
+            $correoEmpresa = 'rdsalazarr@ufpso.edu.co';
+
+            $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionCierreCajaAutomatico')->first();
+            $buscar             = Array('nombreEmpleado', 'nombreGerente');
+            $remplazo           = Array($nombreUsuario, $nombreGerente); 
+            $innocoasunto       = $informacionCorreo->innocoasunto;
+            $innococontenido    = $informacionCorreo->innococontenido;
+            $enviarcopia        = $informacionCorreo->innocoenviarcopia;
+            $enviarpiepagina    = $informacionCorreo->innocoenviarpiepagina;
+            $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
+            $msg                = str_replace($buscar, $remplazo, $innococontenido);
+            $mensajeNotificar   = $notificar->correo([$correoUsuario], $asunto, $msg, [$rutaPdf], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+
+        }
+
+        
+
+
 
        // GenerarContrato::vehiculo(6, 'I');
 

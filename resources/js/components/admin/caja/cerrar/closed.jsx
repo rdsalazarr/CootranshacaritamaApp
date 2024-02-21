@@ -32,7 +32,7 @@ export default function Closed(){
         edit(dataFactura, 1);
     }
 
-    const modales     = [<CerrarCaja dataFactura={modal.data} cerrarModal={cerrarModal} mostrarComprobante={mostrarComprobante} />, 
+    const modales     = [<CerrarCaja saldoCerrar={modal.data} cerrarModal={cerrarModal} mostrarComprobante={mostrarComprobante} />, 
                         <VisualizarPdf dataFactura={modal.data} />  ];
 
     const tituloModal = ['Cerrar caja para el día de hoy',

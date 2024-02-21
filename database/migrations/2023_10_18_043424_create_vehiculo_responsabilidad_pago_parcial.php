@@ -17,7 +17,7 @@ return new class extends Migration
             $table->smallInteger('agenid')->unsigned()->comment('Identificador de la agencia a la que recibe el pago');
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que recibe el pago');  
             $table->decimal('vereppvalorpagado', 8, 0)->comment('Valor parcial pagado referente a la responsabilidad mensual');
-            $table->date('vereppfechapagado')->comment('Fecha en la cual se realiza el pago parcial de la responsabilidad');
+            $table->datetime('vereppfechapagado')->comment('Fecha en la cual se realiza el pago parcial de la responsabilidad');
             $table->boolean('vereppprocesado')->default(false)->comment('Determina si el pago parcial esta procesado');
             $table->timestamps();
             $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehiverepp');

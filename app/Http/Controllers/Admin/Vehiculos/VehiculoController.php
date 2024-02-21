@@ -240,7 +240,7 @@ class VehiculoController extends Controller
                     $vecofiid              = $contratoMaxConsecutio->vecofiid;
                     $nombreUsuario         = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
                     $persona               = DB::table('persona')
-                                            ->select('perscorreoelectronico',DB::raw("CONCAT(persprimernombre,' ',IFNULL(perssegundonombre,''),' ',persprimerapellido,' ',IFNULL(perssegundoapellido,'')) as nombreAsociado"))                                     
+                                            ->select('perscorreoelectronico',DB::raw("CONCAT(persprimernombre,' ',IFNULL(perssegundonombre,''),' ',persprimerapellido,' ',IFNULL(perssegundoapellido,'')) as nombreAsociado"))
                                             ->where('persid', $request->personaId)->first();
                     $correoAsociado        = $persona->perscorreoelectronico;
                     $nombreAsociado        = $persona->nombreAsociado;

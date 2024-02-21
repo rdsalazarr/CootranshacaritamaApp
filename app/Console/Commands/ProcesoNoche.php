@@ -39,7 +39,8 @@ class ProcesoNoche extends Command
     public function handle()
     {
         $mensaje  = Noche::iniciar();
-        $mensaje .= Noche::prueba();       
+        $mensaje .= Noche::procesarPagoMensualidad();
+        $mensaje .= Noche::cerrarMovimientoCaja();
                     Noche::finalizar($mensaje);
     }
 }

@@ -148,6 +148,28 @@ class ProcesoAutomaticoSeeder extends Seeder
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
         ]);
+
+        DB::table('procesoautomatico')->insert([
+            'proautid'             => '13',
+            'proautnombre'         => 'ProcesarPagoMensualidad',
+            'proautmetodo'         => 'procesarPagoMensualidad',
+            'proautclasephp'       => 'Noche',
+            'proautfechaejecucion' => $fechaActual,
+            'proauttipo'           => 'N',
+            'created_at'           => $fechaHoraActual,
+            'updated_at'           => $fechaHoraActual,
+        ]);
+
+        DB::table('procesoautomatico')->insert([
+            'proautid'             => '14',
+            'proautnombre'         => 'CerrarMovimientoCaja',
+            'proautmetodo'         => 'cerrarMovimientoCaja',
+            'proautclasephp'       => 'Noche',
+            'proautfechaejecucion' => $fechaActual,
+            'proauttipo'           => 'N',
+            'created_at'           => $fechaHoraActual,
+            'updated_at'           => $fechaHoraActual,
+        ]);
       
     }
 }

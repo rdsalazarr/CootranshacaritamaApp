@@ -2256,6 +2256,7 @@ EOD;
 	}
 
 	function hojaGeneralContratoServicioEspecial($arrayDatos, $arrayVigenciaContrato, $arrayConductores, $arrayDatosVehiculo, $nombreEmpresa, $nit, $direccionEmpresa, $barrioEmpresa, $telefonoEmpresa, $celularEmpresa, $urlEmpresa, $logoEmpresa){
+
 		$numeroContratoEspecial    = $arrayDatos['numeroContratoEspecial'];	
 		$numeroContrato            = $arrayDatos['numeroContrato'];		
 		$nombreContratante         = $arrayDatos['nombreContratante'];
@@ -2469,6 +2470,7 @@ EOD;
 	}
 
 	function contratoTransporteEspecial($arrayDatos, $dataInfoPdfContrato, $numeroContratoServicioEspecial, $nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa){
+
 		$firmaGerente                 = $arrayDatos['firmaGerente'];
 		$nombreGerente                = $arrayDatos['nombreGerente'];
 		$documentoGerente             = $arrayDatos['documentoGerente'];
@@ -2536,6 +2538,7 @@ EOD;
 	}
 
 	function listaPasajeros($arrayDatos, $idCifrado, $logoEmpresa){
+
 		$firmaGerente  = $arrayDatos['firmaGerente'];
 		$nombreGerente = $arrayDatos['nombreGerente'];
 		PDF::AddPage('P', 'Letter');
@@ -2828,6 +2831,7 @@ EOD;
 	}
 
 	function facturaEncomienda($arrayDatos){
+
 		$numeroEncomienda      = $arrayDatos['numeroEncomienda'];
 		$fechaEncomienda       = $arrayDatos['fechaEncomienda'];
 		$rutaEncomienda        = $arrayDatos['rutaEncomienda'];
@@ -3018,6 +3022,7 @@ EOD;
 	}
 
 	function facturaTiquete($arrayDatos){
+
 		$numeroTiquete      = $arrayDatos['numeroTiquete'];
 		$fechaTiquete      	= $arrayDatos['fechaTiquete'];
 		$rutaTiquete        = $arrayDatos['rutaTiquete'];
@@ -3188,6 +3193,7 @@ EOD;
 	}
 
 	function facturaPagoMensualidad($arrayDatos){
+
 		$fechaPago      	= $arrayDatos['fechaPago'];
 		$valorPago          = $arrayDatos['valorPago'];
 		$descuentoPago      = $arrayDatos['descuentoPago'];
@@ -3331,6 +3337,7 @@ EOD;
 	}
 
 	function generarComprobanteContable($arrayDatos, $moviemientosContables){
+
 		$nombreUsuario       = $arrayDatos['nombreUsuario'];
 		$nuemeroComprobante  = $arrayDatos['nuemeroComprobante'];
 		$fechaComprobante    = $arrayDatos['fechaComprobante'];
@@ -3359,7 +3366,7 @@ EOD;
         PDF::SetAuthor('IMPLESOFT');
 		PDF::SetCreator('ERP '.$siglaEmpresa);
 		PDF::SetSubject($titulo);
-		PDF::SetKeywords('Certificado, documento, '.$siglaEmpresa.', '.$titulo);
+		PDF::SetKeywords('Comprobante contable, documento, '.$siglaEmpresa.', '.$titulo);
         PDF::SetTitle($titulo);	
 
 		$this->headerDocumentoHorizontal($nombreEmpresa, $siglaEmpresa, $personeriaJuridica, $nit, $logoEmpresa);

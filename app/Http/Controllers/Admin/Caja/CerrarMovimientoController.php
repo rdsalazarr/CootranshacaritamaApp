@@ -61,12 +61,15 @@ class CerrarMovimientoController extends Controller
                                                     AND t.usuaid = '$idUsuario'
                                                 ) AS saldoTiquete") )
                                         ->join('comprobantecontable as cc', 'cc.movcajid', '=', 'mc.movcajid')
-                                        ->whereDate('movcajfechahoraapertura', $fechaActual)
+                                        ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
                                         ->where('mc.usuaid', $idUsuario)
                                         ->where('cc.agenid', $agenciaId)
                                         ->where('mc.cajaid', $cajaId)->first();
 
-            return response()->json(['success'    => true,         "data"          => $this->obtenerMovimientosContables(), "movimientoCaja" => $movimientoCaja,
+
+            $data = MovimientoCaja::obtenerMovimientosContables($fechaActual, $idUsuario, $agenciaId, $cajaId);
+
+            return response()->json(['success'    => true,         "data"          => $data,        "movimientoCaja" => $movimientoCaja,
                                     "cajaAbierta" => $cajaAbierta, "nombreUsuario" => $nombreUsuario  ]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
@@ -75,7 +78,7 @@ class CerrarMovimientoController extends Controller
 
     public function salve(Request $request)
 	{
-        $this->validate(request(),['idValor'    => 'required|numeric|between:1,999999999']);
+        $this->validate(request(),['idValor'  => 'required|numeric|between:1,999999999']);
 
         DB::beginTransaction();
         try {
@@ -112,7 +115,6 @@ class CerrarMovimientoController extends Controller
                 $comprobantecontabledetalle->cocodecontabilizado = true;
                 $comprobantecontabledetalle->save();
             }
-            
 
             $movimientocaja                        = MovimientoCaja::findOrFail($comprobanteContableId->movcajid);
             $movimientocaja->movcajfechahoracierre = $fechaHoraActual;
@@ -131,7 +133,7 @@ class CerrarMovimientoController extends Controller
             ];
 
             $generarPdf  = new generarPdf();
-            $dataFactura = $generarPdf->generarComprobanteContable($arrayDatos, $this->obtenerMovimientosContablesPdf());
+            $dataFactura = $generarPdf->generarComprobanteContable($arrayDatos, MovimientoCaja::obtenerMovimientosContablesPdf($fechaActual, $idUsuario, $agenciaId, $cajaId));
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Proceso realizado con éxito', "dataFactura" => $dataFactura ]);
@@ -139,105 +141,6 @@ class CerrarMovimientoController extends Controller
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-    }
-
-    public function obtenerMovimientosContables()
-    {
-        //Contiene el mismo contenido de obtenerMovimientosContablesPdf solo que en esa no se puede formatear los valores
-        $fechaActual     = Carbon::now()->format('Y-m-d');
-        $idUsuario       = Auth::id();
-        $agenciaId       = auth()->user()->agenid;
-        $cajaId          = auth()->user()->cajaid;
-
-        return DB::table('cuentacontable as cc')
-                    ->select(DB::raw('DATE(ccd.cocodefechahora) as fechaMovimiento'), 'cc.cueconid','cc.cueconnombre', 'cc.cueconcodigo','mc.cajaid', 'cct.agenid', 'mc.usuaid',
-                        DB::raw("CONCAT('$ ', (SELECT COALESCE(FORMAT(SUM(ccd.cocodemonto), 0), 0)
-                            FROM comprobantecontabledetalle as ccd
-                            INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
-                            INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
-                            INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
-                            WHERE cc1.cueconnaturaleza = 'D'
-                            AND cc1.cueconid = cc.cueconid
-                            AND mc1.cajaid = mc.cajaid
-                            AND cct1.agenid = cct.agenid
-                            AND mc1.usuaid = mc.usuaid
-                            AND DATE(mc1.movcajfechahoraapertura) = '$fechaActual'
-                        )) AS valorDebito"),
-                        DB::raw("CONCAT('$ ', (SELECT COALESCE(FORMAT(SUM(ccd.cocodemonto), 0), 0)
-                            FROM comprobantecontabledetalle as ccd
-                            INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
-                            INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
-                            INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
-                            WHERE cc1.cueconnaturaleza = 'C'
-                            AND cc1.cueconid = cc.cueconid
-                            AND mc1.cajaid = mc.cajaid
-                            AND cct1.agenid = cct.agenid
-                            AND mc1.usuaid = mc.usuaid
-                            AND DATE(mc1.movcajfechahoraapertura) = '$fechaActual'
-                        )) AS valorCredito")
-                    )
-                    ->join('comprobantecontabledetalle as ccd', 'ccd.cueconid', '=', 'cc.cueconid')
-                    ->join('comprobantecontable as cct', 'cct.comconid', '=', 'ccd.comconid')
-                    ->join('movimientocaja as mc', function ($join) {
-                        $join->on('mc.movcajid', '=', 'cct.movcajid');
-                        $join->on('mc.usuaid', '=', 'cct.usuaid');
-                    })
-                    ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
-                    ->where('mc.usuaid', $idUsuario)
-                    ->where('cct.agenid', $agenciaId)
-                    ->where('mc.cajaid', $cajaId)
-                    ->groupBy(DB::raw('DATE(ccd.cocodefechahora)'), 'cc.cueconid', 'cc.cueconnombre', 'cc.cueconcodigo', 'mc.cajaid', 'cct.agenid', 'mc.usuaid')
-                    ->orderBy('cc.cueconid')
-                    ->get();
-    }
-
-    public function obtenerMovimientosContablesPdf()
-    {
-        $fechaActual     = Carbon::now()->format('Y-m-d');
-        $idUsuario       = Auth::id();
-        $agenciaId       = auth()->user()->agenid;
-        $cajaId          = auth()->user()->cajaid;
-
-        return DB::table('cuentacontable as cc')
-                    ->select(DB::raw('DATE(ccd.cocodefechahora) as fechaMovimiento'), 'cc.cueconid','cc.cueconnombre', 'cc.cueconcodigo','mc.cajaid', 'cct.agenid', 'mc.usuaid',
-                        DB::raw("(SELECT COALESCE(SUM(ccd.cocodemonto), 0)
-                            FROM comprobantecontabledetalle as ccd
-                            INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
-                            INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
-                            INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
-                            WHERE cc1.cueconnaturaleza = 'D'
-                            AND cc1.cueconid = cc.cueconid
-                            AND mc1.cajaid = mc.cajaid
-                            AND cct1.agenid = cct.agenid
-                            AND mc1.usuaid = mc.usuaid
-                            AND DATE(mc1.movcajfechahoraapertura) = '$fechaActual'
-                        ) AS valorDebito"),
-                        DB::raw("(SELECT COALESCE(SUM(ccd.cocodemonto), 0)
-                            FROM comprobantecontabledetalle as ccd
-                            INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
-                            INNER JOIN comprobantecontable as cct1 ON cct1.comconid = ccd.comconid
-                            INNER JOIN movimientocaja as mc1 ON mc1.movcajid = cct1.movcajid
-                            WHERE cc1.cueconnaturaleza = 'C'
-                            AND cc1.cueconid = cc.cueconid
-                            AND mc1.cajaid = mc.cajaid
-                            AND cct1.agenid = cct.agenid
-                            AND mc1.usuaid = mc.usuaid
-                            AND DATE(mc1.movcajfechahoraapertura) = '$fechaActual'
-                        ) AS valorCredito")
-                    )
-                    ->join('comprobantecontabledetalle as ccd', 'ccd.cueconid', '=', 'cc.cueconid')
-                    ->join('comprobantecontable as cct', 'cct.comconid', '=', 'ccd.comconid')
-                    ->join('movimientocaja as mc', function ($join) {
-                        $join->on('mc.movcajid', '=', 'cct.movcajid');
-                        $join->on('mc.usuaid', '=', 'cct.usuaid');
-                    })
-                    ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
-                    ->where('mc.usuaid', $idUsuario)
-                    ->where('cct.agenid', $agenciaId)
-                    ->where('mc.cajaid', $cajaId)
-                    ->groupBy(DB::raw('DATE(ccd.cocodefechahora)'), 'cc.cueconid', 'cc.cueconnombre', 'cc.cueconcodigo', 'mc.cajaid', 'cct.agenid', 'mc.usuaid')
-                    ->orderBy('cc.cueconid')
-                    ->get();
     }
 
     public function tiquete(Request $request)

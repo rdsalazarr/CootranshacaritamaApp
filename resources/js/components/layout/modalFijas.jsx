@@ -1294,7 +1294,7 @@ export function CerrarCaja({saldoCerrar, cerrarModal, mostrarComprobante}){
 
             <Grid item xl={6} md={6} sm={6} xs={6}>
                 <Button onClick={continuar} className='modalBtn' disabled={(habilitado) ? false : true}
-                    startIcon={<DeleteIcon />}> Eliminar
+                    startIcon={<SaveIcon />}> Continuar
                 </Button>
             </Grid>
         </Grid>

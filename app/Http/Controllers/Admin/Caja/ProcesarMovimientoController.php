@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin\Caja;
 use App\Models\Vehiculos\VehiculoResponsabilidadPagoParcial;
 use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Cartera\ColocacionCambioEstado;
 use App\Models\Cartera\ColocacionLiquidacion;
 use App\Models\Caja\ComprobanteContable;
 use App\Models\Asociado\AsociadoSancion;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Vehiculos\Vehiculo;
 use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
@@ -128,11 +130,12 @@ class ProcesarMovimientoController extends Controller
             $fechaHoraActual = Carbon::now();
             $fechaActual     = $fechaHoraActual->format('Y-m-d');
             $vehiculo        = DB::table('vehiculo as v')
-                                ->select('v.vehiid', 'tmv.timoveid', 'tmv.timovecuotasostenimiento', 'tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora')
+                                ->select('v.vehiid', 'tmv.timoveid', 'tmv.timovecuotasostenimiento', 'tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora',
+                                DB::raw('(SELECT SUM(vereppvalorpagado) FROM vehiculoresponpagoparcial WHERE vehiid = v.vehiid AND vereppprocesado = 0) AS totalAbono'))
                                 ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
                                 ->where('v.vehiid', $request->vehiculoId)->first();
 
-        $vehiculoResponsabilidades = DB::table('vehiculoresponsabilidad')->select('vehresid','vehresfechacompromiso','vehresvalorresponsabilidad')
+            $vehiculoResponsabilidades = DB::table('vehiculoresponsabilidad')->select('vehresid','vehresfechacompromiso','vehresvalorresponsabilidad')
                                         ->whereNull('vehresvalorpagado')
                                         ->where('vehiid', $request->vehiculoId)
                                         ->orderBy('vehresid')->get();
@@ -147,9 +150,12 @@ class ProcesarMovimientoController extends Controller
             $mensajeError           .= 'Por favor, asegúrese de que la información esté disponible o consulte con el administrador del sistema';
 
             if(count($vehiculoResponsabilidades) > 0){
-                foreach($vehiculoResponsabilidades as $key => $vehiculoResponsabilidad){ 
-                    $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
-                    $recargoMora          = $vehiculo->timoverecargomora;
+                $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
+                $recargoMora          = $vehiculo->timoverecargomora;
+                $recargoMora          = $vehiculo->timoverecargomora;
+                $totalAbono           = $vehiculo->totalAbono;
+
+                foreach($vehiculoResponsabilidades as $key => $vehiculoResponsabilidad){
                     $fechaCompromiso      = $vehiculoResponsabilidad->vehresfechacompromiso;
                     $valorResponsabilidad = $vehiculoResponsabilidad->vehresvalorresponsabilidad;
                     $resultadoMensualidad = $generales->calcularMensualidadVehiculo($fechaCompromiso, $valorResponsabilidad, $descuentoAnticipado, $recargoMora);
@@ -162,13 +168,15 @@ class ProcesarMovimientoController extends Controller
                         $mensualiad = [
                             'idResponsabilidad'   => $vehiculoResponsabilidad->vehresid,
                             'fechaCompromiso'     => $vehiculoResponsabilidad->vehresfechacompromiso,
-                            'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
+                            'valorAPagarMostrar'  => number_format($valorResponsabilidad,0,',','.'),
                             'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
                             'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
                             'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
+                            'totalAbono'          => number_format($totalAbono,0,',','.'),  
+                            'valorAPagar'         => $valorResponsabilidad,
                             'valorDesAnticipado'  => $valorDesAnticipado,
                             'interesMora'         => $valorMora,
-                            'totalAPagar'         => $totalAPagar
+                            'totalAPagar'         => $totalAPagar       
                         ];
                         array_push($pagoMensualidad, $mensualiad);
                     }
@@ -177,11 +185,13 @@ class ProcesarMovimientoController extends Controller
                 $totalizado = [
                     'idResponsabilidad'   => '',
                     'fechaCompromiso'     => $fechaCompromisoInicial,
-                    'valorAPagar'         => number_format($valorResponsabilidad,0,',','.'),
+                    'valorAPagarMostrar'  => number_format($valorResponsabilidad,0,',','.'),
                     'interesMoraMostrar'  => number_format($valorMora,0,',','.'),
                     'descuentoAnticipado' => number_format($valorDesAnticipado,0,',','.'),
                     'totalAPagarMostrar'  => number_format($totalAPagar,0,',','.'),
-                    'valorDesAnticipado'  => $valorDesAnticipado,
+                    'totalAbono'          => number_format($totalAbono,0,',','.'),  
+                    'valorAPagar'         => $valorResponsabilidad,
+                    'interesMora'         => $valorMora,
                     'interesMora'         => $valorMora,
                     'totalAPagar'         => $totalAPagar
                 ];
@@ -197,8 +207,7 @@ class ProcesarMovimientoController extends Controller
 
     public function salveMensualidad(Request $request)
 	{
-        $this->validate(request(),['vehiculoId' => 'required|numeric', 'totalAPagar' => 'required', 
-                                    'pagoTotal' => 'required',         'pagoPacial' => 'required']); 
+        $this->validate(request(),['vehiculoId' => 'required|numeric', 'totalAPagar' => 'required', 'formaPago' => 'required']); 
 
         DB::beginTransaction();
         try {
@@ -206,14 +215,23 @@ class ProcesarMovimientoController extends Controller
             $fechaHoraActual    = Carbon::now();
             $fechaActual        = $fechaHoraActual->format('Y-m-d');
             $totalAPagarMensual = $request->totalAPagar;
+            $valorAPagar        = $request->valorAPagar;
             $agenciaId          = auth()->user()->agenid;
             $usuarioId          = Auth::id();
             $totalAPagar        = $totalAPagarMensual;
-            $cuentaContableId   = 3;
-            $mensajeFactura     = 'FACTURA DE PAGO MENSUALIDAD';
+            $vehiculo           = DB::table('vehiculo as v')
+                                        ->select('v.tiesveid','tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora',
+                                        DB::raw('(SELECT SUM(vereppvalorpagado) FROM vehiculoresponpagoparcial WHERE vehiid = v.vehiid AND vereppprocesado = 0) AS totalAbono'))
+                                        ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
+                                        ->where('v.vehiid', $request->vehiculoId)->first();
+            $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
+            $recargoMora          = $vehiculo->timoverecargomora;
+            $estadoVehiculo       = $vehiculo->tiesveid;
+            $totalAbono           = $vehiculo->totalAbono;
+            $debeCambiarEstado    = (($totalAbono + $totalAPagar ) >= $valorAPagar ) ? true : false;
 
             //Pago parcial
-            if($request->pagoPacial === 'S'){
+            if($request->formaPago === 'P'){
                 $cuentaContableId                             = 12;
                 $mensajeFactura                               = 'FACTURA DE PAGO MENSUALIDAD PARCIAL';
                 $vehiculoresponpagoparcial                    = new VehiculoResponsabilidadPagoParcial();
@@ -221,12 +239,13 @@ class ProcesarMovimientoController extends Controller
                 $vehiculoresponpagoparcial->agenid            = $agenciaId;
                 $vehiculoresponpagoparcial->usuaid            = $usuarioId;
                 $vehiculoresponpagoparcial->vereppvalorpagado = $totalAPagarMensual;
-                $vehiculoresponpagoparcial->vereppfechapagado = $fechaHoraActual;           
+                $vehiculoresponpagoparcial->vereppfechapagado = $fechaHoraActual;
                 $vehiculoresponpagoparcial->save();
             }
 
             //Pago mensual
-            if($request->pagoPacial === 'N' and $request->pagoTotal === 'N'){
+            if($request->formaPago === 'M' ){
+                $mensajeFactura                             = 'FACTURA DE PAGO MENSUALIDAD'; 
                 $cuentaContableId                           = 3;
                 $vehiculoresponsabilidad                    = VehiculoResponsabilidad::findOrFail($request->idResponsabilidad);
                 $vehiculoresponsabilidad->vehresfechapagado = $fechaHoraActual;
@@ -239,23 +258,18 @@ class ProcesarMovimientoController extends Controller
             }
             
             //Pago total
-            if($request->pagoPacial === 'N' and $request->pagoTotal === 'S'){
+            if($request->formaPago === 'T'){
                 $cuentaContableId = 4;
                 $totalAPagar      = 0;
-                $mensajeFactura   = 'FACTURA DE PAGO MENSUALIDAD TOTAL';
-                $vehiculo         = DB::table('vehiculo as v')
-                                        ->select('tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora')
-                                        ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
-                                        ->where('v.vehiid', $request->vehiculoId)->first();
+                $mensajeFactura   = 'FACTURA DE PAGO MENSUALIDAD TOTAL';              
 
                 $vehiculoResponsabilidades = DB::table('vehiculoresponsabilidad')->select('vehresid','vehresfechacompromiso','vehresvalorresponsabilidad')
                                             ->whereNull('vehresvalorpagado')
-                                            ->where('vehiid', $request->vehiculoId)                                            
+                                            ->where('vehiid', $request->vehiculoId)
                                             ->orderBy('vehresid')->get();
 
                 foreach($vehiculoResponsabilidades as $vehiculoResponsabilidad){
-                    $descuentoAnticipado  = $vehiculo->timovedescuentopagoanticipado;
-                    $recargoMora          = $vehiculo->timoverecargomora;
+                    
                     $fechaCompromiso      = $vehiculoResponsabilidad->vehresfechacompromiso;
                     $valorResponsabilidad = $vehiculoResponsabilidad->vehresvalorresponsabilidad;
                     $resultadoMensualidad = $generales->calcularMensualidadVehiculo($fechaCompromiso, $valorResponsabilidad, $descuentoAnticipado, $recargoMora);
@@ -270,6 +284,20 @@ class ProcesarMovimientoController extends Controller
                     $vehiculoresponsabilidad->usuaid            = $usuarioId;
                     $vehiculoresponsabilidad->save();
                 }
+            }
+
+            if($debeCambiarEstado and $estadoVehiculo === 'S'){//Suspendido
+                $vehiculo           = Vehiculo::findOrFail($request->vehiculoId);
+                $vehiculo->tiesveid = 'A';
+                $vehiculo->save();
+
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $request->vehiculoId;
+                $vehiculocambioestado->tiesveid          = 'A';
+                $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = 'Se realiza el pago de la mensualidad levantando la sanción. Este procedimiento fue llevado a cabo por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+                $vehiculocambioestado->save();
             }
 
             //Se realiza la contabilizacion
@@ -299,10 +327,10 @@ class ProcesarMovimientoController extends Controller
 
             $arrayDatos   = [
                 "fechaPago"         => $fechaHoraActual,
-                "valorPago"         => number_format($request->valorAPagar, 0,',','.'),
-                "descuentoPago"     => ($request->pagoPacial === 'N') ? number_format($request->valorDesAnticipado, 0,',','.') : 0,
-                "interesMora"       => ($request->pagoPacial === 'N') ? number_format($request->interesMora, 0,',','.') : 0,
-                "valorTotalPago"    => ($request->pagoPacial === 'N') ? number_format($totalAPagar, 0,',','.') : 0,
+                "valorPago"         => number_format($valorAPagar, 0,',','.'),
+                "descuentoPago"     => ($request->formaPago !== 'P') ? number_format($request->valorDesAnticipado, 0,',','.') : 0,
+                "interesMora"       => ($request->formaPago !== 'P') ? number_format($request->interesMora, 0,',','.') : 0,
+                "valorTotalPago"    => number_format($totalAPagar, 0,',','.'),
                 "documentoCliente"  => $vehiculocontrato->persdocumento,
                 "nombreCliente"     => $vehiculocontrato->nombreAsociado,
                 "direccionCliente"  => $vehiculocontrato->persdireccion,
