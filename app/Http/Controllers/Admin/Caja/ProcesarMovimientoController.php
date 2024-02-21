@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Caja;
 
+use App\Models\Vehiculos\VehiculoResponsabilidadPagoParcial;
 use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Cartera\ColocacionCambioEstado;
@@ -196,7 +197,8 @@ class ProcesarMovimientoController extends Controller
 
     public function salveMensualidad(Request $request)
 	{
-        $this->validate(request(),['vehiculoId' => 'required|numeric', 'pagoTotal' => 'required']); 
+        $this->validate(request(),['vehiculoId' => 'required|numeric', 'totalAPagar' => 'required', 
+                                    'pagoTotal' => 'required',         'pagoPacial' => 'required']); 
 
         DB::beginTransaction();
         try {
@@ -208,8 +210,24 @@ class ProcesarMovimientoController extends Controller
             $usuarioId          = Auth::id();
             $totalAPagar        = $totalAPagarMensual;
             $cuentaContableId   = 3;
+            $mensajeFactura     = 'FACTURA DE PAGO MENSUALIDAD';
 
-            if($request->pagoTotal === 'N'){
+            //Pago parcial
+            if($request->pagoPacial === 'S'){
+                $cuentaContableId                             = 12;
+                $mensajeFactura                               = 'FACTURA DE PAGO MENSUALIDAD PARCIAL';
+                $vehiculoresponpagoparcial                    = new VehiculoResponsabilidadPagoParcial();
+                $vehiculoresponpagoparcial->vehiid            = $request->vehiculoId;
+                $vehiculoresponpagoparcial->agenid            = $agenciaId;
+                $vehiculoresponpagoparcial->usuaid            = $usuarioId;
+                $vehiculoresponpagoparcial->vereppvalorpagado = $totalAPagarMensual;
+                $vehiculoresponpagoparcial->vereppfechapagado = $fechaHoraActual;           
+                $vehiculoresponpagoparcial->save();
+            }
+
+            //Pago mensual
+            if($request->pagoPacial === 'N' and $request->pagoTotal === 'N'){
+                $cuentaContableId                           = 3;
                 $vehiculoresponsabilidad                    = VehiculoResponsabilidad::findOrFail($request->idResponsabilidad);
                 $vehiculoresponsabilidad->vehresfechapagado = $fechaHoraActual;
                 $vehiculoresponsabilidad->vehresvalorpagado = $totalAPagarMensual;
@@ -218,9 +236,13 @@ class ProcesarMovimientoController extends Controller
                 $vehiculoresponsabilidad->agenid            = $agenciaId;
                 $vehiculoresponsabilidad->usuaid            = $usuarioId;
                 $vehiculoresponsabilidad->save();
-            }else{
+            }
+            
+            //Pago total
+            if($request->pagoPacial === 'N' and $request->pagoTotal === 'S'){
                 $cuentaContableId = 4;
                 $totalAPagar      = 0;
+                $mensajeFactura   = 'FACTURA DE PAGO MENSUALIDAD TOTAL';
                 $vehiculo         = DB::table('vehiculo as v')
                                         ->select('tmv.timovedescuentopagoanticipado', 'tmv.timoverecargomora')
                                         ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
@@ -228,7 +250,7 @@ class ProcesarMovimientoController extends Controller
 
                 $vehiculoResponsabilidades = DB::table('vehiculoresponsabilidad')->select('vehresid','vehresfechacompromiso','vehresvalorresponsabilidad')
                                             ->whereNull('vehresvalorpagado')
-                                            ->where('vehiid', $request->vehiculoId)
+                                            ->where('vehiid', $request->vehiculoId)                                            
                                             ->orderBy('vehresid')->get();
 
                 foreach($vehiculoResponsabilidades as $vehiculoResponsabilidad){
@@ -267,9 +289,8 @@ class ProcesarMovimientoController extends Controller
             $comprobantecontabledetalle->save();
 
             $vehiculocontrato  = DB::table('vehiculocontrato as vc')
-                                    ->select('p.persdocumento', DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
-                                    'p.persdireccion', 'p.persnumerocelular')
+                                    ->select('p.persdocumento', 'p.persdireccion', 'p.persnumerocelular',
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))
                                     ->join('asociado as a', 'a.asocid', '=', 'vc.asocid')
                                     ->join('persona as p', 'p.persid', '=', 'a.persid')
                                     ->where('vc.vehiid', $request->vehiculoId)->first();
@@ -279,9 +300,9 @@ class ProcesarMovimientoController extends Controller
             $arrayDatos   = [
                 "fechaPago"         => $fechaHoraActual,
                 "valorPago"         => number_format($request->valorAPagar, 0,',','.'),
-                "descuentoPago"     => number_format($request->valorDesAnticipado, 0,',','.'),
-                "interesMora"       => number_format($request->interesMora, 0,',','.'),
-                "valorTotalPago"    => number_format($totalAPagar, 0,',','.'),
+                "descuentoPago"     => ($request->pagoPacial === 'N') ? number_format($request->valorDesAnticipado, 0,',','.') : 0,
+                "interesMora"       => ($request->pagoPacial === 'N') ? number_format($request->interesMora, 0,',','.') : 0,
+                "valorTotalPago"    => ($request->pagoPacial === 'N') ? number_format($totalAPagar, 0,',','.') : 0,
                 "documentoCliente"  => $vehiculocontrato->persdocumento,
                 "nombreCliente"     => $vehiculocontrato->nombreAsociado,
                 "direccionCliente"  => $vehiculocontrato->persdireccion,
@@ -291,7 +312,7 @@ class ProcesarMovimientoController extends Controller
                 "direccionAgencia"  => $agencia->agendireccion,
                 "telefonoAgencia"   => $agencia->telefonoAgencia,
                 "mensajePlanilla"   => 'Gracias por su pago',
-                "tituloFactura"     => 'FACTURA DE PAGO MENSUALIDAD',
+                "tituloFactura"     => $mensajeFactura,
                 "metodo"            => 'S'
             ];
 

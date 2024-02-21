@@ -114,5 +114,14 @@ class CuentaContableSeeder extends Seeder
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,
         ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '12',
+            'cueconnombre'     => 'CXC PAGO MENSUALIDAD PARCIAL',
+            'cueconnaturaleza' => 'D',
+            'cueconcodigo'     => '120012',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
     }
 }

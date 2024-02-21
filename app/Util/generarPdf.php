@@ -3245,19 +3245,19 @@ EOD;
 		PDF::Cell(38, 3,$fechaPago, 0, 0,'L');
 		PDF::Ln(3);
 
-		if($valorPago !== ''){
+		if($valorPago > 0){
 			PDF::Cell(18, 3,"Valor:", 0, 0,'L');
 			PDF::Cell(38, 3,'$ '.$valorPago, 0, 0,'L'); 
 			PDF::Ln(3);
 		}
 
-		if($descuentoPago !== ''){
+		if($descuentoPago > 0){
 			PDF::Cell(18, 3,"Descuento:", 0, 0,'L'); 
 			PDF::Cell(38, 3,'$ '.$descuentoPago, 0, 0,'L');
 			PDF::Ln(3);
 		}
 
-		if($interesMora !== ''){
+		if($interesMora > 0){
 			PDF::Cell(18, 3,"Mora:", 0, 0,'L'); 
 			PDF::Cell(38, 3,'$ '.$interesMora, 0, 0,'L');
 			PDF::Ln(3);

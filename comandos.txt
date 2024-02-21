@@ -92,6 +92,7 @@ php artisan make:migration create_vehiculo_contrato
 php artisan make:migration create_vehiculo_contrato_firma
 php artisan make:migration create_vehiculo_contrato_asociado
 php artisan make:migration create_vehiculo_responsabilidad
+php artisan make:migration create_vehiculo_responsabilidad_pago_parcial
 php artisan make:migration create_vehiculo_suspendido
 
 php artisan make:migration create_tipo_estado_conductor
@@ -235,6 +236,7 @@ php artisan make:model Vehiculos\VehiculoContratoAsocidado
 php artisan make:model Vehiculos\TipoVehiculoDistribucion
 php artisan make:model Vehiculos\VehiculoResponsabilidad
 php artisan make:model Vehiculos\VehiculoSuspendido
+php artisan make:model Vehiculos\VehiculoResponsabilidadPagoParcial
 
 php artisan make:model Usuario\CajaUsuario
 php artisan make:model Caja\AbrirCaja
