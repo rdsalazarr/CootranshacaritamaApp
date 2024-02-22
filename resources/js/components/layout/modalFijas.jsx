@@ -1042,8 +1042,8 @@ export function EntregarEncomienda({data, cerrarModal}){
     )   
 }
 
-export function EjecutarProcesoAutomatico({data, cerrarModal}){
-    const [fechaEjecucion, setFechaEjecucion] = useState(data.fechaActual);   
+export function EjecutarProcesoAutomatico({data, cerrarModal, proceso}){
+    const [fechaEjecucion, setFechaEjecucion] = useState(data.proautfechaejecucion);   
     const [habilitado, setHabilitado] = useState(true);
     const [loader, setLoader] = useState(false);
 
@@ -1071,7 +1071,7 @@ export function EjecutarProcesoAutomatico({data, cerrarModal}){
                 </Grid>
             </Box>
 
-            {(data.esFechaActual === 'NO') ? 
+            {((proceso === 'DIA' && data.esFechaActual === 'NO') || (proceso === 'NOCHE' && data.esFechaAnterior === 'SI')) ? 
                 <Fragment>
                     <Grid item xl={12} md={12} sm={12} xs={12}>
                         <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'justify'}}>

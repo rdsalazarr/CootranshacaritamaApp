@@ -109,7 +109,7 @@ class CuentaContableSeeder extends Seeder
         DB::table('cuentacontable')->insert([
             'cueconid'         => '11',
             'cueconnombre'     => 'CXC DESEMBOLSOS',
-            'cueconnaturaleza' => 'C',
+            'cueconnaturaleza' => 'D',
             'cueconcodigo'     => '120011',
             'created_at'       => $fechaHoraActual,
             'updated_at'       => $fechaHoraActual,

@@ -10,28 +10,28 @@ import instance from '../../../../layout/instance';
 import PagarCuota from "./pagarCuota";
 
 export default function Search(){
-
-    const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
-    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:'1978917'});
+  
+    const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:''});
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [creditoAsociados, setCreditoAsociados] = useState([]);
+    const [creditoAsociados, setCreditoAsociados] = useState([]);    
+    const [abrirModal, setAbrirModal] = useState(false);
+    const [modal, setModal] = useState({data:{}});
     const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const limpiarForm = () =>{
+    const cerrarModal = () =>{
+        setAbrirModal(false);
         setFormData({tipoIdentificacion:'1', documento:''});
-       // setDatosEncontrados(false);
+        setDatosEncontrados(false);
     }
 
-    const modales     = [<PagarCuota data={modal.data} limpiarForm={limpiarForm} /> ];
-    const tituloModal = ['Pagar cuota de crédito'];
-
-    const edit = (data, tipo) =>{
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: 'mediumFlot'});
+    const openModal = (data) =>{
+        setModal({data:data});
+        setAbrirModal(true);
     }
 
     const consultarCredito = () =>{
@@ -121,18 +121,18 @@ export default function Search(){
                                 datos={creditoAsociados}
                                 titulo={['Persona','Número de colocacion','Fecha desembolso','Línea de crédito','Valor desembolsado', 'Fecha cuota','Procesar']}
                                 ver={["nombrePersona", "numeroColocacion", "colofechacolocacion","lincrenombre","valorDesembolsado", "colliqfechavencimiento"]}
-                                accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'green', funcion : (data)=>{edit(data, 0)} }]}
+                                accion={[{tipo: 'B', icono : 'monetization_on_icon', color: 'green', funcion : (data)=>{openModal(data)} }]}
                                 funciones={{orderBy: false, search: false, pagination:false}}
                             />
                         </Grid>
                     </Grid>
 
                     <ModalDefaultAuto
-                        title   = {modal.titulo}
-                        content = {modales[modal.vista]}
-                        close   = {() =>{setModal({open : false, vista:2, data:{}, titulo:'', tamano: ''});}}
-                        tam     = {modal.tamano}
-                        abrir   = {modal.open}
+                        title   = {'Pagar cuota de crédito'}
+                        content = {<PagarCuota data={modal.data} cerrarModal={cerrarModal}  />}
+                        close   = {() =>{(setAbrirModal(false), inicio())}} 
+                        tam     = 'mediumFlot'
+                        abrir   = {abrirModal}
                     />
                     
                 </Box>

@@ -13,6 +13,7 @@ use App\Models\Asociado\AsociadoSancion;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
 use App\Models\Vehiculos\Vehiculo;
+use App\Models\Cartera\Colocacion;
 use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
@@ -329,6 +330,7 @@ class ProcesarMovimientoController extends Controller
                 "fechaPago"         => $fechaHoraActual,
                 "valorPago"         => number_format($valorAPagar, 0,',','.'),
                 "descuentoPago"     => ($request->formaPago !== 'P') ? number_format($request->valorDesAnticipado, 0,',','.') : 0,
+                "interesCorriente"  => 0,
                 "interesMora"       => ($request->formaPago !== 'P') ? number_format($request->interesMora, 0,',','.') : 0,
                 "valorTotalPago"    => number_format($totalAPagar, 0,',','.'),
                 "documentoCliente"  => $vehiculocontrato->persdocumento,
@@ -374,7 +376,6 @@ class ProcesarMovimientoController extends Controller
             $fechaHoraActual = Carbon::now();
             $fechaActual     = $fechaHoraActual->format('Y-m-d');
 
-            /*colliqfechavencimiento <= '$fechaActual' AND*/
             $colocaciones = DB::table('colocacion as c')
                                 ->select('c.coloid', 'lc.lincrenombre', 'c.colofechacolocacion', 'Q.colliqfechavencimiento','Q.colliqid',
                                     DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
@@ -407,9 +408,9 @@ class ProcesarMovimientoController extends Controller
     public function calcularCuota(Request $request)
 	{
         $this->validate(request(),['colocacionId' => 'required|numeric','liquidacionId' => 'required|numeric']);
-    
+
         try{
-            $generales             = new generales(); 
+            $generales             = new generales();
             $pagoMensualidad       = [];
             $pagoTotal             = [];
             $valorInteresesTotal   = 0;
@@ -417,67 +418,57 @@ class ProcesarMovimientoController extends Controller
             $valorDescuentoTotal   = 0;
             $totalAPagarTotal      = 0;
             $interesMensualTotal   = 0;
-            $colocaciones = DB::table('colocacionliquidacion as cl')
+
+            $colocacion = DB::table('colocacionliquidacion as cl')
                             ->select('cl.coloid','cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechacolocacion',
-                                 'c.colotasa','c.colonumerocuota','c.colovalordesembolsado','lc.lincreinteresmora', DB::raw('DATE(c.colofechahoradesembolso) as fechaDesembolso'))
+                                 'c.colotasa','c.colonumerocuota','c.colovalordesembolsado','lc.lincreinteresmora', DB::raw('DATE(c.colofechahoradesembolso) as fechaDesembolso'),
+                                 DB::raw("(SELECT SUM(cl1.colliqvalorpagado) FROM colocacionliquidacion as cl1 WHERE cl1.coloid = c.coloid AND cl.colliqfechapago is null) AS saldoColocacion"))
                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                             ->where('c.coloid', $request->colocacionId)
                             ->whereNull('cl.colliqfechapago')
-                            ->get();
+                            ->first();
 
-            foreach($colocaciones as $colocacion){
-                if($colocacion->coloid  = $request->liquidacionId){
-                    //Pago de la cuota
-                    $montoPrestamo         = $colocacion->colovalordesembolsado;
-                    $tasaInteresMensual    = $colocacion->colotasa;
-                    $plazo                 = $colocacion->colonumerocuota;
-                    $fechaVencimiento      = $colocacion->colliqfechavencimiento;
-                    $valorCuota            = $colocacion->colliqvalorcuota;
-                    $fechaDesembolso       = $colocacion->fechaDesembolso;
-                    $fechaColocacion       = $colocacion->colofechacolocacion;
-                    $interesMora           = $colocacion->lincreinteresmora;
-                    $numeroDiasCambioFecha = ($colocacion->colliqnumerocuota === '1') ? $generales->calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaColocacion) : 0;
-                    $arrayInteresMensual   = $generales->calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha);
-                    $valorIntereses        = $arrayInteresMensual['valorIntereses'];
-                    $valorInteresMora      = $arrayInteresMensual['valorInteresMora'];
-                    $valorDescuento        = $arrayInteresMensual['valorDescuento'];
-                    $interesMensualTotal   = $arrayInteresMensual['interesMensualTotal'];
-                         
-                    $totalAPagar           = ($valorCuota + $valorInteresMora ) - $valorDescuento;
+            //Pago de la cuota
+            $montoPrestamo         = $colocacion->colovalordesembolsado;
+            $tasaInteresMensual    = $colocacion->colotasa;
+            $plazo                 = $colocacion->colonumerocuota;
+            $fechaVencimiento      = $colocacion->colliqfechavencimiento;
+            $valorCuota            = $colocacion->colliqvalorcuota;
+            $fechaDesembolso       = $colocacion->fechaDesembolso;
+            $fechaColocacion       = $colocacion->colofechacolocacion;
+            $interesMora           = $colocacion->lincreinteresmora;
+            $saldoColocacion       = $colocacion->saldoColocacion;
+            $numeroDiasCambioFecha = ($colocacion->colliqnumerocuota === '1') ? $generales->calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaColocacion) : 0;
+            $arrayInteresMensual   = $generales->calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha);
 
-                    $mensualiad = [
-                                    'fechaCuota'          => $fechaVencimiento,
-                                    'valorCuota'          => $valorCuota,
-                                    'totalAPagar'         => $totalAPagar,
-                                    'valorIntereses'      => $valorIntereses,
-                                    'interesMensualTotal' => $interesMensualTotal,
-                                    'valorInteresMora'    => $valorInteresMora,
-                                    'valorDescuento'      => $valorDescuento
-                                ];
-                    array_push($pagoMensualidad, $mensualiad);
-                }
+            $valorIntereses        = $arrayInteresMensual['valorIntereses'];
+            $valorInteresMora      = $arrayInteresMensual['valorInteresMora'];
+            $valorDescuento        = $arrayInteresMensual['valorDescuento'];
+            $interesMensualTotal   = $arrayInteresMensual['interesMensualTotal'];
+            $totalAPagar           = ($valorCuota + $valorInteresMora ) - $valorDescuento;
 
-                //Pago total
-                $arrayInteresMensualTota = $generales->calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha);
-                $valorInteresesTotal     += $arrayInteresMensualTota['valorIntereses'];
-                $valorInteresMoraTotal   += $arrayInteresMensualTota['valorInteresMora'];
-                $valorDescuentoTotal     += $arrayInteresMensualTota['valorDescuento'];
-                $interesMensualTotal     += $arrayInteresMensual['interesMensualTotal'];
-                $totalAPagarTotal        += ($valorCuota + $arrayInteresMensualTota['valorInteresMora'] ) - $arrayInteresMensualTota['valorDescuento'];
-            }
+            $mensualiad = [
+                            'fechaCuota'          => $fechaVencimiento,
+                            'valorCuota'          => $valorCuota,
+                            'totalAPagar'         => $totalAPagar,
+                            'valorIntereses'      => $valorIntereses,
+                            'interesMensualTotal' => $interesMensualTotal,
+                            'valorInteresMora'    => $valorInteresMora,
+                            'valorDescuento'      => $valorDescuento
+                        ];
+            array_push($pagoMensualidad, $mensualiad);
 
             $totalPago = [
-                'fechaCuota'          => $fechaVencimiento,
-                'valorCuota'          => $valorCuota,
-                'totalAPagar'         => $totalAPagarTotal,
-                'valorIntereses'      => $valorInteresesTotal,
-                'valorInteresMora'    => $valorInteresMoraTotal,
-                'interesMensualTotal' => $interesMensualTotal,
-                'valorDescuento'      => $valorDescuentoTotal
-            ];
-
+                        'fechaCuota'          => $fechaVencimiento,
+                        'valorCuota'          => $valorCuota,
+                        'totalAPagar'         => $saldoColocacion - $totalAPagar,
+                        'valorIntereses'      => $valorIntereses,
+                        'valorInteresMora'    => $valorInteresMora,
+                        'interesMensualTotal' => $interesMensualTotal,
+                        'valorDescuento'      => $valorDescuento
+                    ];
             array_push($pagoTotal, $totalPago);
 
             return response()->json(['success' => true, "pagoMensualidad" => $pagoMensualidad, "pagoTotal" => $pagoTotal]);
@@ -505,7 +496,8 @@ class ProcesarMovimientoController extends Controller
                             DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
                             DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalCuotasPorPagar'),
                             DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NOT NULL) AS totalCuotasPagadas'),
-                            DB::raw('(SELECT SUM(colliqvalorcapitalpagado) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NOT NULL) AS totalPagadoColocacion'))
+                            DB::raw("(SELECT SUM(cl1.colliqvalorpagado) FROM colocacionliquidacion as cl1 WHERE cl1.coloid = c.coloid AND cl.colliqfechapago is null) AS saldoColocacion"),
+                            DB::raw('(SELECT SUM(colliqvalorcapitalpagado) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalPagadoColocacion'))
                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                             ->join('persona as p', 'p.persid', '=', 'sc.persid')
@@ -517,76 +509,63 @@ class ProcesarMovimientoController extends Controller
             $valorDesembolsado       = intval($colocacion->colovalordesembolsado);
             $valorCuota              = $colocacion->colliqvalorcuota;
             $totalPagado             = $colocacion->totalPagadoColocacion;
+            $interesCobrados         = $request->interesCorrienteTotal;
+            $valorInteresMora        = $request->interesMora;
+            $descuentoAnticipado     = $request->descuentoAnticipado;
+            $valorPagado             = $request->totalAPagar;
+            $abonoCapital            = round($valorCuota - $interesCobrados, 0);
+            $saldocapital            = ($totalPagado > 0) ? ($valorDesembolsado - $totalPagado - $abonoCapital ) : ($valorDesembolsado - $abonoCapital);
 
             if($request->pagoTotal === 'N'){
-    
-                $interesCobrados     = $request->interesCorrienteTotal;
-                $valorInteresMora    = $request->interesMora;
-                $descuentoAnticipado = $request->descuentoAnticipado;
-                $valorPagado         = $request->totalAPagar;
-                $abonoCapital        = round($valorCuota - $interesCobrados, 0);
-                $saldocapital        = ($totalPagado > 0) ? ($valorDesembolsado - $totalPagado - $abonoCapital ) : ($valorDesembolsado - $abonoCapital);
-
                 $colocacionliquidacion 				                   = ColocacionLiquidacion::findOrFail($request->liquidacionId);
                 $colocacionliquidacion->colliqfechapago                = $fechaActual;
-                $colocacionliquidacion->colliqnumerocomprobante        = $comprobanteContableId;
+                $colocacionliquidacion->comconid                       = $comprobanteContableId;
                 $colocacionliquidacion->colliqvalorpagado              = $valorPagado;
-                $colocacionliquidacion->colliqsaldocapital             = $saldocapital; 
+                $colocacionliquidacion->colliqsaldocapital             = $saldocapital;
                 $colocacionliquidacion->colliqvalorcapitalpagado       = $abonoCapital;
                 $colocacionliquidacion->colliqvalorinterespagado       = $interesCobrados;
                 $colocacionliquidacion->colliqvalorinteresmora         = $valorInteresMora;
                 $colocacionliquidacion->colliqvalordescuentoanticipado = $descuentoAnticipado;
                 $colocacionliquidacion->save();
             }else{
-                //$cambiarEstadoColocacion = true;
+                $cambiarEstadoColocacion = true;
                 $cuentaContableId        = 6;
                 $estadoColocacion        = 'C';
-                $colocaciones     = DB::table('colocacionliquidacion as cl')
-                                        ->select('cl.colliqid', 'c.colotasa', 'cl.colliqvalorcuota','c.colovalordesembolsado','c.colofechacolocacion',
-                                            'lc.lincreinteresmora','cl.colliqfechavencimiento','cl.colliqnumerocuota',DB::raw('DATE(c.colofechahoradesembolso) as fechaDesembolso'))
-                                        ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
-                                        ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
-                                        ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
-                                        ->where('cl.coloid', $request->colocacionId)
-                                        ->whereNull('cl.colliqfechapago')
-                                        ->whereIn('cl.colliqid',[1,2,3])//Borrar
-                                        ->get();
+                $colocacionLiquidaciones = DB::table('colocacionliquidacion as cl')->select('cl.colliqid')
+                                                ->whereNull('cl.colliqfechapago')
+                                                ->get();
 
-                foreach($colocaciones as $colocacionPago){
-                    $tasaInteresMensual    = $colocacionPago->colotasa;
-                    $fechaDesembolso       = $colocacionPago->fechaDesembolso; 
-                    $fechaColocacion       = $colocacionPago->colofechacolocacion;
-                    $fechaVencimiento      = $colocacionPago->colliqfechavencimiento;
-                    $interesMora           = $colocacionPago->lincreinteresmora;
-                    $numeroDiasCambioFecha = ($colocacionPago->colliqnumerocuota === '1') ? $generales->calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaColocacion) : 0;
-                    $arrayInteresTotal     = $generales->calcularValorInteresDiario($valorDesembolsado, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha);
-
-                    $valorInteresMora      = $arrayInteresTotal['valorInteresMora'];
-                    $descuentoAnticipado   = $arrayInteresTotal['valorDescuento'];
-                    $interesCobrados       = $arrayInteresTotal['interesMensualTotal'];
-                    $totalAPagar           = ($valorCuota + $arrayInteresTotal['valorInteresMora'] ) - $arrayInteresTotal['valorDescuento'];
-                    $abonoCapital          = round($valorCuota - $interesCobrados, 0);
-                    $saldocapital          = ($totalPagado > 0) ? ($valorDesembolsado - $totalPagado - $abonoCapital ) : ($valorDesembolsado - $abonoCapital);
-                    $totalPagado           += $totalAPagar;
-                    $valorPagado           += $totalAPagar;
-
-
-                    $colocacionliquidacion 				                   = ColocacionLiquidacion::findOrFail($colocacionPago->colliqid);
+                $valorPagadoTotal          = $valorPagado;
+                $saldocapitalTotal         = $saldocapital;
+                $abonoCapitalTotal         = $abonoCapital;
+                $interesCobradosTotal      = $interesCobrados;
+                $valorInteresMoraTotal     = $valorInteresMora;
+                $descuentoAnticipadoTotal  = $descuentoAnticipado;
+                foreach($colocacionLiquidaciones as $colocacionLiquidacion){
+                    $colocacionliquidacion 				                   = ColocacionLiquidacion::findOrFail($colocacionLiquidacion->colliqid);
                     $colocacionliquidacion->colliqfechapago                = $fechaActual;
-                    $colocacionliquidacion->colliqnumerocomprobante        = $comprobanteContableId;
-                    $colocacionliquidacion->colliqvalorpagado              = $totalAPagar;
-                    $colocacionliquidacion->colliqsaldocapital             = $saldocapital;
-                    $colocacionliquidacion->colliqvalorcapitalpagado       = $abonoCapital;
-                    $colocacionliquidacion->colliqvalorinterespagado       = $interesCobrados;
-                    $colocacionliquidacion->colliqvalorinteresmora         = $valorInteresMora;
-                    $colocacionliquidacion->colliqvalordescuentoanticipado = $descuentoAnticipado;
+                    $colocacionliquidacion->comconid                       = $comprobanteContableId;
+                    $colocacionliquidacion->colliqvalorpagado              = $valorPagadoTotal;
+                    $colocacionliquidacion->colliqsaldocapital             = $saldocapitalTotal;
+                    $colocacionliquidacion->colliqvalorcapitalpagado       = $abonoCapitalTotal;
+                    $colocacionliquidacion->colliqvalorinterespagado       = $interesCobradosTotal;
+                    $colocacionliquidacion->colliqvalorinteresmora         = $valorInteresMoraTotal;
+                    $colocacionliquidacion->colliqvalordescuentoanticipado = $descuentoAnticipadoTotal;
                     $colocacionliquidacion->save();
-                }               
+                    $valorPagadoTotal         = 0;
+                    $saldocapitalTotal        = 0;
+                    $abonoCapitalTotal        = 0;
+                    $interesCobradosTotal     = 0;
+                    $valorInteresMoraTotal    = 0;
+                    $descuentoAnticipadoTotal = 0;
+                }
             }
 
-
-
             if($cambiarEstadoColocacion){
+                $colocacion           = Colocacion::findOrFail($request->colocacionId);
+                $colocacion->tiesclid = $estadoColocacion;
+                $colocacion->save();
+
                 $colocacioncambioestado 				   = new ColocacionCambioEstado();
                 $colocacioncambioestado->coloid            = $request->colocacionId;
                 $colocacioncambioestado->tiesclid          = $estadoColocacion;
@@ -597,7 +576,7 @@ class ProcesarMovimientoController extends Controller
             }
 
             //Se realiza la contabilizacion
-           /* $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+            $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
             $comprobantecontabledetalle->cueconid        = 1;//Caja
@@ -610,15 +589,16 @@ class ProcesarMovimientoController extends Controller
             $comprobantecontabledetalle->cueconid        = $cuentaContableId;
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $valorPagado;
-            $comprobantecontabledetalle->save();*/
+            $comprobantecontabledetalle->save();
 
             $agencia                = $this->consultarAgencia($agenciaId);
 
             $arrayDatos   = [
                 "fechaPago"         => $fechaHoraActual,
-                "valorPago"         => number_format($valorPagado, 0,',','.'),
-                "descuentoPago"     => number_format($valorPagado, 0,',','.'),
-                "interesMora"       => number_format($valorPagado, 0,',','.'),
+                "valorPago"         => number_format($valorCuota, 0,',','.'),
+                "descuentoPago"     => number_format($descuentoAnticipado, 0,',','.'),
+                "interesCorriente"  => number_format($interesCobrados, 0,',','.'),
+                "interesMora"       => number_format($valorInteresMora, 0,',','.'),
                 "valorTotalPago"    => number_format($valorPagado, 0,',','.'),
                 "documentoCliente"  => $colocacion->persdocumento,
                 "nombreCliente"     => $colocacion->nombrePersona,
@@ -629,7 +609,7 @@ class ProcesarMovimientoController extends Controller
                 "direccionAgencia"  => $agencia->agendireccion,
                 "telefonoAgencia"   => $agencia->telefonoAgencia,
                 "mensajePlanilla"   => 'Gracias por su pago',
-                "tituloFactura"     => 'FACTURA DE PAGO MENSUALIDAD',
+                "tituloFactura"     => 'FACTURA DE PAGO CRÉDITO',
                 "metodo"            => 'S'
             ];
 
@@ -714,9 +694,10 @@ class ProcesarMovimientoController extends Controller
 
             $arrayDatos   = [
                 "fechaPago"         => $fechaHoraActual,
-                "valorPago"         => '',
-                "descuentoPago"     => '',
-                "interesMora"       => '',
+                "valorPago"         => 0,
+                "descuentoPago"     => 0,
+                "interesMora"       => 0,
+                "interesCorriente"  => 0,
                 "valorTotalPago"    => number_format($totalAPagar, 0,',','.'),
                 "documentoCliente"  => $vehiculocontrato->persdocumento,
                 "nombreCliente"     => $vehiculocontrato->nombreAsociado,
@@ -740,7 +721,7 @@ class ProcesarMovimientoController extends Controller
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-    }    
+    }
 
     public function consultarAgencia($agenciaId)
 	{
