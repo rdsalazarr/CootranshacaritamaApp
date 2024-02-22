@@ -419,6 +419,10 @@ php artisan make:controller Admin\Caja\EntregarPagoCreditoController
 
 php artisan make:controller Admin\AtencionUsuario\GestionarSolicitudController
 
+php artisan make:controller Admin\informes\InformePdfController
+php artisan make:controller Admin\informes\InformeDescargableController
+
+
 php artisan make:middleware SecurityMiddleware
 php artisan make:middleware PreloadSecurityMiddleware
 

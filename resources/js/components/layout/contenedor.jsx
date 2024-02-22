@@ -80,6 +80,9 @@ import CerrarCaja from "../admin/caja/cerrar/closed";
 import GestionarSolicitud from "../admin/atencionUsuario/solicitud/list";
 import ProcesosAutomaticos from "../admin/procesos/list";
 
+import InformesPdf from "../admin/informes/pdf/list";
+import InformesDescargables from "../admin/informes/descargables/list";
+
 const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
@@ -175,18 +178,15 @@ const componenteMenu = [
             {ruta : 'admin/procesosAutomaticos',             menu: 'Verificar',          icono : 'spellcheck_icon',   componente : <ProcesosAutomaticos />},  
         
         ]
-    },*/
+    },
     {   nombre: 'Informes',
         icono : 'assessment_icon',
         itemMenu: [
-            {ruta : 'admin/despacho/otros',             menu: 'Otros',            icono : 'close_icon',   componente : <EnConstruccion />},
-            {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'clean_hands_icon',        componente : <EnConstruccion />},
-            {ruta : 'admin/despacho/otros3',            menu: 'Otros 3',            icono : 'repeat_one_icon',        componente : <EnConstruccion />},
-            {ruta : 'admin/despacho/otros3',            menu: 'Consignar',            icono : 'account_balance_icon',        componente : <EnConstruccion />},
-            {ruta : 'admin/despacho/otros3',            menu: 'Consignar2',            icono : 'price_check_icon',        componente : <EnConstruccion />},
+            {ruta : 'admin/informes/pdf',         menu: 'PDF',         icono : 'picture_as_pdf_icon',  componente : <InformesPdf />},
+            {ruta : 'admin/informes/descargable', menu: 'Descargable', icono : 'cloud_download_icon',  componente : <InformesDescargables />}, 
                                   
         ]
-    } 
+    } */
 ];
 
 
@@ -226,6 +226,9 @@ const menuComponente = [
     {id:33,componente : <AsignarVehiculo />},
     {id:34,componente : <DistribucionVehiculo />},
     {id:35,componente : <SuspenderVehiculo />},
+
+    {id:54,componente : <FirmarContrato />},
+
     {id:36,componente : <LineaCredito />},
     {id:37,componente : <SolicitudCredito />},
     {id:38,componente : <AprobacionCredito />},
@@ -245,15 +248,18 @@ const menuComponente = [
 
     {id:52,componente : <GestionarSolicitud />},
     {id:53,componente : <ProcesosAutomaticos />},
+    {id:55,componente : <InformesPdf />},
+    {id:56,componente : <InformesDescargables />},
 
-    {id:54,componente : <FirmarContrato />},
-
-    {id:55,componente : <EnConstruccion />},
-    {id:56,componente : <EnConstruccion />},
     {id:57,componente : <EnConstruccion />},
     {id:58,componente : <EnConstruccion />},
     {id:59,componente : <EnConstruccion />},
     {id:60,componente : <EnConstruccion />},
+    {id:61,componente : <EnConstruccion />},
+    {id:62,componente : <EnConstruccion />},
+    {id:63,componente : <EnConstruccion />},
+    {id:64,componente : <EnConstruccion />},
+    {id:65,componente : <EnConstruccion />},
 ];
 
 export default function  Contenedor () {

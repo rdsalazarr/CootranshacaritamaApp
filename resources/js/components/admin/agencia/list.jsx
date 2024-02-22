@@ -36,7 +36,7 @@ export default function List(){
         instance.get('/admin/agencia/list').then(res=>{
             setData(res.data);
             setLoader(false);
-        }) 
+        })
     }
 
     useEffect(()=>{inicio();}, []);

@@ -273,3 +273,12 @@ INSERT INTO `informacionnotificacioncorreo` (`innocoid`, `innoconombre`, `innoco
 
 
 ALTER TABLE `colocacionliquidacion` CHANGE `colliqnumerocomprobante` `comconid` VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Número de comprobante de pago de la cuota de la colocación';
+
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(55, 13, 'PDF', 'Generar informes en PDF', 'admin/informes/pdf', 'picture_as_pdf_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(56, 13, 'Descargable', 'Generar informes en descargable', 'admin/informes/descargable', 'cloud_download_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(55, 1, 55),
+(56, 1, 56);
