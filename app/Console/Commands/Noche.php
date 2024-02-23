@@ -45,9 +45,9 @@ class Noche
     {
         $fechaHoraActual = Carbon::now();
         $notificar       = new notificar();
-        $generales  	 = new generales();
-        $fechaActual     = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("ProcesarPagoMensualidad") : $fechaHoraActual->format('Y-m-d');
-        $mensaje         =  "Iniciando proceso de liquidacion de la totalidad del compromiso del vehiculo en la fecha ".$fechaActual."\r\n";
+        $generales  	 = new generales(); 
+        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("ProcesarPagoMensualidad") : $fechaHoraActual->format('Y-m-d');
+        $mensaje         = "Iniciando proceso de liquidacion de la totalidad del compromiso del vehiculo en la fecha ".$fechaProceso."\r\n";
         $mensajeCorreo   = '';
         $success         = false;
         DB::beginTransaction();
@@ -154,37 +154,37 @@ class Noche
                     $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
                     $msg                = str_replace($buscar, $remplazo, $innococontenido);
                     $mensajeNotificar   = $notificar->correo([$correoAsociado], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
-                    $mensaje            .= "Proceso de notificacion de pago de mensualidad en la fecha  ".$fechaActual.", al correo ".$correoAsociado."\r\n";
+                    $mensaje            .= "Proceso de notificacion de pago de mensualidad en la fecha  ".$fechaProceso.", al correo ".$correoAsociado."\r\n";
                     $mensajeCorreo      .= $mensaje.'<br>';
                 }
             }
 
             $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(13);
-            $procesoAutomatico->proautfechaejecucion = $fechaActual;
+            $procesoAutomatico->proautfechaejecucion = $fechaProceso;
             $procesoAutomatico->save();
 
-            $success  = true;
+            $success      = true;
+            $mensajeVista = "Proceso de pago de mensualidad realizado con éxito";
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
-            $mensaje       = "Ocurrio un error al suspender el conductor por falta de licencia en la fecha ".$fechaActual."\r\n";
+            $mensaje       = "Ocurrio un error al suspender el conductor por falta de licencia en la fecha ".$fechaProceso."\r\n";
             $mensajeCorreo = $mensaje.'<br>';
         }
 
         echo $esEjecucionManual ? '' : $mensaje;
-        return $esEjecucionManual ? ['success' => $success, 'message' => $mensaje] : $mensajeCorreo.'<br>';
+        return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
     }
 
     public static function cerrarMovimientoCaja($esEjecucionManual = false)
-    {    
+    {
         $fechaHoraActual = Carbon::now();
         $notificar       = new notificar();
         $generales  	 = new generales();
-       // $fechaActual     = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("ProcesarPagoMensualidad") : $fechaHoraActual->format('Y-m-d');
-        $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $mensaje         = "Iniciando proceso de cierre de caja para la  fecha ".$fechaActual."\r\n";
+        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("CerrarMovimientoCaja") : $fechaHoraActual->format('Y-m-d');
+        $mensaje         = "Iniciando proceso de cierre de caja para la  fecha ".$fechaProceso."\r\n";
         $mensajeCorreo   = '';
-        $success         = false;   
+        $success         = false;
 
         DB::beginTransaction();
 		try {
@@ -194,23 +194,21 @@ class Noche
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
 
-            $searcComprobanteContables = DB::table('comprobantecontable')->select('comconid', 'usuaid','agenid','cajaid')->whereDate('comconestado', 'A')->get();
+            $searcComprobanteContables = DB::table('comprobantecontable')->select('comconid', 'usuaid','agenid','cajaid')->where('comconestado',  'A')->get();
             foreach($searcComprobanteContables as $searcComprobanteContable){
                 $comconid  = $searcComprobanteContable->comconid;
                 $idUsuario = $searcComprobanteContable->usuaid;
                 $agenciaId = $searcComprobanteContable->agenid;
                 $cajaId    = $searcComprobanteContable->cajaid;
-    
+
                 //movimientocaja as mc
                 $comprobanteContableId = DB::table('comprobantecontable as cc')
-                                            ->select('cc.comconid', 'cc.movcajid', 'cc.comcondescripcion', 'a.agennombre', 'c.cajanumero','u.usuaalias',
-                                            DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 
-                                            DB::raw('DATE(cc.comconfechahora) as fechaComprobante'), 
-                                            DB::raw("(SELECT movcajsaldoinicial from movimientocaja 
-                                                            where date(movcajfechahoraapertura) = '$fechaActual' 
-                                                            and usuaid = '$idUsuario' 
+                                            ->select('cc.comconid', 'cc.movcajid', 'u.usuaemail',
+                                            DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"),
+                                            DB::raw("(SELECT movcajsaldoinicial from movimientocaja
+                                                            where date(movcajfechahoraapertura) = '$fechaProceso' 
+                                                            and usuaid = '$idUsuario'
                                                             and cajaid = '$cajaId') as saldoInicial"),
-                                            DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),
                                             DB::raw("(SELECT SUM(ccd.cocodemonto)
                                                     FROM comprobantecontabledetalle as ccd
                                                     INNER JOIN cuentacontable as cc ON cc.cueconid = ccd.cueconid
@@ -220,61 +218,39 @@ class Noche
                                                     AND mc.usuaid = '$idUsuario'
                                                     AND mc.cajaid = '$cajaId'
                                                     AND cct.agenid = '$agenciaId'
-                                                    AND DATE(mc.movcajfechahoraapertura) = '$fechaActual'
+                                                    AND DATE(mc.movcajfechahoraapertura) = '$fechaProceso'
                                                 ) AS valorDebito"))
-                                            ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
-                                            ->join('caja as c', 'c.cajaid', '=', 'cc.cajaid')
                                             ->join('usuario as u', 'u.usuaid', '=', 'cc.usuaid')
-                                            ->whereDate('cc.comconfechahora', $fechaActual)
+                                            ->whereDate('cc.comconfechahora', $fechaProceso)
                                             ->where('cc.usuaid', $idUsuario)
                                             ->where('cc.agenid', $agenciaId)
                                             ->where('cc.cajaid', $cajaId)
                                             ->first();
 
                 $nombreUsuario         = $comprobanteContableId->nombreUsuario;
-                $correoUsuario         = $comprobanteContableId->usuaalias;
-                $nuemeroComprobante    = $comprobanteContableId->numeroComprobante;
-                $fechaComprobante      = $comprobanteContableId->fechaComprobante;
-                $nombreAgencia         = $comprobanteContableId->agennombre;
-                $numeroCaja            = $comprobanteContableId->cajanumero;
-                $conceptoComprobante   = $comprobanteContableId->comcondescripcion;
+                $correoUsuario         = $comprobanteContableId->usuaemail;
                 $saldoCajaCerrar       = $comprobanteContableId->saldoInicial + $comprobanteContableId->valorDebito;
                 $movimientoCajaId      = $comprobanteContableId->movcajid;
                 $comprobanteContableId = $comprobanteContableId->comconid;
-    
+
                 $comprobantecontable                        = ComprobanteContable::findOrFail($comprobanteContableId);
                 $comprobantecontable->comconfechahoracierre = $fechaHoraActual;
                 $comprobantecontable->comconestado          = 'C';
-                //$comprobantecontable->save();
-    
+                $comprobantecontable->save();
+
                 $comprobanteContableDetalles = DB::table('comprobantecontabledetalle')->select('cocodeid')->whereDate('comconid', $comconid)->get();
                 foreach($comprobanteContableDetalles as $comprobanteContableDetalleId){
                     $comprobantecontabledetalle                       = ComprobanteContableDetalle::findOrFail($comprobanteContableDetalleId->cocodeid);
                     $comprobantecontabledetalle->cocodecontabilizado = true;
-                   // $comprobantecontabledetalle->save();
+                    $comprobantecontabledetalle->save();
                 }
-    
-                $movimientocaja                        = MovimientoCaja::findOrFail($movimientoCajaId);
-                $movimientocaja->movcajfechahoracierre = $fechaHoraActual;
-                $movimientocaja->movcajsaldofinal      = $saldoCajaCerrar;
-               // $movimientocaja->save();
-    
-                $arrayDatos = [ 
-                        "nombreUsuario"       => $nombreUsuario,
-                        "nuemeroComprobante"  => $nuemeroComprobante,
-                        "fechaComprobante"    => $fechaComprobante,
-                        "nombreAgencia"       => $nombreAgencia,
-                        "numeroCaja"          => $numeroCaja,
-                        "conceptoComprobante" => $conceptoComprobante,
-                        "mensajeImpresion"    => 'Documento impreso el dia '.$fechaHoraActual,
-                        "metodo"              => 'F'
-                    ];
-    
-                $generarPdf  = new generarPdf();
-                $rutaPdf     = []; 
-                $dataFactura = $generarPdf->generarComprobanteContable($arrayDatos, MovimientoCaja::obtenerMovimientosContablesPdf($fechaActual, $idUsuario, $agenciaId, $cajaId));
-                array_push($rutaPdf, $dataFactura);    
-    
+
+                $movimientocaja                               = MovimientoCaja::findOrFail($movimientoCajaId);
+                $movimientocaja->movcajfechahoracierre        = $fechaHoraActual;
+                $movimientocaja->movcajsaldofinal             = $saldoCajaCerrar;
+                $movimientocaja->movcajcerradoautomaticamente = true;
+                $movimientocaja->save();
+
                 $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionCierreCajaAutomatico')->first();
                 $buscar             = Array('nombreEmpleado', 'nombreGerente');
                 $remplazo           = Array($nombreUsuario, $nombreGerente); 
@@ -284,25 +260,25 @@ class Noche
                 $enviarpiepagina    = $informacionCorreo->innocoenviarpiepagina;
                 $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg                = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar   = $notificar->correo([$correoUsuario], $asunto, $msg, [$rutaPdf], $correoEmpresa, $enviarcopia, $enviarpiepagina);
-                $mensaje            .= "Proceso de notificacion de pago de mensualidad en la fecha  ".$fechaActual.", al correo ".$correoUsuario."\r\n";
-                $mensajeCorreo      .= $mensaje.'<br>';    
+                $mensajeNotificar   = $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                $mensaje            .= "Proceso de notificacion de pago de mensualidad en la fecha  ".$fechaProceso.", al correo ".$correoUsuario."\r\n";
+                $mensajeCorreo      .= $mensaje.'<br>';
             }
 
             $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(14);
-            $procesoAutomatico->proautfechaejecucion = $fechaActual;
+            $procesoAutomatico->proautfechaejecucion = $fechaProceso;
             $procesoAutomatico->save();
 
-            $success  = true;
-            //DB::commit();
-            DB::rollback();
+            $success      = true;
+            $mensajeVista = "Proceso de notificación de cerrar movimiento de caja realizado con éxito";
+            DB::commit();
         } catch (Exception $error){
             DB::rollback();
-            $mensaje       = "Ocurrio un error al suspender el conductor por falta de licencia en la fecha ".$fechaActual."\r\n";
+            $mensaje       = "Ocurrio un error al suspender el conductor por falta de licencia en la fecha ".$fechaProceso."\r\n";
             $mensajeCorreo = $mensaje.'<br>';
         }
 
         echo $esEjecucionManual ? '' : $mensaje;
-        return $esEjecucionManual ? ['success' => $success, 'message' => $mensaje] : $mensajeCorreo.'<br>';
+        return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
     }
 }

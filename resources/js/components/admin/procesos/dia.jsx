@@ -16,7 +16,7 @@ export default function List(){
         setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
     }
 
-    const modales     = [ <EjecutarProcesoAutomatico data={modal.data} cerrarModal={cerrarModal}/> ];
+    const modales     = [ <EjecutarProcesoAutomatico data={modal.data} cerrarModal={cerrarModal} proceso='DIA' /> ];
     const tituloModal = ['Ejecutar proceso día'];
 
 

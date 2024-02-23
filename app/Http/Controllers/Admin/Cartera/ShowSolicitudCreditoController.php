@@ -21,15 +21,15 @@ class ShowSolicitudCreditoController extends Controller
             $cambiosEstadoColocacion = [];
             $colocacionLiquidacion   = [];
             $solicitudCredito        = DB::table('solicitudcredito as sc')->select('sc.solcrefechasolicitud','sc.solcredescripcion',
-                                            'sc.solcrenumerocuota','sc.solcreobservacion','p.persdocumento', 'p.persprimernombre',
-                                            'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
-                                            'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
-                                            'p.persgenero','p.persrutafoto','a.asocfechaingreso','lc.lincrenombre as lineaCredito','tesc.tiesscnombre as estadoActual',
-                                            DB::raw("CONCAT(sc.solcretasa,' %') as tasaNominal"),
-                                            DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
-                                            DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
-                                            DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"),
-                                            DB::raw('(SELECT COUNT(coloid) AS coloid FROM colocacion WHERE solcreid = sc.solcreid) AS totalColocacion'))
+                                                'sc.solcrenumerocuota','sc.solcreobservacion','p.persdocumento', 'p.persprimernombre',
+                                                'p.perssegundonombre','p.persprimerapellido','p.perssegundoapellido','p.persfechanacimiento',
+                                                'p.persdireccion','p.perscorreoelectronico','p.persfechadexpedicion','p.persnumerotelefonofijo','p.persnumerocelular',
+                                                'p.persgenero','p.persrutafoto','a.asocfechaingreso','lc.lincrenombre as lineaCredito','tesc.tiesscnombre as estadoActual',
+                                                DB::raw("CONCAT(sc.solcretasa,' %') as tasaNominal"),
+                                                DB::raw("CONCAT('$ ', FORMAT(sc.solcrevalorsolicitado, 0)) as valorSolicitado"),
+                                                DB::raw("CONCAT(ti.tipidesigla,' - ', ti.tipidenombre) as nombreTipoIdentificacion"),
+                                                DB::raw("CONCAT('$url/archivos/persona/',p.persdocumento,'/',p.persrutafoto ) as fotografia"),
+                                                DB::raw('(SELECT COUNT(coloid) AS coloid FROM colocacion WHERE solcreid = sc.solcreid) AS totalColocacion'))
                                             ->join('persona as p', 'p.persid', '=', 'sc.persid')
                                             ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
@@ -48,24 +48,24 @@ class ShowSolicitudCreditoController extends Controller
 
                 $colocacion =   DB::table('colocacion as c')
                                     ->select('c.colofechahoradesembolso','c.colovalordesembolsado','c.colotasa','c.colonumerocuota','tec.tiesclnombre',
-                                    DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
-                                    DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
-                                    DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+                                        DB::raw("CONCAT('$ ', FORMAT(c.colovalordesembolsado, 0)) as valorDesembolsado"),
+                                        DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"),
+                                        DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
                                     ->join('tipoestadocolocacion as tec', 'tec.tiesclid', '=', 'c.tiesclid')
                                     ->join('usuario as u', 'u.usuaid', '=', 'c.usuaid')
                                     ->where('c.solcreid', $request->codigo)->first();
 
                 $colocacionLiquidacion  = DB::table('colocacionliquidacion as cl')
                                             ->select('cl.colliqnumerocuota as numeroCuota','cl.colliqfechavencimiento as fechaVencimiento',
-                                            'cl.colliqnumerocomprobante as numeroComprobante','cl.colliqfechapago as fechaPago',
-                                            DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcuota, 0)) as valorCuota"),
-                                            DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorpagado, 0)) as valorPagado"),
-                                            DB::raw("CONCAT('$ ', FORMAT(cl.colliqsaldocapital, 0)) as saldoCapital"),
-                                            DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcapitalpagado, 0)) as capitalPagado"),
-                                            DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinterespagado, 0)) as interesPagado"),
-                                            DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinteresmora, 0)) as interesMora") 
-                                            )
+                                                DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),'cl.colliqfechapago as fechaPago',
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcuota, 0)) as valorCuota"),
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorpagado, 0)) as valorPagado"),
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqsaldocapital, 0)) as saldoCapital"),
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcapitalpagado, 0)) as capitalPagado"),
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinterespagado, 0)) as interesPagado"),
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinteresmora, 0)) as interesMora"))
                                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
+                                            ->join('comprobantecontable as cc', 'cc.comconid', '=', 'cl.comconid') 
                                             ->where('c.solcreid', $request->codigo)->get();
 
                 $cambiosEstadoColocacion =  DB::table('colocacioncambioestado as cce')

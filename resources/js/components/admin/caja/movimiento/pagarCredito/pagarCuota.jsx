@@ -7,12 +7,13 @@ import { ModalDefaultAuto } from '../../../../layout/modal';
 import {Button, Grid, Stack, Box} from '@mui/material';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
+import ClearIcon from '@mui/icons-material/Clear';
 import SaveIcon from '@mui/icons-material/Save';
 import VisualizarPdf from '../visualizarPdf';
 
-export default function PagarCuota({data, limpiarForm}){
+export default function PagarCuota({data, cerrarModal}){
 
-    const [formData, setFormData] = useState({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',   
+    const [formData, setFormData] = useState({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',
                                             descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
                                             descuentoAnticipadoMostrar:'', totalAPagarMostrar:'', interesCorrienteTotal: '', interesCorrienteTotalMostrar: '' });
     const [pagoMensualidad, setPagoMensualidad] = useState([]);
@@ -37,7 +38,7 @@ export default function PagarCuota({data, limpiarForm}){
             newFormData.interesMora                = pagoGeneral.valorInteresMora;
             newFormData.descuentoAnticipado        = pagoGeneral.valorDescuento;
             newFormData.totalAPagar                = pagoGeneral.totalAPagar;
-            newFormData.interesCorrienteTotal      = pagoGeneral.interesMensualTotal; 
+            newFormData.interesCorrienteTotal      = pagoGeneral.interesMensualTotal;
             newFormData.interesCorrienteMostrar    = formatearNumero(pagoGeneral.valorIntereses);
             newFormData.interesMoraMostrar         = formatearNumero(pagoGeneral.valorInteresMora);
             newFormData.descuentoAnticipadoMostrar = formatearNumero(pagoGeneral.valorDescuento);
@@ -47,7 +48,7 @@ export default function PagarCuota({data, limpiarForm}){
             newFormData.interesCorriente             = pagoMensualidad.valorIntereses;
             newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
             newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
-            newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;  
+            newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
             newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
             newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
             newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
@@ -65,13 +66,7 @@ export default function PagarCuota({data, limpiarForm}){
         instance.post('/admin/caja/registrar/pago/cuota', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? setHabilitado(false) : null; 
-            /*(res.success) ? setFormData({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',   
-                                        descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
-                                        descuentoAnticipadoMostrar:'', totalAPagarMostrar:''}) : null;*/
-            (res.success) ? setDataFactura(res.dataFactura) : null;
-            (res.success) ? setAbrirModal(true) : null;
-            (res.success) ? limpiarForm() : null;            
+            (res.success) ? (setHabilitado(false), setDataFactura(res.dataFactura), setAbrirModal(true)) : null;
             setLoader(false);
         })
     }
@@ -220,19 +215,28 @@ export default function PagarCuota({data, limpiarForm}){
 
                 </Grid>
 
-                <Grid container direction="row" justifyContent="right">
-                    <Stack direction="row" spacing={2}>
-                        <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
-                            startIcon={<SaveIcon />}> Guardar
+                <Grid container spacing={2}>
+                    <Grid item xl={6} md={6} sm={6} xs={6}>
+                        <Button onClick={cerrarModal} className='modalBtnRojo'
+                            startIcon={<ClearIcon />}> Cancelar
                         </Button>
-                    </Stack>
+                    </Grid>
+
+                    <Grid item xl={6} md={6} sm={6} xs={6}>
+                        <Stack direction="row" spacing={2} justifyContent="right">
+                            <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
+                                startIcon={<SaveIcon />}> Guardar
+                            </Button>
+                        </Stack>
+                    </Grid>
                 </Grid>
+
             </ValidatorForm>
 
             <ModalDefaultAuto
-                title   = {'Visualizar factura en PDF del pago de crédito'} 
-                content = {<VisualizarPdf dataFactura={dataFactura} />} 
-                close   = {() =>{setAbrirModal(false);}} 
+                title   = {'Visualizar factura en PDF del pago de crédito'}
+                content = {<VisualizarPdf dataFactura={dataFactura} />}
+                close   = {() =>{setAbrirModal(false);}}
                 tam     = 'smallFlot'
                 abrir   = {abrirModal}
             />

@@ -9,10 +9,10 @@ import NewEdit from './new';
 
 export default function List(){
 
+    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
     const [tipo, setTipo] = useState(0);
-    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{
         setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
@@ -21,7 +21,7 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.persid : null} ruta={'/admin/agencia/destroy'} cerrarModal={cerrarModal} />
+                        <Eliminar id={(tipo === 2) ? modal.data.agenid : null} ruta={'/admin/agencia/destroy'} cerrarModal={cerrarModal} />
                     ];
 
     const tituloModal = ['Nueva agencia','Editar agencia',''];
@@ -36,7 +36,7 @@ export default function List(){
         instance.get('/admin/agencia/list').then(res=>{
             setData(res.data);
             setLoader(false);
-        }) 
+        })
     }
 
     useEffect(()=>{inicio();}, []);

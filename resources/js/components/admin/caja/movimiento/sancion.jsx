@@ -39,8 +39,7 @@ export default function Sancion(){
         newFormData.totalSancion = formatearNumero(totalSancion);
         setFormDataSancion(newFormDataSancion);
         setFormData(newFormData);
-    }   
-
+    }
 
     const handleSubmit = () =>{
         let newFormData               = {...formData}

@@ -92,6 +92,8 @@ use App\Http\Controllers\Admin\Caja\CerrarMovimientoController;
 
 use App\Http\Controllers\Admin\AtencionUsuario\GestionarSolicitudController;
 
+use App\Http\Controllers\Admin\Informes\InformeDescargableController;
+use App\Http\Controllers\Admin\Informes\InformePdfController;
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -133,8 +135,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
         Route::get('/admin/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/caja/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/informes/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/despacho/{id}', [DashboardController::class, 'index']);
-        Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/configurar/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/antencion/usuario/{id}', [DashboardController::class, 'index']);
@@ -563,6 +566,12 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/persona', [GestionarSolicitudController::class, 'consultarPersona']);
             Route::post('/salve/datos', [GestionarSolicitudController::class, 'salve']);
             Route::post('/show/solicitud', [GestionarSolicitudController::class, 'show']);
+        });
+
+        Route::prefix('/informes')->group(function(){
+            Route::get('/pdf/comprobante/contable', [InformePdfController::class, 'index'])->middleware('security:admin/informes/pdf');
+            Route::post('/pdf/generar/comprobante/contable', [InformePdfController::class, 'comprobanteContable']);
+            Route::get('/descargable', [InformeDescargableController::class, 'index'])->middleware('security:admin/informes/descargable');
         });
 
     });

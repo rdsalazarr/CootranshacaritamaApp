@@ -3197,6 +3197,7 @@ EOD;
 		$fechaPago      	= $arrayDatos['fechaPago'];
 		$valorPago          = $arrayDatos['valorPago'];
 		$descuentoPago      = $arrayDatos['descuentoPago'];
+		$interesCorriente   = $arrayDatos['interesCorriente'];		
 		$interesMora        = $arrayDatos['interesMora'];
 		$valorTotalPago     = $arrayDatos['valorTotalPago'];
 		$documentoCliente   = $arrayDatos['documentoCliente'];		
@@ -3263,8 +3264,14 @@ EOD;
 			PDF::Ln(3);
 		}
 
+		if($interesCorriente > 0){
+			PDF::Cell(18, 3,"Interés corriente:", 0, 0,'L'); 
+			PDF::Cell(38, 3,'$ '.$interesCorriente, 0, 0,'L');
+			PDF::Ln(3);
+		}
+
 		if($interesMora > 0){
-			PDF::Cell(18, 3,"Mora:", 0, 0,'L'); 
+			PDF::Cell(18, 3,"Interés mora:", 0, 0,'L'); 
 			PDF::Cell(38, 3,'$ '.$interesMora, 0, 0,'L');
 			PDF::Ln(3);
 		}

@@ -20,5 +20,4 @@ class FuncionesGenerales
        $fechaEjecucion    = Carbon::parse($procesoautomatico->proautfechaejecucion)->addDays(1);
        return $fechaEjecucion->format('Y-m-d');
     }
-
 }

@@ -20,7 +20,9 @@ class ProcesosAutomaticosController extends Controller
                                 ->select('proautid', 'proautnombre', 'proautfechaejecucion',
                                     DB::raw("if(proauttipo = 'D', 'Diurno', 'Nocturno') as tipoProceso"),
                                     DB::raw("IF(proautfechaejecucion >= CURDATE(), 'SI', 'NO') as esFechaActual"),
-                                    DB::raw("CURDATE() as fechaActual"))
+                                    DB::raw("IF(proautfechaejecucion < DATE_SUB(CURDATE(), INTERVAL 1 DAY), 'SI', 'NO') as esFechaAnterior"),
+                                    DB::raw("CURDATE() as fechaActual"),
+                                    DB::raw("(SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY)) as fechaAnterior"))
                                 ->where('proauttipo', $request->tipo)
                                 ->orderBy('proautid')
                                 ->get();

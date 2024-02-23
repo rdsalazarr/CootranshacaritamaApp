@@ -53,10 +53,11 @@ class GestionCobroCarteraController extends Controller
             $colocacionLiquidacion   = [];
             $cambiosEstadoColocacion = [];
             $tipoEstadosColocacion   = [];
+
             if($request->tipo === 'H'){
                 $colocacionLiquidacion  = DB::table('colocacionliquidacion as cl')
                                             ->select('cl.colliqnumerocuota as numeroCuota','cl.colliqfechavencimiento as fechaVencimiento',
-                                                'cl.colliqnumerocomprobante as numeroComprobante','cl.colliqfechapago as fechaPago',
+                                                DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),'cl.colliqfechapago as fechaPago',
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcuota, 0)) as valorCuota"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorpagado, 0)) as valorPagado"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqsaldocapital, 0)) as saldoCapital"),
@@ -64,6 +65,7 @@ class GestionCobroCarteraController extends Controller
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinterespagado, 0)) as interesPagado"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinteresmora, 0)) as interesMora"))
                                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
+                                            ->join('comprobantecontable as cc', 'cc.comconid', '=', 'cl.comconid')                                            
                                             ->where('c.solcreid', $request->codigo)->get();
 
                 $cambiosEstadoColocacion =  DB::table('colocacioncambioestado as cce')

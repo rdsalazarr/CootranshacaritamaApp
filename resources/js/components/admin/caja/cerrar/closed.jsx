@@ -18,7 +18,6 @@ export default function Closed(){
 
     const [movimientoCaja, setMovimientoCaja] = useState({saldoInicial:'',valorDebito:'',valorCredito:'', saldoCerrar:'', saldoCerrarFormateado:'', saldoTiquete:''});
     const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
-    const [deshabilitarBoton, setDeshabilitarBoton] = useState(true);
     const [nombreUsuario, setNombreUsuario] = useState('');
     const [cajaAbierta, setCajaAbierta] = useState(true);
     const [loader, setLoader] = useState(true);
@@ -61,7 +60,7 @@ export default function Closed(){
 
     const buttons = [
             <Button key="1" startIcon={<FileDownloadIcon />} onClick={() => {descargarFile()}}>Descargar excel</Button>,
-            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {edit(movimientoCaja.saldoCerrar, 0)}} disabled={(deshabilitarBoton) ? false : true}>Cerrar caja</Button>
+            <Button key="2" startIcon={<CloseIcon />} style={{marginTop: '1em'}} onClick={() => {edit(movimientoCaja.saldoCerrar, 0)}} >Cerrar caja</Button>
         ];
 
     const inicio = () =>{
@@ -190,7 +189,7 @@ export default function Closed(){
                     <ModalDefaultAuto
                         title   = {modal.titulo}
                         content = {modales[modal.vista]}
-                        close   = {() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), setDeshabilitarBoton(false), inicio();}}
+                        close   = {() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
                         tam     = {modal.tamano}
                         abrir   = {modal.open}
                     />

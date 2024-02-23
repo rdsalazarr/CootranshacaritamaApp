@@ -16,12 +16,12 @@ export default function New({data, tipo}){
                                     telefonoCelular:'', telefonoFijo:'', estado:'1', tipo:tipo
                                 }); 
 
-    const [loader, setLoader] = useState(false);
-    const [habilitado, setHabilitado] = useState(true);
-    const [responsables, setResponsables] = useState([]);
+    const [municipiosDeptos, setMunicipiosDeptos] = useState([]);    
     const [departamentos, setDepartamentos] = useState([]);
+    const [responsables, setResponsables] = useState([]);
+    const [habilitado, setHabilitado] = useState(true);
     const [municipios, setMunicipios] = useState([]);
-    const [municipiosDeptos, setMunicipiosDeptos] = useState([]);
+    const [loader, setLoader] = useState(false);    
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
