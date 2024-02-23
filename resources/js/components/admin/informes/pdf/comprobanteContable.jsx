@@ -5,7 +5,6 @@ import { Button, Grid, MenuItem, Stack} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
-
 import instance from '../../../layout/instance';
 import VisualizarPdf from "./visualizarPdf";
 
@@ -143,7 +142,6 @@ export default function ComprobanteContable(){
                     </SelectValidator>
                 </Grid>
 
-                
                 <Grid item xl={3} md={3} sm={6} xs={12}>
                     <TextValidator
                         name={'fecha'}
@@ -179,6 +177,7 @@ export default function ComprobanteContable(){
                 tam = {'mediumFlot'}
                 abrir ={abrirModal}
             />
+
         </ValidatorForm>
     )
 }

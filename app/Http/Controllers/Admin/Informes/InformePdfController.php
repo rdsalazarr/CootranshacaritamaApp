@@ -78,7 +78,6 @@ class InformePdfController extends Controller
 
             return response()->json(['success' => $success, 'message' => $message, "dataComprobante" => $dataComprobante ]);
         } catch (Exception $error){
-
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
     }

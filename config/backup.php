@@ -18,7 +18,8 @@ return [
                  * The list of directories and files that will be included in the backup.
                  */
                 'include' => [
-                    base_path(),
+                    //base_path(),
+                    public_path().'/archivos',
                 ],
 
                 /*
@@ -207,11 +208,11 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'your@example.com',
+            'to' => 'radasa10@hotmail.com',
 
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-                'name' => env('MAIL_FROM_NAME', 'Example'),
+                'address' => env('MAIL_FROM_ADDRESS', 'rdsalazarr@ufpso.edu.co'),
+                'name' => env('MAIL_FROM_NAME', 'Copia de respaldo'),
             ],
         ],
 
