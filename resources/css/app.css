@@ -1,10 +1,10 @@
 body{
     --colorBlanco: #fdfdfd;
-    /*--verdeClaro: #80C900; 
-    --verdeOscuro: #44ac34;*/
-  
+    --verdeClaro: #80C900; 
+    --verdeOscuro: #44ac34;
+  /*
     --verdeOscuro: #ec1c21;
-    --verdeClaro: #c33f3f; 
+    --verdeClaro: #c33f3f; */
     --grisClaro: #cdcdcd;
     --grisOscuro: #868686;
     --rojoOscuro: #f33602;

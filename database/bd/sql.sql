@@ -1273,8 +1273,7 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (33, 7, 'Asignación vehículos', 'Gestionar asignación de vehículos', 'admin/direccion/transporte/asignarVehiculo', 'credit_score_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (34, 7, 'Distribución', 'Getionar Distribución de vehículo', 'admin/direccion/transporte/distribucionVehiculos', 'local_car_wash_icon', 5, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (35, 7, 'Suspender', 'Getionar suspención de vehículo', 'admin/direccion/transporte/suspenderVehiculo', 'no_transfer_icon', 6, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(36, 7, 'Firmar contrato', 'Firmar contrato de vehículo', 'admin/direccion/transporte/firmarContratos', 'post_add_icon', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-
+(36, 7, 'Firmar contrato', 'Firmar contrato de vehículo', 'admin/direccion/transporte/firmarContratos', 'post_add_icon', 7, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (37, 8, 'Línea de crédito', 'Gestionar línea de crédito', 'admin/cartera/lineaCredito', 'add_chart', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (38, 8, 'Solicitud', 'Gestionar solicitud de crédito', 'admin/cartera/solicitud', 'add_card_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (39, 8, 'Aprobación', 'Aprobar solicitud de crédito', 'admin/cartera/aprobacion', 'credit_score_icon', 3, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
@@ -1293,7 +1292,6 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 (52, 10, 'Cerrar', 'Cerrar moviemiento de caja', 'admin/caja/cerrar', 'close_icon', 4, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (53, 11, 'Solicitud', 'Gestionar solicitud de atención al usuario', 'admin/antencion/usuario/solicitud', 'clean_hands_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (54, 12, 'Verificar', 'Verificar proceso automáticos del dia', 'admin/procesosAutomaticos', 'spellcheck_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-
 (55, 13, 'PDF', 'Generar informes en PDF', 'admin/informes/pdf', 'picture_as_pdf_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (56, 13, 'Descargable', 'Generar informes en descargable', 'admin/informes/descargable', 'cloud_download_icon', 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
  

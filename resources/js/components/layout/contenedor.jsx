@@ -226,28 +226,25 @@ const menuComponente = [
     {id:33,componente : <AsignarVehiculo />},
     {id:34,componente : <DistribucionVehiculo />},
     {id:35,componente : <SuspenderVehiculo />},
-
-    {id:54,componente : <FirmarContrato />},
-
-    {id:36,componente : <LineaCredito />},
-    {id:37,componente : <SolicitudCredito />},
-    {id:38,componente : <AprobacionCredito />},
-    {id:39,componente : <DesembolsarCredito />},
-    {id:40,componente : <HistorialSolicitudCredito />},
-    {id:41,componente : <CobroCartera />},
-    {id:42,componente : <Rutas />},
-    {id:43,componente : <Planillas />},
-    {id:44,componente : <Encomiendas />},
-    {id:45,componente : <Tiquetes />},
-    {id:46,componente : <RecibirPlanillas />},
-    {id:47,componente : <ServicoEspecial />},
-    {id:48,componente : <MovimientoCaja />},
-    {id:49,componente : <PagarCredito />}, 
-    {id:50,componente : <Consignacion />},
-    {id:51,componente : <CerrarCaja />},
-
-    {id:52,componente : <GestionarSolicitud />},
-    {id:53,componente : <ProcesosAutomaticos />},
+    {id:36,componente : <FirmarContrato />},
+    {id:37,componente : <LineaCredito />},
+    {id:38,componente : <SolicitudCredito />},
+    {id:39,componente : <AprobacionCredito />},
+    {id:40,componente : <DesembolsarCredito />},
+    {id:41,componente : <HistorialSolicitudCredito />},
+    {id:42,componente : <CobroCartera />},
+    {id:43,componente : <Rutas />},
+    {id:44,componente : <Planillas />},
+    {id:45,componente : <Encomiendas />},
+    {id:46,componente : <Tiquetes />},
+    {id:47,componente : <RecibirPlanillas />},
+    {id:48,componente : <ServicoEspecial />},
+    {id:49,componente : <MovimientoCaja />},
+    {id:50,componente : <PagarCredito />}, 
+    {id:51,componente : <Consignacion />},
+    {id:52,componente : <CerrarCaja />},
+    {id:53,componente : <GestionarSolicitud />},
+    {id:54,componente : <ProcesosAutomaticos />},
     {id:55,componente : <InformesPdf />},
     {id:56,componente : <InformesDescargables />},
 
@@ -269,8 +266,8 @@ export default function  Contenedor () {
 
     useEffect(() => {
        instance.get('/admin/generarMenu').then(res=>{
-        setComponente(res.data);
-        setLoader(false);   
+            setComponente(res.data);
+            setLoader(false);   
         })
     }, []);
 
@@ -296,7 +293,7 @@ export default function  Contenedor () {
                             {componente.map(item=>{
                                 return item.itemMenu.map((res, i ) =>{
                                     const resultado = menuComponente.find( resul => resul.id === parseInt(res.id));
-                                    return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={resultado.componente}></Route>)
+                                    return (<Route key={'R-'+res.ruta} exact = {`true`} path={'/'+res.ruta} element={resultado.componente} ></Route>)
                                 }
                             )})}
 
