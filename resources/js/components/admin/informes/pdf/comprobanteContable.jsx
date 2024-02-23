@@ -11,11 +11,14 @@ import VisualizarPdf from "./visualizarPdf";
 
 export default function ComprobanteContable(){
 
-    const [formData, setFormData] = useState({agencia:'', usuario:'', caja: '', fecha: ''}); 
+    const [formData, setFormData] = useState({agencia:'', usuario:'', caja: '', fecha: ''});
+    const [usuarioAgencias, setUsuarioAgencias] = useState([]);
+    const [cajasUsuario, setCajasUsuario] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
-    const [agencias, setAgencias] = useState([]);   
-    const [dataPdf, setDataPdf] = useState(''); 
+    const [agencias, setAgencias] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
     const [loader, setLoader] = useState(false);
+    const [dataPdf, setDataPdf] = useState(''); 
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -26,15 +29,50 @@ export default function ComprobanteContable(){
         instance.post('/admin/informes/pdf/generar/comprobante/contable', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            ( res.success) ? (setDataPdf(res.dataComprobante), setFormData({agencia:'', usuario:'', caja: '', fecha: ''}), setAbrirModal(true)) : null;
+            (res.success) ? (setDataPdf(res.dataComprobante), setAbrirModal(true)) : null;
             setLoader(false);
         })
+    }
+
+    const consultarUsuario = (e) => {
+        let newFormData         = {...formData}
+        newFormData.agencia     = e.target.value;
+        const usuariosFiltrados = usuarios.filter(age => age.agenid === e.target.value);
+
+        const usuarioAgencias   = usuariosFiltrados.map(usuario => {
+                                    return {
+                                        cajaid:        usuario.cajaid,
+                                        cajanumero:    usuario.cajanumero,
+                                        usuaid:        usuario.usuaid,
+                                        nombreUsuario: usuario.nombreUsuario
+                                    };
+                                });
+
+        setUsuarioAgencias(usuarioAgencias);
+        setFormData(newFormData);
+    }
+
+    const consultarCaja = (e) => {
+        let newFormData             = {...formData}
+        newFormData.usuario         = e.target.value;
+        const usuarioCajasFiltrados = usuarioAgencias.filter(usua => usua.usuaid === e.target.value);
+
+        const cajasUsuario          = usuarioCajasFiltrados.map(usuario => {
+                                            return {
+                                                cajaid:     usuario.cajaid,
+                                                cajanumero: usuario.cajanumero,
+                                            };
+                                        });
+
+        setCajasUsuario(cajasUsuario);
+        setFormData(newFormData);
     }
 
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/informes/pdf/comprobante/contable').then(res=>{
             setAgencias(res.agencias);
+            setUsuarios(res.usuarios);
             setLoader(false);
         })
     }
@@ -58,7 +96,7 @@ export default function ComprobanteContable(){
                         inputProps={{autoComplete: 'off'}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange} 
+                        onChange={consultarUsuario} 
                     >
                         <MenuItem value={""}>Seleccione </MenuItem>
                         {agencias.map(res=>{
@@ -77,11 +115,11 @@ export default function ComprobanteContable(){
                         inputProps={{autoComplete: 'off'}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
-                        onChange={handleChange} 
+                        onChange={consultarCaja} 
                     >
                         <MenuItem value={""}>Seleccione </MenuItem>
-                        {agencias.map(res=>{
-                           return <MenuItem value={res.agenid} key={res.agenid} >{res.agennombre}</MenuItem>
+                        {usuarioAgencias.map(res=>{
+                           return <MenuItem value={res.usuaid} key={res.usuaid} >{res.nombreUsuario}</MenuItem>
                         })}
                     </SelectValidator>
                 </Grid>
@@ -99,8 +137,8 @@ export default function ComprobanteContable(){
                         onChange={handleChange} 
                     >
                         <MenuItem value={""}>Seleccione </MenuItem>
-                        {agencias.map(res=>{
-                           return <MenuItem value={res.agenid} key={res.agenid} >{res.agennombre}</MenuItem>
+                        {cajasUsuario.map(res=>{
+                           return <MenuItem value={res.cajaid} key={res.cajaid} >{res.cajanumero}</MenuItem>
                         })}
                     </SelectValidator>
                 </Grid>

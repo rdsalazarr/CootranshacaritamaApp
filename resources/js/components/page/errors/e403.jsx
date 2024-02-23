@@ -1,7 +1,7 @@
 import '../../../bootstrap';
 import React from 'react';
 import {createRoot} from "react-dom/client";
-import imagen from "../../../../images/errors/accesoNoAutorizado.svg";
+import imagen from "../../../../images/errors/accesoProhibido.svg";
 import {Header, Footer} from "../../layout/general";
 import HomeIcon from '@mui/icons-material/Home';
 import { Box, Grid } from '@mui/material';
@@ -17,8 +17,9 @@ export default function E403(){
             <Box className='container paginaError'>
                 <Grid container spacing={2}>
                     <Grid item xl={6} md={7} sm={12} xs={12} className='centrarContenido'>
-                        <h1>¡Acceso no autorizado!</h1>
-                        <p>La página a la que desea ingresar no cuenta con la autorización requerida.</p>
+                        <h1>¡Acceso no autorizado o prohibido!</h1>
+                        <p>Lo sentimos, no cuentas con la autorización necesaria para acceder a esta página o el acceso al recurso en el servidor está denegado. 
+                            Por favor, contacta al administrador del sistema para obtener ayuda.</p>
                         <a href='/'>
                             <HomeIcon className='icono' />
                         </a>

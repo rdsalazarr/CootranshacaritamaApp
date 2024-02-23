@@ -124,12 +124,12 @@ Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);
 Route::post('/admin/exportar/datos/movimiento/diarios', [RegistrosController::class, 'exportarMovimientoDiarios']);
 
-// verifySource
+// verifySource //verificar que se acceda desde el sistema
 Route::middleware(['revalidate','auth'])->group(function () {
 
     Route::get('dashboard', [DashboardController::class, 'index']);
     Route::get('admin/welcome', [DashboardController::class, 'welcome']);
-    Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu']);
+    Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu'])->middleware('verifySource');
 
     Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
@@ -151,91 +151,91 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
     Route::prefix('admin')->group(function(){
 
-        Route::get('/rol/list', [RolController::class, 'index'])->middleware('security:admin/configurar/menu');
+        Route::get('/rol/list', [RolController::class, 'index'])->middleware(['security:admin/configurar/menu','verifySource']);
         Route::post('/rol/listar/funcionalidad', [RolController::class, 'funcionalidades']);
         Route::post('/rol/salve', [RolController::class, 'salve']);
         Route::post('/rol/destroy', [RolController::class, 'destroy']);
 
-        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware('security:admin/configurar/menu');
-        Route::get('/funcionalidad/listar/modulos', [FuncionalidadController::class, 'modulos']);
+        Route::get('/funcionalidad/list', [FuncionalidadController::class, 'index'])->middleware(['security:admin/configurar/menu','verifySource']);
+        Route::get('/funcionalidad/listar/modulos', [FuncionalidadController::class, 'modulos'])->middleware('verifySource');
         Route::post('/funcionalidad/salve', [FuncionalidadController::class, 'salve']);
         Route::post('/funcionalidad/destroy', [FuncionalidadController::class, 'destroy']);
 
-        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware('security:admin/configurar/menu');
+        Route::get('/modulo/list', [ModuloController::class, 'index'])->middleware(['security:admin/configurar/menu','verifySource']);
         Route::post('/modulo/salve', [ModuloController::class, 'salve']);
         Route::post('/modulo/destroy', [ModuloController::class, 'destroy']);
         
-        Route::get('/informacionGeneralPdf/list', [GeneralPdfController::class, 'index'])->middleware('security:admin/configurar/GeneralPdf');
+        Route::get('/informacionGeneralPdf/list', [GeneralPdfController::class, 'index'])->middleware(['security:admin/configurar/GeneralPdf','verifySource']);
         Route::post('/informacionGeneralPdf/salve', [GeneralPdfController::class, 'salve']);
         Route::post('/informacionGeneralPdf/show/pdf', [GeneralPdfController::class, 'showPdf']);
         Route::post('/informacionGeneralPdf/destroy', [GeneralPdfController::class, 'destroy']);
 
-        Route::get('/informacionCorreo/list', [NotificacionCorreoController::class, 'index'])->middleware('security:admin/configurar/notificarCorreo');
+        Route::get('/informacionCorreo/list', [NotificacionCorreoController::class, 'index'])->middleware(['security:admin/configurar/notificarCorreo','verifySource']);
         Route::post('/informacionCorreo/salve', [NotificacionCorreoController::class, 'salve']);
         Route::post('/informacionCorreo/destroy', [NotificacionCorreoController::class, 'destroy']);
 
-        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware('security:admin/configurar/notificarCorreo');
+        Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware(['security:admin/configurar/notificarCorreo','verifySource']);
         Route::post('/configuracionCorreo/salve', [ConfiguracionCorreoController::class, 'salve']);
         Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);        
         
-        Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware('security:admin/configurar/datosTerritorial');
+        Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware(['security:admin/configurar/datosTerritorial','verifySource']);
         Route::post('/departamento/salve', [DepartamentoController::class, 'salve']);
 
-        Route::get('/municipio/list', [MunicipioController::class, 'index'])->middleware('security:admin/configurar/datosTerritorial');
-        Route::get('/municipio/list/deptos', [MunicipioController::class, 'deptos']);
+        Route::get('/municipio/list', [MunicipioController::class, 'index'])->middleware(['security:admin/configurar/datosTerritorial','verifySource']);
+        Route::get('/municipio/list/deptos', [MunicipioController::class, 'deptos'])->middleware('verifySource');
         Route::post('/municipio/salve', [MunicipioController::class, 'salve']);
 
-        Route::get('/empresa/list', [EmpresaController::class, 'index'])->middleware('security:admin/configurar/empresa');
-        Route::get('/empresa/list/datos', [EmpresaController::class, 'datos']);
+        Route::get('/empresa/list', [EmpresaController::class, 'index'])->middleware(['security:admin/configurar/empresa','verifySource']);
+        Route::get('/empresa/list/datos', [EmpresaController::class, 'datos'])->middleware('verifySource');
         Route::post('/empresa/salve', [EmpresaController::class, 'salve']); 
 
-        Route::get('/tipoSaludo/list', [SaludoController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/tipoSaludo/list', [SaludoController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/tipoSaludo/salve', [SaludoController::class, 'salve']);
         Route::post('/tipoSaludo/destroy', [SaludoController::class, 'destroy']);
 
-        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/tipoDespedida/list', [DespedidaController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/tipoDespedida/salve', [DespedidaController::class, 'salve']);
         Route::post('/tipoDespedida/destroy', [DespedidaController::class, 'destroy']);
 
-        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/cargoLaboral/list', [CargoLaboralController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/cargoLaboral/salve', [CargoLaboralController::class, 'salve']);
         Route::post('/cargoLaboral/destroy', [CargoLaboralController::class, 'destroy']);
 
-        Route::get('/entidadFinanciera/list', [EntidadFinancieraController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/entidadFinanciera/list', [EntidadFinancieraController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/entidadFinanciera/salve', [EntidadFinancieraController::class, 'salve']);
         Route::post('/entidadFinanciera/destroy', [EntidadFinancieraController::class, 'destroy']);
 
-        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/tipoEstante/list', [EstanteArchivadorController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/tipoEstante/salve', [EstanteArchivadorController::class, 'salve']);
         Route::post('/tipoEstante/destroy', [EstanteArchivadorController::class, 'destroy']);
 
-        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/tipoDocumental/list', [DocumentalController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/tipoDocumental/salve', [DocumentalController::class, 'salve']);
         Route::post('/tipoDocumental/destroy', [DocumentalController::class, 'destroy']);
 
-        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/personaDocumental/list', [PersonaDocumentalController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/personaDocumental/salve', [PersonaDocumentalController::class, 'salve']);
         Route::post('/personaDocumental/destroy', [PersonaDocumentalController::class, 'destroy']);
 
-        Route::get('/tipoSancion/list', [SancionController::class, 'index'])->middleware('security:admin/gestionar/tipos');
+        Route::get('/tipoSancion/list', [SancionController::class, 'index'])->middleware(['security:admin/gestionar/tipos','verifySource']);
         Route::post('/tipoSancion/salve', [SancionController::class, 'salve']);
         Route::post('/tipoSancion/destroy', [SancionController::class, 'destroy']);
 
-        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');
+        Route::get('/serieDocumental/list', [SerieDocumentalController::class, 'index'])->middleware(['security:admin/gestionar/seriesDocumentales','verifySource']);
         Route::post('/serieDocumental/salve', [SerieDocumentalController::class, 'salve']);
         Route::post('/serieDocumental/destroy', [SerieDocumentalController::class, 'destroy']);
 
-        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware('security:admin/gestionar/seriesDocumentales');
-        Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos']);  
+        Route::get('/subSerieDocumental/list', [SubSerieDocumentalController::class, 'index'])->middleware(['security:admin/gestionar/seriesDocumentales','verifySource']);
+        Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos'])->middleware('verifySource');  
         Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
         Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
          
-        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware('security:admin/gestionar/dependencia');
+        Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware(['security:admin/gestionar/dependencia','verifySource']);
         Route::post('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware('security:admin/gestionar/persona');       
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware(['security:admin/gestionar/persona','verifySource']);       
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/consultar/asignacion', [PersonaController::class, 'datos']);
         Route::post('/persona/procesar', [PersonaController::class, 'procesar']);
@@ -244,49 +244,51 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::post('/persona/listar/datos', [DatosPersonaController::class, 'index']); //No debe tener control de ruta
         Route::post('/show/persona', [DatosPersonaController::class, 'show']);
 
-        Route::get('/usuario/list', [UsuarioController::class, 'index'])->middleware('security:admin/gestionar/usuario');
+        Route::get('/usuario/list', [UsuarioController::class, 'index'])->middleware(['security:admin/gestionar/usuario','verifySource']);
         Route::post('/usuario/consultar/persona', [UsuarioController::class, 'consultar']);
         Route::post('/usuario/list/datos', [UsuarioController::class, 'datos']);
         Route::post('/usuario/salve', [UsuarioController::class, 'salve']);
         Route::post('/usuario/destroy', [UsuarioController::class, 'destroy']);
 
-        Route::get('/usuario/data', [PerfilUsuarioController::class, 'index']); //No debe tener control de ruta
-        Route::get('/usuario/miPerfil', [PerfilUsuarioController::class, 'perfil']);
+        Route::get('/usuario/data', [PerfilUsuarioController::class, 'index'])->middleware('verifySource'); //No debe tener control de ruta
+        Route::get('/usuario/miPerfil', [PerfilUsuarioController::class, 'perfil'])->middleware('verifySource');
         Route::post('/usuario/updatePerfil', [PerfilUsuarioController::class, 'updatePerfil']);
         Route::post('/usuario/updatePassword', [PerfilUsuarioController::class, 'updatePassword']);
 
-        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware('security:admin/gestionar/festivos');
+        Route::get('/festivo/list', [FestivoController::class, 'index'])->middleware(['security:admin/gestionar/festivos','verifySource']);
         Route::post('/festivo/salve', [FestivoController::class, 'salve']);
         
-        Route::get('/cuenta/contable/list', [CuentaContableController::class, 'index'])->middleware('security:admin/gestionar/cuentaContable');
+        Route::get('/cuenta/contable/list', [CuentaContableController::class, 'index'])->middleware(['security:admin/gestionar/cuentaContable','verifySource']);
         Route::post('/cuenta/contable/salve', [CuentaContableController::class, 'salve']);
         Route::post('/cuenta/contable/destroy', [CuentaContableController::class, 'destroy']);
 
-        Route::get('/agencia/list', [AgenciaController::class, 'index'])->middleware('security:admin/gestionar/agencia');
-        Route::get('/agencia/listar/datos', [AgenciaController::class, 'datos']);
+        Route::get('/agencia/list', [AgenciaController::class, 'index'])->middleware(['security:admin/gestionar/agencia','verifySource']);
+        Route::get('/agencia/listar/datos', [AgenciaController::class, 'datos'])->middleware('verifySource');
         Route::post('/agencia/salve', [AgenciaController::class, 'salve']);
         Route::post('/agencia/destroy', [AgenciaController::class, 'destroy']);
-
-        Route::get('/asociado/list', [AsociadoController::class, 'index'])->middleware('security:admin/gestionar/asociados');
-        Route::post('/asociado/salve', [AsociadoController::class, 'salve']);
-        Route::post('/asociado/destroy', [AsociadoController::class, 'destroy']);
-
-        Route::get('/asociado/desvincular', [DesvincularAsociadoController::class, 'index'])->middleware('security:admin/gestionar/desvincularAsociado');       
-        Route::post('/asociado/consultar', [DesvincularAsociadoController::class, 'consultar']);
-        Route::post('/asociado/desvincular/salve', [DesvincularAsociadoController::class, 'desvincular']);
-
-        Route::get('/asociado/sancionar/datos', [SancionarController::class, 'index'])->middleware('security:admin/gestionar/sancionarAsociado');
-        Route::post('/asociado/sancionar/salve', [SancionarController::class, 'salve']);
-
-        Route::get('/asociado/inactivos', [AsociadoInactivosController::class, 'index'])->middleware('security:admin/gestionar/asociadosInactivos');
 
         Route::post('/procesos/automaticos', [ProcesosAutomaticosController::class, 'index'])->middleware('security:admin/procesosAutomaticos');
         Route::post('/procesos/automaticos/ejecutar', [ProcesosAutomaticosController::class, 'ejecutar']);
 
+        Route::prefix('/asociado')->group(function(){
+            Route::get('/list', [AsociadoController::class, 'index'])->middleware(['security:admin/gestionar/asociados','verifySource']);
+            Route::post('/salve', [AsociadoController::class, 'salve']);
+            Route::post('/destroy', [AsociadoController::class, 'destroy']);
+
+            Route::get('/desvincular', [DesvincularAsociadoController::class, 'index'])->middleware(['security:admin/gestionar/desvincularAsociado','verifySource']);       
+            Route::post('/consultar', [DesvincularAsociadoController::class, 'consultar']);
+            Route::post('/desvincular/salve', [DesvincularAsociadoController::class, 'desvincular']);
+
+            Route::get('/sancionar/datos', [SancionarController::class, 'index'])->middleware(['security:admin/gestionar/sancionarAsociado','verifySource']);
+            Route::post('/sancionar/salve', [SancionarController::class, 'salve']);
+
+            Route::get('/inactivos', [AsociadoInactivosController::class, 'index'])->middleware(['security:admin/gestionar/asociadosInactivos','verifySource']);
+        });
+
         Route::prefix('/producion/documental')->group(function(){
 
             Route::post('/acta/list', [ActaController::class, 'index'])->middleware('security:admin/produccion/documental/acta');
-            Route::get('/acta/consultar/area', [ActaController::class, 'area']);
+            Route::get('/acta/consultar/area', [ActaController::class, 'area'])->middleware('verifySource');
             Route::post('/acta/listar/datos', [ActaController::class, 'datos']);
             Route::post('/acta/salve', [ActaController::class, 'salve']);
             Route::post('/acta/solicitar/firma', [ActaController::class, 'solicitarFirma']);
@@ -297,7 +299,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/trazabilidad/acta', [ActaController::class, 'trazabilidad']);
 
             Route::post('/certificado/list', [CertificadoController::class, 'index'])->middleware('security:admin/produccion/documental/certificado');
-            Route::get('/certificado/consultar/area', [CertificadoController::class, 'area']);
+            Route::get('/certificado/consultar/area', [CertificadoController::class, 'area'])->middleware('verifySource');
             Route::post('/certificado/listar/datos', [CertificadoController::class, 'datos']);
             Route::post('/certificado/salve', [CertificadoController::class, 'salve']);
             Route::post('/certificado/solicitar/firma', [CertificadoController::class, 'solicitarFirma']);
@@ -308,7 +310,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/trazabilidad/certificado', [CertificadoController::class, 'trazabilidad']);
 
             Route::post('/circular/list', [CircularController::class, 'index'])->middleware('security:admin/produccion/documental/circular');
-            Route::get('/circular/consultar/area', [CircularController::class, 'area']);
+            Route::get('/circular/consultar/area', [CircularController::class, 'area'])->middleware('verifySource');
             Route::post('/circular/listar/datos', [CircularController::class, 'datos']);
             Route::post('/circular/salve', [CircularController::class, 'salve']);
             Route::post('/circular/solicitar/firma', [CircularController::class, 'solicitarFirma']);
@@ -319,7 +321,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/trazabilidad/circular', [CircularController::class, 'trazabilidad']);
 
             Route::post('/citacion/list', [CitacionController::class, 'index'])->middleware('security:admin/produccion/documental/citacion');
-            Route::get('/citacion/consultar/area', [CitacionController::class, 'area']);
+            Route::get('/citacion/consultar/area', [CitacionController::class, 'area'])->middleware('verifySource');
             Route::post('/citacion/listar/datos', [CitacionController::class, 'datos']);
             Route::post('/citacion/salve', [CitacionController::class, 'salve']);
             Route::post('/citacion/solicitar/firma', [CitacionController::class, 'solicitarFirma']);
@@ -330,7 +332,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/trazabilidad/citacion', [CitacionController::class, 'trazabilidad']);
 
             Route::post('/constancia/list', [ConstanciaController::class, 'index'])->middleware('security:admin/produccion/documental/constancia');
-            Route::get('/constancia/consultar/area', [ConstanciaController::class, 'area']);
+            Route::get('/constancia/consultar/area', [ConstanciaController::class, 'area'])->middleware('verifySource');
             Route::post('/constancia/listar/datos', [ConstanciaController::class, 'datos']);
             Route::post('/constancia/salve', [ConstanciaController::class, 'salve']);
             Route::post('/constancia/solicitar/firma', [ConstanciaController::class, 'solicitarFirma']);
@@ -341,7 +343,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/trazabilidad/constancia', [ConstanciaController::class, 'trazabilidad']);
 
             Route::post('/oficio/list', [OficioController::class, 'index'])->middleware('security:admin/produccion/documental/oficio');
-            Route::get('/oficio/consultar/area', [OficioController::class, 'area']);
+            Route::get('/oficio/consultar/area', [OficioController::class, 'area'])->middleware('verifySource');
             Route::post('/oficio/listar/datos', [OficioController::class, 'datos']);
             Route::post('/oficio/salve', [OficioController::class, 'salve']);
             Route::post('/oficio/solicitar/firma', [OficioController::class, 'solicitarFirma']);
@@ -381,50 +383,51 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/archivo/historico')->group(function(){
-            Route::get('/gestionar/list', [HistoricoController::class, 'index'])->middleware('security:admin/archivo/historico/gestionar');
+            Route::get('/gestionar/list', [HistoricoController::class, 'index'])->middleware(['security:admin/archivo/historico/gestionar','verifySource']);
             Route::post('/obtener/datos', [HistoricoController::class, 'datos']);
             Route::post('/salve', [HistoricoController::class, 'salve']);
             Route::post('/show', [HistoricoShowController::class, 'index']);  //No debe tener control de ruta
-            Route::get('/obtener/datos/consulta', [HistoricoConsultarController::class, 'index'])->middleware('security:admin/archivo/historico/consultar');
+
+            Route::get('/obtener/datos/consulta', [HistoricoConsultarController::class, 'index'])->middleware(['security:admin/archivo/historico/consultar','verifySource']);
             Route::post('/consultar/datos', [HistoricoConsultarController::class, 'consultar']);
             Route::post('/consultar/expediente', [HistoricoConsultarController::class, 'expediente']);
             Route::post('/consultar/expediente/pdf', [HistoricoConsultarController::class, 'expedientePdf']);
         });
 
         Route::prefix('/direccion/transporte')->group(function(){
-            Route::get('/tipo/list', [TipoVehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/tipo/list', [TipoVehiculoController::class, 'index'])->middleware(['security:admin/direccion/transporte/tipos','verifySource']);
             Route::post('/tipo/salve', [TipoVehiculoController::class, 'salve']);
             Route::post('/tipo/destroy', [TipoVehiculoController::class, 'destroy']);
             Route::post('/distribucion/tipo/vehiculo', [TipoVehiculoController::class, 'datos']);
             Route::post('/tipo/distribucion/salve', [TipoVehiculoController::class, 'distribucion']);
 
-            Route::get('/referencia/list', [TipoReferenciaController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/referencia/list', [TipoReferenciaController::class, 'index'])->middleware(['security:admin/direccion/transporte/tipos','verifySource']);
             Route::post('/referencia/salve', [TipoReferenciaController::class, 'salve']);
             Route::post('/referencia/destroy', [TipoReferenciaController::class, 'destroy']);
 
-            Route::get('/carroceria/list', [TipoCarroceriaController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/carroceria/list', [TipoCarroceriaController::class, 'index'])->middleware(['security:admin/direccion/transporte/tipos','verifySource']);
             Route::post('/carroceria/salve', [TipoCarroceriaController::class, 'salve']);
             Route::post('/carroceria/destroy', [TipoCarroceriaController::class, 'destroy']);
 
-            Route::get('/marca/list', [TipoMarcaController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/marca/list', [TipoMarcaController::class, 'index'])->middleware(['security:admin/direccion/transporte/tipos','verifySource']);
             Route::post('/marca/salve', [TipoMarcaController::class, 'salve']);
             Route::post('/marca/destroy', [TipoMarcaController::class, 'destroy']);
 
-            Route::get('/color/list', [TipoColorController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/color/list', [TipoColorController::class, 'index'])->middleware(['security:admin/direccion/transporte/tipos','verifySource']);
             Route::post('/color/salve', [TipoColorController::class, 'salve']);
             Route::post('/color/destroy', [TipoColorController::class, 'destroy']);
 
-            Route::get('/modalidad/list', [TipoModalidadController::class, 'index'])->middleware('security:admin/direccion/transporte/tipos');
+            Route::get('/modalidad/list', [TipoModalidadController::class, 'index'])->middleware(['security:admin/direccion/transporte/tipos','verifySource']);
             Route::post('/modalidad/salve', [TipoModalidadController::class, 'salve']);
             Route::post('/modalidad/destroy', [TipoModalidadController::class, 'destroy']);
 
-            Route::get('/vehiculo/list', [VehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/vehiculos');
+            Route::get('/vehiculo/list', [VehiculoController::class, 'index'])->middleware(['security:admin/direccion/transporte/vehiculos','verifySource']);
             Route::post('/vehiculo/list/datos', [VehiculoController::class, 'datos']);
             Route::post('/vehiculo/salve', [VehiculoController::class, 'salve']);
             Route::post('/vehiculo/show', [VehiculoController::class, 'show']);
             Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
 
-            Route::get('/suspender/vehiculo/datos', [SuspenderController::class, 'index'])->middleware('security:admin/direccion/transporte/suspenderVehiculo');
+            Route::get('/suspender/vehiculo/datos', [SuspenderController::class, 'index'])->middleware(['security:admin/direccion/transporte/suspenderVehiculo','verifySource']);
             Route::post('/suspender/vehiculo/salve', [SuspenderController::class, 'salve']);
 
             Route::post('/conductor/list', [ConductorController::class, 'index'])->middleware('security:admin/direccion/transporte/conductores');
@@ -433,7 +436,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/conductor/suspender', [ConductorController::class, 'suspender']);
             Route::post('/conductor/activar/salve', [ConductorController::class, 'activar']);
 
-            Route::get('/listar/vehiculos', [AsignarVehiculoController::class, 'index'])->middleware('security:admin/direccion/transporte/asignarVehiculo');
+            Route::get('/listar/vehiculos', [AsignarVehiculoController::class, 'index'])->middleware(['security:admin/direccion/transporte/asignarVehiculo','verifySource']);
             Route::post('/consultar/informacion/vehiculo', [AsignarVehiculoController::class, 'consultarVehiculo']);
             Route::post('/listar/contratos/vehiculo', [AsignarVehiculoController::class, 'listarContratos']);
             Route::post('/asociados/imprimir/contrato', [AsignarVehiculoController::class, 'showPdf']);
@@ -449,7 +452,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/listar/tarjeta/operacion', [AsignarVehiculoController::class, 'listTarjetaOperacion']);
             Route::post('/tarjeta/operacion/salve', [AsignarVehiculoController::class, 'salveTarjetaOperacion']);
 
-            Route::get('/list/tipos/vehiculos', [DistribucionVehiculosController::class, 'index'])->middleware('security:admin/direccion/transporte/distribucionVehiculos');
+            Route::get('/list/tipos/vehiculos', [DistribucionVehiculosController::class, 'index'])->middleware(['security:admin/direccion/transporte/distribucionVehiculos','verifySource']);
             Route::post('/list/distribucion/vehiculo', [DistribucionVehiculosController::class, 'datos']);
             Route::post('/salve/distribucion/vehiculo', [DistribucionVehiculosController::class, 'salve']);
 
@@ -461,37 +464,37 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/cartera')->group(function(){
-            Route::get('/linea/credito/list', [LineaCreditoController::class, 'index'])->middleware('security:admin/cartera/lineaCredito');
+            Route::get('/linea/credito/list', [LineaCreditoController::class, 'index'])->middleware(['security:admin/cartera/lineaCredito','verifySource']);
             Route::post('/linea/credito/salve', [LineaCreditoController::class, 'salve']);
             Route::post('/linea/credito/destroy', [LineaCreditoController::class, 'destroy']);
 
-            Route::get('/solicitud/credito/datos', [SolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/solicitud');
+            Route::get('/solicitud/credito/datos', [SolicitudCreditoController::class, 'index'])->middleware(['security:admin/cartera/solicitud','verifySource']);
             Route::post('/consultar/datos/asociado', [SolicitudCreditoController::class, 'consultar']);
-            Route::get('/solicitud/credito/tipo/documento', [SolicitudCreditoController::class, 'tipoDocumento']);
+            Route::get('/solicitud/credito/tipo/documento', [SolicitudCreditoController::class, 'tipoDocumento'])->middleware('verifySource');
             Route::post('/consultar/datos/persona', [SolicitudCreditoController::class, 'persona']);
             Route::post('/registrar/solicitud/credito', [SolicitudCreditoController::class, 'salve']);
             Route::post('/simular/solicitud/credito', [SolicitudCreditoController::class, 'simular']);
 
-            Route::get('/aprobar/solicitud/credito', [AprobarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/aprobacion');
+            Route::get('/aprobar/solicitud/credito', [AprobarSolicitudCreditoController::class, 'index'])->middleware(['security:admin/cartera/aprobacion','verifySource']);
             Route::get('/listar/estados/solicitud/credito', [AprobarSolicitudCreditoController::class, 'estados']);
             Route::post('/tomar/decision/solicitud/credito', [AprobarSolicitudCreditoController::class, 'salve']);
             
-            Route::get('/desembolsar/solicitud/credito/datos', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/desembolso');
+            Route::get('/desembolsar/solicitud/credito/datos', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware(['security:admin/cartera/desembolso','verifySource']);
             Route::post('/consultar/asociado', [DesembolsarSolicitudCreditoController::class, 'consultar']);
             Route::post('/desembolsar/solicitud/credito', [DesembolsarSolicitudCreditoController::class, 'salve']);
 
             Route::post('/show/solicitud/credito', [ShowSolicitudCreditoController::class, 'index']);//No debe tener control de ruta
             Route::post('/imprimir/documento/desembolso', [ShowSolicitudCreditoController::class, 'imprimir']);
 
-            Route::get('/historial/solicitud/credito', [HistorialSolicitudCreditoController::class, 'index'])->middleware('security:admin/cartera/historial');
+            Route::get('/historial/solicitud/credito', [HistorialSolicitudCreditoController::class, 'index'])->middleware(['security:admin/cartera/historial','verifySource']);
 
-            Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware('security:admin/cartera/cobranza');
+            Route::get('/gestionar/cobro/cartera', [GestionCobroCarteraController::class, 'index'])->middleware(['security:admin/cartera/cobranza','verifySource']);
             Route::post('/show/colocacion', [GestionCobroCarteraController::class, 'showColocacion']);
             Route::post('/hacer/seguimiento/colocacion', [GestionCobroCarteraController::class, 'salveSeguimiento']);
         });
 
         Route::prefix('/despacho')->group(function(){
-            Route::get('/ruta/list', [RutaController::class, 'index'])->middleware('security:admin/despacho/rutas');
+            Route::get('/ruta/list', [RutaController::class, 'index'])->middleware(['security:admin/despacho/rutas','verifySource']);
             Route::post('/ruta/listar/datos', [RutaController::class, 'datos']);
             Route::post('/ruta/salve', [RutaController::class, 'salve']);
             Route::post('/ruta/destroy', [RutaController::class, 'destroy']);
@@ -520,7 +523,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/tiquete/show/general', [TiqueteController::class, 'show']);
             Route::post('/tiquete/visualizar/PDF', [TiqueteController::class, 'verFactura']);
 
-            Route::get('/recibir/planilla/list', [RecibirPlanillaRutaController::class, 'index'])->middleware('security:admin/despacho/recibirPlanilla');
+            Route::get('/recibir/planilla/list', [RecibirPlanillaRutaController::class, 'index'])->middleware(['security:admin/despacho/recibirPlanilla','verifySource']);
             Route::post('/recibir/planilla/salve', [RecibirPlanillaRutaController::class, 'salve']);
             Route::post('/consultar/persona/entregar/encomienda', [RecibirPlanillaRutaController::class, 'consultarPersona']);
             Route::post('/entregar/encomienda/salve', [RecibirPlanillaRutaController::class, 'salveEntregaEncomienda']);
@@ -533,13 +536,13 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/caja')->group(function(){
-            Route::get('/procesar/movimiento', [ProcesarMovimientoController::class, 'index'])->middleware('security:admin/caja/procesar');
+            Route::get('/procesar/movimiento', [ProcesarMovimientoController::class, 'index'])->middleware(['security:admin/caja/procesar','verifySource']);
             Route::post('/abrir/dia', [ProcesarMovimientoController::class, 'abrirDia']);
-            Route::get('/listar/vehiculos', [ProcesarMovimientoController::class, 'listVehiculos']);
+            Route::get('/listar/vehiculos', [ProcesarMovimientoController::class, 'listVehiculos'])->middleware('verifySource');
             Route::post('/consultar/vehiculo', [ProcesarMovimientoController::class, 'consultarVehiculo']);
             Route::post('/registrar/mensualidad', [ProcesarMovimientoController::class, 'salveMensualidad']);
 
-            Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos']);
+            Route::get('/listar/tipo/documento', [ProcesarMovimientoController::class, 'tipoDocumentos'])->middleware('verifySource');
             Route::post('/consultar/credito/asociado', [ProcesarMovimientoController::class, 'consultarCredito']);
             Route::post('/calcular/valor/cuota', [ProcesarMovimientoController::class, 'calcularCuota']);
             Route::post('/registrar/pago/cuota', [ProcesarMovimientoController::class, 'salvePagoCredito']);
@@ -547,15 +550,15 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/consultar/sancion/asociado', [ProcesarMovimientoController::class, 'consultarSancionAsociado']);
             Route::post('/registrar/sancion', [ProcesarMovimientoController::class, 'salveSancion']);
 
-            Route::get('/listar/consignacion/bancaria', [ConsignacionBancariaController::class, 'index'])->middleware('security:admin/caja/consigarBanco');
+            Route::get('/listar/consignacion/bancaria', [ConsignacionBancariaController::class, 'index'])->middleware(['security:admin/caja/consigarBanco','verifySource']);
             Route::get('/consultar/datos/consignacion/bancaria', [ConsignacionBancariaController::class, 'datosConsignacion']);
             Route::post('/registrar/consignacion/bancaria', [ConsignacionBancariaController::class, 'salveConsignacion']);
 
-            Route::get('/pagar/credito/tipo/documento', [EntregarPagoCreditoController::class, 'index'])->middleware('security:admin/caja/entregarDesembolsoCredito');
+            Route::get('/pagar/credito/tipo/documento', [EntregarPagoCreditoController::class, 'index'])->middleware(['security:admin/caja/entregarDesembolsoCredito','verifySource']);
             Route::post('/pagar/credito/consultar/persona', [EntregarPagoCreditoController::class, 'consultarPersona']);
             Route::post('/pagar/credito/entregar/efectivo', [EntregarPagoCreditoController::class, 'entregarEfectivo']);
 
-            Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware('security:admin/caja/cerrar');
+            Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware(['security:admin/caja/cerrar','verifySource']);
             Route::post('/contabilizar/tiquetes', [CerrarMovimientoController::class, 'tiquete']);
             Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);            
         });
@@ -569,9 +572,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
         });
 
         Route::prefix('/informes')->group(function(){
-            Route::get('/pdf/comprobante/contable', [InformePdfController::class, 'index'])->middleware('security:admin/informes/pdf');
+            Route::get('/pdf/comprobante/contable', [InformePdfController::class, 'index'])->middleware(['security:admin/informes/pdf','verifySource']);
             Route::post('/pdf/generar/comprobante/contable', [InformePdfController::class, 'comprobanteContable']);
-            Route::get('/descargable', [InformeDescargableController::class, 'index'])->middleware('security:admin/informes/descargable');
+            Route::get('/descargable', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
         });
 
     });

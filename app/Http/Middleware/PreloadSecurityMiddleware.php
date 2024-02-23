@@ -23,7 +23,7 @@ class PreloadSecurityMiddleware
                         ->join('usuariorol','usurolrolid','=','rolfunrolid')
                         ->where('usurolusuaid', Auth::id());
 
-            if(Auth::id() != 1)
+            if(Auth::id() != 2)
                 $consulta = $consulta->where('funcactiva', 1);
 
             $funcionalidad =  $consulta->where('funcruta', $ruta)->get();

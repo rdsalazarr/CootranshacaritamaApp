@@ -11,6 +11,7 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css',
                     'resources/js/components/page/app.jsx',
+                    'resources/js/components/page/reset.jsx',
                     'resources/js/components/page/dashboard.jsx',
                     'resources/js/components/page/verificar.jsx',                    
                     'resources/js/components/page/errors/e401.jsx',
