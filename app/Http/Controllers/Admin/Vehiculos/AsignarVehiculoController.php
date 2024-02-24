@@ -93,7 +93,7 @@ class AsignarVehiculoController extends Controller
 
     public function showPdf(Request $request)
 	{
-	    $this->validate(request(),['idContrato' => 'required']);  
+	    $this->validate(request(),['idContrato' => 'required']);
 
         try {
 
@@ -107,14 +107,19 @@ class AsignarVehiculoController extends Controller
                                         ->join('vehiculo as v', 'v.vehiid', '=', 'vc.vehiid')
                                         ->first();
 
-            if($vehiculoContratoFirma->totalFirmas === $vehiculoContratoFirma->totalFirmasRealizadas){
-                $rutaContrato = public_path().$vehiculoContratoFirma->rutaPdfContrato;
-                $data         = file_exists($rutaContrato) ? base64_encode(file_get_contents($rutaContrato)) : 'El archivo no existe';
-            }else{
-                $data         = GenerarContrato::vehiculo($request->idContrato, 'S');
+            $success = false;
+            $data    = '';
+            if( $vehiculoContratoFirma){
+                $success = true;
+                if($vehiculoContratoFirma->totalFirmas === $vehiculoContratoFirma->totalFirmasRealizadas){
+                    $rutaContrato = public_path().$vehiculoContratoFirma->rutaPdfContrato;
+                    $data         = file_exists($rutaContrato) ? base64_encode(file_get_contents($rutaContrato)) : 'El archivo no existe';
+                }else{
+                    $data         = GenerarContrato::vehiculo($request->idContrato, 'S');
+                }
             }
-        
-		    return response()->json(['success' => true, "data" => $data]);
+ 
+		    return response()->json(['success' =>  $success, "data" => $data]);
 		} catch (Exception $error){
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
@@ -126,39 +131,42 @@ class AsignarVehiculoController extends Controller
         try {
 
             $vehiculoContrato = DB::table('vehiculocontrato as vc')
-                                ->select('vc.vehconid', 'vcf.vecofiid', DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"), 'p.persid','p.perscorreoelectronico','p.persnumerocelular',
-                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"))	
+                                ->select('vc.vehconid', 'vcf.vecofiid',  'p.persid','p.perscorreoelectronico','p.persnumerocelular',
+                                    DB::raw("CONCAT(vc.vehconanio, vc.vehconnumero) as numeroContrato"),
+                                    DB::raw("if(p.perstienefirmaelectronica = 1 ,'SI', 'NO') as tieneFirmaElectronica"),
+                                    DB::raw("(select emprcorreo from empresa where emprid = 1) as correoEmpresa"),
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),
+                                    DB::raw("CONCAT(pe.persprimernombre,' ',IFNULL(pe.perssegundonombre,''),' ',pe.persprimerapellido,' ',IFNULL(pe.perssegundoapellido,'')) as nombreGerente"))	
                                 ->join('vehiculocontratofirma as vcf', 'vcf.vehconid', '=', 'vc.vehconid')
                                 ->join('persona as p', 'p.persid', '=', 'vcf.persid')
+                                ->join('persona as pe', 'pe.persid', '=', 'vc.persidgerente') 
                                 ->where('vcf.persid', $request->personaId)
                                 ->where('vc.vehconid', $request->contradoId)->first();
 
-            $representante         =  DB::table('empresa as e')->select('e.emprcorreo',
-                                        DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"))
-                                        ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-                                        ->where('emprid', '1')->first();
-
-            $vehconid            = $vehiculoContrato->vehconid;
-            $vecofiid            = $vehiculoContrato->vecofiid;
-            $numeroContrato      = $vehiculoContrato->numeroContrato;
-            $correoEmpresa       = $representante->emprcorreo;
-            $nombreGerente       = $representante->nombreGerente;
-            $correoAsociado      = $vehiculoContrato->perscorreoelectronico;
-            $nombreAsociado      = $vehiculoContrato->nombreAsociado;
-            $nombreUsuario       = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;           
-            $urlFirmaContrato    = asset('firmar/contrato/asociado/'.Crypt::encrypt($vehconid).'/'.Crypt::encrypt($vecofiid));
-
-            $notificar           = new notificar();
-            $informacioncorreo   = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'solicitaFirmaContratoAsociado')->first();
-            $buscar              = Array('numeroContrato', 'nombreGerente', 'nombreUsuario', 'nombreAsociado', 'urlFirmaContrato');
-            $remplazo            = Array($numeroContrato, $nombreGerente,  $nombreUsuario, $nombreAsociado, $urlFirmaContrato); 
-            $asunto              = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
-            $msg                 = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
-            $enviarcopia         = $informacioncorreo->innocoenviarcopia;
-            $enviarpiepagina     = $informacioncorreo->innocoenviarpiepagina;
-            $mensajeNotificacion = $notificar->correo([$correoAsociado], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);            
-            $mensajeMostrar      = 'Hemos enviado una notificación al correo electrónico '.$correoAsociado;
-            $mensajeMostrar      .= ', donde se detalla cómo completar el proceso de firma del contrato y/o descargar una copia del mismo';
+            $mensajeMostrar = 'Lo sentimos, pero no podemos enviar una notificación a una persona que no tiene firma electrónica habilitada';
+            if( $vehiculoContrato->tieneFirmaElectronica === 'SI'){
+                $vehconid            = $vehiculoContrato->vehconid;
+                $vecofiid            = $vehiculoContrato->vecofiid;
+                $numeroContrato      = $vehiculoContrato->numeroContrato;
+                $correoEmpresa       = $vehiculoContrato->correoEmpresa;
+                $nombreGerente       = $vehiculoContrato->nombreGerente;
+                $correoAsociado      = $vehiculoContrato->perscorreoelectronico;
+                $nombreAsociado      = $vehiculoContrato->nombreAsociado;
+                $nombreUsuario       = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;           
+                $urlFirmaContrato    = asset('firmar/contrato/asociado/'.Crypt::encrypt($vehconid).'/'.Crypt::encrypt($vecofiid));
+    
+                $notificar           = new notificar();
+                $informacioncorreo   = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'solicitaFirmaContratoAsociado')->first();
+                $buscar              = Array('numeroContrato', 'nombreGerente', 'nombreUsuario', 'nombreAsociado', 'urlFirmaContrato');
+                $remplazo            = Array($numeroContrato, $nombreGerente,  $nombreUsuario, $nombreAsociado, $urlFirmaContrato); 
+                $asunto              = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
+                $msg                 = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
+                $enviarcopia         = $informacioncorreo->innocoenviarcopia;
+                $enviarpiepagina     = $informacioncorreo->innocoenviarpiepagina;
+                $mensajeNotificacion = $notificar->correo([$correoAsociado], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);            
+                $mensajeMostrar      = 'Hemos enviado una notificación al correo electrónico '.$correoAsociado;
+                $mensajeMostrar      .= ', donde se detalla cómo completar el proceso de firma del contrato y/o descargar una copia del mismo';
+            }      
 
             return response()->json(['success' => true, "message" => $mensajeMostrar]);
 		} catch (Exception $error){

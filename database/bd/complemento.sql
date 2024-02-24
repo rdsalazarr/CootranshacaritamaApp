@@ -282,3 +282,7 @@ INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `fu
 INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
 (55, 1, 55),
 (56, 1, 56);
+
+
+
+ALTER TABLE `vehiculoresponsabilidad` ADD `created_at` TIMESTAMP NULL AFTER `vehresvalorpagado`, ADD `updated_at` TIMESTAMP NULL AFTER `created_at`;

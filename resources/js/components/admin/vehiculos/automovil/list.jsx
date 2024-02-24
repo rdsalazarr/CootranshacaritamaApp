@@ -22,7 +22,7 @@ export default function List(){
     const modales = [
                         <NewEdit tipo={'I'}  />,
                         <NewEdit data={modal.data} tipo={'U'} /> ,
-                        <Eliminar id={(tipo === 2) ? modal.data.ticaveid : null} ruta={'/admin/direccion/transporte/vehiculo/destroy'} cerrarModal={cerrarModal} />,
+                        <Eliminar id={(tipo === 2) ? modal.data.vehiid : null} ruta={'/admin/direccion/transporte/vehiculo/destroy'} cerrarModal={cerrarModal} />,
                         <Show id={(tipo === 3) ? modal.data.vehiid : null} />
                     ];
 

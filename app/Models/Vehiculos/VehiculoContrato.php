@@ -12,4 +12,8 @@ class VehiculoContrato extends Model
     protected $table      = 'vehiculocontrato';
     protected $primaryKey = 'vehconid';
     protected $fillable   = ['vehiid','asocid','persidgerente','vehconanio','vehconnumero','vehconfechainicial','vehconfechafinal','vehconobservacion'];
+
+    public function firma(){
+        return $this->hasMany('App\Models\Vehiculos\VehiculoContratoFirma', 'vehconid', 'vehconid');
+    }
 }

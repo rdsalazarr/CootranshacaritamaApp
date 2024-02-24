@@ -165,7 +165,7 @@ class UsuarioController extends Controller
             DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
 		}
-	}    
+	}
 
 	public function destroy(Request $request)
 	{
@@ -177,6 +177,7 @@ class UsuarioController extends Controller
 		}else if($dataIngreso){
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está relacionado con un ingreso al sistema']);
 		}else{
+			DB::beginTransaction();
 			try {
 				$usuario = User::findOrFail($request->codigo);
 				if ($usuario->has('usuarioRoles')){ 
@@ -185,8 +186,10 @@ class UsuarioController extends Controller
 					}
 				}
                 $usuario->delete();
+				DB::commit();
 				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
-			} catch (Exception $error){
+			} catch (Exception $error){ 
+				DB::rollback();
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}

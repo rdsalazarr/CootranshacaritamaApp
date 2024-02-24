@@ -61,7 +61,7 @@ class RutaController extends Controller
             'municipioOrigen'      => 'required|numeric',
             'departamentoDestino'  => 'required|numeric',
             'municipioDestino'     => 'required|numeric',
-            'valorEstampilla'      => 'required|numeric|between:1,99999',
+            'valorEstampilla'      => 'nullable|numeric|between:1,99999',
             'tieneNodos'           => 'required|numeric',
             'estado'               => 'required',
             'nodos'                => 'nullable|array|min:1'
@@ -73,7 +73,7 @@ class RutaController extends Controller
             $ruta->depaidorigen        = $request->departamentoOrigen;
             $ruta->muniidorigen        = $request->municipioOrigen;
             $ruta->depaiddestino       = $request->departamentoDestino;
-            $ruta->rutavalorestampilla = $request->valorEstampilla;
+            $ruta->rutavalorestampilla = ($request->valorEstampilla !== null) ? $request->valorEstampilla : 0 ;
             $ruta->muniiddestino       = $request->municipioDestino;
             $ruta->rutatienenodos      = $request->tieneNodos;
             $ruta->rutaactiva          = $request->estado;

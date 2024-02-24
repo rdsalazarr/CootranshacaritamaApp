@@ -15,11 +15,10 @@ export default function Procesar({data}){
     const [mostrarMensaje, setMostrarMensaje] = useState(false);
     const [tipoConductores, setTipoConductores] = useState([]);
     const [mostrarSelect, setMostrarSelect] = useState(false);
-    const [habilitado, setHabilitado] = useState(true);
     const [conductor, setConductor] = useState(false);
     const [asociado, setAsociado] = useState(false);
     const [agencias, setAgencias] = useState([]);
-    const [loader, setLoader] = useState(false);     
+    const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -30,7 +29,7 @@ export default function Procesar({data}){
         instance.post('/admin/persona/procesar', formData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? setHabilitado(false) : null; 
+            (res.success) ? inicio() : null; 
             (res.success) ? setFormData({codigo:data.persid,  fechaIngresoAsociado:'', fechaIngresoConductor:'', tipoConductor:'',
                                         agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', tipo:''}) : null;
             setLoader(false);
@@ -43,7 +42,7 @@ export default function Procesar({data}){
         setAsociado((e.target.value === 'ASOCIADO') ? true : false);
     }
 
-    useEffect(()=>{
+    const inicio = () =>{
         setLoader(true);
         let newFormData = {...formData}
         instance.post('/admin/persona/consultar/asignacion', {codigo:data.persid}).then(res=>{
@@ -63,7 +62,9 @@ export default function Procesar({data}){
             setFormData(newFormData);
             setLoader(false);
         })
-    }, []);
+    }
+
+    useEffect(()=>{inicio();}, []);
 
     if(loader){
         return <LoaderModal />
@@ -281,7 +282,7 @@ export default function Procesar({data}){
             : 
                 <Grid container direction="row"  justifyContent="right">
                     <Stack direction="row" spacing={2}>
-                        <Button type={"submit"} className={'modalBtn'} disabled={(habilitado) ? false : true}
+                        <Button type={"submit"} className={'modalBtn'}
                             startIcon={<SaveIcon />}> {"Guardar" }
                         </Button>
                     </Stack>

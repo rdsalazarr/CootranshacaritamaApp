@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('vehresdescuento', 8, 0)->nullable()->comment('Valor de escuento por pago anticipado en la responsabilidad pagado');
             $table->decimal('vehresinteresmora', 8, 0)->nullable()->comment('Valor de interés de mora en la responsabilidad pagado');
             $table->decimal('vehresvalorpagado', 8, 0)->nullable()->comment('Valor de la responsabilidad pagado');
+            $table->timestamps();
             $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehivehres');
             $table->foreign('agenid')->references('agenid')->on('agencia')->onUpdate('cascade')->index('fk_agenvehres');
             $table->foreign('usuaid')->references('usuaid')->on('usuario')->onUpdate('cascade')->index('fk_usuavehres');

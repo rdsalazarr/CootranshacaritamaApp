@@ -574,7 +574,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::prefix('/informes')->group(function(){
             Route::get('/pdf/comprobante/contable', [InformePdfController::class, 'index'])->middleware(['security:admin/informes/pdf','verifySource']);
             Route::post('/pdf/generar/comprobante/contable', [InformePdfController::class, 'comprobanteContable']);
+
             Route::get('/descargable', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
+            Route::post('/descargable/moviemiento/caja', [InformeDescargableController::class, 'movimientoCaja']);
+            Route::post('/descargable/tiquete', [InformeDescargableController::class, 'tiquete']);
         });
 
     });

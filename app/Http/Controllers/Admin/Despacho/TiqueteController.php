@@ -189,8 +189,8 @@ class TiqueteController extends Controller
                 'valorDescuento'       => 'nullable|numeric|between:1,99999999',
                 'valorFondoReposicion' => 'required|numeric|between:1,99999999',
                 'valorTotal'           => 'required|numeric|between:1,99999999',
-                'valorSeguro'          => 'required|numeric|between:1,99999999',      
-                'estampilla'           => 'required|numeric',          
+                'valorSeguro'          => 'required|numeric|between:1,99999999',
+                'valorEstampilla'      => 'required|numeric',
                 'puestosVendidos'      => 'required|array|min:1',
 	        ]);
 
@@ -236,7 +236,7 @@ class TiqueteController extends Controller
             $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
             $tiquete->tiquvalorseguro          = $request->valorSeguro;
-            //$tiquete->tiquvalorestampilla      = $request->valorEstampilla; //Hace falta
+            $tiquete->tiquvalorestampilla      = $request->valorEstampilla;
             $tiquete->tiquvalorfondoreposicion = $request->valorFondoReposicion;
             $tiquete->tiquvalortotal           = $request->valorTotal;
 			$tiquete->save();

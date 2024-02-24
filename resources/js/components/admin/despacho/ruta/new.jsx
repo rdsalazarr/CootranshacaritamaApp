@@ -12,7 +12,7 @@ export default function New({data, tipo}){
     const [formData, setFormData] = useState(
                                 (tipo !== 'I') ? {codigo:data.rutaid,  departamentoOrigen:data.depaidorigen, municipioOrigen: data.muniidorigen, departamentoDestino: data.depaiddestino, 
                                         municipioDestino:data.muniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, valorEstampilla: data.rutavalorestampilla, tipo:tipo 
-                                    } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:0, tipo:tipo
+                                    } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:'', tipo:tipo
                                 });
    
     const [formDataAdicionarNodo, setFormDataAdicionarNodo] = useState({municipioId:'', nombreMunicipio: ''});
@@ -42,7 +42,7 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo === 'I' && res.success) ? setRutaNodos([]) : null; 
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:0, tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:'', tipo:tipo}) : null;
             setLoader(false);
         })
     }
@@ -217,8 +217,8 @@ export default function New({data, tipo}){
                         label={"Valor de estampilla"}
                         value={formData.valorEstampilla}
                         type={'numeric'}
-                        require={['required', 'maxStringLength:6']}
-                        error={['Campo obligatorio','Número máximo permitido es el 999999']}
+                        require={['maxStringLength:6']}
+                        error={['Número máximo permitido es el 999999']}
                         onChange={handleChange}
                     />
                 </Grid> 

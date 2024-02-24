@@ -20,74 +20,82 @@ class VehiculoController extends Controller
 {
     public function index()
     {
-        $data = DB::table('vehiculo as v')->select('v.vehiid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
+        try{
+            $data = DB::table('vehiculo as v')->select('v.vehiid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
                                                     'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','tv.tipvehnombre', 'tev.tiesvenombre as estado')
                                                     ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
                                                     ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'v.tiesveid')
                                                     ->orderBy('v.vehiplaca')->get();
-        return response()->json(["data" => $data]);
+
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
-    
+
 	public function datos(Request $request)
 	{
 		$this->validate(request(),['codigo' => 'required','tipo' => 'required']);
+        try{
+            $tipoPeticion               = ($request->tipo === 'I') ? true : false;
+            $consultaTipoVehiculo       = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia');
+                                            if($tipoPeticion)
+                                                $consultaTipoVehiculo = $consultaTipoVehiculo->where('tipvehactivo', true);
+            $tipovehiculos              = $consultaTipoVehiculo->orderBy('tipvehnombre')->orderBy('tipvehreferencia')->get();
 
-        $tipoPeticion               = ($request->tipo === 'I') ? true : false;
-        $consultaTipoVehiculo       = DB::table('tipovehiculo')->select('tipvehid','tipvehnombre','tipvehreferencia');
-                                        if($tipoPeticion)
-                                            $consultaTipoVehiculo = $consultaTipoVehiculo->where('tipvehactivo', true);
-        $tipovehiculos              = $consultaTipoVehiculo->orderBy('tipvehnombre')->orderBy('tipvehreferencia')->get();
+            $consultaTipoReferencia     = DB::table('tiporeferenciavehiculo')->select('tireveid','tirevenombre');
+                                            if($tipoPeticion)
+                                                $consultaTipoReferencia = $consultaTipoReferencia->where('tireveactivo', true);
+            $tiporeferenciavehiculos    = $consultaTipoReferencia->orderBy('tirevenombre')->get();
 
-        $consultaTipoReferencia     = DB::table('tiporeferenciavehiculo')->select('tireveid','tirevenombre');
-                                        if($tipoPeticion)
-                                            $consultaTipoReferencia = $consultaTipoReferencia->where('tireveactivo', true);
-        $tiporeferenciavehiculos    = $consultaTipoReferencia->orderBy('tirevenombre')->get();
+            $consultaTipoMarca          = DB::table('tipomarcavehiculo')->select('timaveid','timavenombre');
+                                            if($tipoPeticion)
+                                                $consultaTipoMarca = $consultaTipoMarca->where('timaveactiva', true);
+            $tipomarcavehiculos         = $consultaTipoMarca->orderBy('timavenombre')->get();
 
-        $consultaTipoMarca          = DB::table('tipomarcavehiculo')->select('timaveid','timavenombre');
-                                        if($tipoPeticion)
-                                            $consultaTipoMarca = $consultaTipoMarca->where('timaveactiva', true);
-        $tipomarcavehiculos         = $consultaTipoMarca->orderBy('timavenombre')->get();
+            $consultaTipoCarroceria     = DB::table('tipocarroceriavehiculo')->select('ticaveid','ticavenombre');
+                                            if($tipoPeticion)
+                                                $consultaTipoCarroceria = $consultaTipoCarroceria->where('ticaveactivo', true);
+            $tipocarroceriavehiculos    = $consultaTipoCarroceria->orderBy('ticavenombre')->get();
 
-        $consultaTipoCarroceria     = DB::table('tipocarroceriavehiculo')->select('ticaveid','ticavenombre');
-                                        if($tipoPeticion)
-                                            $consultaTipoCarroceria = $consultaTipoCarroceria->where('ticaveactivo', true);
-        $tipocarroceriavehiculos    = $consultaTipoCarroceria->orderBy('ticavenombre')->get();
+            $consultaTipoColor          = DB::table('tipocolorvehiculo')->select('ticoveid','ticovenombre');
+                                            if($tipoPeticion)
+                                                $consultaTipoColor = $consultaTipoColor->where('ticoveactivo', true);
+            $tipocolorvehiculos         = $consultaTipoColor->orderBy('ticovenombre')->get();
 
-        $consultaTipoColor          = DB::table('tipocolorvehiculo')->select('ticoveid','ticovenombre');
-                                        if($tipoPeticion)
-                                            $consultaTipoColor = $consultaTipoColor->where('ticoveactivo', true);
-        $tipocolorvehiculos         = $consultaTipoColor->orderBy('ticovenombre')->get();
+            $consultaAgencia            = DB::table('agencia')->select('agenid','agennombre');
+                                            if($tipoPeticion)
+                                                $consultaAgencia = $consultaAgencia->where('agenactiva', true);
+            $agencias                   = $consultaAgencia->orderBy('agennombre')->get();
 
-        $consultaAgencia            = DB::table('agencia')->select('agenid','agennombre');
-                                        if($tipoPeticion)
-                                            $consultaAgencia = $consultaAgencia->where('agenactiva', true);
-        $agencias                   = $consultaAgencia->orderBy('agennombre')->get();
+            $tipocombustiblevehiculos   = DB::table('tipocombustiblevehiculo')->select('ticovhid','ticovhnombre')->orderBy('ticovhnombre')->get();
+            $tipomodalidadvehiculos     = DB::table('tipomodalidadvehiculo')->select('timoveid','timovenombre')->orderBy('timovenombre')->get();
+            $asociados                  = DB::table('persona as p')->select('a.asocid', 'p.persid', DB::raw("if(p.perstienefirmaelectronica = 1 ,'SI', 'NO') as tieneFirmaElectronica"),
+                                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                                                ->join('asociado as a', 'a.persid', '=', 'p.persid')
+                                                ->where('a.tiesasid', 'A')
+                                                ->orderBy('nombrePersona')->get();
 
-        $tipocombustiblevehiculos   = DB::table('tipocombustiblevehiculo')->select('ticovhid','ticovhnombre')->orderBy('ticovhnombre')->get();
-        $tipomodalidadvehiculos     = DB::table('tipomodalidadvehiculo')->select('timoveid','timovenombre')->orderBy('timovenombre')->get();
-        $asociados                  = DB::table('persona as p')->select('a.asocid', 'p.persid', DB::raw("if(p.perstienefirmaelectronica = 1 ,'SI', 'NO') as tieneFirmaElectronica"),
-                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
-                                            ->join('asociado as a', 'a.persid', '=', 'p.persid')
-                                            ->where('a.tiesasid', 'A')
-                                            ->orderBy('nombrePersona')->get();
+            $vehiculo         = [];
+            if($request->tipo === 'U'){
+                $url      = URL::to('/');
+                $vehiculo = DB::table('vehiculo')
+                                ->select('asocid','vehiid','tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
+                                        'tiesveid','vehifechaingreso','vehinumerointerno','vehiplaca','vehimodelo','vehicilindraje',
+                                        'vehinumeromotor','vehinumerochasis','vehinumeroserie','vehinumeroejes','vehiesmotorregrabado',
+                                        'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto','vehiobservacion',
+                                        DB::raw("CONCAT('$url/archivos/vehiculo/', vehiplaca, '/', vehirutafoto ) as rutaFotografia"))
+                                ->where('vehiid', $request->codigo)->first();
+            }
 
-		$vehiculo         = [];
-		if($request->tipo === 'U'){
-            $url      = URL::to('/');
-			$vehiculo = DB::table('vehiculo')
-                            ->select('asocid','vehiid','tipvehid','tireveid','timaveid','ticoveid','timoveid','ticaveid','ticovhid','agenid',
-                                    'tiesveid','vehifechaingreso','vehinumerointerno','vehiplaca','vehimodelo','vehicilindraje',
-                                    'vehinumeromotor','vehinumerochasis','vehinumeroserie','vehinumeroejes','vehiesmotorregrabado',
-                                    'vehieschasisregrabado','vehiesserieregrabado','vehirutafoto','vehiobservacion',
-                                    DB::raw("CONCAT('$url/archivos/vehiculo/', vehiplaca, '/', vehirutafoto ) as rutaFotografia"))
-                            ->where('vehiid', $request->codigo)->first();
-		}
-
-        return response()->json(['success' => true,       'tipovehiculos' => $tipovehiculos, 'tiporeferenciavehiculos' => $tiporeferenciavehiculos, 
-                                'tipomarcavehiculos'       => $tipomarcavehiculos,           'tipocarroceriavehiculos' => $tipocarroceriavehiculos,
-                                'tipocolorvehiculos'       => $tipocolorvehiculos,           'agencias'                => $agencias,
-                                'tipocombustiblevehiculos' => $tipocombustiblevehiculos,     'tipomodalidadvehiculos'  => $tipomodalidadvehiculos,
-                                'vehiculo'                 => $vehiculo ,                    'asociados'               => $asociados]);
+            return response()->json(['success' => true,       'tipovehiculos' => $tipovehiculos, 'tiporeferenciavehiculos' => $tiporeferenciavehiculos, 
+                                    'tipomarcavehiculos'       => $tipomarcavehiculos,           'tipocarroceriavehiculos' => $tipocarroceriavehiculos,
+                                    'tipocolorvehiculos'       => $tipocolorvehiculos,           'agencias'                => $agencias,
+                                    'tipocombustiblevehiculos' => $tipocombustiblevehiculos,     'tipomodalidadvehiculos'  => $tipomodalidadvehiculos,
+                                    'vehiculo'                 => $vehiculo ,                    'asociados'               => $asociados]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
 	}
 
     public function salve(Request $request)
@@ -120,7 +128,7 @@ class VehiculoController extends Controller
                 'observacion'           => 'nullable|string|max:500',
                 'fotografia'            => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
                 'fechaInicialContrato'  => 'nullable|date_format:Y-m-d|required_if:tipo,I',
-                'firmaElectronia'       => 'required'                
+                'firmaElectronia'       => 'required'
 	        ]);
 
         DB::beginTransaction();
@@ -209,7 +217,6 @@ class VehiculoController extends Controller
                 $vehiculoContratoMaxConsecutio = VehiculoContrato::latest('vehconid')->first();
                 $vehconid                      = $vehiculoContratoMaxConsecutio->vehconid;
 
-
                 $tipoModalidadVehiculo   = DB::table('tipomodalidadvehiculo')->select('timovecuotasostenimiento')->where('timoveid', $request->tipoModalidad)->first();
                 $fechasCompromisos       = $funcion->obtenerFechasCompromisoVehiculo($request->fechaInicialContrato);
                 $valorMensualidadInicial = $funcion->obtenerPrimerValorMensualidad($request->fechaInicialContrato, $tipoModalidadVehiculo->timovecuotasostenimiento);
@@ -221,33 +228,34 @@ class VehiculoController extends Controller
                     $vehiculoresponsabilidad->vehresvalorresponsabilidad = ($id === 0 && $valorMensualidadInicial > 0 ) ? $valorMensualidadInicial : $valorCuotaSostenimiento;
                     $vehiculoresponsabilidad->save();
                 }
-                
+
+                $vehiculocontratofirma           = new VehiculoContratoFirma();
+                $vehiculocontratofirma->vehconid = $vehconid;
+                $vehiculocontratofirma->persid   = $representante->persid;
+                $vehiculocontratofirma->save();
+
+                //firma del asociado
+                $vehiculocontratofirma           = new VehiculoContratoFirma();
+                $vehiculocontratofirma->vehconid = $vehconid;
+                $vehiculocontratofirma->persid   = $request->personaId;
+                $vehiculocontratofirma->save();
+
                 //Creamos la firma de los contratos
                 if($request->firmaElectronia === 'SI'){
-                    $vehiculocontratofirma           = new VehiculoContratoFirma();
-                    $vehiculocontratofirma->vehconid = $vehconid;
-                    $vehiculocontratofirma->persid   = $representante->persid;
-                    $vehiculocontratofirma->save();
-
-                    //firma del asociado
-                    $vehiculocontratofirma           = new VehiculoContratoFirma();
-                    $vehiculocontratofirma->vehconid = $vehconid;
-                    $vehiculocontratofirma->persid   = $request->personaId;
-                    $vehiculocontratofirma->save();
 
                     //Obtengo el id del contrato
                     $contratoMaxConsecutio = VehiculoContratoFirma::latest('vecofiid')->first();
                     $vecofiid              = $contratoMaxConsecutio->vecofiid;
                     $nombreUsuario         = auth()->user()->usuanombre.' '.auth()->user()->usuaapellidos;
-                    $persona               = DB::table('persona')
-                                            ->select('perscorreoelectronico',DB::raw("CONCAT(persprimernombre,' ',IFNULL(perssegundonombre,''),' ',persprimerapellido,' ',IFNULL(perssegundoapellido,'')) as nombreAsociado"))
-                                            ->where('persid', $request->personaId)->first();
+                    $persona               = DB::table('persona')->select('perscorreoelectronico',
+                                                    DB::raw("CONCAT(persprimernombre,' ',IFNULL(perssegundonombre,''),' ',persprimerapellido,' ',IFNULL(perssegundoapellido,'')) as nombreAsociado"))
+                                                    ->where('persid', $request->personaId)->first();
                     $correoAsociado        = $persona->perscorreoelectronico;
                     $nombreAsociado        = $persona->nombreAsociado;
                     $urlFirmaContrato      = asset('firmar/contrato/asociado/'.Crypt::encrypt($vehconid).'/'.Crypt::encrypt($vecofiid));
 
-                    //Notificamos a al gerente y al asociado
-                    $notificar         = new notificar();
+                    //Notificamos al gerente y al asociado
+                    $notificar          = new notificar();
                     $informacioncorreos = DB::table('informacionnotificacioncorreo')->whereIn('innoconombre', ['solicitaFirmaContratoGerente', 'solicitaFirmaContratoAsociado'])->get();
                     foreach($informacioncorreos as $informacioncorreo){
                         $buscar             = Array('numeroContrato', 'nombreGerente', 'nombreUsuario', 'nombreAsociado', 'urlFirmaContrato');
@@ -315,15 +323,79 @@ class VehiculoController extends Controller
 
     public function destroy(Request $request)
 	{
-		$vehiculocontrato = DB::table('vehiculocontrato')->select('tipvehid')->where('tipvehid', $request->codigo)->first();
+		$vehiculocontrato = DB::table('vehiculocontratofirma as vcf')->select('vc.vehiid')
+                                    ->join('vehiculocontrato as vc', 'vc.vehconid', '=', 'vcf.vehconid')
+                                    ->where('vcf.vecofifirmado', true)
+                                    ->where('vc.vehiid', $request->codigo)->first();
 		if($vehiculocontrato){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un vehículo contrato del sistema']);
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un vehículo contrato firmado del sistema']);
 		}else{
+            DB::beginTransaction();
 			try {
-				$vehiculo = Vehiculo::findOrFail($request->codigo);
-				$vehiculo->delete();
+
+                $vehiculo = Vehiculo::findOrFail($request->codigo); 
+
+				if ($vehiculo->has('cambioEstado')){ 
+					foreach ($vehiculo->cambioEstado as $idCambioEstado){
+						$vehiculo->cambioEstado()->delete($idCambioEstado);
+					}
+				}
+
+                if ($vehiculo->contrato()->exists()) {
+                    foreach ($vehiculo->contrato as $contrato) {
+                        $contrato->firma()->delete();  
+                        $contrato->delete();
+                    }
+                }
+
+                if ($vehiculo->has('contrato')){ 
+					foreach ($vehiculo->contrato as $idContrato){
+						$vehiculo->contrato()->delete($idContrato);
+					}
+				}
+
+                if ($vehiculo->contrato()->exists()) {
+                    foreach ($vehiculo->contrato as $idContrato) {
+                        dd($idContrato);
+                        
+                    }
+                }
+
+                if ($vehiculo->has('crt')){ 
+					foreach ($vehiculo->crt as $idCrt){
+						$vehiculo->crt()->delete($idCrt);
+					}
+				}
+
+                if ($vehiculo->has('poliza')){ 
+					foreach ($vehiculo->poliza as $idPoliza){
+						$vehiculo->poliza()->delete($idPoliza);
+					}
+				}
+
+                if ($vehiculo->has('responsabilidad')){ 
+					foreach ($vehiculo->responsabilidad as $idResponsabilidad){
+						$vehiculo->responsabilidad()->delete($idResponsabilidad);
+					}
+				}
+
+                if ($vehiculo->has('soat')){ 
+					foreach ($vehiculo->soat as $idSoat){
+						$vehiculo->soat()->delete($idSoat);
+					}
+				}
+
+                if ($vehiculo->has('tarjetaOperacion')){ 
+					foreach ($vehiculo->tarjetaOperacion as $idTarjetaOperacion){
+						$vehiculo->tarjetaOperacion()->delete($idTarjetaOperacion);
+					}
+				}
+
+                $vehiculo->delete();
+                DB::commit();
 				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
 			} catch (Exception $error){
+                DB::rollback();
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}
