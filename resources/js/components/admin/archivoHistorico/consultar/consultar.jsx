@@ -14,13 +14,13 @@ export default function Consultar(){
 
     const [formData, setFormData] = useState({fechaInicial:'', fechaFinal: '', tipoDocumental:'000', estante: '000', caja:'000', carpeta: '000', asuntoDocumento:''});
     const [modal, setModal] = useState({open : false, vista:2, data:{}, titulo:'', tamano:'bigFlot'});
-    const [mostarDatos, setMostarDatos] = useState(false);
-    const [data, setData] = useState([]);   
-    const [loader, setLoader] = useState(false);
-    const [tipoDocumentales, setTipoDocumentales ] = useState([]);
     const [tipoEstanteArchivadores, setTipoEstanteArchivadores] = useState([]);
-    const [tipoCajaUbicaciones, setTipoCajaUbicaciones] = useState([]);
     const [tipoCarpetaUbicaciones, setTipoCarpetaUbicaciones] = useState([]);
+    const [tipoCajaUbicaciones, setTipoCajaUbicaciones] = useState([]);
+    const [tipoDocumentales, setTipoDocumentales ] = useState([]);
+    const [mostarDatos, setMostarDatos] = useState(false);
+    const [loader, setLoader] = useState(false);
+    const [data, setData] = useState([]);
 
     const handleChange = (e) =>{
       setFormData(prev => ({...prev, [e.target.name]: e.target.value}));
@@ -38,7 +38,7 @@ export default function Consultar(){
         (res.success) ? setData(res.data) : null;
         setLoader(false);
       })
-    }    
+    }
 
     const descargarFile = () =>{
         setLoader(true);
@@ -65,7 +65,7 @@ export default function Consultar(){
     }
 
     return (
-        <Box>            
+        <Box>
             <ValidatorForm onSubmit={handleSubmit} >
                 <Card style={{padding: '5px', width: '80%', margin: 'auto', marginTop: '1em' }}>
                     <Grid container spacing={2}>

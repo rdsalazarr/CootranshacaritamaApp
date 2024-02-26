@@ -16,7 +16,7 @@ export default function MovimientoCaja(){
 
     const handleSubmit = () =>{
         setLoader(true);
-        instanceFile.post('/admin/exportar/datos/movimiento/diarios', formData).then(res=>{
+        instanceFile.post('/admin/exportar/datos/tiquete', formData).then(res=>{
             setLoader(false);
         })
     } 

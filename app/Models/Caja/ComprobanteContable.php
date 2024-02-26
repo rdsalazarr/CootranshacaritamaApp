@@ -12,7 +12,7 @@ class ComprobanteContable extends Model
 
     protected $table      = 'comprobantecontable';
     protected $primaryKey = 'comconid';
-    protected $fillable   = ['movcajid','usuaid','cajaid','comconanio','comconconsecutivo',
+    protected $fillable   = ['movcajid','usuaid','cajaid','agenid','comconanio','comconconsecutivo',
                             'comconfechahora', 'comcondescripcion','comconfechahoracierre','comconestado'];
 
     public static function obtenerConsecutivo($anioActual)

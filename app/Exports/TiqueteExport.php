@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use DB, Auth, AfterSheet, BeforeExport, Exportable, WithEvents;
 use Carbon\Carbon;
 
-class MovimientosDiariosExport implements FromCollection, WithHeadings,WithProperties,WithTitle,ShouldAutoSize
+class TiqueteExportExport implements FromCollection, WithHeadings,WithProperties,WithTitle,ShouldAutoSize
 {
     protected $request;
 
@@ -28,8 +28,8 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
         return [
             'creator'        => 'IMPLESOFT',
             'lastModifiedBy' => 'IMPLESOFT',
-            'title'          => 'Reporte de movimiento diarios',
-            'description'    => 'Contiene todos los movimiento diarios por usuario y caja',
+            'title'          => 'Reporte de tiquete',
+            'description'    => 'Contiene todos los tiquetes vendidos',
             'subject'        => 'HACARITAMA',
             'keywords'       => 'Reporte',
             'category'       => 'reporte',
@@ -43,7 +43,7 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
      */
     public function title(): string
     {
-        return 'Movimientos diarios';
+        return 'Tiquetes';
     }
     
     /**

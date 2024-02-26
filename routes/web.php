@@ -123,6 +123,7 @@ Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosControl
 Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class, 'exportarCarteraVencida']);
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);
 Route::post('/admin/exportar/datos/movimiento/diarios', [RegistrosController::class, 'exportarMovimientoDiarios']);
+Route::post('/admin/exportar/datos/tiquete', [RegistrosController::class, 'exportarTiquete']);
 
 // verifySource //verificar que se acceda desde el sistema
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -575,9 +576,9 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/pdf/comprobante/contable', [InformePdfController::class, 'index'])->middleware(['security:admin/informes/pdf','verifySource']);
             Route::post('/pdf/generar/comprobante/contable', [InformePdfController::class, 'comprobanteContable']);
 
-            Route::get('/descargable', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
-            Route::post('/descargable/moviemiento/caja', [InformeDescargableController::class, 'movimientoCaja']);
-            Route::post('/descargable/tiquete', [InformeDescargableController::class, 'tiquete']);
+            Route::get('/descargable/tiquete', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
+           /// Route::post('/descargable/moviemiento/caja', [InformeDescargableController::class, 'movimientoCaja']);
+           // Route::post('/descargable/tiquete', [InformeDescargableController::class, 'tiquete']);
         });
 
     });
