@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
+import instanceFile from '../..//layout/instanceFile';
+import { ModalDefaultAuto } from '../../layout/modal';
 import TablaGeneral from '../../layout/tablaGeneral';
-import { ModalDefaultAuto  } from '../../layout/modal';
 import {LoaderModal} from "../../layout/loader";
 import { Box, Typography} from '@mui/material';
 import Eliminar from '../../layout/modalFijas';
@@ -35,6 +36,13 @@ export default function List(){
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' : 'bigFlot'});
     }
 
+    const descargarFile = () =>{
+        setLoader(true);
+        instanceFile.post('/admin/exportar/datos/persona').then(res=>{
+            setLoader(false);
+        })
+    } 
+
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/persona/list').then(res=>{
@@ -59,11 +67,13 @@ export default function List(){
                     titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Tipo de persona', 'Activo','Actualizar','Eliminar','Ver','Procesar']}
                     ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico", "tipoPersona","estado"]}
                     accion={[
-                        {tipo: 'T', icono : 'add',           color: 'green',  funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',          color: 'orange', funcion : (data)=>{edit(data,1)} },
-                        {tipo: 'B', icono : 'delete',        color: 'red',    funcion : (data)=>{edit(data,2)} },
-                        {tipo: 'B', icono : 'visibility',    color: 'green',  funcion : (data)=>{edit(data,3)} },
-                        {tipo: 'B', icono : 'add_task_Icon', color: 'red',    funcion : (data)=>{edit(data,4)} },
+                        {tipo: 'D', icono : 'file_download_icon', color: 'orange', funcion : (data)=>{descargarFile()} },
+                        {tipo: 'T', icono : 'add',                color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',               color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',             color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility',         color: 'green',  funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'B', icono : 'add_task_Icon',      color: 'red',    funcion : (data)=>{edit(data,4)} },
+                        
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />

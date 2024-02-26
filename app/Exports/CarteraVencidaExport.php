@@ -20,7 +20,7 @@ class CarteraVencidaExport implements FromCollection, WithHeadings,WithPropertie
 
     public function __construct($request)
     {
-        $this->request = $request;    
+        $this->request = $request;
     }
 
     public function properties(): array
@@ -45,24 +45,23 @@ class CarteraVencidaExport implements FromCollection, WithHeadings,WithPropertie
     {
         return 'Cartera vencida';
     }
-    
+
     /**
     * @return \Illuminate\Support\Collection
     */  
 
     public function headings(): array
     {
-        $request   = $this->request;  
-        
         return [ 'Documento','Nombre asociado','Línea crédito','Número de crédito','Fecha desembolso','Valor', 'Vehículo', 'Placa', 'Número interno', 'Días en mora'];
     }
 
     public function collection()
     {
-        $request         = $this->request; 
+        $request         = $this->request;
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $consulta        = DB::table('colocacion as c')->select('p.persdocumento',DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ', p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"),
+        $consulta        = DB::table('colocacion as c')->select('p.persdocumento',
+                                DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),
                                 'lc.lincrenombre', DB::raw("CONCAT(c.coloanio, c.colonumerodesembolso) as numeroColocacion"), 'c.colofechacolocacion','c.colovalordesembolsado', 
                                 DB::raw("CONCAT(tv.tipvehnombre,if(tv.tipvehreferencia is null ,'', tv.tipvehreferencia) ) as referenciaVehiculo"),'v.vehiplaca', 'v.vehinumerointerno', 
                                 DB::raw("DATEDIFF(NOW(), c.colofechacolocacion) as diasMora"))

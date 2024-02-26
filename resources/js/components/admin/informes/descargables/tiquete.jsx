@@ -67,8 +67,8 @@ export default function MovimientoCaja(){
                         </Grid>
                         <Grid item xl={4} md={4} sm={6} xs={12} >
                             <Stack direction="row" spacing={2} style={{ float:'right'}}>
-                                <Button type={"submit"} className={'modalBtn'}
-                                    startIcon={<DownloadingIcon />}> Descargar
+                                <Button type={"submit"} className={'modalBtnIcono'}
+                                    startIcon={<DownloadingIcon className='icono'/>}> Descargar
                                 </Button>
                             </Stack>
                         </Grid>

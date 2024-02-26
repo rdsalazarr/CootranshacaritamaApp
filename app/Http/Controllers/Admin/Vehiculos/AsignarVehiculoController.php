@@ -584,7 +584,7 @@ class AsignarVehiculoController extends Controller
             $fechaActual           = $fechaHoraActual->format('Y-m-d');
     
             $tarjetaOperacionVehiculo = DB::table('vehiculotarjetaoperacion as vto')
-                                        ->select('vto.vetaopaid','vto.vehiid','vto.tiseveid','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
+                                        ->select('vto.vetaopid','vto.vehiid','vto.tiseveid','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
                                             'vto.vetaopenteadministrativo','vto.vetaopextension','vto.vetaopnombrearchivooriginal', 'vto.vetaopnombrearchivoeditado', 'vto.vetaoprutaarchivo',                                        
                                             DB::raw("CONCAT('archivos/vehiculo/', v.vehiplaca) as rutaAdjuntoTarjetaOperacion"),
                                             DB::raw("(SELECT MAX(vetaopfechafinal) FROM vehiculotarjetaoperacion WHERE vehiid = vto.vehiid) AS maxFechaVencimiento"))
@@ -600,7 +600,7 @@ class AsignarVehiculoController extends Controller
             $tipoServiciosVehiculos   = DB::table('tiposerviciovehiculo')->select('tiseveid','tisevenombre')->orderBy('tisevenombre')->get();
 
             $historialTarjetaOperacion = DB::table('vehiculotarjetaoperacion as vto')
-                                        ->select('vto.vetaopaid','vto.vehiid','tsv.tisevenombre','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
+                                        ->select('vto.vetaopid','vto.vehiid','tsv.tisevenombre','vto.vetaopnumero', 'vto.vetaopfechainicial','vto.vetaopfechafinal','vto.vetaopradioaccion',
                                         'vto.vetaopenteadministrativo','vto.vetaopextension', 'vto.vetaopnombrearchivooriginal', 'vto.vetaopnombrearchivoeditado', 'vto.vetaoprutaarchivo',
                                         DB::raw("if(vto.vetaopradioaccion = 'M' ,'Municipal', 'Nacional') as radioAccion"),
                                         DB::raw("if(vto.vetaopenteadministrativo = 'M' ,'Ministerio', 'Tránsito') as enteAdministrativo"),

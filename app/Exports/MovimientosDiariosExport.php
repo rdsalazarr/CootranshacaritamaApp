@@ -20,7 +20,7 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
 
     public function __construct($request)
     {
-        $this->request = $request;    
+        $this->request = $request;
     }
 
     public function properties(): array
@@ -48,12 +48,10 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
     
     /**
     * @return \Illuminate\Support\Collection
-    */  
+    */
 
     public function headings(): array
     {
-        $request   = $this->request;
-
         return ['Fecha movimiento', 'Código contable','Cuenta','Agencia','Usuario','Débito','Crédito'];
     }
 

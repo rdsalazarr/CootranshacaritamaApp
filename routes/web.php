@@ -120,10 +120,13 @@ Route::post('/admin/eliminar/archivo', [EliminarAchivosController::class, 'index
 Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);
 Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
 
+Route::post('/admin/exportar/datos/persona', [RegistrosController::class, 'exportarPersona']);
+Route::post('/admin/exportar/datos/tiquete', [RegistrosController::class, 'exportarTiquete']);
+Route::post('/admin/exportar/datos/licencia/vencidas', [RegistrosController::class, 'exportarLicencias']);
 Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class, 'exportarCarteraVencida']);
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);
 Route::post('/admin/exportar/datos/movimiento/diarios', [RegistrosController::class, 'exportarMovimientoDiarios']);
-Route::post('/admin/exportar/datos/tiquete', [RegistrosController::class, 'exportarTiquete']);
+Route::post('/admin/exportar/datos/documento/vencidos/vehiculos', [RegistrosController::class, 'documentosVencidos']);
 
 // verifySource //verificar que se acceda desde el sistema
 Route::middleware(['revalidate','auth'])->group(function () {

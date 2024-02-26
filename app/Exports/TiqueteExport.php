@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use DB, Auth, AfterSheet, BeforeExport, Exportable, WithEvents;
 use Carbon\Carbon;
 
-class TiqueteExportExport implements FromCollection, WithHeadings,WithProperties,WithTitle,ShouldAutoSize
+class TiqueteExport implements FromCollection, WithHeadings,WithProperties,WithTitle,ShouldAutoSize
 {
     protected $request;
 
@@ -20,7 +20,7 @@ class TiqueteExportExport implements FromCollection, WithHeadings,WithProperties
 
     public function __construct($request)
     {
-        $this->request = $request;    
+        $this->request = $request;
     }
 
     public function properties(): array
@@ -52,50 +52,42 @@ class TiqueteExportExport implements FromCollection, WithHeadings,WithProperties
 
     public function headings(): array
     {
-        $request   = $this->request;
-
-        return ['Fecha movimiento', 'Código contable','Cuenta','Agencia','Usuario','Débito','Crédito'];
+        return ['Fecha registro', 'Fecha salida','Municipio origen','Municipio destino','Vehículo','Número tiquete','Nombre cliente','Valor tiquete',
+                'Descuento', 'Valor seguro','Valor estampilla','Fondo reposición', 'Valor total', 'Contabilizado', 'Agencia venta'];
     }
 
     public function collection()
     {
         $request         = $this->request;
-        $fechaInicial   = $request->fechaInicial;
-        $fechaFinal     = $request->fechaFinal;
-        $fechaHoraActual = Carbon::now();
-        $fechaActual     = $fechaHoraActual->format('Y-m-d');
-        $idUsuario       = Auth::id();
-        $agenciaId       = auth()->user()->agenid;
-        $cajaId          = auth()->user()->cajaid;
+        $fechaInicial    = $request->fechaInicial;
+        $fechaFinal      = $request->fechaFinal;
 
-        $consulta = DB::table('comprobantecontabledetalle as ccd')
-                        ->select('ccd.cocodefechahora', 'cc.cueconcodigo', 'cc.cueconnombre','a.agennombre',
-                            DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 
-                            DB::raw("(CASE WHEN cc.cueconnaturaleza = 'D' THEN COALESCE(ccd.cocodemonto, 0) ELSE 0 END) AS valorDebito"),
-                            DB::raw("(CASE WHEN cc.cueconnaturaleza = 'C' THEN COALESCE(ccd.cocodemonto, 0) ELSE 0 END) AS valorCredito")
-                        )
-                        ->join('comprobantecontable as cct', 'cct.comconid', '=', 'ccd.comconid')
-                        ->join('cuentacontable as cc', 'cc.cueconid', '=', 'ccd.cueconid')
-                        ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
-                        ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
-                        ->join('usuario as u', 'u.usuaid', '=', 'cc.usuaid')
-                        ->join('movimientocaja as mc', function($join)
+        $consulta =   DB::table('tiquete as t')
+                            ->select('t.tiqufechahoraregistro','pr.plarutfechahorasalida',
+                            'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
+                            DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
+                            DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            DB::raw("CONCAT(ps.perserprimernombre,' ',IFNULL(ps.persersegundonombre,''),' ',ps.perserprimerapellido,' ',IFNULL(ps.persersegundoapellido,'')) as nombreCliente"),
+                            't.tiquvalortiquete','t.tiquvalordescuento','t.tiquvalorseguro','t.tiquvalorestampilla','t.tiquvalorfondoreposicion','t.tiquvalortotal',
+                            DB::raw("if(t.tiqucontabilizado = 1 ,'Sí', 'No') as contabilizado"),'ag.agennombre')
+                        ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                        ->join('municipio as mo', function($join)
                         {
-                            $join->on('mc.movcajid', '=', 'cct.movcajid');
-                            $join->on('mc.usuaid', '=', 'cct.usuaid');
-                        });
-
-                    if($fechaInicial !==''){
-                        $consulta = $consulta->whereDate('mc.movcajfechahoraapertura', '>=', $fechaInicial)
-                                            ->whereDate('mc.movcajfechahoraapertura', '<=', $fechaFinal);
-                    }else{
-                        $consulta = $consulta->whereDate('mc.movcajfechahoraapertura', $fechaActual)
-                                            ->where('mc.usuaid', $idUsuario)
-                                            ->where('cct.agenid', $agenciaId)
-                                            ->where('mc.cajaid', $cajaId);
-                    }
-
-                $consulta = $consulta->orderBy('ccd.cocodefechahora')->get();
+                            $join->on('mo.munidepaid', '=', 't.depaidorigen');
+                            $join->on('mo.muniid', '=', 't.muniidorigen');
+                        })
+                        ->join('municipio as md', function($join)
+                        {
+                            $join->on('md.munidepaid', '=', 't.depaiddestino');
+                            $join->on('md.muniid', '=', 't.muniiddestino');
+                        })
+                        ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                        ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
+                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                        ->join('agencia as ag', 'ag.agenid', '=', 't.agenid')
+                        ->whereDate('t.tiqufechahoraregistro', '>=', $fechaInicial)
+                        ->whereDate('t.tiqufechahoraregistro', '<=', $fechaFinal)
+                        ->orderBy('t.tiquid', 'Desc')->orderBy('pr.plarutid', 'Desc')->get();
 
         return $consulta;
     }

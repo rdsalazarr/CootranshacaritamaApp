@@ -5,7 +5,7 @@ import { Button, Grid, Box, Stack, Card} from '@mui/material';
 import instanceFile from '../../../layout/instanceFile';
 import {LoaderModal} from "../../../layout/loader";
 
-export default function MovimientoCaja(){
+export default function Licencias(){
 
     const [formData, setFormData] = useState({fechaInicial:'', fechaFinal:''});
     const [loader, setLoader] = useState(false);
@@ -16,10 +16,10 @@ export default function MovimientoCaja(){
 
     const handleSubmit = () =>{
         setLoader(true);
-        instanceFile.post('/admin/exportar/datos/movimiento/diarios', formData).then(res=>{
+        instanceFile.post('/admin/exportar/datos/licencia/vencidas', formData).then(res=>{
             setLoader(false);
         })
-    } 
+    }
 
     if(loader){
         return <LoaderModal />

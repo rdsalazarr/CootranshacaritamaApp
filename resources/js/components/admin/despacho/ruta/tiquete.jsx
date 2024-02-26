@@ -251,7 +251,7 @@ export default function Tiquete({data}){
                     </Grid>
 
                     <Grid item xl={2} md={2} sm={12} xs={12}>
-                        <Button type={"submit"} className={'modalBtnBuscar'} 
+                        <Button type={"submit"} className={'modalBtnIcono'} 
                             startIcon={(tipoProceso === 'I') ? <AddIcon className='icono' /> : <EditIcon className='icono' /> }> {(tipoProceso === 'I') ? "Agregar" : "Actualizar"}
                         </Button>
                     </Grid>

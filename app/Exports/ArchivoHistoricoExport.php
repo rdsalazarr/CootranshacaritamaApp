@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use DB, AfterSheet, BeforeExport, Exportable, WithEvents;
 
 class ArchivoHistoricoExport implements FromCollection, WithHeadings,WithProperties,WithTitle,ShouldAutoSize
-{       
+{
     protected $request;
 
     /**
@@ -19,7 +19,7 @@ class ArchivoHistoricoExport implements FromCollection, WithHeadings,WithPropert
 
     public function __construct($request)
     {
-        $this->request = $request;    
+        $this->request = $request;
     }
 
     public function properties(): array
@@ -44,15 +44,13 @@ class ArchivoHistoricoExport implements FromCollection, WithHeadings,WithPropert
     {
         return 'Archivo historico';
     }
-    
+
     /**
     * @return \Illuminate\Support\Collection
-    */  
+    */
 
     public function headings(): array
     {
-        $request   = $this->request;  
-        
         return [ 'Tipo documental', 'Estante', 'Caja', 'Carpeta', 'Asunto', 'Número de folio', 'Fecha del documento', 'Tomo', 
                 'Código documental', 'Entidad remitente', 'Entidad productora','Resumen del documento', 'Observación'];
     }

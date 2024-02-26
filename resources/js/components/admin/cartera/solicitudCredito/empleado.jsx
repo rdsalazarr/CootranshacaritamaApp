@@ -112,7 +112,7 @@ export default function Empleado(){
 
                             <Grid item xl={2} md={2} sm={6} xs={12}>
                                 <Stack direction="row" spacing={2}>
-                                    <Button type={"submit"} className={'modalBtnBuscar'} 
+                                    <Button type={"submit"} className={'modalBtnIcono'} 
                                         startIcon={<SearchIcon className='icono' />}> consultar
                                     </Button>
                                 </Stack>

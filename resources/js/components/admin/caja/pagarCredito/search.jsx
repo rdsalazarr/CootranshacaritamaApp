@@ -131,7 +131,7 @@ export default function Search(){
 
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <Stack direction="row" spacing={2} >
-                                    <Button type={"submit"} className={'modalBtnBuscar'}
+                                    <Button type={"submit"} className={'modalBtnIcono'}
                                         startIcon={<SearchIcon className='icono' />}> Consultar
                                     </Button>
                                 </Stack>

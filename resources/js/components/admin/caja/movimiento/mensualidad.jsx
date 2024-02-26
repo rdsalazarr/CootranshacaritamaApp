@@ -165,7 +165,7 @@ export default function Mensualidad(){
 
                             <Grid item xl={3} md={3} sm={4} xs={4}>
                                 <Stack direction="row" spacing={2} >
-                                    <Button type={"submit"} className={'modalBtnBuscar'}
+                                    <Button type={"submit"} className={'modalBtnIcono'}
                                         startIcon={<SearchIcon className='icono' />}> Consultar
                                     </Button>
                                 </Stack>

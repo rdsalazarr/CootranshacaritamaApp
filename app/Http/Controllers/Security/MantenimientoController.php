@@ -375,6 +375,38 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {
+
+        //'pr.plarutdespachada'
+
+        /*'agenid','usuaid','plarutid','perserid','depaidorigen','muniidorigen','depaiddestino','muniiddestino',
+                            'tiquanio','tiquconsecutivo','tiqufechahoraregistro','tiqucantidad','tiquvalortiquete','tiquvalordescuento', 
+                            'tiquvalorseguro','tiquvalorestampilla','tiquvalorfondoreposicion','tiquvalortotal','tiqucontabilizado'*/
+
+
+                            $fechaHoraActual = Carbon::now();
+                            $fechaActual     = $fechaHoraActual->format('Y-m-d');
+                            $fechaSuperiror  = Carbon::now()->addDays(30)->toDateString();
+                            $fechaSuperiror  = Carbon::parse($fechaSuperiror);
+                            $fechaFinal      = $fechaSuperiror->format('Y-m-d');
+
+       $consulta = DB::table('vehiculosoat as vs')
+                            ->select('tv.tipvehnombre','v.vehinumerointerno','v.vehiplaca','tmv.timovenombre','vs.vehsoanumero',
+                                'vs.vehsoafechafinal',DB::raw('(CASE WHEN vs.vehsoafechafinal < CURDATE() THEN "Vencido" ELSE "Vigente" END) AS estado'))
+                            ->join('vehiculo as v', 'v.vehiid', '=', 'vs.vehiid')
+                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                            ->join('tipomodalidadvehiculo as tmv', 'tmv.timoveid', '=', 'v.timoveid')
+                            ->whereIn('vs.vehsoaid', function ($query){
+                                $query->select(DB::raw('MAX(vehsoaid)'))
+                                    ->from('vehiculosoat')
+                                    ->groupBy('vehiid');
+                            })
+                            ->whereDate('vs.vehsoafechafinal', '<=', $fechaFinal)
+                            ->orderBy('v.vehinumerointerno')
+                            ->get();
+
+
+dd($consulta);
+
         $notificar       = new notificar();
 
         $fechaHoraActual = Carbon::now();

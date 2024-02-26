@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
+import DocumentoVencidos from "./documentoVencidos";
 import { TabPanel } from '../../../layout/general';
 import MovimientoCaja from "./movimientoCaja";
+import Licencias from "./licencias";
+import Tiquete from "./tiquete";
 
 export default function RegistrarMovimientos(){
 
@@ -23,21 +26,26 @@ export default function RegistrarMovimientos(){
                 textColor="secondary"
                 variant={variantTab} >
                 <Tab label="Movimiento caja" />
-                {/* <Tab label="Pago crédito" />
-                    <Tab label="Sanción" />          */}
+                <Tab label="Tiquete" />
+                <Tab label="Documento vencidos" />
+                <Tab label="Licencias vencidas" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
                 <MovimientoCaja />
             </TabPanel>
 
-            {/* <TabPanel value={value} index={1}>
-                <PagoCredito />
+            <TabPanel value={value} index={1}>
+                <Tiquete />
             </TabPanel>
 
             <TabPanel value={value} index={2}>
-                <Sancion />
-            </TabPanel> */}
+                <DocumentoVencidos />
+            </TabPanel>
+
+            <TabPanel value={value} index={3}>
+                <Licencias />
+            </TabPanel>
         </Box>
     )
 }

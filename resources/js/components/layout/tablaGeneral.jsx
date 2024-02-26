@@ -131,6 +131,14 @@ export default function TablaGeneral({datos, titulo, ver, accion= [],
             <TableContainer  className={'tableGeneral'}   style={mergeJSON({margin: '0 auto'}, style)}>
                 <Grid container spacing={0}>
                     <Grid item className={'tablaIcono'} xl={8} md={8} sm={2} xs={2} style={{textAlign:'left', padding: 0}}>
+                       {accion.map(ev=>{
+                            if(ev.tipo === 'D'){
+                                return (<Icon key={'icon'+ ev.icono} className={'icon top ' + ev.color } style={{marginRight: '1em'}} title='Descargar'
+                                            onClick={() => {const a = ev.funcion;
+                                                a();}}>{ev.icono}</Icon>);
+                            }
+                        })}
+
                         {accion.map(ev=>{
                             if(ev.tipo === 'T'){
                                 return (<Icon key={'icon'+ ev.icono} className={'icon top ' + ev.color }
@@ -159,18 +167,18 @@ export default function TablaGeneral({datos, titulo, ver, accion= [],
                             <TableRow>
                                 {titulo.map((res , i )=>{
                                     if(funciones.orderBy){
-                                    return (
-                                    <TableCell key={res} onClick={()=>{orderData(ver[i])}}>
-                                        <TableSortLabel
-                                            active={ordenar.tipo === ver[i]}
-                                            direction={ordenar.valor ? 'desc' : 'asc'}
-                                        >
-                                                {res}
-                                                {ordenar.tipo === ver[i] ? (<Box  component="span" sx={visuallyHidden}>
-                                                {ordenar.valor ? 'sorted descending' : 'sorted ascending'}
-                                                </Box>): null}
-                                        </TableSortLabel>
-                                        </TableCell>)
+                                        return (
+                                            <TableCell key={res} onClick={()=>{orderData(ver[i])}}>
+                                                <TableSortLabel
+                                                    active={ordenar.tipo === ver[i]}
+                                                    direction={ordenar.valor ? 'desc' : 'asc'}
+                                                >
+                                                        {res}
+                                                        {ordenar.tipo === ver[i] ? (<Box  component="span" sx={visuallyHidden}>
+                                                        {ordenar.valor ? 'sorted descending' : 'sorted ascending'}
+                                                        </Box>): null}
+                                                </TableSortLabel>
+                                                </TableCell>)
                                     }
                                     return <TableCell key={res}>{res}</TableCell>
                                 })}
