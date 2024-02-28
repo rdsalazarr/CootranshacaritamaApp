@@ -10,11 +10,11 @@ import instance from '../../../../layout/instance';
 import PagarCuota from "./pagarCuota";
 
 export default function Search(){
-  
+
     const [formData, setFormData] = useState({tipoIdentificacion:'1', documento:''});
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [datosEncontrados, setDatosEncontrados] = useState(false);
-    const [creditoAsociados, setCreditoAsociados] = useState([]);    
+    const [creditoAsociados, setCreditoAsociados] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
     const [modal, setModal] = useState({data:{}});
     const [loader, setLoader] = useState(false);
@@ -41,8 +41,8 @@ export default function Search(){
             if(!res.success){
                 showSimpleSnackbar(res.message, 'error');
             }else{
-                setCreditoAsociados(res.creditoAsociados); 
-                setDatosEncontrados(res.datosEncontrado)
+                setCreditoAsociados(res.creditoAsociados);
+                setDatosEncontrados(res.datosEncontrado);
             }
             setLoader(false);
         })
@@ -51,7 +51,7 @@ export default function Search(){
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/caja/listar/tipo/documento').then(res=>{
-            setTipoIdentificaciones(res.tipoIdentificaciones); 
+            setTipoIdentificaciones(res.tipoIdentificaciones);
             setLoader(false);
         })
     }
@@ -130,11 +130,11 @@ export default function Search(){
                     <ModalDefaultAuto
                         title   = {'Pagar cuota de crédito'}
                         content = {<PagarCuota data={modal.data} cerrarModal={cerrarModal}  />}
-                        close   = {() =>{(setAbrirModal(false), inicio())}} 
+                        close   = {() =>{}} 
                         tam     = 'mediumFlot'
                         abrir   = {abrirModal}
                     />
-                    
+
                 </Box>
             : null }
 

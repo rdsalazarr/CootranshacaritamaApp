@@ -22,9 +22,9 @@ return new class extends Migration
             $table->decimal('colliqvalordescuentoanticipado', 10, 0)->nullable()->comment('Valor del descuento pagado a la colocación');
             $table->decimal('colliqvalorpagado', 12, 0)->nullable()->comment('Valor pagado en la cuota de la colocación');
             $table->decimal('colliqsaldocapital', 10, 0)->nullable()->comment('Saldo a capital de la colocación');
-            $table->decimal('colliqvalorcapitalpagado', 10, 0)->nullable()->comment('Valor capital pagado la colocación');
-            $table->decimal('colliqvalorinterespagado', 10, 0)->nullable()->comment('Valor interés pagado la colocación');
-            $table->decimal('colliqvalorinteresmora', 10, 0)->nullable()->comment('Valor interés de mora pagado la colocación');
+            $table->decimal('colliqvalorcapitalpagado', 10, 0)->nullable()->comment('Valor capital pagado a la colocación');
+            $table->decimal('colliqvalorinterespagado', 10, 0)->nullable()->comment('Valor interés pagado a la colocación');
+            $table->decimal('colliqvalorinteresmora', 10, 0)->nullable()->comment('Valor interés de mora pagado a la colocación');
             $table->timestamps();
             $table->foreign('coloid')->references('coloid')->on('colocacion')->onUpdate('cascade')->index('fk_colocolliq');
             $table->foreign('comconid')->references('comconid')->on('comprobantecontable')->onUpdate('cascade')->index('fk_comconcolliq');

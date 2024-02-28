@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
-
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel} from '@mui/material';
+import NumberValidator from '../../../../layout/numberValidator';
 import { ValidatorForm} from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../../layout/modal';
@@ -16,13 +16,18 @@ export default function PagarCuota({data, cerrarModal}){
     const [formData, setFormData] = useState({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',
                                             descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
                                             descuentoAnticipadoMostrar:'', totalAPagarMostrar:'', interesCorrienteTotal: '', interesCorrienteTotalMostrar: '' });
+    const [deshabilitarRadios, setDeshabilitarRadios] = useState(false);
     const [pagoMensualidad, setPagoMensualidad] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
     const [pagoGeneral, setPagoGeneral] = useState([]);
-    const [habilitado, setHabilitado] = useState(true);
-    const [dataFactura, setDataFactura] = useState('');  
-    const [pagoTotal, setPagoTotal] = useState('N');
+    const [habilitado, setHabilitado] = useState(true);    
+    const [dataFactura, setDataFactura] = useState('');
+    const [formaPago, setFormaPago] = useState('N');
     const [loader, setLoader] = useState(false);
+
+    const handleChange = (e) =>{
+        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
 
     const formatearNumero = (numero) =>{
         const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
@@ -30,21 +35,23 @@ export default function PagarCuota({data, cerrarModal}){
     }
 
     const handleChangeRadio = (event) => {
-        setPagoTotal(event.target.value); 
+        setFormaPago(event.target.value);
         let newFormData = {...formData};
 
-        if(event.target.value === 'S'){
-            newFormData.interesCorriente           = pagoGeneral.valorIntereses;
-            newFormData.interesMora                = pagoGeneral.valorInteresMora;
-            newFormData.descuentoAnticipado        = pagoGeneral.valorDescuento;
-            newFormData.totalAPagar                = pagoGeneral.totalAPagar;
-            newFormData.interesCorrienteTotal      = pagoGeneral.interesMensualTotal;
-            newFormData.interesCorrienteMostrar    = formatearNumero(pagoGeneral.valorIntereses);
-            newFormData.interesMoraMostrar         = formatearNumero(pagoGeneral.valorInteresMora);
-            newFormData.descuentoAnticipadoMostrar = formatearNumero(pagoGeneral.valorDescuento);
-            newFormData.totalAPagarMostrar         = formatearNumero(pagoGeneral.totalAPagar);
+        if(event.target.value === 'T'){
+            newFormData.interesCorriente             = pagoGeneral.valorIntereses;
+            newFormData.interesMora                  = pagoGeneral.valorInteresMora;
+            newFormData.descuentoAnticipado          = pagoGeneral.valorDescuento;
+            newFormData.totalAPagar                  = pagoGeneral.totalAPagar;
+            newFormData.interesCorrienteTotal        = pagoGeneral.interesMensualTotal;
+            newFormData.interesCorrienteMostrar      = formatearNumero(pagoGeneral.valorIntereses);
+            newFormData.interesMoraMostrar           = formatearNumero(pagoGeneral.valorInteresMora);
+            newFormData.descuentoAnticipadoMostrar   = formatearNumero(pagoGeneral.valorDescuento);
+            newFormData.totalAPagarMostrar           = formatearNumero(pagoGeneral.totalAPagar);
             newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoGeneral.interesMensualTotal);
-        }else{
+        }
+
+        if(event.target.value === 'M'){
             newFormData.interesCorriente             = pagoMensualidad.valorIntereses;
             newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
             newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
@@ -56,17 +63,22 @@ export default function PagarCuota({data, cerrarModal}){
             newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
             newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
         }
+
+        if(event.target.value === 'A'){
+            newFormData.totalAPagar = '';
+        }
+
         setFormData(newFormData);
     }
 
     const handleSubmit = () =>{
         setLoader(true);
         let newFormData       = {...formData}
-        newFormData.pagoTotal = pagoTotal;
+        newFormData.formaPago = formaPago;
         instance.post('/admin/caja/registrar/pago/cuota', newFormData).then(res=>{
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
-            (res.success) ? (setHabilitado(false), setDataFactura(res.dataFactura), setAbrirModal(true)) : null;
+            (res.success) ? (setHabilitado(false), setDataFactura(res.dataFactura), setAbrirModal(true), setDeshabilitarRadios(true)) : null;
             setLoader(false);
         })
     }
@@ -95,7 +107,7 @@ export default function PagarCuota({data, cerrarModal}){
                 setPagoMensualidad(res.pagoMensualidad[0]);
                 setPagoGeneral(res.pagoTotal[0]);
                 setFormData(newFormData);
-                setPagoTotal('N');
+                setFormaPago('M');
             }
             setLoader(false);
         })
@@ -147,72 +159,89 @@ export default function PagarCuota({data, cerrarModal}){
 
                     <Grid item md={4} xl={4} sm={6} xs={12} >
                         <FormControl>
-                            <FormLabel className='labelRadio'>Forma de pago</FormLabel>
+                            <FormLabel className='labelRadio' >Forma de pago</FormLabel>
                                 <RadioGroup
                                     row
-                                    name="pagoTotal"
-                                    value={pagoTotal}
+                                    name="formaPago"
+                                    value={formaPago}
                                     onChange={handleChangeRadio}
                                 >
-                                <FormControlLabel value="M" control={<Radio color="success"/>} label="Mensual" />
-                                <FormControlLabel value="A" control={<Radio color="success"/>} label="Abono" />
-                                <FormControlLabel value="T" control={<Radio color="success"/>} label="Total" />
+                                <FormControlLabel value="M" disabled={deshabilitarRadios} control={<Radio color="success"/>} label="Mensual" />
+                                <FormControlLabel value="A" disabled={deshabilitarRadios} control={<Radio color="success"/>} label="Abono" />
+                                <FormControlLabel value="T"  disabled={deshabilitarRadios} control={<Radio color="success"/>} label="Total" />
                             </RadioGroup>
                         </FormControl>
                     </Grid>
 
-                    <Grid item md={2} xl={2} sm={6} xs={12} >
-                        <Box className='frmTexto'>
-                            <label>Fecha cuota: </label>
-                            <span >{'\u00A0'+ formData.fechaCuota}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}> 
-                        <Box className='frmTexto'>
-                            <label>Valor cuota</label>
-                            <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorCuotaMostrar}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Interés cuota</label>
-                            <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteMostrar}</span>
-                        </Box>
-                    </Grid>
-
-                    {(formData.interesMoraMostrar !== '0') ?
-                        <Grid item xl={3} md={3} sm={6} xs={12}>
-                            <Box className='frmTexto'>
-                                <label>Interés mora </label>
-                                <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
-                            </Box>
+                    {(formaPago === 'A') ?
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <NumberValidator fullWidth
+                                id={"totalAPagar"}
+                                name={"totalAPagar"}
+                                label={"Total a pagar"}
+                                value={formData.totalAPagar}
+                                type={'numeric'}
+                                require={['required', 'maxStringLength:9']}
+                                error={['Campo obligatorio','Número máximo permitido es el 999999999']}
+                                onChange={handleChange}
+                            />
                         </Grid>
-                    : null }
+                    : 
+                        <Fragment>
+                            <Grid item md={2} xl={2} sm={6} xs={12} >
+                                <Box className='frmTexto'>
+                                    <label>Fecha cuota: </label>
+                                    <span >{'\u00A0'+ formData.fechaCuota}</span>
+                                </Box>
+                            </Grid>
 
-                    {(formData.descuentoAnticipadoMostrar !== '0') ?
-                        <Grid item xl={3} md={3} sm={6} xs={12}>
-                            <Box className='frmTexto'>
-                                <label>Descuento anticipado</label>
-                                <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipadoMostrar}</span>
-                            </Box>
-                        </Grid>
-                    : null }
+                            <Grid item xl={3} md={3} sm={6} xs={12}> 
+                                <Box className='frmTexto'>
+                                    <label>Valor cuota</label>
+                                    <span className='textoRojo' ><span className='textoGris'>$</span> {'\u00A0'+ formData.valorCuotaMostrar}</span>
+                                </Box>
+                            </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Interés a pagar</label>
-                            <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteTotalMostrar}</span>
-                        </Box>
-                    </Grid>
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                    <label>Interés cuota</label>
+                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteMostrar}</span>
+                                </Box>
+                            </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <Box className='frmTexto columnaPagar'>
-                            <label className='labelDeroration'>Total a pagar</label>
-                            <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
-                        </Box>
-                    </Grid>
+                            {(formData.interesMoraMostrar !== '0') ?
+                                <Grid item xl={3} md={3} sm={6} xs={12}>
+                                    <Box className='frmTexto'>
+                                        <label>Interés mora </label>
+                                        <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesMoraMostrar}</span>
+                                    </Box>
+                                </Grid>
+                            : null }
+
+                            {(formData.descuentoAnticipadoMostrar !== '0') ?
+                                <Grid item xl={3} md={3} sm={6} xs={12}>
+                                    <Box className='frmTexto'>
+                                        <label>Descuento anticipado</label>
+                                        <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipadoMostrar}</span>
+                                    </Box>
+                                </Grid>
+                            : null }
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto'>
+                                    <label>Interés a pagar</label>
+                                    <span className='textoRojo'><span className='textoGris'>$</span> {'\u00A0'+formData.interesCorrienteTotalMostrar}</span>
+                                </Box>
+                            </Grid>
+
+                            <Grid item xl={3} md={3} sm={6} xs={12}>
+                                <Box className='frmTexto columnaPagar'>
+                                    <label className='labelDeroration'>Total a pagar</label>
+                                    <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.totalAPagarMostrar}</span>
+                                </Box>
+                            </Grid>
+                        </Fragment>
+                    }
 
                 </Grid>
 

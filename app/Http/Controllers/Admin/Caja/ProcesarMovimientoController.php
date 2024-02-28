@@ -420,9 +420,9 @@ class ProcesarMovimientoController extends Controller
             $interesMensualTotal   = 0;
 
             $colocacion = DB::table('colocacionliquidacion as cl')
-                            ->select('cl.coloid','cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'cl.colliqvalorcuota', 'c.colofechacolocacion',
-                                 'c.colotasa','c.colonumerocuota','c.colovalordesembolsado','lc.lincreinteresmora', DB::raw('DATE(c.colofechahoradesembolso) as fechaDesembolso'),
-                                 DB::raw("(SELECT SUM(cl1.colliqvalorpagado) FROM colocacionliquidacion as cl1 WHERE cl1.coloid = c.coloid AND cl.colliqfechapago is null) AS saldoColocacion"))
+                            ->select('cl.coloid','cl.colliqvalorcuota', 'cl.colliqfechavencimiento', 'cl.colliqnumerocuota', 'c.colofechacolocacion',
+                                'c.colotasa','c.colonumerocuota','c.colovalordesembolsado','lc.lincreinteresmora', DB::raw('DATE(c.colofechahoradesembolso) as fechaDesembolso'),
+                                DB::raw("(SELECT SUM(cl1.colliqvalorcapitalpagado) FROM colocacionliquidacion as cl1 WHERE cl1.coloid = c.coloid AND cl.colliqfechapago is null) AS capitalPagado"))
                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
                             ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
@@ -439,10 +439,9 @@ class ProcesarMovimientoController extends Controller
             $fechaDesembolso       = $colocacion->fechaDesembolso;
             $fechaColocacion       = $colocacion->colofechacolocacion;
             $interesMora           = $colocacion->lincreinteresmora;
-            $saldoColocacion       = $colocacion->saldoColocacion;
+            $saldoColocacion       = ($colocacion->capitalPagado !== null) ? ($montoPrestamo - $colocacion->capitalPagado ): $montoPrestamo;
             $numeroDiasCambioFecha = ($colocacion->colliqnumerocuota === '1') ? $generales->calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaColocacion) : 0;
             $arrayInteresMensual   = $generales->calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha);
-
             $valorIntereses        = $arrayInteresMensual['valorIntereses'];
             $valorInteresMora      = $arrayInteresMensual['valorInteresMora'];
             $valorDescuento        = $arrayInteresMensual['valorDescuento'];
@@ -463,7 +462,7 @@ class ProcesarMovimientoController extends Controller
             $totalPago = [
                         'fechaCuota'          => $fechaVencimiento,
                         'valorCuota'          => $valorCuota,
-                        'totalAPagar'         => $saldoColocacion - $totalAPagar,
+                        'totalAPagar'         => $saldoColocacion - $interesMensualTotal,
                         'valorIntereses'      => $valorIntereses,
                         'valorInteresMora'    => $valorInteresMora,
                         'interesMensualTotal' => $interesMensualTotal,
@@ -479,7 +478,7 @@ class ProcesarMovimientoController extends Controller
 
     public function salvePagoCredito(Request $request)
 	{
-        $this->validate(request(),['colocacionId' => 'required|numeric','liquidacionId' => 'required|numeric']);
+        $this->validate(request(),['colocacionId' => 'required|numeric','liquidacionId' => 'required|numeric', 'formaPago' => 'required']);
 
         DB::beginTransaction();
         try {
@@ -492,51 +491,58 @@ class ProcesarMovimientoController extends Controller
             $estadoColocacion      = 'S';
             $valorPagado           = 0;
             $colocacion = DB::table('colocacionliquidacion as cl')
-                            ->select('cl.coloid', 'cl.colliqvalorcuota','c.colovalordesembolsado','p.persdocumento','p.persdireccion', 'p.persnumerocelular',
+                            ->select('cl.coloid', 'cl.colliqvalorcuota','cl.colliqfechavencimiento', 'lc.lincreinteresmora','c.colotasa', 'c.colovalordesembolsado','p.persdocumento','p.persdireccion', 'p.persnumerocelular',                           
+                            DB::raw("(CASE WHEN cl.colliqfechavencimiento < CURDATE() THEN 'SI' ELSE 'NO' END) AS cuotaVencida"),
                             DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
                             DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalCuotasPorPagar'),
                             DB::raw('(SELECT COUNT(colliqid) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NOT NULL) AS totalCuotasPagadas'),
-                            DB::raw("(SELECT SUM(cl1.colliqvalorpagado) FROM colocacionliquidacion as cl1 WHERE cl1.coloid = c.coloid AND cl.colliqfechapago is null) AS saldoColocacion"),
-                            DB::raw('(SELECT SUM(colliqvalorcapitalpagado) FROM colocacionliquidacion WHERE colliqid = cl.colliqid AND colliqfechapago IS NULL) AS totalPagadoColocacion'))
+                            DB::raw('(SELECT SUM(cl3.colliqvalorcapitalpagado) FROM colocacionliquidacion as cl3 WHERE cl3.coloid = cl.coloid AND cl3.colliqfechapago IS NOT NULL) AS capitalPagado'))
                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                             ->join('solicitudcredito as sc', 'sc.solcreid', '=', 'c.solcreid')
+                            ->join('lineacredito as lc', 'lc.lincreid', '=', 'sc.lincreid')
                             ->join('persona as p', 'p.persid', '=', 'sc.persid')
                             ->where('cl.coloid', $request->colocacionId)
                             ->where('cl.colliqid', $request->liquidacionId)
                             ->first();
 
-            $cambiarEstadoColocacion = ($colocacion->totalCuotasPorPagar + 1 === $colocacion->totalCuotasPagadas) ? true : false;
             $valorDesembolsado       = intval($colocacion->colovalordesembolsado);
+            $tasaInteresMensual      = $colocacion->colotasa;
+            $fechaVencimiento        = $colocacion->colliqfechavencimiento;
+            $cuotaVencida            = $colocacion->cuotaVencida;
+            $interesMora             = $colocacion->lincreinteresmora;
+            $saldoColocacion         = ($colocacion->capitalPagado !== null) ? ($valorDesembolsado - $colocacion->capitalPagado ) : $colocacion->colovalordesembolsado;
+            $cambiarEstadoColocacion = ($colocacion->totalCuotasPorPagar + 1 === $colocacion->totalCuotasPagadas) ? true : false;
             $valorCuota              = $colocacion->colliqvalorcuota;
-            $totalPagado             = $colocacion->totalPagadoColocacion;
             $interesCobrados         = $request->interesCorrienteTotal;
             $valorInteresMora        = $request->interesMora;
             $descuentoAnticipado     = $request->descuentoAnticipado;
             $valorPagado             = $request->totalAPagar;
             $abonoCapital            = round($valorCuota - $interesCobrados, 0);
-            $saldocapital            = ($totalPagado > 0) ? ($valorDesembolsado - $totalPagado - $abonoCapital ) : ($valorDesembolsado - $abonoCapital);
+            $saldoCapital            = $saldoColocacion - $abonoCapital;
 
-            if($request->pagoTotal === 'N'){
+            if($request->formaPago === 'M'){//Pago mensual
+                $mensajeFactura                                        = 'FACTURA DE PAGO CRÉDITO';
                 $colocacionliquidacion 				                   = ColocacionLiquidacion::findOrFail($request->liquidacionId);
                 $colocacionliquidacion->colliqfechapago                = $fechaActual;
                 $colocacionliquidacion->comconid                       = $comprobanteContableId;
                 $colocacionliquidacion->colliqvalorpagado              = $valorPagado;
-                $colocacionliquidacion->colliqsaldocapital             = $saldocapital;
+                $colocacionliquidacion->colliqsaldocapital             = $saldoCapital;
                 $colocacionliquidacion->colliqvalorcapitalpagado       = $abonoCapital;
                 $colocacionliquidacion->colliqvalorinterespagado       = $interesCobrados;
                 $colocacionliquidacion->colliqvalorinteresmora         = $valorInteresMora;
                 $colocacionliquidacion->colliqvalordescuentoanticipado = $descuentoAnticipado;
                 $colocacionliquidacion->save();
-            }else{
+            }
+
+            if($request->formaPago === 'T'){//Pago total
+                $mensajeFactura          = 'FACTURA DE PAGO CRÉDITO TOTAL';
                 $cambiarEstadoColocacion = true;
                 $cuentaContableId        = 6;
                 $estadoColocacion        = 'C';
-                $colocacionLiquidaciones = DB::table('colocacionliquidacion as cl')->select('cl.colliqid')
-                                                ->whereNull('cl.colliqfechapago')
-                                                ->get();
+                $colocacionLiquidaciones = DB::table('colocacionliquidacion as cl')->select('cl.colliqid')->whereNull('cl.colliqfechapago')->get();
 
                 $valorPagadoTotal          = $valorPagado;
-                $saldocapitalTotal         = $saldocapital;
+                $saldoCapitalTotal         = $saldoCapital;
                 $abonoCapitalTotal         = $abonoCapital;
                 $interesCobradosTotal      = $interesCobrados;
                 $valorInteresMoraTotal     = $valorInteresMora;
@@ -546,19 +552,55 @@ class ProcesarMovimientoController extends Controller
                     $colocacionliquidacion->colliqfechapago                = $fechaActual;
                     $colocacionliquidacion->comconid                       = $comprobanteContableId;
                     $colocacionliquidacion->colliqvalorpagado              = $valorPagadoTotal;
-                    $colocacionliquidacion->colliqsaldocapital             = $saldocapitalTotal;
+                    $colocacionliquidacion->colliqsaldocapital             = $saldoCapitalTotal;
                     $colocacionliquidacion->colliqvalorcapitalpagado       = $abonoCapitalTotal;
                     $colocacionliquidacion->colliqvalorinterespagado       = $interesCobradosTotal;
                     $colocacionliquidacion->colliqvalorinteresmora         = $valorInteresMoraTotal;
                     $colocacionliquidacion->colliqvalordescuentoanticipado = $descuentoAnticipadoTotal;
                     $colocacionliquidacion->save();
                     $valorPagadoTotal         = 0;
-                    $saldocapitalTotal        = 0;
+                    $saldoCapitalTotal        = 0;
                     $abonoCapitalTotal        = 0;
                     $interesCobradosTotal     = 0;
                     $valorInteresMoraTotal    = 0;
                     $descuentoAnticipadoTotal = 0;
                 }
+            }
+
+            if($request->formaPago === 'A'){//Abono a capital
+
+                if($saldoColocacion <= $valorPagado){
+                    return response()->json(['success' => false, 'message' => 'No es posible realizar un abono a una colocación por un valor igual o mayor al saldo pendiente']);
+                }
+
+                if($cuotaVencida === 'SI'){
+                    return response()->json(['success' => false, 'message' => 'No es posible realizar un abono a una colocación en mora']);
+                }
+//valorDesembolsado
+                $arrayInteresMensual   = $generales->calcularValorInteresDiario($saldoColocacion, $tasaInteresMensual, $fechaVencimiento, $interesMora, 0);
+                $valorDescuento        = $arrayInteresMensual['valorDescuento'];
+                $interesMensualTotal   = $arrayInteresMensual['interesMensualTotal'];
+                $capitalPagado         = round($valorPagado - $interesMensualTotal, 0);
+                $abonoCapital          = round($saldoColocacion - $capitalPagado, 0);
+                $interesCobrados       = $interesMensualTotal;
+                $valorInteresMora      = 0;
+                $descuentoAnticipado   = 0;
+
+                $mensajeFactura                                        = 'FACTURA ABONO AL CRÉDITO';
+                $colocacionliquidacion 				                   = new ColocacionLiquidacion();
+                $colocacionliquidacion->colliqvalorcuota               = $valorPagado;
+                $colocacionliquidacion->coloid                         = $request->colocacionId;
+                $colocacionliquidacion->colliqnumerocuota              = 'A' ;
+                $colocacionliquidacion->colliqfechavencimiento         = $fechaActual;
+                $colocacionliquidacion->colliqfechapago                = $fechaActual;
+                $colocacionliquidacion->comconid                       = $comprobanteContableId;
+                $colocacionliquidacion->colliqvalorpagado              = $valorPagado;
+                $colocacionliquidacion->colliqsaldocapital             = $abonoCapital;
+                $colocacionliquidacion->colliqvalorcapitalpagado       = $capitalPagado;
+                $colocacionliquidacion->colliqvalorinterespagado       = $interesMensualTotal;
+                $colocacionliquidacion->colliqvalorinteresmora         = $valorInteresMora;
+                $colocacionliquidacion->colliqvalordescuentoanticipado = $descuentoAnticipado;
+                $colocacionliquidacion->save();
             }
 
             if($cambiarEstadoColocacion){
@@ -609,7 +651,7 @@ class ProcesarMovimientoController extends Controller
                 "direccionAgencia"  => $agencia->agendireccion,
                 "telefonoAgencia"   => $agencia->telefonoAgencia,
                 "mensajePlanilla"   => 'Gracias por su pago',
-                "tituloFactura"     => 'FACTURA DE PAGO CRÉDITO',
+                "tituloFactura"     => $mensajeFactura,
                 "metodo"            => 'S'
             ];
 

@@ -339,11 +339,13 @@ class generales
             $totalInteresMora = $this->redondearCienMasCercano($interesMora); 
         }else{
             $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
-            $valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
+			$diasAnticipado      = ($diasAnticipado > 30) ? 30 : $diasAnticipado;
+            $valorDescuento      = ($interesMensual / 30 ) * $diasAnticipado;
+			//$valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
             $totalValorDescuento = $this->redondearCienMasCercano($valorDescuento - $valorCambioFechas);
         }
-		
-		$interesMensualTotal = ($interesMensual  + $totalInteresMora ) - $totalValorDescuento;
+
+		$interesMensualTotal = $this->redondearCienMasCercano(($interesMensual + $totalInteresMora ) - $totalValorDescuento);
 
         $resultado = [
 			'valorIntereses'      => $interesMensual,

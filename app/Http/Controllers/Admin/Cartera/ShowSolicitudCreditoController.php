@@ -118,6 +118,7 @@ class ShowSolicitudCreditoController extends Controller
                                 ->first();
 
         $colocacionLiquidacion = DB::table('colocacionliquidacion')->select('colliqnumerocuota','colliqfechavencimiento', 'colliqvalorcuota')
+                                    ->where('colliqnumerocuota', '<>', 'A')
                                     ->where('coloid', $colocacion->coloid)
                                     ->get();
 
