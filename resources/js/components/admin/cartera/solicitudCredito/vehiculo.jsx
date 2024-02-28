@@ -38,7 +38,6 @@ export default function Vehiculo(){
         setLoader(true);
         instance.post('/admin/cartera/consultar/datos/asociado', {personaId: Number(array[0])}).then(res=>{
             if(res.success) {
-                console.log(res.asociado);
                 let asociado                             = res.asociado;
                 newFormDataConsulta.tipoIdentificacion   = asociado.nombreTipoIdentificacion;
                 newFormDataConsulta.documento            = asociado.persdocumento;

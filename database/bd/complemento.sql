@@ -288,3 +288,5 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 ALTER TABLE `vehiculoresponsabilidad` ADD `created_at` TIMESTAMP NULL AFTER `vehresvalorpagado`, ADD `updated_at` TIMESTAMP NULL AFTER `created_at`;
 
 ALTER TABLE `vehiculotarjetaoperacion` CHANGE `vetaopaid` `vetaopid` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la tabla vehículo tarjeta operación';
+
+ALTER TABLE `colocacionliquidacion` CHANGE `comconid` `comconid` BIGINT(20) UNSIGNED NULL COMMENT 'Identificador del comprobante contable';

@@ -109,18 +109,18 @@ class DesembolsarSolicitudCreditoController extends Controller
             $solicitudcreditocambioestado->socrceobservacion = $descripcionCambioEstado;
             $solicitudcreditocambioestado->save();
 
-            $fechaInicialColocacion            = $generales->obtenerFechaInicialColocacion();
-            $colocacion 					   = new Colocacion();
-            $colocacion->usuaid                = Auth::id();
-            $colocacion->solcreid              = $solcreid;
-            $colocacion->tiesclid              = $estadoColocacion;
+            $fechaInicialColocacion              = $generales->obtenerFechaInicialColocacion();
+            $colocacion 					     = new Colocacion();
+            $colocacion->usuaid                  = Auth::id();
+            $colocacion->solcreid                = $solcreid;
+            $colocacion->tiesclid                = $estadoColocacion;
             $colocacion->colofechahoradesembolso = $fechaHoraActual;
-            $colocacion->colofechacolocacion   = $fechaInicialColocacion;
-            $colocacion->coloanio              = $anioActual;
-            $colocacion->colonumerodesembolso  = $numeroColocacion;
-            $colocacion->colovalordesembolsado = $valorPrestamo;
-            $colocacion->colotasa              = $tasaInteres;
-            $colocacion->colonumerocuota       = $numerosCuota;
+            $colocacion->colofechacolocacion     = $fechaInicialColocacion;
+            $colocacion->coloanio                = $anioActual;
+            $colocacion->colonumerodesembolso    = $numeroColocacion;
+            $colocacion->colovalordesembolsado   = $valorPrestamo;
+            $colocacion->colotasa                = $tasaInteres;
+            $colocacion->colonumerocuota         = $numerosCuota;
             $colocacion->save();
 
             $colocacionMaxConsecutio = Colocacion::latest('coloid')->first();

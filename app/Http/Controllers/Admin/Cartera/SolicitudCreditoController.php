@@ -117,7 +117,7 @@ class SolicitudCreditoController extends Controller
 
             $empresa               = DB::table('empresa as e')
                                         ->select('e.persidrepresentantelegal', 'e.emprcorreo','p.perscorreoelectronico',
-                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"),
+                                            DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreGerente"),
                                             DB::raw("(SELECT lincrenombre FROM lineacredito WHERE lincreid = '$request->lineaCredito') as nombreLineaCredito"))
                                         ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                                         ->where('emprid', '1')->first();
@@ -128,9 +128,9 @@ class SolicitudCreditoController extends Controller
             $correoPersonaCartera   = auth()->user()->usuaemail;
             $valorCredito           = number_format($request->valorSolicitado,0,',','.');
             $correoPersona          = ($request->correo === null) ? $empresa->emprcorreo : $request->correo; // si no tiene correo le envio la informacion a la empresa
-            $nombreSolicitante      = $request->nombreAsociado;
+            $nombreSolicitante      = $request->nombrePersona;
             $nombreLineaCredito     = $empresa->nombreLineaCredito;
-            $nombreGerente          = $empresa->nombrePersona;
+            $nombreGerente          = $empresa->nombreGerente;
             $correoGerente          = $empresa->perscorreoelectronico;
             $correoEmpresa          = $empresa->emprcorreo;
  

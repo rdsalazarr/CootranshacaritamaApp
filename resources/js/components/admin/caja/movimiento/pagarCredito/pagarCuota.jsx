@@ -145,22 +145,23 @@ export default function PagarCuota({data, cerrarModal}){
                         </Box>
                     </Grid>
 
-                    <Grid item md={3} xl={3} sm={6} xs={12} >
+                    <Grid item md={4} xl={4} sm={6} xs={12} >
                         <FormControl>
-                            <FormLabel className='labelRadio'>Pago total</FormLabel>
+                            <FormLabel className='labelRadio'>Forma de pago</FormLabel>
                                 <RadioGroup
                                     row
                                     name="pagoTotal"
                                     value={pagoTotal}
                                     onChange={handleChangeRadio}
                                 >
-                                <FormControlLabel value="N" control={<Radio color="success"/>} label="No" />
-                                <FormControlLabel value="S" control={<Radio color="success"/>} label="Sí" />
+                                <FormControlLabel value="M" control={<Radio color="success"/>} label="Mensual" />
+                                <FormControlLabel value="A" control={<Radio color="success"/>} label="Abono" />
+                                <FormControlLabel value="T" control={<Radio color="success"/>} label="Total" />
                             </RadioGroup>
                         </FormControl>
                     </Grid>
 
-                    <Grid item md={3} xl={3} sm={6} xs={12} >
+                    <Grid item md={2} xl={2} sm={6} xs={12} >
                         <Box className='frmTexto'>
                             <label>Fecha cuota: </label>
                             <span >{'\u00A0'+ formData.fechaCuota}</span>

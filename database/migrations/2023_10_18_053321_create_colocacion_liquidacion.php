@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('colliqvalorcuota', 10)->comment('Monto o valor de la cuota de la colocación');
             $table->date('colliqfechavencimiento')->comment('Fecha de vencimiento de la cuota de la colocación');
             $table->date('colliqfechapago')->nullable()->comment('Fecha de pago de la cuota de la colocación');
-            $table->bigInteger('comconid')->unsigned()->comment('Identificador del comprobante contable');
+            $table->bigInteger('comconid')->unsigned()->nullable()->comment('Identificador del comprobante contable');
             $table->decimal('colliqvalordescuentoanticipado', 10, 0)->nullable()->comment('Valor del descuento pagado a la colocación');
             $table->decimal('colliqvalorpagado', 12, 0)->nullable()->comment('Valor pagado en la cuota de la colocación');
             $table->decimal('colliqsaldocapital', 10, 0)->nullable()->comment('Saldo a capital de la colocación');
