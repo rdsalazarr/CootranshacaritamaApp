@@ -127,6 +127,7 @@ Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);
 Route::post('/admin/exportar/datos/movimiento/diarios', [RegistrosController::class, 'exportarMovimientoDiarios']);
 Route::post('/admin/exportar/datos/documento/vencidos/vehiculos', [RegistrosController::class, 'documentosVencidos']);
+Route::post('/admin/exportar/datos/tabla/liquidacion/credito', [RegistrosController::class, 'tablaLiquidacionCreditos']);
 
 // verifySource //verificar que se acceda desde el sistema
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -180,7 +181,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::get('/configuracionCorreo/list', [ConfiguracionCorreoController::class, 'index'])->middleware(['security:admin/configurar/notificarCorreo','verifySource']);
         Route::post('/configuracionCorreo/salve', [ConfiguracionCorreoController::class, 'salve']);
-        Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);        
+        Route::post('/configuracionCorreo/destroy', [ConfiguracionCorreoController::class, 'destroy']);
         
         Route::get('/departamento/list', [DepartamentoController::class, 'index'])->middleware(['security:admin/configurar/datosTerritorial','verifySource']);
         Route::post('/departamento/salve', [DepartamentoController::class, 'salve']);
@@ -233,13 +234,13 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/subSerieDocumental/listar/datos', [SubSerieDocumentalController::class, 'datos'])->middleware('verifySource');  
         Route::post('/subSerieDocumental/salve', [SubSerieDocumentalController::class, 'salve']);
         Route::post('/subSerieDocumental/destroy', [SubSerieDocumentalController::class, 'destroy']);
-         
+
         Route::get('/dependencia/list', [DependenciaController::class, 'index'])->middleware(['security:admin/gestionar/dependencia','verifySource']);
         Route::post('/dependencia/listar/datos', [DependenciaController::class, 'datos']);
         Route::post('/dependencia/salve', [DependenciaController::class, 'salve']);
         Route::post('/dependencia/destroy', [DependenciaController::class, 'destroy']);
 
-        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware(['security:admin/gestionar/persona','verifySource']);       
+        Route::get('/persona/list', [PersonaController::class, 'index'])->middleware(['security:admin/gestionar/persona','verifySource']);
         Route::post('/persona/salve', [PersonaController::class, 'salve']);
         Route::post('/persona/consultar/asignacion', [PersonaController::class, 'datos']);
         Route::post('/persona/procesar', [PersonaController::class, 'procesar']);
@@ -279,7 +280,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/salve', [AsociadoController::class, 'salve']);
             Route::post('/destroy', [AsociadoController::class, 'destroy']);
 
-            Route::get('/desvincular', [DesvincularAsociadoController::class, 'index'])->middleware(['security:admin/gestionar/desvincularAsociado','verifySource']);       
+            Route::get('/desvincular', [DesvincularAsociadoController::class, 'index'])->middleware(['security:admin/gestionar/desvincularAsociado','verifySource']);
             Route::post('/consultar', [DesvincularAsociadoController::class, 'consultar']);
             Route::post('/desvincular/salve', [DesvincularAsociadoController::class, 'desvincular']);
 
@@ -482,7 +483,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/aprobar/solicitud/credito', [AprobarSolicitudCreditoController::class, 'index'])->middleware(['security:admin/cartera/aprobacion','verifySource']);
             Route::get('/listar/estados/solicitud/credito', [AprobarSolicitudCreditoController::class, 'estados']);
             Route::post('/tomar/decision/solicitud/credito', [AprobarSolicitudCreditoController::class, 'salve']);
-            
+
             Route::get('/desembolsar/solicitud/credito/datos', [DesembolsarSolicitudCreditoController::class, 'index'])->middleware(['security:admin/cartera/desembolso','verifySource']);
             Route::post('/consultar/asociado', [DesembolsarSolicitudCreditoController::class, 'consultar']);
             Route::post('/desembolsar/solicitud/credito', [DesembolsarSolicitudCreditoController::class, 'salve']);
@@ -564,7 +565,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/cerrar/movimiento', [CerrarMovimientoController::class, 'index'])->middleware(['security:admin/caja/cerrar','verifySource']);
             Route::post('/contabilizar/tiquetes', [CerrarMovimientoController::class, 'tiquete']);
-            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);            
+            Route::post('/cerrar/movimiento/salve', [CerrarMovimientoController::class, 'salve']);
         });
 
         Route::prefix('/antencion/usuario')->group(function(){
@@ -579,9 +580,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::get('/pdf/comprobante/contable', [InformePdfController::class, 'index'])->middleware(['security:admin/informes/pdf','verifySource']);
             Route::post('/pdf/generar/comprobante/contable', [InformePdfController::class, 'comprobanteContable']);
 
-            Route::get('/descargable/tiquete', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
-           /// Route::post('/descargable/moviemiento/caja', [InformeDescargableController::class, 'movimientoCaja']);
-           // Route::post('/descargable/tiquete', [InformeDescargableController::class, 'tiquete']);
+            Route::get('/descargable/list/tabla/liquidacion', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
         });
 
     });

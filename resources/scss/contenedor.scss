@@ -698,6 +698,15 @@ body{
   margin-right: 2em;
 }
 
+.enlaceDownload{
+  color: $grisOscuro !important;
+  cursor: pointer;
+  text-decoration: none  !important;
+  &:hover{
+    color: $rojoOscuro !important;
+  }
+}
+
 /*md*/
 @media (max-width: 768px) { 
   .containerAdmin{

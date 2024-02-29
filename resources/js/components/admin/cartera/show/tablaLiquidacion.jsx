@@ -1,8 +1,22 @@
-import React from 'react';
-import {Table, TableHead, TableBody, TableRow, TableCell, Grid, Box} from '@mui/material';
+import React, {useState} from 'react';
+import {Table, TableHead, TableBody, TableRow, TableCell, Grid, Box, Link } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import instanceFile from '../../../layout/instanceFile';
+import {LoaderModal} from "../../../layout/loader";
 
 export default function TablaLiquidacion({liquidacion}){
+    const [loader, setLoader] = useState(false);
+
+    const descargarLiquidacion = () =>{
+        setLoader(true);
+        instanceFile.post('/admin/exportar/datos/tabla/liquidacion/credito', {colocacionId:liquidacion[0].colocacionId} ).then(res=>{
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }
 
     return (
         <Grid container spacing={2}>
@@ -78,10 +92,12 @@ export default function TablaLiquidacion({liquidacion}){
                     </Table>
                 </Box>
 
-                <Box style={{float: 'right', color: '#747171'}}>
-                    Descargar liquidación <CloudDownloadIcon />
+                <Box style={{float: 'right',marginBottom: '0.5em'}}>
+                    <Link href="#" className='enlaceDownload' onClick={() => {descargarLiquidacion()}}>
+                        Descargar liquidación <CloudDownloadIcon />
+                     </Link>
                 </Box>
-     
+
             </Grid>
        </Grid>
     )

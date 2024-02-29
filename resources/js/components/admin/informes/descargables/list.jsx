@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { Box, Typography, Tab, Tabs} from '@mui/material';
 import DocumentoVencidos from "./documentoVencidos";
 import { TabPanel } from '../../../layout/general';
+import TablaLiquidacion from "./tablaLiquidacion";
 import MovimientoCaja from "./movimientoCaja";
 import Licencias from "./licencias";
 import Tiquete from "./tiquete";
@@ -13,7 +14,7 @@ export default function RegistrarMovimientos(){
 
     const handleChangeTab = (event, newValue) => {
         setValue(newValue);
-    };
+    }
 
     return (
         <Box>
@@ -29,6 +30,7 @@ export default function RegistrarMovimientos(){
                 <Tab label="Tiquete" />
                 <Tab label="Documento vencidos" />
                 <Tab label="Licencias vencidas" />
+                <Tab label="Tabla de liquidación" />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -46,6 +48,11 @@ export default function RegistrarMovimientos(){
             <TabPanel value={value} index={3}>
                 <Licencias />
             </TabPanel>
+
+            <TabPanel value={value} index={4}>
+                <TablaLiquidacion />
+            </TabPanel>
+
         </Box>
     )
 }

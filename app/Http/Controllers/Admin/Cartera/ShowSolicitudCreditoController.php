@@ -56,7 +56,7 @@ class ShowSolicitudCreditoController extends Controller
                                     ->where('c.solcreid', $request->codigo)->first();
 
                 $colocacionLiquidacion  = DB::table('colocacionliquidacion as cl')
-                                            ->select('cl.colliqnumerocuota as numeroCuota','cl.colliqfechavencimiento as fechaVencimiento',
+                                            ->select('cl.coloid as colocacionId', 'cl.colliqnumerocuota as numeroCuota','cl.colliqfechavencimiento as fechaVencimiento',
                                                 DB::raw("CONCAT(cc.comconanio, cc.comconconsecutivo) as numeroComprobante"),'cl.colliqfechapago as fechaPago',
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcuota, 0)) as valorCuota"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorpagado, 0)) as valorPagado"),

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Exportar;
 
+use App\Exports\TablaLiquidacionCreditoExport;
 use App\Exports\DocumentosVencidosExport;
 use App\Exports\MovimientosDiariosExport;
 use App\Exports\LicenciasVencidasExport;
@@ -92,4 +93,15 @@ class RegistrosController extends Controller
         }
     }
 
+    public function tablaLiquidacionCreditos(Request $request){
+        $this->validate(request(),['colocacionId'=> 'required|numeric' ]);
+
+        try {
+            $nombreReporte                 = 'Reporte_tabla_liquidacion_credito_'.Carbon::now().'.xls';
+            $tablaLiquidacionCreditoExport = new TablaLiquidacionCreditoExport($request);
+            return Excel::download($tablaLiquidacionCreditoExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+	}
 }
