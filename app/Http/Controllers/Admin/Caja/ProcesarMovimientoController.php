@@ -583,7 +583,7 @@ class ProcesarMovimientoController extends Controller
                 $abonoCapital        = round($saldoColocacion - $capitalPagado, 0);
                 $interesCobrados     = $interesMensualTotal;
                 $valorInteresMora    = 0;
-                $interesDevuelto     = 0
+                $interesDevuelto     = 0;
                 $valorCuota          = $valorPagado;
 
                 $mensajeFactura                                    = 'FACTURA ABONO AL CRÉDITO';
