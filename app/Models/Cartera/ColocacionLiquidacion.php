@@ -13,5 +13,5 @@ class ColocacionLiquidacion extends Model
     protected $primaryKey = 'colliqid';
     protected $fillable   = ['coloid','colliqnumerocuota','colliqfechavencimiento','colliqvalorcuota',
                             'comconid', 'colliqfechapago','colliqvalorpagado', 'colliqsaldocapital',
-                            'colliqvalorcapitalpagado', 'colliqvalorinterespagado', 'colliqvalorinteresmora'];
+                            'colliqvalorcapitalpagado', 'colliqvalorinterespagado', 'colliqvalorinteresdevuelto', 'colliqvalorinteresmora'];
 }

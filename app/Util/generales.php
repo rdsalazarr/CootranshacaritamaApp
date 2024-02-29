@@ -325,7 +325,7 @@ class generales
 		$interesMensualTotal = 0;
         $valorCambioFechas   = 0;
         $totalInteresMora    = 0;
-        $totalValorDescuento = 0;
+        $interesDevuelto     = 0;
 
         if($numeroDiasCambioFecha > 0){
             $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
@@ -338,21 +338,21 @@ class generales
             $interesMora      = $montoPrestamo * ($interesMora / 100) * ($diasMora / 365);
             $totalInteresMora = $this->redondearCienMasCercano($interesMora); 
         }else{
-            $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
-			$diasAnticipado      = ($diasAnticipado > 30) ? 30 : $diasAnticipado;
-            $valorDescuento      = ($interesMensual / 30 ) * $diasAnticipado;
+            $diasAnticipado  = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
+			$diasAnticipado  = ($diasAnticipado > 30) ? 30 : $diasAnticipado;
+            $valorDescuento  = ($interesMensual / 30 ) * $diasAnticipado;
+			$interesDevuelto = $this->redondearCienMasCercano($valorDescuento - $valorCambioFechas);
 			//$valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
-            $totalValorDescuento = $this->redondearCienMasCercano($valorDescuento - $valorCambioFechas);
         }
 
-		$interesMensualTotal = $this->redondearCienMasCercano(($interesMensual + $totalInteresMora ) - $totalValorDescuento);
+		$interesMensualTotal = $this->redondearCienMasCercano(($interesMensual + $totalInteresMora ) - $interesDevuelto);
 
         $resultado = [
-			'valorIntereses'      => $interesMensual,
-			'valorInteresMora'    => $totalInteresMora,
-			'interesMensualTotal' => $interesMensualTotal,
-			'valorDescuento'      => $totalValorDescuento,
-			'valorCambioFechas'   => $valorCambioFechas
+			'valorIntereses'       => $interesMensual,
+			'valorInteresMora'     => $totalInteresMora,
+			'interesMensualTotal'  => $interesMensualTotal,
+			'valorInteresDevuelto' => $interesDevuelto,
+			'valorCambioFechas'    => $valorCambioFechas
 		];
 
         return $resultado;

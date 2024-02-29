@@ -14,8 +14,8 @@ import VisualizarPdf from '../visualizarPdf';
 export default function PagarCuota({data, cerrarModal}){
 
     const [formData, setFormData] = useState({colocacionId: data.coloid, liquidacionId: data.colliqid, fechaCuota:'', valorCuota:'', interesCorriente:'', interesMora:'',
-                                            descuentoAnticipado:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
-                                            descuentoAnticipadoMostrar:'', totalAPagarMostrar:'', interesCorrienteTotal: '', interesCorrienteTotalMostrar: '' });
+                                            interesDevuelto:'', totalAPagar:'', valorCuotaMostrar:'',interesCorrienteMostrar:'', interesMoraMostrar:'',
+                                            interesDevueltoMostrar:'', totalAPagarMostrar:'', interesCorrienteTotal: '', interesCorrienteTotalMostrar: '' });
     const [deshabilitarRadios, setDeshabilitarRadios] = useState(false);
     const [pagoMensualidad, setPagoMensualidad] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
@@ -41,12 +41,12 @@ export default function PagarCuota({data, cerrarModal}){
         if(event.target.value === 'T'){
             newFormData.interesCorriente             = pagoGeneral.valorIntereses;
             newFormData.interesMora                  = pagoGeneral.valorInteresMora;
-            newFormData.descuentoAnticipado          = pagoGeneral.valorDescuento;
+            newFormData.interesDevuelto              = pagoGeneral.valorInteresDevuelto;
             newFormData.totalAPagar                  = pagoGeneral.totalAPagar;
             newFormData.interesCorrienteTotal        = pagoGeneral.interesMensualTotal;
             newFormData.interesCorrienteMostrar      = formatearNumero(pagoGeneral.valorIntereses);
             newFormData.interesMoraMostrar           = formatearNumero(pagoGeneral.valorInteresMora);
-            newFormData.descuentoAnticipadoMostrar   = formatearNumero(pagoGeneral.valorDescuento);
+            newFormData.interesDevueltoMostrar       = formatearNumero(pagoGeneral.valorInteresDevuelto);
             newFormData.totalAPagarMostrar           = formatearNumero(pagoGeneral.totalAPagar);
             newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoGeneral.interesMensualTotal);
         }
@@ -54,12 +54,12 @@ export default function PagarCuota({data, cerrarModal}){
         if(event.target.value === 'M'){
             newFormData.interesCorriente             = pagoMensualidad.valorIntereses;
             newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
-            newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
+            newFormData.interesDevuelto              = pagoMensualidad.valorInteresDevuelto;
             newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
             newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
             newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
             newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
-            newFormData.descuentoAnticipadoMostrar   = formatearNumero(pagoMensualidad.valorDescuento);
+            newFormData.interesDevueltoMostrar       = formatearNumero(pagoMensualidad.valorInteresDevuelto);
             newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
             newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
         }
@@ -95,13 +95,13 @@ export default function PagarCuota({data, cerrarModal}){
                 newFormData.valorCuota                   = pagoMensualidad.valorCuota;
                 newFormData.interesCorriente             = pagoMensualidad.valorIntereses;
                 newFormData.interesMora                  = pagoMensualidad.valorInteresMora;
-                newFormData.descuentoAnticipado          = pagoMensualidad.valorDescuento;
+                newFormData.interesDevuelto              = pagoMensualidad.valorInteresDevuelto;
                 newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
                 newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
                 newFormData.valorCuotaMostrar            = formatearNumero(pagoMensualidad.valorCuota);
                 newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
                 newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
-                newFormData.descuentoAnticipadoMostrar   = formatearNumero(pagoMensualidad.valorDescuento);
+                newFormData.interesDevueltoMostrar       = formatearNumero(pagoMensualidad.valorInteresDevuelto);
                 newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
                 newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
                 setPagoMensualidad(res.pagoMensualidad[0]);
@@ -218,11 +218,11 @@ export default function PagarCuota({data, cerrarModal}){
                                 </Grid>
                             : null }
 
-                            {(formData.descuentoAnticipadoMostrar !== '0') ?
+                            {(formData.interesDevueltoMostrar !== '0') ?
                                 <Grid item xl={3} md={3} sm={6} xs={12}>
                                     <Box className='frmTexto'>
-                                        <label>Descuento anticipado</label>
-                                        <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.descuentoAnticipadoMostrar}</span>
+                                        <label>Interés devuelto</label>
+                                        <span className='textoRojo'> <span className='textoGris'>$</span> {'\u00A0'+formData.interesDevueltoMostrar}</span>
                                     </Box>
                                 </Grid>
                             : null }

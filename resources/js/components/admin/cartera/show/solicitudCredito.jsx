@@ -56,7 +56,7 @@ export default function SolicitudCredito({data, aprobada = false}){
 
             <Grid item xl={3} md={3} sm={6} xs={12}>
                 <Box className='frmTexto'>
-                    <label>Número de cuota </label>
+                    <label>Números de cuota </label>
                     <span>{data.numerosCuota}</span>
                 </Box>
             </Grid>

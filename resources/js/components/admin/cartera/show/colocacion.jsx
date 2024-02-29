@@ -48,7 +48,7 @@ export default function Colocacion({data}){
 
             <Grid item xl={3} md={3} sm={6} xs={12}>
                 <Box className='frmTexto'>
-                    <label>Número de cuota</label>
+                    <label>Números de cuota</label>
                     <span>{data.numeroCuota}</span>
                 </Box>
             </Grid>

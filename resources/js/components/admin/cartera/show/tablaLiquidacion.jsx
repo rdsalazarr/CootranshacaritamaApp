@@ -1,5 +1,6 @@
 import React from 'react';
 import {Table, TableHead, TableBody, TableRow, TableCell, Grid, Box} from '@mui/material';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 
 export default function TablaLiquidacion({liquidacion}){
 
@@ -13,20 +14,22 @@ export default function TablaLiquidacion({liquidacion}){
             </Grid>
 
             <Grid item xs={12} sm={12} md={12} xl={12}>
+
                 <Box sx={{maxHeight: '20em', overflow:'auto'}}>
                     <Table key={'tableCambioEstado'} className={'tableAdicional'} style={{width: '100%', margin: 'auto'}}>
                         <TableHead>
                             <TableRow>
                                 <TableCell style={{width: '5%'}}>Cuota</TableCell>
                                 <TableCell style={{width: '12%'}}>Valor cuota</TableCell>
-                                <TableCell style={{width: '12%'}}>Fecha vencimiento</TableCell>
-                                <TableCell style={{width: '11%'}}>Comprobante</TableCell>
-                                <TableCell style={{width: '10%'}}>Fecha pago</TableCell>
-                                <TableCell style={{width: '10%'}}>Valor pagado</TableCell> 
-                                <TableCell style={{width: '10%'}}>Saldo capital</TableCell>
-                                <TableCell style={{width: '10%'}}>Capital pagado</TableCell>
-                                <TableCell style={{width: '10%'}}>Intereses pagado</TableCell>
-                                <TableCell style={{width: '10%'}}>Intereses mora</TableCell>
+                                <TableCell style={{width: '10%'}}>Fecha vencimiento</TableCell>
+                                <TableCell style={{width: '10%'}}>Comprobante</TableCell>
+                                <TableCell style={{width: '9%'}}>Fecha pago</TableCell>
+                                <TableCell style={{width: '9%'}}>Valor pagado</TableCell> 
+                                <TableCell style={{width: '9%'}}>Saldo capital</TableCell>
+                                <TableCell style={{width: '9%'}}>Capital pagado</TableCell>
+                                <TableCell style={{width: '9%'}}>Intereses pagado</TableCell>
+                                <TableCell style={{width: '9%'}}>Intereses devuelto</TableCell>
+                                <TableCell style={{width: '9%'}}>Intereses mora</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -62,15 +65,23 @@ export default function TablaLiquidacion({liquidacion}){
                                                 <span>{liq['interesPagado']}</span>
                                             </TableCell>
                                             <TableCell>
+                                                <span>{liq['interesDevuelto']}</span>
+                                            </TableCell>
+                                            <TableCell>
                                                 <span>{liq['interesMora']}</span>
                                             </TableCell>
-                                        </TableRow> 
+                                        </TableRow>
                                     );
                                 })
                             }
                         </TableBody>
                     </Table>
                 </Box>
+
+                <Box style={{float: 'right', color: '#747171'}}>
+                    Descargar liquidación <CloudDownloadIcon />
+                </Box>
+     
             </Grid>
        </Grid>
     )

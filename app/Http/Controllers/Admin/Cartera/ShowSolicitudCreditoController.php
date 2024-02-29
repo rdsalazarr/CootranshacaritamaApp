@@ -63,10 +63,12 @@ class ShowSolicitudCreditoController extends Controller
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqsaldocapital, 0)) as saldoCapital"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorcapitalpagado, 0)) as capitalPagado"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinterespagado, 0)) as interesPagado"),
+                                                DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinteresdevuelto, 0)) as interesDevuelto"),
                                                 DB::raw("CONCAT('$ ', FORMAT(cl.colliqvalorinteresmora, 0)) as interesMora"))
                                             ->join('colocacion as c', 'c.coloid', '=', 'cl.coloid')
                                             ->join('comprobantecontable as cc', 'cc.comconid', '=', 'cl.comconid') 
-                                            ->where('c.solcreid', $request->codigo)->get();
+                                            ->where('c.solcreid', $request->codigo)
+                                            ->orderBy('fechaPago')->get();
 
                 $cambiosEstadoColocacion =  DB::table('colocacioncambioestado as cce')
                                         ->select('cce.cocaesfechahora as fecha','cce.cocaesobservacion as observacion','tec.tiesclnombre as estado',

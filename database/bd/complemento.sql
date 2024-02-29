@@ -290,3 +290,4 @@ ALTER TABLE `vehiculoresponsabilidad` ADD `created_at` TIMESTAMP NULL AFTER `veh
 ALTER TABLE `vehiculotarjetaoperacion` CHANGE `vetaopaid` `vetaopid` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Identificador de la tabla vehículo tarjeta operación';
 
 ALTER TABLE `colocacionliquidacion` CHANGE `comconid` `comconid` BIGINT(20) UNSIGNED NULL COMMENT 'Identificador del comprobante contable';
+ALTER TABLE `colocacionliquidacion` CHANGE `colliqvalordescuentoanticipado` `colliqvalorinteresdevuelto` DECIMAL(10,0) NULL DEFAULT NULL COMMENT 'Valor interés devuelto en el pagado a la colocación';
