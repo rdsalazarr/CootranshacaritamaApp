@@ -170,6 +170,17 @@ class ProcesoAutomaticoSeeder extends Seeder
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
         ]);
+
+        DB::table('procesoautomatico')->insert([
+            'proautid'             => '15',
+            'proautnombre'         => 'CrearBackup',
+            'proautmetodo'         => 'crearBackup',
+            'proautclasephp'       => 'Noche',
+            'proautfechaejecucion' => $fechaActual,
+            'proauttipo'           => 'N',
+            'created_at'           => $fechaHoraActual,
+            'updated_at'           => $fechaHoraActual,
+        ]);
       
     }
 }

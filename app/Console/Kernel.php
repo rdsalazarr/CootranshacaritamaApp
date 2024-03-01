@@ -17,7 +17,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         'App\Console\Commands\ProcesoDia',
         'App\Console\Commands\ProcesoNoche',
-        'App\Console\Commands\BackupGenerate',
     ];
 
     /**
@@ -28,8 +27,7 @@ class Kernel extends ConsoleKernel
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
         $schedule->command('procesos:dia')->dailyAt('03:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');
-        $schedule->command('procesos:noche')->dailyAt('21:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');
-        $schedule->command('backup:generate')->dailyAt('22:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');        
+        $schedule->command('procesos:noche')->dailyAt('21:00')->withoutOverlapping()->appendOutputTo('storage/logs/pr_'.$fechaActual.'.log');         
     }
 
     /**

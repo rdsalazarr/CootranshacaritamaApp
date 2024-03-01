@@ -41,6 +41,7 @@ class ProcesoNoche extends Command
         $mensaje  = Noche::iniciar();
         $mensaje .= Noche::procesarPagoMensualidad();
         $mensaje .= Noche::cerrarMovimientoCaja();
+        $mensaje .= Noche::crearBackup();
                     Noche::finalizar($mensaje);
     }
 }

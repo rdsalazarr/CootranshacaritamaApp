@@ -281,4 +281,42 @@ class Noche
         echo $esEjecucionManual ? '' : $mensaje;
         return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
     }
+
+    public static function crearBackup($esEjecucionManual = false)
+    {
+        $fechaHoraActual = Carbon::now();
+        $notificar       = new notificar();
+        $generales  	 = new generales();
+        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("CerrarMovimientoCaja") : $fechaHoraActual->format('Y-m-d');
+        $mensaje         = "Iniciando proceso de generacion de backup en la fecha ".$fechaProceso."\r\n";
+        $mensajeCorreo   = '';
+        $success         = false;
+
+        DB::beginTransaction();
+		try {
+
+            $resultado = Artisan::call('backup:run');
+
+            if ($resultado === 0) {
+                $mensaje  .= "La copia de seguridad se realizó correctamente.";
+            } else {
+                $mensaje  .= "Se produjo un error durante la copia de seguridad. Código de salida: $resultado";
+            }
+
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(15);
+            $procesoAutomatico->proautfechaejecucion = $fechaProceso;
+            $procesoAutomatico->save();
+
+            $success      = true;
+            $mensajeVista = "Proceso de notificación de cerrar movimiento de caja realizado con éxito";
+            DB::commit();
+        } catch (Exception $error){
+            DB::rollback();
+            $mensaje       = "Ocurrio un error al generar  backup en la fecha ".$fechaProceso."\r\n";
+            $mensajeCorreo = $mensaje.'<br>';
+        }
+
+        echo $esEjecucionManual ? '' : $mensaje;
+        return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
+    }
 }
