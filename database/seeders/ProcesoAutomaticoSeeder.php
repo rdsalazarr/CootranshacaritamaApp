@@ -172,6 +172,17 @@ class ProcesoAutomaticoSeeder extends Seeder
         ]);
 
         DB::table('procesoautomatico')->insert([
+            'proautid'             => '14',
+            'proautnombre'         => 'MarcarRecibidoPlanilla',
+            'proautmetodo'         => 'marcarRecibidoPlanilla',
+            'proautclasephp'       => 'Noche',
+            'proautfechaejecucion' => $fechaActual,
+            'proauttipo'           => 'N',
+            'created_at'           => $fechaHoraActual,
+            'updated_at'           => $fechaHoraActual,
+        ]);
+
+        DB::table('procesoautomatico')->insert([
             'proautid'             => '15',
             'proautnombre'         => 'CrearBackup',
             'proautmetodo'         => 'crearBackup',

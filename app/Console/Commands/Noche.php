@@ -4,11 +4,14 @@ namespace App\Console\Commands;
 
 use App\Models\Vehiculos\VehiculoResponsabilidadPagoParcial;
 use App\Models\Vehiculos\VehiculoResponsabilidad;
+use App\Models\Despacho\EncomiendaCambioEstado;
 use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Vehiculos\VehiculoCambioEstado;
 use App\Models\Procesos\ProcesosAutomaticos;
 use App\Console\Commands\FuncionesGenerales;
 use App\Models\Caja\ComprobanteContable;
+use App\Models\Despacho\PlanillaRuta;
+use App\Models\Despacho\Encomienda;
 use App\Models\Caja\MovimientoCaja;
 use App\Models\Vehiculos\Vehiculo;
 use Illuminate\Console\Command;
@@ -282,26 +285,88 @@ class Noche
         return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
     }
 
+    public static function marcarRecibidoPlanilla($esEjecucionManual = false)
+    {
+        $fechaHoraActual = Carbon::now();
+        $notificar       = new notificar();
+        $generales  	 = new generales();
+        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("MarcarRecibidoPlanilla") : $fechaHoraActual->format('Y-m-d');
+        $mensaje         = "Iniciando proceso de marcacion de planillas en la fecha ".$fechaProceso."\r\n";
+        $mensajeCorreo   = '';
+        $success         = false;
+        $fechaProcesar   = Carbon::parse($fechaProceso)->subDays(5);
+
+        DB::beginTransaction();
+		try {
+
+            $planillaRutas = DB::table('planillaruta')->select('plarutid', DB::raw("CONCAT(plarutanio,'',plarutconsecutivo) as numeroPlanilla"))
+                                    ->whereDate('plarutfechahoraregistro', $fechaProcesar)
+                                    ->whereNull('plarutfechallegadaaldestino')
+                                    ->where('plarutdespachada', true)->get();
+
+            $mensaje        = (count($planillaRutas) === 0) ? "No existen planillas por marcar en la fecha ".$fechaActual."\r\n" : '';
+            foreach($planillaRutas as $dataPlanillaRuta){ 
+                $planillaruta                              = PlanillaRuta::findOrFail($dataPlanillaRuta->plarutid);
+                $planillaruta->plarutfechallegadaaldestino = $fechaHoraActual;
+                $planillaruta->save();
+
+                $mensaje          .= "Proceso de marcacion de planilla con numero ".$dataPlanillaRuta->numeroPlanilla."\r\n";
+                $mensajeCorreo    .= $mensaje.'<br>';
+
+                $encomiendas  = DB::table('encomienda')->select('encoid')->where('plarutid', $dataPlanillaRuta->plarutid)->get();
+                foreach($encomiendas as $encomienda){
+
+                    $encomienda           = Encomienda::findOrFail($encomienda->encoid);
+                    $encomienda->tiesenid = 'D';
+                    $encomienda->save();
+
+                    $encomiendacambioestado 				   = new EncomiendaCambioEstado();
+                    $encomiendacambioestado->encoid            = $encomienda->encoid;
+                    $encomiendacambioestado->tiesenid          = 'D';
+                    $encomiendacambioestado->encaesusuaid      = 1;
+                    $encomiendacambioestado->encaesfechahora   = $fechaHoraActual;
+                    $encomiendacambioestado->encaesobservacion = 'En terminal destino. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
+                    $encomiendacambioestado->save();
+
+                    $mensaje          .= "Proceso de marcacion de encomienda con numero ". $encomienda->encoanio.''.$encomienda->encoconsecutivo."\r\n";
+                    $mensajeCorreo    .= $mensaje.'<br>';
+                }
+            }
+
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(14);
+            $procesoAutomatico->proautfechaejecucion = $fechaProceso;
+            $procesoAutomatico->save();
+
+            $success      = true;
+            $mensajeVista = "Proceso de marcacion de planilla realizado con éxito";
+            DB::commit();
+        } catch (Exception $error){
+            DB::rollback();
+            $mensaje       = "Ocurrio un error al generar  backup en la fecha ".$fechaProceso."\r\n";
+            $mensajeCorreo = $mensaje.'<br>';
+        }
+
+        echo $esEjecucionManual ? '' : $mensaje;
+        return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
+    }    
+
     public static function crearBackup($esEjecucionManual = false)
     {
         $fechaHoraActual = Carbon::now();
         $notificar       = new notificar();
         $generales  	 = new generales();
-        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("CerrarMovimientoCaja") : $fechaHoraActual->format('Y-m-d');
+        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("CrearBackup") : $fechaHoraActual->format('Y-m-d');
         $mensaje         = "Iniciando proceso de generacion de backup en la fecha ".$fechaProceso."\r\n";
         $mensajeCorreo   = '';
         $success         = false;
 
         DB::beginTransaction();
 		try {
+            $mensaje1  = "La copia de seguridad se realizó correctamente \r\n";
+            $mensaje2  = "Se produjo un error durante la copia de seguridad. Codigo de salida: ".$resultado."\r\n";
 
             $resultado = Artisan::call('backup:run');
-
-            if ($resultado === 0) {
-                $mensaje  .= "La copia de seguridad se realizó correctamente.";
-            } else {
-                $mensaje  .= "Se produjo un error durante la copia de seguridad. Código de salida: $resultado";
-            }
+            $mensaje  .= ($resultado === 0) ? $mensaje1 : $mensaje2;
 
             $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(15);
             $procesoAutomatico->proautfechaejecucion = $fechaProceso;
