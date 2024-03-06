@@ -8,6 +8,7 @@ use App\Models\Caja\ComprobanteContable;
 use App\Models\Despacho\PlanillaRuta;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Caja\CuentaContable;
 use App\Models\Despacho\Encomienda;
 use Illuminate\Http\Request;
 use Exception, DB, Auth;
@@ -162,14 +163,14 @@ class RecibirPlanillaRutaController extends Controller
                 $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = 1;//Caja
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $encomienda->encovalortotal;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = 9; //CXP PAGO ENCOMIENDA CONTRAENTREGA
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEncomiendaContraentrega');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $encomienda->encovalortotal;
                 $comprobantecontabledetalle->save();

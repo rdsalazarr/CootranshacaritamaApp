@@ -6,6 +6,7 @@ use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Caja\ComprobanteContable;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Caja\CuentaContable;
 use App\Models\Despacho\Tiquete;
 use Illuminate\Http\Request;
 use App\Util\generarPdf;
@@ -167,14 +168,14 @@ class CerrarMovimientoController extends Controller
             $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
             $comprobantecontabledetalle->save();
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 10; //CXP PAGO TIQUETE
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoTiquete');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
             $comprobantecontabledetalle->save();

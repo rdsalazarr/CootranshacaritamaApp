@@ -296,3 +296,7 @@ ALTER TABLE `colocacionliquidacion` CHANGE `colliqvalordescuentoanticipado` `col
 ALTER TABLE `ruta`  DROP `rutavalorestampilla`;
 ALTER TABLE `tarifatiquete` ADD `tartiqvalorestampilla` DECIMAL(6,0) NULL COMMENT 'Valor de la estampilla para el tiquete' AFTER `tartiqfondoreposicion`;
 UPDATE `tarifatiquete` SET `tartiqvalorestampilla` = '0' WHERE `tarifatiquete`.`tartiqid` = 1; UPDATE `tarifatiquete` SET `tartiqvalorestampilla` = '0' WHERE `tarifatiquete`.`tartiqid` = 2;
+
+
+
+ALTER TABLE `cuentacontable` ADD `cuecontitulo` VARCHAR(50) NOT NULL AFTER `cueconid`;

@@ -6,6 +6,7 @@ use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Caja\ComprobanteContable;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Caja\CuentaContable;
 use App\Models\Cartera\Colocacion;
 use Exception, Auth, DB, URL;
 use Illuminate\Http\Request;
@@ -83,14 +84,14 @@ class EntregarPagoCreditoController extends Controller
             $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 11;//CXC desembolso
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxcDesembolso');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $request->valorDesembolsado;
             $comprobantecontabledetalle->save();
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 1;//Caja
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = - $request->valorDesembolsado;
             $comprobantecontabledetalle->save();

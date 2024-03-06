@@ -12,7 +12,7 @@ class CuentaContableController extends Controller
     public function index()
     {
 		try{
-			$data = DB::table('cuentacontable')->select('cueconid','cueconnombre','cueconnaturaleza','cueconcodigo','cueconactiva',
+			$data = DB::table('cuentacontable')->select('cueconid','cueconnombre','cuecondescripcion','cueconnaturaleza','cueconcodigo','cueconactiva',
 										DB::raw("if(cueconnaturaleza = 'C' ,'Crédito', 'Debito') as naturaleza"),
 										DB::raw("if(cueconactiva = 1 ,'Sí', 'No') as estado"))
 										->orderBy('cueconid')->get();
@@ -29,17 +29,19 @@ class CuentaContableController extends Controller
         $cuentacontable = ($id != 000) ? CuentaContable::findOrFail($id) : new CuentaContable();
 
 	    $this->validate(request(),[
-                'nombre'         => 'required|string|min:4|max:200',
+                'nombre'         => 'required|string|min:5|max:50|unique:cuentacontable,cueconnombre,'.$cuentacontable->cueconid.',cueconid',
+				'descripcion'    => 'required|string|min:4|max:200',
                 'naturaleza'     => 'required|string|max:1',
                 'codigoContable' => 'required|string|max:20',
                 'estado'         => 'required'
 	        ]);
 
         try {
-            $cuentacontable->cueconnombre     = mb_strtoupper($request->nombre,'UTF-8');
-            $cuentacontable->cueconnaturaleza = $request->naturaleza;
-            $cuentacontable->cueconcodigo     = $request->codigoContable;
-            $cuentacontable->cueconactiva     = $request->estado;
+            $cuentacontable->cueconnombre      = $request->nombre;
+			$cuentacontable->cuecondescripcion = mb_strtoupper($request->descripcion,'UTF-8');
+            $cuentacontable->cueconnaturaleza  = $request->naturaleza;
+            $cuentacontable->cueconcodigo      = $request->codigoContable;
+            $cuentacontable->cueconactiva      = $request->estado;
             $cuentacontable->save();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
 		} catch (Exception $error){

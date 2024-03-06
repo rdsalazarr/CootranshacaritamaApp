@@ -9,6 +9,7 @@ use App\Models\Despacho\PersonaServicio;
 use App\Http\Controllers\Controller;
 use App\Models\Despacho\Encomienda;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Caja\CuentaContable;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
 use App\Util\generarPdf;
@@ -250,6 +251,10 @@ class EncomiendaController extends Controller
                 $encomienda->encoconsecutivo        = $this->obtenerConsecutivo($anioActual);
             }
 
+            $valorComisionEmpresa  = ($valorTotalEncomienda * $porcentajeComisionEmpresa) / 100;
+            $valorComisionAgencia  = ($valorTotalEncomienda * $porcentajeComisionAgencia) / 100;
+            $valorComisionVehiculo = ($valorTotalEncomienda * $porcentajeComisionVehiculo) / 100;
+
 			$encomienda->perseridremitente         = $personaIdRemitente;
 			$encomienda->perseriddestino           = $personaIdDestino; 
             $encomienda->plarutid                  = $request->ruta;
@@ -265,30 +270,62 @@ class EncomiendaController extends Controller
 			$encomienda->encocontenido             = mb_strtoupper($request->contenido,'UTF-8');
             $encomienda->encoobservacion           = mb_strtoupper($request->observaciones,'UTF-8');
             $encomienda->encovalorcomisionseguro   = $request->valorSeguro;
-            $encomienda->encovalorcomisionempresa  = ($valorTotalEncomienda * $porcentajeComisionEmpresa) / 100;
-            $encomienda->encovalorcomisionagencia  = ($valorTotalEncomienda * $porcentajeComisionAgencia) / 100;
-            $encomienda->encovalorcomisionvehiculo = ($valorTotalEncomienda * $porcentajeComisionVehiculo) / 100;
+            $encomienda->encovalorcomisionempresa  = $valorComisionEmpresa;
+            $encomienda->encovalorcomisionagencia  = $valorComisionAgencia;
+            $encomienda->encovalorcomisionvehiculo = $valorComisionVehiculo;
             $encomienda->encovalortotal            = $valorTotalEncomienda;
             $encomienda->encopagocontraentrega     = ($request->pagoContraEntrega === 'SI') ? 1 : 0;
             $encomienda->encocontabilizada         = ($request->pagoContraEntrega === 'NO' && $request->contabilizado === 'NO') ? 1 : 0;
 			$encomienda->save();
+
+            dd("esta mal la contabilizacion");
 
             if($request->pagoContraEntrega === 'NO' && $request->contabilizado === 'NO'){
                 //Se realiza la contabilizacion
                 $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = 1;//Caja
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $valorTotalEncomienda;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = 8; //CXP PAGO ENCOMIENDA
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEncomienda');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $valorTotalEncomienda;
                 $comprobantecontabledetalle->save();
+
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionEmpresa');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorComisionEmpresa;
+                $comprobantecontabledetalle->save();
+
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionAgencia');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorComisionAgencia;
+                $comprobantecontabledetalle->save();
+
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionVehiculo');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorComisionVehiculo;
+                $comprobantecontabledetalle->save();
+
+                if($request->valorDomicilio > 0){
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEncomiendaDomicilio');
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = $request->valorDomicilio;
+                    $comprobantecontabledetalle->save();
+                }
             }
 
             if($request->tipo === 'I'){
