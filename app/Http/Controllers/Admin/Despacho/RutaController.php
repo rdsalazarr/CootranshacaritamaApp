@@ -133,7 +133,7 @@ class RutaController extends Controller
         }
 
         $tarifaTiquetes = DB::table('tarifatiquete')
-                                ->select('tartiqid','depaiddestino','muniiddestino','tartiqvalor','tartiqfondoreposicion','tartiqvalorestampilla','tartiqvalorseguro',
+                                ->select('tartiqid','depaidorigen','muniidorigen','tartiqvalor','tartiqfondoreposicion','tartiqvalorestampilla','tartiqvalorseguro',
                                 DB::raw("CONCAT(FORMAT(tartiqvalor, 0)) as valorTiquete"),
                                 DB::raw("CONCAT(FORMAT(tartiqvalorestampilla, 0)) as valorEstampilla"),
                                 DB::raw("CONCAT(FORMAT(tartiqvalorseguro, 0)) as valorSeguro"))
@@ -163,8 +163,8 @@ class RutaController extends Controller
 				if($tarifaTiqueteEstado === 'I'){
 					$tarifaTiquete                        = new TarifaTiquete();
 					$tarifaTiquete->rutaid                = $request->codigo;
-					$tarifaTiquete->depaiddestino         = $request->departamento;
-                    $tarifaTiquete->muniiddestino         = $municipioId;
+					$tarifaTiquete->depaidorigen          = $request->departamento;
+                    $tarifaTiquete->muniidorigen          = $municipioId;
                     $tarifaTiquete->tartiqvalor           = $valorTiquete;
                     $tarifaTiquete->tartiqvalorseguro     = $valorSeguro;
                     $tarifaTiquete->tartiqvalorestampilla = $valorEstampilla;
@@ -175,7 +175,7 @@ class RutaController extends Controller
 					$tarifaTiquete->delete();
 				}else{//Editar
                     $tarifaTiquete                        = TarifaTiquete::findOrFail($identificador);
-                    $tarifaTiquete->muniiddestino         = $municipioId;
+                    $tarifaTiquete->muniidorigen          = $municipioId;
                     $tarifaTiquete->tartiqvalor           = $valorTiquete;
                     $tarifaTiquete->tartiqvalorseguro     = $valorSeguro;
                     $tarifaTiquete->tartiqvalorestampilla = $valorEstampilla;

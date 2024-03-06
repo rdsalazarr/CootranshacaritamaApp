@@ -7,6 +7,7 @@ use App\Models\Caja\ConsignacionBancaria;
 use App\Models\Caja\ComprobanteContable;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Caja\CuentaContable;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
 use Carbon\Carbon;
@@ -71,14 +72,14 @@ class ConsignacionBancariaController extends Controller
             $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 1;//Banco
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('banco');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $request->monto;
             $comprobantecontabledetalle->save();
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = 2;//Caja;
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = -$request->monto;//Lo ingresamos con movimiento crédito colocando un signo -
             $comprobantecontabledetalle->save();

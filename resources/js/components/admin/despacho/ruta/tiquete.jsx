@@ -144,7 +144,7 @@ export default function Tiquete({data}){
 
             let newValorTiquetes = [];
             tarifaTiquetes.forEach(function(tiq){
-                const municipioEncontrado = municipioRutas.find(mun => mun.muniid === tiq.muniiddestino);
+                const municipioEncontrado = municipioRutas.find(mun => mun.muniid === tiq.muniidorigen);
                 if(municipioEncontrado){
                     newValorTiquetes.push({
                         identificador:          tiq.tartiqid,
@@ -176,17 +176,31 @@ export default function Tiquete({data}){
             <ValidatorForm onSubmit={adicionarFilaTarifa} >
                 <Grid container spacing={2}>
             
-                    <Grid item xl={6} md={6} sm={12} xs={12}>
+                    <Grid item xl={3} md={3} sm={12} xs={12}>
                         <Box className='frmTexto'>
                             <label>Departamento origen</label>
                             <span>{data.nombreDeptoOrigen}</span>
                         </Box>
                     </Grid>
 
-                    <Grid item xl={6} md={6} sm={12} xs={12}>
+                    <Grid item xl={3} md={3} sm={12} xs={12}>
                         <Box className='frmTexto'>
                             <label>Municipio origen</label>
                             <span>{data.nombreMunicipioOrigen}</span>
+                        </Box>
+                    </Grid>
+
+                    <Grid item xl={3} md={3} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Departamento destino</label>
+                            <span>{data.nombreDeptoDestino}</span>
+                        </Box>
+                    </Grid>
+
+                    <Grid item xl={3} md={3} sm={12} xs={12}>
+                        <Box className='frmTexto'>
+                            <label>Municipio destino</label>
+                            <span>{data.nombreMunicipioDestino}</span>
                         </Box>
                     </Grid>
 
@@ -194,7 +208,7 @@ export default function Tiquete({data}){
                         <SelectValidator
                             name={'municipioId'}
                             value={formDataTiquete.municipioId}
-                            label={'Nodo del municipio destino'}
+                            label={'Municipio origen y/o final'}
                             className={'inputGeneral'}
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}
@@ -289,7 +303,7 @@ export default function Tiquete({data}){
                                 <Table key={'tablePersona'} className={'tableAdicional'} sx={{width: '90%', margin:'auto'}} sm={{width: '96%', margin:'auto'}}>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Municipio destino</TableCell>
+                                            <TableCell>Municipio origen</TableCell>
                                             <TableCell>Valor tiquete</TableCell>
                                             <TableCell>Valor seguro</TableCell>
                                             <TableCell>Valor estampilla</TableCell>

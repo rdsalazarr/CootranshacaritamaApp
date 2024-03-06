@@ -9,9 +9,9 @@ import instance from '../../../layout/instance';
 export default function New({data, tipo}){
 
     const [formData, setFormData] = useState(
-                    (tipo !== 'I') ? {codigo:data.cueconid,  nombre:data.cueconnombre, naturaleza: data.cueconnaturaleza, 
+                    (tipo !== 'I') ? {codigo:data.cueconid, nombre:data.cueconnombre, descripcion:data.cuecondescripcion, naturaleza: data.cueconnaturaleza, 
                                     codigoContable: data.cueconcodigo, estado:data.cueconactiva, tipo:tipo 
-                                    } : {codigo:'000', nombre:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo
+                                    } : {codigo:'000', nombre:'', descripcion:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo
                                 }); 
 
     const [loader, setLoader] = useState(false);
@@ -31,7 +31,7 @@ export default function New({data, tipo}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null; 
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', nombre:'', descripcion:'', naturaleza: '', codigoContable: '', estado:'1', tipo:tipo}) : null;
             setLoader(false);
         })
     }    
@@ -58,11 +58,11 @@ export default function New({data, tipo}){
                     />
                 </Grid>
 
-                <Grid item xl={5} md={5} sm={6} xs={12}>
+                <Grid item xl={9} md={9} sm={6} xs={12}>
                     <TextValidator
-                        name={'nombre'}
-                        value={formData.nombre}
-                        label={'Nombre'}
+                        name={'descripcion'}
+                        value={formData.descripcion}
+                        label={'Descripción'}
                         className={'inputGeneral'}
                         variant={"standard"}
                         inputProps={{autoComplete: 'off', maxLength: 200}}
@@ -71,8 +71,22 @@ export default function New({data, tipo}){
                         onChange={handleChangeUpperCase}
                     />
                 </Grid>
+                
+                <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <TextValidator
+                        name={'nombre'}
+                        value={formData.nombre}
+                        label={'Nombre'}
+                        className={'inputGeneral'} 
+                        variant={"standard"} 
+                        inputProps={{autoComplete: 'off', maxLength: 50}}
+                        validators={["required"]}
+                        errorMessages={["Campo obligatorio"]}
+                        onChange={handleChange}
+                    />
+                </Grid>
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator
                         name={'naturaleza'}
                         value={formData.naturaleza}
@@ -90,7 +104,7 @@ export default function New({data, tipo}){
                     </SelectValidator>
                 </Grid>                 
 
-                <Grid item xl={2} md={2} sm={6} xs={12}>
+                <Grid item xl={3} md={3} sm={6} xs={12}>
                     <SelectValidator
                         name={'estado'}
                         value={formData.estado}

@@ -28,7 +28,7 @@ export default function List(){
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'bigFlot'});
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'mediumFlot'});
     }
 
     const inicio = () =>{
@@ -52,8 +52,8 @@ export default function List(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Código','Nombre','Naturaleza','Activa','Actualizar','Eliminar']}
-                    ver={[ "cueconcodigo", "cueconnombre", "naturaleza", "estado"]}
+                    titulo={['Código','Descripción','Nombre','Naturaleza','Activa','Actualizar','Eliminar']}
+                    ver={[ "cueconcodigo", "cuecondescripcion", "cueconnombre", "naturaleza", "estado"]}
                     accion={[
                         {tipo: 'T', icono : 'add',    color: 'green',  funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },

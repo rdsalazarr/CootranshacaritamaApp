@@ -48,8 +48,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '4',
-            'cueconnombre'      => 'cxpMensualidades',
-            'cuecondescripcion' => 'CXP MENSUALIDADES',
+            'cueconnombre'      => 'cxpPagoMensualidad',
+            'cuecondescripcion' => 'CXP PAGO MENSUALIDAD',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120004',
             'created_at'        => $fechaHoraActual,
@@ -58,8 +58,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '5',
-            'cueconnombre'      => 'cxpMensualidadTotal',
-            'cuecondescripcion' => 'CXP MENSUALIDAD TOTAL',
+            'cueconnombre'      => 'cxpPagoMensualidadTotal',
+            'cuecondescripcion' => 'CXP PAGO MENSUALIDAD TOTAL',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120005',
             'created_at'        => $fechaHoraActual,
@@ -68,8 +68,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '6',
-            'cueconnombre'      => 'cxpPagoCuotaCredito',
-            'cuecondescripcion' => 'CXP PAGO CUOTA CRÉDITO',
+            'cueconnombre'      => 'cxpPagoMensualidadParcial',
+            'cuecondescripcion' => 'CXC PAGO MENSUALIDAD PARCIAL',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120006',
             'created_at'        => $fechaHoraActual,
@@ -78,8 +78,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '7',
-            'cueconnombre'      => 'cxpPagoCreditoTotal',
-            'cuecondescripcion' => 'CXP PAGO CRÉDITO TOTAL',
+            'cueconnombre'      => 'cxpPagoCuotaCredito',
+            'cuecondescripcion' => 'CXP PAGO CUOTA CRÉDITO',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120007',
             'created_at'        => $fechaHoraActual,
@@ -88,8 +88,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '8',
-            'cueconnombre'      => 'cxpPagoSancion',
-            'cuecondescripcion' => 'CXP PAGO SANCIÓN',
+            'cueconnombre'      => 'cxpPagoCreditoTotal',
+            'cuecondescripcion' => 'CXP PAGO CRÉDITO TOTAL',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120008',
             'created_at'        => $fechaHoraActual,
@@ -98,13 +98,13 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '9',
-            'cueconnombre'      => 'cxpPagoMensualidadParcial',
-            'cuecondescripcion' => 'CXC PAGO MENSUALIDAD PARCIAL',
+            'cueconnombre'      => 'cxpPagoSancion',
+            'cuecondescripcion' => 'CXP PAGO SANCIÓN',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120009',
             'created_at'        => $fechaHoraActual,
             'updated_at'        => $fechaHoraActual,
-        ]);
+        ]);     
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '10',
