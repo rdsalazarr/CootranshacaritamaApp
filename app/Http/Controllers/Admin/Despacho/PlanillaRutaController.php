@@ -229,7 +229,10 @@ class PlanillaRutaController extends Controller
         try {
 
             $tiquete = DB::table('tiquete')
-                        ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'))
+                        ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'),
+                        DB::raw('SUM(tiquvalorfondoreposicion) as valorContabilizarFondoReposicion'),
+                        DB::raw('SUM(tiquvalorestampilla) as valorContabilizarEstampilla'),
+                        DB::raw('SUM(tiquvalorseguro) as valorContabilizarSeguro'))
                         ->where('plarutid', $request->codigo)
                         ->where('tiqucontabilizado', 0)
                         ->groupBy('plarutid')
@@ -276,9 +279,9 @@ class PlanillaRutaController extends Controller
             }
 
             if($tiquete){
-
+                //, DB::raw('SUM(tiquvalortotal) as valorContabilizar')
                 $tiquetes = DB::table('tiquete')
-                                ->select('tiquid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'))
+                                ->select('tiquid')
                                 ->where('plarutid', $request->codigo)
                                 ->where('tiqucontabilizado', 0)
                                 ->get();
@@ -304,6 +307,33 @@ class PlanillaRutaController extends Controller
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizar;
                 $comprobantecontabledetalle->save();
+
+                if($tiquete->valorContabilizarFondoReposicion){
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = 11; //CXP FONDO REPOSICION
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizarFondoReposicion;
+                    $comprobantecontabledetalle->save();
+                }
+
+                if($tiquete->valorContabilizarEstampilla){
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = 12; //CXP PAGO ESTAMIPILLA
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizarEstampilla;
+                    $comprobantecontabledetalle->save();  
+                }                
+
+                if($tiquete->valorContabilizarSeguro > 0 ){
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = 13; //CXP PAGO SEGURO
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizarSeguro;
+                    $comprobantecontabledetalle->save();
+                }
             }
 
             DB::commit();

@@ -108,6 +108,42 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'         => '11',
+            'cueconnombre'     => 'CXP FONDO REPOSICION',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120011',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '12',
+            'cueconnombre'     => 'CXP PAGO ESTAMIPILLA',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120012',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '13',
+            'cueconnombre'     => 'CXP PAGO SEGURO',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120013',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '14',
+            'cueconnombre'     => 'CXP DESCUENTO TIQUETE',
+            'cueconnaturaleza' => 'C',
+            'cueconcodigo'     => '120014',
+            'created_at'       => $fechaHoraActual,
+            'updated_at'       => $fechaHoraActual,
+        ]);
+
+        DB::table('cuentacontable')->insert([
+            'cueconid'         => '11',
             'cueconnombre'     => 'CXC DESEMBOLSOS',
             'cueconnaturaleza' => 'D',
             'cueconcodigo'     => '120011',

@@ -36,9 +36,13 @@ class FirmarContratoController extends Controller
                             ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                             ->join('persona as p', 'p.persid', '=', 'a.persid')
                             ->where('vcf.persid', Auth::id());
+
                             if($request->tipo === 'PENDIENTE')
                                 $consulta = $consulta->whereNull('vcf.vecofitoken');
-                            
+
+                            if($request->tipo === 'FIRMADOS')
+                                $consulta = $consulta->whereNotNull('vcf.vecofitoken');
+
                 $data = $consulta->orderBy('vcf.vecofiid')->get();
 
             return response()->json(['success' => true, "data" => $data]);

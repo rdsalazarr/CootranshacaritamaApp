@@ -48,8 +48,8 @@ class TiqueteController extends Controller
 
                             if($rutaDespachada)
                                 $consulta = $consulta->whereDate('t.tiqufechahoraregistro', '>=', $fechaInicial);
-                            
-                            $data  = $consulta->orderBy('t.tiquid', 'Desc')->orderBy('pr.plarutid', 'Desc')->get();
+
+                 $data  = $consulta->orderBy('t.tiquid', 'Desc')->orderBy('pr.plarutid', 'Desc')->get();
 
             return response()->json(['success' => true, "data" => $data]);
         }catch(Exception $e){
@@ -64,19 +64,24 @@ class TiqueteController extends Controller
         try{
             $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
             $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
-            $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre')
-                                        ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
+            $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
+                                        //->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
+                                        ->join('tarifatiquete as tt', function($join)
+                                        {
+                                            $join->on('tt.depaiddestino', '=', 'm.munidepaid');
+                                            $join->on('tt.muniiddestino', '=', 'm.muniid');
+                                        })
+                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->distinct()->get();
 
             $tarifaTiquetes         = DB::table('tarifatiquete as tt')
-                                        ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion','tt.tartiqvalorseguro')
+                                        ->select('tt.rutaid','tt.depaiddestino','tt.muniiddestino', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro')
                                         ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')
                                         ->where('r.rutaactiva', true)
                                         ->get();
 
             $planillaRutas        = DB::table('planillaruta as pr')
                                         ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen',
-                                        'md.muninombre as municipioDestino','r.rutavalorestampilla',
+                                        'md.muninombre as municipioDestino',
                                         DB::raw("CONCAT(pr.agenid,pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                         ->join('municipio as mo', function($join)
@@ -104,8 +109,9 @@ class TiqueteController extends Controller
             $tiquetePuestosPlanilla = [];
             if($request->tipo === 'U'){
                 $tiquete  = DB::table('tiquete as t')
-                                    ->select('t.tiquid','t.plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino', DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),
-                                    't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorseguro','t.tiquvalorestampilla','t.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
+                                    ->select('t.tiquid','t.plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino', 't.tiquvalortiquete','t.tiquvalordescuento', 
+                                     DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),
+                                    't.tiquvalorseguro','t.tiquvalorestampilla','t.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
                                     'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido','ps.perserpermitenotificacion',
                                     'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'pr.vehiid','pr.rutaid')
                                     ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
@@ -118,7 +124,9 @@ class TiqueteController extends Controller
                 $tiquetePuestosPlanilla  = DB::table('tiquetepuesto as tp')->select('tp.tiqpuenumeropuesto')
                                         ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
                                         ->where('t.plarutid', $request->planillaId)
-                                        ->where('t.tiquid', '<>', $request->codigo)->get();
+                                        ->where('t.tiquid1', '<>', $request->codigo)->get();
+
+                                        dd($tiquetePuestosPlanilla);
             }
 
             return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"          => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
@@ -131,14 +139,14 @@ class TiqueteController extends Controller
 
     public function consultarVenta(Request $request)
 	{
-        $this->validate(request(),['palnillaId' => 'required|numeric']);
+        $this->validate(request(),['planillaId' => 'required|numeric']);
 
         try{
             $data  = DB::table('tiquete as t')
                         ->select('tp.tiqpueid','tp.tiqpuenumeropuesto')
                         ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 'tp.tiquid')
                         ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
-                        ->where('t.plarutid', $request->palnillaId)->get();
+                        ->where('t.plarutid', $request->planillaId)->get();
 
             return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data]);
           }catch(Exception $e){
@@ -190,7 +198,7 @@ class TiqueteController extends Controller
                 'valorFondoReposicion' => 'required|numeric|between:1,99999999',
                 'valorTotal'           => 'required|numeric|between:1,99999999',
                 'valorSeguro'          => 'required|numeric|between:1,99999999',
-                'valorEstampilla'      => 'required|numeric',
+                'valorTotalEstampilla' => 'required|numeric',
                 'puestosVendidos'      => 'required|array|min:1',
 	        ]);
 
@@ -226,17 +234,19 @@ class TiqueteController extends Controller
                 $tiquete->tiquconsecutivo       = $this->obtenerConsecutivo($anioActual);
             }
 
+            dd($request->departamentoOrigen, $request->municipioOrigen, $request->departamentoDestino, $request->municipioDestino );
+
             $tiquete->plarutid                 = $request->planillaId;
             $tiquete->perserid                 = $personaId;
 			$tiquete->depaidorigen             = $request->departamentoOrigen;
-			$tiquete->muniidorigen             = $request->municipioOrigen;
+			$tiquete->muniidorigen             = $request->municipioOrigen;            
 			$tiquete->depaiddestino            = $request->departamentoDestino;
             $tiquete->muniiddestino            = $request->municipioDestino;
             $tiquete->tiqucantidad             = $request->cantidadPuesto;
             $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
             $tiquete->tiquvalorseguro          = $request->valorSeguro;
-            $tiquete->tiquvalorestampilla      = $request->valorEstampilla;
+            $tiquete->tiquvalorestampilla      = $request->valorTotalEstampilla;
             $tiquete->tiquvalorfondoreposicion = $request->valorFondoReposicion;
             $tiquete->tiquvalortotal           = $request->valorTotal;
 			$tiquete->save();
@@ -247,10 +257,10 @@ class TiqueteController extends Controller
 				$tiquid             = $tiqueteConsecutivo->tiquid;
 			}else{
                 $tiquetePuestos  = DB::table('tiquetepuesto as tp')->select('tp.tiqpueid')
-                                ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
-                                ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
-                                ->where('tp.tiquid', $tiquid)
-                                ->where('ps.perserid', $personaId)->get();
+                                    ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
+                                    ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
+                                    ->where('tp.tiquid', $tiquid)
+                                    ->where('ps.perserid', $personaId)->get();
                 foreach($tiquetePuestos as $tiquetePuesto){
                     $tiquetepuesto = TiquetePuesto::findOrFail($tiquetePuesto->tiqpueid);
                     $tiquetepuesto->delete();

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->smallInteger('muniiddestino')->unsigned()->comment('Identificador del municipio de destino del tiquete');
             $table->decimal('tartiqvalor', 10, 0)->comment('Valor del tiquete');
             $table->decimal('tartiqvalorseguro', 6, 0)->default(0)->comment('Valor del seguro para el tiquete');
+            $table->decimal('tartiqvalorestampilla', 6, 0)->nullable()->comment('Valor de la estampilla para el tiquete');
             $table->decimal('tartiqfondoreposicion', 6, 2)->comment('Porcentaje para el fondo de reposición del tiquete');
             $table->timestamps();
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutatartiq');

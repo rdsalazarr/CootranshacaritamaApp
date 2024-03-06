@@ -15,12 +15,15 @@ export default function VisualizarPdf({data}){
         instance.post('/admin/direccion/transporte/verificar/total/firma/contrato', {codigo: data.vecofiid}).then(res=>{
             if(res.success){
                 if(res.data.totalFirmas === res.data.totalFirmasRealizadas){
+                    setLoader(true);
                     instancePdf.post('/admin/direccion/transporte/visualizar/contrato/PDF', {codigo: data.vecofiid}).then(res=>{
                         let url = 'data:application/pdf;base64,'+res.data;
                         setPdf(url);
                         setMostrarPdf(true);
                         setLoader(false);
                     });
+                }else{
+                    setLoader(false);
                 }
             }else{
                 setLoader(false);

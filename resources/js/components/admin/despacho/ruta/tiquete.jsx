@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell, Autocomplete, createFilterOptions} from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
@@ -23,12 +23,12 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 
 export default function Tiquete({data}){
 
+    const [formDataTiquete, setFormDataTiquete] = useState({municipioId:'', nombreMunicipio:'', valorTiquete: '', valorTiqueteMostrar: '', valorSeguro:'', valorSeguroMostrar:'', valorEstampilla:'0', valorEstampillaMostrar:'', fondoReposicion:'1.00'});
     const [formData, setFormData]               = useState({codigo:data.rutaid, departamento: data.depaiddestino});
-    const [formDataTiquete, setFormDataTiquete] = useState({municipioId:'', nombreMunicipio:'', valorTiquete: '', valorTiqueteMostrar: '', valorSeguro:'', valorSeguroMostrar:'', fondoReposicion:'1.00'});
     const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
     const [tipoProceso, setTipoProceso] = useState('I');
     const [habilitado, setHabilitado] = useState(true);
-    const [municipios, setMunicipios] = useState([]);    
+    const [municipios, setMunicipios] = useState([]);
     const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
@@ -58,18 +58,7 @@ export default function Tiquete({data}){
     }
 
     const adicionarFilaTarifa = () =>{
-        if(formDataTiquete.municipioId === ''){
-            showSimpleSnackbar('Debe seleccionar un municipio', 'error');
-            return
-        }
-        if(formDataTiquete.valorTiquete === ''){
-            showSimpleSnackbar('Debe ingresar un valor del tiquete', 'error');
-            return
-        }
-        if(formDataTiquete.fondoReposicion === ''){
-            showSimpleSnackbar('Debe ingresar un valor del fondo de reposición', 'error');
-            return
-        }
+ 
         if(tipoProceso === 'I' && tarifaTiquetes.some(nod => nod.municipioId == formDataTiquete.municipioId)){
             showSimpleSnackbar('Este registro ya fue adicionado', 'error');
             return
@@ -80,6 +69,7 @@ export default function Tiquete({data}){
         if(tipoProceso === 'I'){
             newTarifaTiquetes.push({identificador:'', municipioId:formDataTiquete.municipioId, nombreMunicipio: resultadoNombreMunicipio[0].muninombre, valorTiquete: formDataTiquete.valorTiquete, 
                                 valorTiqueteMostrar: formatearNumero(formDataTiquete.valorTiquete), valorSeguro: formDataTiquete.valorSeguro, valorSeguroMostrar: formatearNumero(formDataTiquete.valorSeguro),
+                                valorEstampilla: formDataTiquete.valorEstampilla, valorEstampillaMostrar: formatearNumero(formDataTiquete.valorEstampilla),
                                 fondoReposicion: formDataTiquete.fondoReposicion, estado: 'I'}); 
             setTarifaTiquetes(newTarifaTiquetes);
         }else{
@@ -89,17 +79,19 @@ export default function Tiquete({data}){
                     arrayTarifaTiquetes.push({ identificador:res.identificador, municipioId: formDataTiquete.municipioId, nombreMunicipio:resultadoNombreMunicipio[0].muninombre,
                         valorTiquete: formDataTiquete.valorTiquete, valorTiqueteMostrar: formatearNumero(formDataTiquete.valorTiquete),
                         valorSeguro: formDataTiquete.valorSeguro, valorSeguroMostrar: formatearNumero(formDataTiquete.valorSeguro),
+                        valorEstampilla: formDataTiquete.valorEstampilla, valorEstampillaMostrar: formatearNumero(formDataTiquete.valorEstampilla),
                         fondoReposicion: formDataTiquete.fondoReposicion, estado: 'U' });
                 }else{
-                    arrayTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, 
+                    arrayTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio,
                         valorTiquete: res.valorTiquete, valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro:res.valorSeguro, valorSeguroMostrar:res.valorSeguroMostrar, 
-                        fondoReposicion: res.fondoReposicion,estado: 'U'});
+                        valorEstampilla: res.valorEstampilla, valorEstampillaMostrar: res.valorEstampillaMostrar,
+                        fondoReposicion: res.fondoReposicion, estado: res.estado});
                 }
             })
             setTarifaTiquetes(arrayTarifaTiquetes);
         }
-        
-        setFormDataTiquete({municipioId:'', nombreMunicipio:'', valorTiquete: '', valorSeguro:'', fondoReposicion:'1.00' });
+
+        setFormDataTiquete({municipioId:'', nombreMunicipio:'', valorTiquete: '', valorSeguro:'',valorEstampilla:'0', fondoReposicion:'1.00' });
         setTipoProceso('I');
     }
 
@@ -108,17 +100,21 @@ export default function Tiquete({data}){
         tarifaTiquetes.map((res,i) =>{
             if(res.estado === 'U' && i === id){
                 newTarifaTiquetes.push({ identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, 
-                                        valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar, fondoReposicion: res.fondoReposicion,estado: 'D' }); 
+                                        valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar, 
+                                        valorEstampilla: res.valorEstampilla, valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion,estado: 'D' }); 
             }else if(res.estado === 'D' && i === id){
-                newTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, 
-                                        valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar,fondoReposicion: res.fondoReposicion,estado: 'U'});
+                newTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete,
+                                        valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar, 
+                                        valorEstampilla: res.valorEstampilla, valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion,estado: 'U'});
             }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
-                newTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, 
-                                        valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar, fondoReposicion: res.fondoReposicion,estado:res.estado});
+                newTarifaTiquetes.push({identificador:res.identificador, municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete,
+                                        valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar, 
+                                        valorEstampilla: res.valorEstampilla, valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion,estado:res.estado});
             }else{
                 if(i != id){
-                    newTarifaTiquetes.push({identificador:res.identificador,municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete, 
-                                            valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar, fondoReposicion: res.fondoReposicion,estado: 'I' });
+                    newTarifaTiquetes.push({identificador:res.identificador,municipioId: res.municipioId,nombreMunicipio:res.nombreMunicipio, valorTiquete: res.valorTiquete,
+                                            valorTiqueteMostrar: res.valorTiqueteMostrar, valorSeguro: res.valorSeguro, valorSeguroMostrar: res.valorSeguroMostrar,
+                                            valorEstampilla: res.valorEstampilla, valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion,estado: 'I' });
                 }
             }
         })
@@ -132,6 +128,7 @@ export default function Tiquete({data}){
         newFormDataTiquete.municipioId     = resultadoTarifaTiquetes[0].municipioId;
         newFormDataTiquete.valorTiquete    = resultadoTarifaTiquetes[0].valorTiquete;
         newFormDataTiquete.valorSeguro     = resultadoTarifaTiquetes[0].valorSeguro;
+        newFormDataTiquete.valorEstampilla = resultadoTarifaTiquetes[0].valorEstampilla;
         newFormDataTiquete.fondoReposicion = resultadoTarifaTiquetes[0].fondoReposicion;
         setFormDataTiquete(newFormDataTiquete);
         setTipoProceso('U');
@@ -150,14 +147,16 @@ export default function Tiquete({data}){
                 const municipioEncontrado = municipioRutas.find(mun => mun.muniid === tiq.muniiddestino);
                 if(municipioEncontrado){
                     newValorTiquetes.push({
-                        identificador:       tiq.tartiqid,
-                        municipioId:         tiq.muniiddestino,
-                        nombreMunicipio:     municipioEncontrado.muninombre,
-                        valorTiquete:        tiq.tartiqvalor,
-                        valorTiqueteMostrar: tiq.valorTiquete,
-                        valorSeguro:         tiq.tartiqvalorseguro,
-                        valorSeguroMostrar:  tiq.valorSeguro,
-                        fondoReposicion:     tiq.tartiqfondoreposicion,
+                        identificador:          tiq.tartiqid,
+                        municipioId:            tiq.muniiddestino,
+                        nombreMunicipio:        municipioEncontrado.muninombre,
+                        valorTiquete:           tiq.tartiqvalor,
+                        valorTiqueteMostrar:    tiq.valorTiquete,
+                        valorSeguro:            tiq.tartiqvalorseguro,
+                        valorSeguroMostrar:     tiq.valorSeguro,
+                        valorEstampilla:        tiq.tartiqvalorestampilla,
+                        valorEstampillaMostrar: tiq.valorEstampilla,
+                        fondoReposicion:        tiq.tartiqfondoreposicion,
                         estado: 'U'
                     });
                 }
@@ -191,7 +190,7 @@ export default function Tiquete({data}){
                         </Box>
                     </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Grid item xl={4} md={4} sm={6} xs={12}>
                         <SelectValidator
                             name={'municipioId'}
                             value={formDataTiquete.municipioId}
@@ -210,7 +209,7 @@ export default function Tiquete({data}){
                         </SelectValidator>
                     </Grid>
 
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                    <Grid item xl={4} md={4} sm={6} xs={12}>
                         <NumberValidator fullWidth
                             id={"valorTiquete"}
                             name={"valorTiquete"}
@@ -223,7 +222,7 @@ export default function Tiquete({data}){
                         />
                     </Grid>
 
-                    <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <Grid item xl={4} md={4} sm={6} xs={12}>
                         <NumberValidator fullWidth
                             id={"valorSeguro"}
                             name={"valorSeguro"}
@@ -236,7 +235,20 @@ export default function Tiquete({data}){
                         />
                     </Grid>
 
-                    <Grid item xl={2} md={2} sm={6} xs={12}>
+                    <Grid item xl={4} md={4} sm={6} xs={12}>
+                        <NumberValidator fullWidth
+                            id={"valorEstampilla"}
+                            name={"valorEstampilla"}
+                            label={"Valor estampilla"}
+                            value={formDataTiquete.valorEstampilla}
+                            type={'numeric'}
+                            require={['maxStringLength:9']}
+                            error={['Número máximo permitido es el 999999']}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    <Grid item xl={3} md={3} sm={6} xs={12}>
                         <TextValidator
                             name={'fondoReposicion'}
                             value={formDataTiquete.fondoReposicion}
@@ -250,7 +262,11 @@ export default function Tiquete({data}){
                         />
                     </Grid>
 
-                    <Grid item xl={2} md={2} sm={12} xs={12}>
+                    <Grid item xl={2} md={2} sm={6} xs={12}>
+
+                    </Grid>
+
+                    <Grid item xl={3} md={3} sm={12} xs={12} style={{textAlign:'center'}}>
                         <Button type={"submit"} className={'modalBtnIcono'} 
                             startIcon={(tipoProceso === 'I') ? <AddIcon className='icono' /> : <EditIcon className='icono' /> }> {(tipoProceso === 'I') ? "Agregar" : "Actualizar"}
                         </Button>
@@ -276,6 +292,7 @@ export default function Tiquete({data}){
                                             <TableCell>Municipio destino</TableCell>
                                             <TableCell>Valor tiquete</TableCell>
                                             <TableCell>Valor seguro</TableCell>
+                                            <TableCell>Valor estampilla</TableCell>
                                             <TableCell>Fondo de reposición</TableCell>
                                             <TableCell style={{width: '10%'}} className='cellCenter'>Editar </TableCell>
                                             <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
@@ -297,6 +314,10 @@ export default function Tiquete({data}){
 
                                                 <TableCell>
                                                     $ {tari['valorSeguroMostrar']}
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    $ {tari['valorEstampillaMostrar']}
                                                 </TableCell>
 
                                                 <TableCell>

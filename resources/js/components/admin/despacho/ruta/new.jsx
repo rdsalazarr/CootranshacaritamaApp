@@ -11,8 +11,8 @@ import AddIcon from '@mui/icons-material/Add';
 export default function New({data, tipo}){
     const [formData, setFormData] = useState(
                                 (tipo !== 'I') ? {codigo:data.rutaid,  departamentoOrigen:data.depaidorigen, municipioOrigen: data.muniidorigen, departamentoDestino: data.depaiddestino, 
-                                        municipioDestino:data.muniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, valorEstampilla: data.rutavalorestampilla, tipo:tipo 
-                                    } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:'', tipo:tipo
+                                        municipioDestino:data.muniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, tipo:tipo 
+                                    } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', tipo:tipo
                                 });
    
     const [formDataAdicionarNodo, setFormDataAdicionarNodo] = useState({municipioId:'', nombreMunicipio: ''});
@@ -172,7 +172,7 @@ export default function New({data, tipo}){
         <ValidatorForm onSubmit={handleSubmit}>
             <Grid container spacing={2}>
 
-                <Grid item xl={4} md={4} sm={6} xs={12}>
+                <Grid item xl={6} md={6} sm={6} xs={12}>
                     <SelectValidator
                         name={'departamentoOrigen'}
                         value={formData.departamentoOrigen}
@@ -209,19 +209,6 @@ export default function New({data, tipo}){
                         })}
                     </SelectValidator>
                 </Grid>
-
-                <Grid item xl={2} md={2} sm={6} xs={12}>
-                    <NumberValidator fullWidth
-                        id={"valorEstampilla"}
-                        name={"valorEstampilla"}
-                        label={"Valor de estampilla"}
-                        value={formData.valorEstampilla}
-                        type={'numeric'}
-                        require={['maxStringLength:6']}
-                        error={['Número máximo permitido es el 999999']}
-                        onChange={handleChange}
-                    />
-                </Grid> 
 
                 <Grid item xl={3} md={3} sm={3} xs={12}>
                     <SelectValidator

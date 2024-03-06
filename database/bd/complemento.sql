@@ -291,3 +291,8 @@ ALTER TABLE `vehiculotarjetaoperacion` CHANGE `vetaopaid` `vetaopid` BIGINT(20) 
 
 ALTER TABLE `colocacionliquidacion` CHANGE `comconid` `comconid` BIGINT(20) UNSIGNED NULL COMMENT 'Identificador del comprobante contable';
 ALTER TABLE `colocacionliquidacion` CHANGE `colliqvalordescuentoanticipado` `colliqvalorinteresdevuelto` DECIMAL(10,0) NULL DEFAULT NULL COMMENT 'Valor interés devuelto en el pagado a la colocación';
+
+
+ALTER TABLE `ruta`  DROP `rutavalorestampilla`;
+ALTER TABLE `tarifatiquete` ADD `tartiqvalorestampilla` DECIMAL(6,0) NULL COMMENT 'Valor de la estampilla para el tiquete' AFTER `tartiqfondoreposicion`;
+UPDATE `tarifatiquete` SET `tartiqvalorestampilla` = '0' WHERE `tarifatiquete`.`tartiqid` = 1; UPDATE `tarifatiquete` SET `tartiqvalorestampilla` = '0' WHERE `tarifatiquete`.`tartiqid` = 2;
