@@ -2923,19 +2923,21 @@ EOD;
 		PDF::Cell(36, 3,'$ '.$valorEnvio, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(20, 3,"Valor domicilio:", 0, 0,'L'); 
-		PDF::Cell(36, 3,'$ '.$valorDomicilio, 0, 0,'L'); 
-		PDF::Ln(3);
+		if($valorDomicilio > 0){
+			PDF::Cell(20, 3,"Valor domicilio:", 0, 0,'L'); 
+			PDF::Cell(36, 3,'$ '.$valorDomicilio, 0, 0,'L'); 
+			PDF::Ln(3);
+		}
 
 		PDF::Cell(20, 3,"Valor seguro:", 0, 0,'L'); 
 		PDF::Cell(36, 3,'$ '.$valorSeguro, 0, 0,'L'); 
 		PDF::Ln(3);
 
-		PDF::Cell(20, 3,"Valor total:", 0, 0,'L'); 
-		PDF::Cell(36, 3,'$ '.$valorTotal, 0, 0,'L'); 
+		PDF::Cell(20, 3,"Valor total:", 0, 0,'L');
+		PDF::Cell(36, 3,'$ '.$valorTotal, 0, 0,'L');
 		PDF::Ln(3);
 
-		PDF::Cell(20, 3,"Pago contra entrega:", 0, 0,'L'); 
+		PDF::Cell(20, 3,"Pago contra entrega:", 0, 0,'L');
 		PDF::Cell(36, 3, $pagoContraentrega, 0, 0,'L'); 
 		PDF::Ln(3);
 

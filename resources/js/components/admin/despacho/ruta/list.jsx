@@ -26,7 +26,7 @@ export default function List(){
                         <Eliminar id={(tipo === 3) ? modal.data.rutaid : null} ruta={'/admin/despacho/ruta/destroy'} cerrarModal={cerrarModal} />
                     ];
 
-    const tituloModal = ['Nueva ruta','Editar ruta','Asignar valor del tiquete para la ruta',''];
+    const tituloModal = ['Nueva ruta','Editar ruta','Asignar valores al tiquete para la ruta',''];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);

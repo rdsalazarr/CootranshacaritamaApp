@@ -32,13 +32,13 @@ class TiqueteController extends Controller
                             ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
                             ->join('municipio as mo', function($join)
                             {
-                                $join->on('mo.munidepaid', '=', 't.depaidorigen');
-                                $join->on('mo.muniid', '=', 't.muniidorigen');
+                                $join->on('mo.munidepaid', '=', 't.tiqudepaidorigen');
+                                $join->on('mo.muniid', '=', 't.tiqumuniidorigen');
                             })
                             ->join('municipio as md', function($join)
                             {
-                                $join->on('md.munidepaid', '=', 't.depaiddestino');
-                                $join->on('md.muniid', '=', 't.muniiddestino');
+                                $join->on('md.munidepaid', '=', 't.tiqudepaiddestino');
+                                $join->on('md.muniid', '=', 't.tiqumuniiddestino');
                             })
                             ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
@@ -68,37 +68,37 @@ class TiqueteController extends Controller
                                         //->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
                                         ->join('tarifatiquete as tt', function($join)
                                         {
-                                            $join->on('tt.depaidorigen', '=', 'm.munidepaid');
-                                            $join->on('tt.muniidorigen', '=', 'm.muniid');
+                                            $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
+                                            $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
                                         })
                                         ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->distinct()->get();
 
             $tarifaTiquetes         = DB::table('tarifatiquete as tt')
-                                        ->select('tt.rutaid','tt.depaidorigen','tt.muniidorigen', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro')
+                                        ->select('tt.rutaid','tt.tartiqdepaidorigen','tt.tartiqmuniidorigen', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro')
                                         ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')
                                         ->where('r.rutaactiva', true)
                                         ->get();
 
             $planillaRutas        = DB::table('planillaruta as pr')
-                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino',                                        
+                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.muniiddestino',                                        
                                         'tt.depaidorigen as depaidorigentarifa','tt.muniidorigen as muniidorigentarifa', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro',
                                         DB::raw("CONCAT(pr.agenid,pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                         ->join('tarifatiquete as tt', function($join)
                                         {
                                             $join->on('tt.rutaid', '=', 'r.rutaid');
-                                            $join->on('tt.depaidorigen', '=', 'r.depaiddestino');
-                                            $join->on('tt.muniidorigen', '=', 'r.muniiddestino');
+                                            $join->on('tt.depaidorigen', '=', 'r.rutadepaiddestino');
+                                            $join->on('tt.muniidorigen', '=', 'r.rutamuniiddestino');
                                         })
                                         ->join('municipio as mo', function($join)
                                         {
-                                            $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                            $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                            $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                                            $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
                                         })
                                         ->join('municipio as md', function($join)
                                         {
-                                            $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                            $join->on('md.muniid', '=', 'r.muniiddestino');
+                                            $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                            $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                                         })
                                         ->where('pr.plarutdespachada', false)
                                         ->get();
@@ -115,7 +115,7 @@ class TiqueteController extends Controller
             $tiquetePuestosPlanilla = [];
             if($request->tipo === 'U'){
                 $tiquete  = DB::table('tiquete as t')
-                                    ->select('t.tiquid','t.plarutid','t.perserid','t.depaidorigen','t.muniidorigen','t.depaiddestino','t.muniiddestino', 't.tiquvalortiquete','t.tiquvalordescuento', 
+                                    ->select('t.tiquid','t.plarutid','t.perserid','t.tiqudepaidorigen','t.tiqumuniidorigen','t.tiqudepaiddestino','t.tiqumuniiddestino', 't.tiquvalortiquete','t.tiquvalordescuento', 
                                      DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),
                                     't.tiquvalorseguro','t.tiquvalorestampilla','t.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
                                     'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido','ps.perserpermitenotificacion',
@@ -242,10 +242,10 @@ class TiqueteController extends Controller
 
             $tiquete->plarutid                 = $request->planillaId;
             $tiquete->perserid                 = $personaId;
-			$tiquete->depaidorigen             = $request->departamentoOrigen;
-			$tiquete->muniidorigen             = $request->municipioOrigen;            
-			$tiquete->depaiddestino            = $request->departamentoDestino;
-            $tiquete->muniiddestino            = $request->municipioDestino;
+			$tiquete->tiqudepaidorigen         = $request->departamentoOrigen;
+			$tiquete->tiqumuniidorigen         = $request->municipioOrigen;            
+			$tiquete->tiqudepaiddestino        = $request->departamentoDestino;
+            $tiquete->tiqumuniiddestino        = $request->municipioDestino;
             $tiquete->tiqucantidad             = $request->cantidadPuesto;
             $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
@@ -322,24 +322,24 @@ class TiqueteController extends Controller
                         ->join('tarifatiquete as tt', function($join)
                         {
                             $join->on('tt.rutaid', '=', 'pr.rutaid');
-                            $join->on('tt.depaidorigen', '=', 't.depaidorigen');
-                            $join->on('tt.muniidorigen', '=', 't.muniidorigen');
+                            $join->on('tt.depaidorigen', '=', 't.tiqudepaidorigen');
+                            $join->on('tt.muniidorigen', '=', 't.tiqumuniidorigen');
                         })   
                         ->join('municipio as mo', function($join)
                         {
-                            $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                            $join->on('mo.muniid', '=', 'r.muniidorigen');
+                            $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                            $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
                         })
                         ->join('municipio as md', function($join)
                         {
-                            $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                            $join->on('md.muniid', '=', 'r.muniiddestino');
+                            $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                            $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                         })
-                        ->join('departamento as dd', 'dd.depaid', '=', 't.depaiddestino')
+                        ->join('departamento as dd', 'dd.depaid', '=', 't.tiqudepaiddestino')
                         ->join('municipio as mde', function($join)
                         {
-                            $join->on('mde.munidepaid', '=', 't.depaiddestino');
-                            $join->on('mde.muniid', '=', 't.muniiddestino');
+                            $join->on('mde.munidepaid', '=', 't.tiqudepaiddestino');
+                            $join->on('mde.muniid', '=', 't.tiqumuniiddestino');
                         })
                         ->where('t.tiquid', $request->codigo)->first();
 
@@ -386,23 +386,23 @@ class TiqueteController extends Controller
                             ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                             ->join('municipio as mo', function($join)
                             {
-                                $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                                $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
                             })
                             ->join('municipio as md', function($join)
                             {
-                                $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                $join->on('md.muniid', '=', 'r.muniiddestino');
+                                $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                             })
                             ->join('municipio as mor', function($join)
                             {
-                                $join->on('mor.munidepaid', '=', 't.depaidorigen');
-                                $join->on('mor.muniid', '=', 't.muniidorigen');
+                                $join->on('mor.munidepaid', '=', 't.tiqudepaidorigen');
+                                $join->on('mor.muniid', '=', 't.tiqumuniidorigen');
                             })
                             ->join('municipio as mde', function($join)
                             {
-                                $join->on('mde.munidepaid', '=', 't.depaiddestino');
-                                $join->on('mde.muniid', '=', 't.muniiddestino');
+                                $join->on('mde.munidepaid', '=', 't.tiqudepaiddestino');
+                                $join->on('mde.muniid', '=', 't.tiqumuniiddestino');
                             })
                             ->join('usuario as u', 'u.usuaid', '=', 't.usuaid')
                             ->join('agencia as a', 'a.agenid', '=', 't.agenid')

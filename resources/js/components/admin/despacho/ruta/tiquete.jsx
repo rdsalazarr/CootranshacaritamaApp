@@ -203,12 +203,31 @@ export default function Tiquete({data}){
                             <span>{data.nombreMunicipioDestino}</span>
                         </Box>
                     </Grid>
+                    
+                    <Grid item xl={4} md={4} sm={6} xs={12}>
+                        <SelectValidator
+                            name={'municipioOrigen'}
+                            value={formDataTiquete.municipioId}
+                            label={'Municipio origen'}
+                            className={'inputGeneral'}
+                            variant={"standard"} 
+                            inputProps={{autoComplete: 'off'}}
+                            validators={["required"]}
+                            errorMessages={["Debe hacer una selección"]}
+                            onChange={handleChange} 
+                        >
+                            <MenuItem value={""}>Seleccione</MenuItem>
+                            {municipios.map(res=>{
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
+                            })}
+                        </SelectValidator>
+                    </Grid>
 
                     <Grid item xl={4} md={4} sm={6} xs={12}>
                         <SelectValidator
                             name={'municipioId'}
                             value={formDataTiquete.municipioId}
-                            label={'Municipio origen y/o final'}
+                            label={'Municipio destino'}
                             className={'inputGeneral'}
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}

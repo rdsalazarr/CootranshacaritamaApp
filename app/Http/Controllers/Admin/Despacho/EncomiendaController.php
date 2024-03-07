@@ -39,23 +39,23 @@ class EncomiendaController extends Controller
                         ->join('personaservicio as ps1', 'ps1.perserid', '=', 'e.perseriddestino')
                         ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
                         ->join('tipoestadoencomienda as tee', 'tee.tiesenid', '=', 'e.tiesenid')
-                        ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino')
+                        ->join('departamento as de', 'de.depaid', '=', 'e.encodepaiddestino')
                         ->join('municipio as md', function($join)
                         {
-                            $join->on('md.munidepaid', '=', 'e.depaiddestino');
-                            $join->on('md.muniid', '=', 'e.muniiddestino');
+                            $join->on('md.munidepaid', '=', 'e.encodepaiddestino');
+                            $join->on('md.muniid', '=', 'e.encomuniiddestino');
                         })
                         ->join('planillaruta as pr', 'pr.plarutid', '=', 'e.plarutid')
                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                         ->join('municipio as mor', function($join)
                         {
-                            $join->on('mor.munidepaid', '=', 'r.depaidorigen');
-                            $join->on('mor.muniid', '=', 'r.muniidorigen');
+                            $join->on('mor.munidepaid', '=', 'r.rutadepaidorigen');
+                            $join->on('mor.muniid', '=', 'r.rutamuniidorigen');
                         })
                         ->join('municipio as mdr', function($join)
                         {
-                            $join->on('mdr.munidepaid', '=', 'r.depaiddestino');
-                            $join->on('mdr.muniid', '=', 'r.muniiddestino');
+                            $join->on('mdr.munidepaid', '=', 'r.rutadepaiddestino');
+                            $join->on('mdr.muniid', '=', 'r.rutamuniiddestino');
                         })
                         ->where('e.tiesenid', $comparador, $request->estado)
                         ->where('pr.plarutdespachada', $rutaDespachada);
@@ -84,18 +84,18 @@ class EncomiendaController extends Controller
                                             'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
 
         $planillaRutas        = DB::table('planillaruta as pr')
-                                    ->select('pr.plarutid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                    ->select('pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
                                     DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                     ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                     ->join('municipio as mo', function($join)
                                     {
-                                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                        $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                        $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                                        $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
                                     })
                                     ->join('municipio as md', function($join)
                                     {
-                                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                        $join->on('md.muniid', '=', 'r.muniiddestino');
+                                        $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                        $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                                     })
                                     ->where('pr.plarutdespachada', false)
                                     ->get();
@@ -106,7 +106,7 @@ class EncomiendaController extends Controller
         $municipiosNodoDestino = [];
         if($request->tipo === 'U'){
             $encomienda  = DB::table('encomienda as e')
-                                ->select('e.encoid','e.plarutid','e.perseridremitente','e.perseriddestino','e.depaidorigen','e.muniidorigen','e.depaiddestino','e.muniiddestino','e.tipencid',
+                                ->select('e.encoid','e.plarutid','e.perseridremitente','e.perseriddestino','e.encodepaidorigen','e.encomuniidorigen','e.encodepaiddestino','e.encomuniiddestino','e.tipencid',
                                 'e.encocontenido','e.encocantidad','e.encovalorcomisionseguro','e.encovalordeclarado','e.encovalorenvio','e.encovalortotal','e.encovalordomicilio', 'e.encoobservacion',
                                 'e.encopagocontraentrega','e.encocontabilizada','psr.tipideid','psr.perserdocumento','psr.perserprimernombre','psr.persersegundonombre','psr.perserprimerapellido',
                                 'psr.persersegundoapellido','psr.perserdireccion', 'psr.persercorreoelectronico','psr.persernumerocelular','psr.perserpermitenotificacion',
@@ -260,10 +260,10 @@ class EncomiendaController extends Controller
 			$encomienda->perseridremitente         = $personaIdRemitente;
 			$encomienda->perseriddestino           = $personaIdDestino; 
             $encomienda->plarutid                  = $request->ruta;
-			$encomienda->depaidorigen              = $request->departamentoOrigen;
-			$encomienda->muniidorigen              = $request->municipioOrigen;
-			$encomienda->depaiddestino             = $request->departamentoDestino;
-            $encomienda->muniiddestino             = $request->municipioDestino;
+			$encomienda->encodepaidorigen          = $request->departamentoOrigen;
+			$encomienda->encomuniidorigen          = $request->municipioOrigen;
+			$encomienda->encodepaiddestino         = $request->departamentoDestino;
+            $encomienda->encomuniiddestino         = $request->municipioDestino;
 			$encomienda->tipencid                  = $request->tipoEncomienda;
             $encomienda->encocantidad              = $request->cantidad;
             $encomienda->encovalordeclarado        = $request->valorDeclarado;
@@ -385,25 +385,25 @@ class EncomiendaController extends Controller
                                 ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                 ->join('municipio as mo', function($join)
                                 {
-                                    $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                    $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                    $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                                    $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
                                 })
                                 ->join('municipio as md', function($join)
                                 {
-                                    $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                    $join->on('md.muniid', '=', 'r.muniiddestino');
+                                    $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                    $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                                 })
-                                ->join('departamento as do', 'do.depaid', '=', 'e.depaidorigen')
+                                ->join('departamento as do', 'do.depaid', '=', 'e.encodepaidorigen')
                                 ->join('municipio as mor', function($join)
                                 {
-                                    $join->on('mor.munidepaid', '=', 'e.depaidorigen');
-                                    $join->on('mor.muniid', '=', 'e.muniidorigen');
+                                    $join->on('mor.munidepaid', '=', 'e.encodepaidorigen');
+                                    $join->on('mor.muniid', '=', 'e.encomuniidorigen');
                                 })
-                                ->join('departamento as dd', 'dd.depaid', '=', 'e.depaiddestino')
+                                ->join('departamento as dd', 'dd.depaid', '=', 'e.encodepaiddestino')
                                 ->join('municipio as mde', function($join)
                                 {
-                                    $join->on('mde.munidepaid', '=', 'e.depaiddestino');
-                                    $join->on('mde.muniid', '=', 'e.muniiddestino');
+                                    $join->on('mde.munidepaid', '=', 'e.encodepaiddestino');
+                                    $join->on('mde.muniid', '=', 'e.encomuniiddestino');
                                 })
                                 ->where('e.encoid', $request->codigo)->first();
 
@@ -452,25 +452,25 @@ class EncomiendaController extends Controller
                             ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                             ->join('municipio as mo', function($join)
                             {
-                                $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                                $join->on('mo.muniid', '=', 'r.muniidorigen');
+                                $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                                $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
                             })
                             ->join('municipio as md', function($join)
                             {
-                                $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                $join->on('md.muniid', '=', 'r.muniiddestino');
+                                $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                             })
-                            ->join('departamento as do', 'do.depaid', '=', 'e.depaidorigen')
+                            ->join('departamento as do', 'do.depaid', '=', 'e.encodepaidorigen')
                             ->join('municipio as mor', function($join)
                             {
-                                $join->on('mor.munidepaid', '=', 'e.depaidorigen');
-                                $join->on('mor.muniid', '=', 'e.muniidorigen');
+                                $join->on('mor.munidepaid', '=', 'e.encodepaidorigen');
+                                $join->on('mor.muniid', '=', 'e.encomuniidorigen');
                             })
-                            ->join('departamento as dd', 'dd.depaid', '=', 'e.depaiddestino')
+                            ->join('departamento as dd', 'dd.depaid', '=', 'e.encodepaiddestino')
                             ->join('municipio as mde', function($join)
                             {
-                                $join->on('mde.munidepaid', '=', 'e.depaiddestino');
-                                $join->on('mde.muniid', '=', 'e.muniiddestino');
+                                $join->on('mde.munidepaid', '=', 'e.encodepaiddestino');
+                                $join->on('mde.muniid', '=', 'e.encomuniiddestino');
                             })
                             ->join('usuario as u', 'u.usuaid', '=', 'e.usuaid')
                             ->join('agencia as a', 'a.agenid', '=', 'e.agenid')

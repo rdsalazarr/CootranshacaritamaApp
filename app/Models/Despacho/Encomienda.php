@@ -13,7 +13,7 @@ class Encomienda extends Model
 
     protected $table      = 'encomienda';
     protected $primaryKey = 'encoid';
-    protected $fillable   = ['agenid','usuaid','plarutid','perseridremitente','perseriddestino','depaidorigen','muniidorigen','depaiddestino','muniiddestino',
+    protected $fillable   = ['agenid','usuaid','plarutid','perseridremitente','perseriddestino','encodepaidorigen','encomuniidorigen','encodepaiddestino','encomuniiddestino',
                             'tipencid','tiesenid','encoanio','encoconsecutivo','encofechahoraregistro','encocontenido','encocantidad', 'encovalordeclarado',
                             'encovalorenvio','encovalordomicilio','encovalorcomisionseguro','encovalorcomisionvehiculo', 'encovalorcomisionagencia','encovalorcomisionempresa',
                             'encoobservacion','encofecharecibido','encopagocontraentrega','encocontabilizada'];

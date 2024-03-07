@@ -14,21 +14,21 @@ class RutaController extends Controller
 {
     public function index(){
         $data = DB::table('ruta as r')
-                    ->select('r.rutaid','r.depaidorigen','r.muniidorigen','r.depaiddestino','r.muniiddestino','r.rutaactiva','r.rutatienenodos',
+                    ->select('r.rutaid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino','r.rutaactiva','r.rutatienenodos',
                     'do.depanombre as nombreDeptoOrigen', 'mo.muninombre as nombreMunicipioOrigen',
                     'de.depanombre as nombreDeptoDestino', 'md.muninombre as nombreMunicipioDestino',
                     DB::raw("if(r.rutaactiva = 1 ,'Sí', 'No') as estado"))
-                    ->join('departamento as do', 'do.depaid', '=', 'r.depaidorigen')
+                    ->join('departamento as do', 'do.depaid', '=', 'r.rutadepaidorigen')
                     ->join('municipio as mo', function($join)
                     {
-                        $join->on('mo.munidepaid', '=', 'r.depaidorigen');
-                        $join->on('mo.muniid', '=', 'r.muniidorigen'); 
+                        $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                        $join->on('mo.muniid', '=', 'r.rutamuniidorigen'); 
                     })
-                    ->join('departamento as de', 'de.depaid', '=', 'r.depaiddestino') 
+                    ->join('departamento as de', 'de.depaid', '=', 'r.rutadepaiddestino') 
                     ->join('municipio as md', function($join)
                     {
-                        $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                        $join->on('md.muniid', '=', 'r.muniiddestino'); 
+                        $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                        $join->on('md.muniid', '=', 'r.rutamuniiddestino'); 
                     })
                     ->orderBy('r.rutaid', 'Desc')->get();
 
@@ -68,12 +68,12 @@ class RutaController extends Controller
         DB::beginTransaction();
         try {
 
-            $ruta->depaidorigen        = $request->departamentoOrigen;
-            $ruta->muniidorigen        = $request->municipioOrigen;
-            $ruta->depaiddestino       = $request->departamentoDestino;
-            $ruta->muniiddestino       = $request->municipioDestino;
-            $ruta->rutatienenodos      = $request->tieneNodos;
-            $ruta->rutaactiva          = $request->estado;
+            $ruta->rutadepaidorigen  = $request->departamentoOrigen;
+            $ruta->rutamuniidorigen  = $request->municipioOrigen;
+            $ruta->rutadepaiddestino = $request->departamentoDestino;
+            $ruta->rutamuniiddestino = $request->municipioDestino;
+            $ruta->rutatienenodos    = $request->tieneNodos;
+            $ruta->rutaactiva        = $request->estado;
             $ruta->save();
 
             if($request->tipo === 'I'){
@@ -115,8 +115,8 @@ class RutaController extends Controller
         $ruta           = DB::table('ruta as r')->select('md.muniid', 'md.muninombre')
                             ->join('municipio as md', function($join)
                             {
-                                $join->on('md.munidepaid', '=', 'r.depaiddestino');
-                                $join->on('md.muniid', '=', 'r.muniiddestino');
+                                $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                $join->on('md.muniid', '=', 'r.rutamuniiddestino');
                             })
                             ->where('rutaid', $request->codigo)->first();
 
@@ -133,7 +133,7 @@ class RutaController extends Controller
         }
 
         $tarifaTiquetes = DB::table('tarifatiquete')
-                                ->select('tartiqid','depaidorigen','muniidorigen','tartiqvalor','tartiqfondoreposicion','tartiqvalorestampilla','tartiqvalorseguro',
+                                ->select('tartiqid','tartiqdepaidorigen','tartiqmuniidorigen','tartiqdepaiddestino','tartiqmuniiddestino','tartiqvalor','tartiqfondoreposicion','tartiqvalorestampilla','tartiqvalorseguro',
                                 DB::raw("CONCAT(FORMAT(tartiqvalor, 0)) as valorTiquete"),
                                 DB::raw("CONCAT(FORMAT(tartiqvalorestampilla, 0)) as valorEstampilla"),
                                 DB::raw("CONCAT(FORMAT(tartiqvalorseguro, 0)) as valorSeguro"))
@@ -154,7 +154,8 @@ class RutaController extends Controller
         try {
            foreach($request->tarifaTiquetes as $data){
 				$identificador       = $data['identificador'];
-                $municipioId         = $data['municipioId'];
+                $municipioOrigen     = $data['municipioOrigen'];
+                $municipioDestino    = $data['municipioDestino'];
                 $valorTiquete        = $data['valorTiquete'];
                 $valorSeguro         = $data['valorSeguro'];
                 $valorEstampilla     = $data['valorEstampilla'];
@@ -163,8 +164,10 @@ class RutaController extends Controller
 				if($tarifaTiqueteEstado === 'I'){
 					$tarifaTiquete                        = new TarifaTiquete();
 					$tarifaTiquete->rutaid                = $request->codigo;
-					$tarifaTiquete->depaidorigen          = $request->departamento;
-                    $tarifaTiquete->muniidorigen          = $municipioId;
+					$tarifaTiquete->tartiqdepaidorigen    = $request->departamentoOrigen;
+                    $tarifaTiquete->tartiqmuniidorigen    = $municipioOrigen;
+                    $tarifaTiquete->tartiqdepaiddestino   = $request->departamentoDestino;
+                    $tarifaTiquete->tartiqmuniiddestino   = $municipioDestino;
                     $tarifaTiquete->tartiqvalor           = $valorTiquete;
                     $tarifaTiquete->tartiqvalorseguro     = $valorSeguro;
                     $tarifaTiquete->tartiqvalorestampilla = $valorEstampilla;
@@ -175,7 +178,10 @@ class RutaController extends Controller
 					$tarifaTiquete->delete();
 				}else{//Editar
                     $tarifaTiquete                        = TarifaTiquete::findOrFail($identificador);
-                    $tarifaTiquete->muniidorigen          = $municipioId;
+                    $tarifaTiquete->tartiqdepaidorigen    = $request->departamentoOrigen;
+                    $tarifaTiquete->tartiqmuniidorigen    = $municipioOrigen;
+                    $tarifaTiquete->tartiqdepaiddestino   = $request->departamentoDestino;
+                    $tarifaTiquete->tartiqmuniiddestino   = $municipioDestino;
                     $tarifaTiquete->tartiqvalor           = $valorTiquete;
                     $tarifaTiquete->tartiqvalorseguro     = $valorSeguro;
                     $tarifaTiquete->tartiqvalorestampilla = $valorEstampilla;

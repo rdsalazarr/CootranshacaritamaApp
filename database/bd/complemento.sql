@@ -300,3 +300,14 @@ UPDATE `tarifatiquete` SET `tartiqvalorestampilla` = '0' WHERE `tarifatiquete`.`
 
 
 ALTER TABLE `cuentacontable` ADD `cuecontitulo` VARCHAR(50) NOT NULL AFTER `cueconid`;
+
+
+ALTER TABLE `ruta` CHANGE `depaidorigen` `rutadepaidorigen` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de origen de la ruta', CHANGE `muniidorigen` `rutamuniidorigen` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de origen de la ruta', CHANGE `depaiddestino` `rutadepaiddestino` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de destino de la ruta', CHANGE `muniiddestino` `rutamuniiddestino` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de destino de la ruta';
+
+ALTER TABLE `tarifatiquete` CHANGE `depaidorigen` `tartiqdepaidorigen` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de origen del tiquete', CHANGE `muniidorigen` `tartiqmuniidorigen` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de origen del tiquete';
+
+ALTER TABLE `encomienda` CHANGE `depaidorigen` `encodepaidorigen` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de origen de la encomienda', CHANGE `muniidorigen` `encomuniidorigen` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de origen de la encomienda', CHANGE `depaiddestino` `encodepaiddestino` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de destino de la encomienda', CHANGE `muniiddestino` `encomuniiddestino` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de destino de la encomienda';
+
+ALTER TABLE `tiquete` CHANGE `depaidorigen` `tiqudepaidorigen` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de origen del tiquete', CHANGE `muniidorigen` `tiqumuniidorigen` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de origen del tiquete', CHANGE `depaiddestino` `tiqudepaiddestino` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de destino del tiquete', CHANGE `muniiddestino` `tiqumuniiddestino` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de destino del tiquete';
+
+ALTER TABLE `tarifatiquete` ADD `tartiqdepaiddestino` TINYINT(3) NULL AFTER `tartiqmuniidorigen`, ADD `tartiqmuniiddestino` SMALLINT(5) NULL AFTER `tartiqdepaiddestino`;

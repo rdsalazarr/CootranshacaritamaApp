@@ -172,11 +172,11 @@ export default function New({data, tipo}){
     const consultarMunicipioOrigen = (e) =>{
         let newFormData              = {...formData}
         const planillaRutasFiltradas = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
-        let depaIdOrigen             = planillaRutasFiltradas[0].depaidorigen;
-        let muniIdOrigen             = planillaRutasFiltradas[0].muniidorigen;
+        let depaIdOrigen             = planillaRutasFiltradas[0].rutadepaidorigen;
+        let muniIdOrigen             = planillaRutasFiltradas[0].rutamuniidorigen;
         let municipioOrigen          = planillaRutasFiltradas[0].municipioOrigen;
-        let depaIdDestino            = planillaRutasFiltradas[0].depaiddestino;
-        let muniIdDestino            = planillaRutasFiltradas[0].muniiddestino;
+        let depaIdDestino            = planillaRutasFiltradas[0].rutadepaiddestino;
+        let muniIdDestino            = planillaRutasFiltradas[0].rutamuniiddestino;
         let municipioDestino         = planillaRutasFiltradas[0].municipioDestino;
 
         let municipiosOrigen = []; 
@@ -195,7 +195,7 @@ export default function New({data, tipo}){
             munidepaid: depaIdOrigen,
             muninombre: municipioOrigen
         });
-
+  
         newFormData.ruta                = e.target.value;
         newFormData.municipioOrigen     = muniIdOrigen;
         newFormData.departamentoOrigen  = depaIdOrigen;
@@ -318,10 +318,10 @@ export default function New({data, tipo}){
                 newFormData.direccionDestino            = encomienda.perserdireccionDestino;
                 newFormData.correoDestino               = (encomienda.persercorreoelectronicoDestino !== null) ? encomienda.persercorreoelectronicoDestino : '';
                 newFormData.telefonoCelularDestino      = encomienda.persernumerocelularDestino;
-                newFormData.departamentoOrigen          = encomienda.depaidorigen;
-                newFormData.municipioOrigen             = encomienda.muniidorigen;
-                newFormData.departamentoDestino         = encomienda.depaiddestino;
-                newFormData.municipioDestino            = encomienda.muniiddestino;
+                newFormData.departamentoOrigen          = encomienda.encodepaidorigen;
+                newFormData.municipioOrigen             = encomienda.encomuniidorigen;
+                newFormData.departamentoDestino         = encomienda.encodepaiddestino;
+                newFormData.municipioDestino            = encomienda.encomuniiddestino;
                 newFormData.tipoEncomienda              = encomienda.tipencid;
                 newFormData.cantidad                    = encomienda.encocantidad;
                 newFormData.valorDeclarado              = encomienda.encovalordeclarado;
@@ -338,11 +338,11 @@ export default function New({data, tipo}){
                 let municipiosOrigen         = [];
                 let municipiosDestino        = [];
                 const planillaRutasFiltradas = res.planillaRutas.filter(planilla => planilla.plarutid === encomienda.plarutid);
-                let depaIdOrigen             = planillaRutasFiltradas[0].depaidorigen;
-                let muniIdOrigen             = planillaRutasFiltradas[0].muniidorigen;
+                let depaIdOrigen             = planillaRutasFiltradas[0].rutadepaidorigen;
+                let muniIdOrigen             = planillaRutasFiltradas[0].rutamuniidorigen;
                 let municipioOrigen          = planillaRutasFiltradas[0].municipioOrigen;
-                let depaIdDestino            = planillaRutasFiltradas[0].depaiddestino;
-                let muniIdDestino            = planillaRutasFiltradas[0].muniiddestino;
+                let depaIdDestino            = planillaRutasFiltradas[0].rutadepaiddestino;
+                let muniIdDestino            = planillaRutasFiltradas[0].rutamuniiddestino;
                 let municipioDestino         = planillaRutasFiltradas[0].municipioDestino;
 
                 municipiosOrigen.push({

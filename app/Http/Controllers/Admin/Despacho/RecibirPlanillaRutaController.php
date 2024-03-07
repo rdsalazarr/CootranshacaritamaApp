@@ -89,23 +89,23 @@ class RecibirPlanillaRutaController extends Controller
                         ->join('personaservicio as ps', 'ps.perserid', '=', 'e.perseridremitente')
                         ->join('personaservicio as ps1', 'ps1.perserid', '=', 'e.perseriddestino')
                         ->join('tipoencomienda as te', 'te.tipencid', '=', 'e.tipencid')
-                        ->join('departamento as de', 'de.depaid', '=', 'e.depaiddestino') 
+                        ->join('departamento as de', 'de.depaid', '=', 'e.encodepaiddestino') 
                         ->join('municipio as md', function($join)
                         {
-                            $join->on('md.munidepaid', '=', 'e.depaiddestino');
-                            $join->on('md.muniid', '=', 'e.muniiddestino');
+                            $join->on('md.munidepaid', '=', 'e.encodepaiddestino');
+                            $join->on('md.muniid', '=', 'e.encomuniiddestino');
                         })
                         ->join('planillaruta as pr', 'pr.plarutid', '=', 'e.plarutid')
                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                         ->join('municipio as mor', function($join)
                         {
-                            $join->on('mor.munidepaid', '=', 'r.depaidorigen');
-                            $join->on('mor.muniid', '=', 'r.muniidorigen');
+                            $join->on('mor.munidepaid', '=', 'r.rutadepaidorigen');
+                            $join->on('mor.muniid', '=', 'r.rutamuniidorigen');
                         })
                         ->join('municipio as mdr', function($join)
                         {
-                            $join->on('mdr.munidepaid', '=', 'r.depaiddestino');
-                            $join->on('mdr.muniid', '=', 'r.muniiddestino');
+                            $join->on('mdr.munidepaid', '=', 'r.rutadepaiddestino');
+                            $join->on('mdr.muniid', '=', 'r.rutamuniiddestino');
                         });
 
                         if($request->tipoPersona === 'R')
