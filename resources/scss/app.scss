@@ -54,9 +54,58 @@ $grisOscuro : var(--grisOscuro);
     margin-bottom: 0.5em;
 }
 
+.inputIcon{
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 1.2em;
+    position: relative;
+    div{
+      width: 100%;
+    }
+    > div:hover ~ .icono {
+      margin-bottom: 2px;
+    }
+    input:focus > div  ~ .icono {
+      margin-bottom: 2px;
+      height: 1.13em;
+    }
+    input{
+      padding-left: 1em;
+      text-indent: 2em;
+      height: 1.6em;
+      background: var(--colorBlanco);
+    }
+    .icono{
+      position: absolute;
+      color: #fdfdfd;
+      padding: 0.2em 5px;
+      background-color: var(--verdeClaro);
+      z-index: 1;
+      top: 17px;
+      left: 1px;
+      border-radius: 2px;
+    }
+    .labelInput{
+      text-indent: 2.5em;
+      z-index: 1;
+      cursor: text;
+      line-height: 1.5;
+    }  
+    input:focus{
+      border-width: 1px 1px 0px ;
+      border-color: #6D6D6D !important;
+      border-style: solid;  
+    }
+    input:hover{
+      border-width: 1px 1px 0px ;
+      border-color: #cecece;
+      border-style: solid;
+    }
+}
+
 .piePagina{
     border-radius: 2px;
-    border: 1px solid #CECECE;
+    border: 1px solid #cecece;
     height: 1px;
     background: $grisOscuro;
     min-height: 1.8em;

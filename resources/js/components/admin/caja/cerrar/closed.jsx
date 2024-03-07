@@ -105,7 +105,7 @@ export default function Closed(){
                         <TablaGeneral
                             datos={data}
                             titulo={['Fecha movimeinto','Código contable','Descripción', 'Débito','Crédito']}
-                            ver={["fechaMovimiento","cueconcodigo","cueconnombre","valorDebito","valorCredito"]}
+                            ver={["fechaMovimiento","cueconcodigo","cuecondescripcion","valorDebito","valorCredito"]}
                             accion={[]}
                             funciones={{orderBy: true, search: true, pagination:true}}
                         />

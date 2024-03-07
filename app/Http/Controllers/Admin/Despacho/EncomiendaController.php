@@ -13,6 +13,7 @@ use App\Models\Caja\CuentaContable;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
 use App\Util\generarPdf;
+use App\Util\generales;
 use App\Util\notificar;
 use Carbon\Carbon;
 
@@ -201,10 +202,11 @@ class EncomiendaController extends Controller
             $porcentajeComisionEmpresa  = $configuracionencomienda->conencporcencomisionempresa;
             $porcentajeComisionAgencia  = $configuracionencomienda->conencporcencomisionagencia;
             $porcentajeComisionVehiculo = $configuracionencomienda->conencporcencomisionvehiculo;
+            $generales                  = new generales();
             $estadoEncomienda           = 'R';
             $fechaHoraActual            = Carbon::now();
             $fechaActual                = $fechaHoraActual->format('Y-m-d');
-            $valorTotalEncomienda       = intval($request->valorSeguro) + intval($request->valorEnvio) + intval($request->valorDomicilio);
+            $valorTotalEncomienda       = $generales->redondearCienMasCercano(intval($request->valorSeguro) + intval($request->valorEnvio) + intval($request->valorDomicilio));
             $nombreCliente              = $request->primerNombreRemitente.' '.$request->segundoNombreRemitente.' '.$request->primerApellidoRemitente.' '.$request->segundoApellidoRemitente;
 			$personaservicioRemitente->tipideid                  = $request->tipoIdentificacionRemitente;
 			$personaservicioRemitente->perserdocumento           = $request->documentoRemitente;
@@ -251,9 +253,9 @@ class EncomiendaController extends Controller
                 $encomienda->encoconsecutivo        = $this->obtenerConsecutivo($anioActual);
             }
 
-            $valorComisionEmpresa  = ($valorTotalEncomienda * $porcentajeComisionEmpresa) / 100;
-            $valorComisionAgencia  = ($valorTotalEncomienda * $porcentajeComisionAgencia) / 100;
-            $valorComisionVehiculo = ($valorTotalEncomienda * $porcentajeComisionVehiculo) / 100;
+            $valorComisionEmpresa  = $generales->redondearCienMasCercano(($valorTotalEncomienda * $porcentajeComisionEmpresa) / 100);
+            $valorComisionAgencia  = $generales->redondearCienMasCercano(($valorTotalEncomienda * $porcentajeComisionAgencia) / 100);
+            $valorComisionVehiculo = $generales->redondearCienMasCercano(($valorTotalEncomienda * $porcentajeComisionVehiculo) / 100);
 
 			$encomienda->perseridremitente         = $personaIdRemitente;
 			$encomienda->perseriddestino           = $personaIdDestino; 
@@ -278,21 +280,12 @@ class EncomiendaController extends Controller
             $encomienda->encocontabilizada         = ($request->pagoContraEntrega === 'NO' && $request->contabilizado === 'NO') ? 1 : 0;
 			$encomienda->save();
 
-            dd("esta mal la contabilizacion");
-
             if($request->pagoContraEntrega === 'NO' && $request->contabilizado === 'NO'){
                 //Se realiza la contabilizacion
                 $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
-                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $valorTotalEncomienda;
-                $comprobantecontabledetalle->save();
-
-                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEncomienda');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $valorTotalEncomienda;
                 $comprobantecontabledetalle->save();
@@ -315,7 +308,7 @@ class EncomiendaController extends Controller
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionVehiculo');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $valorComisionVehiculo;
+                $comprobantecontabledetalle->cocodemonto     = $valorComisionVehiculo - $request->valorDomicilio;
                 $comprobantecontabledetalle->save();
 
                 if($request->valorDomicilio > 0){

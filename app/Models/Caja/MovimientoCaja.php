@@ -32,7 +32,7 @@ class MovimientoCaja extends Model
     {
         //Contiene el mismo contenido de obtenerMovimientosContablesPdf solo que en esa no se puede formatear los valores
          return DB::table('cuentacontable as cc')
-                    ->select(DB::raw('DATE(ccd.cocodefechahora) as fechaMovimiento'), 'cc.cueconid','cc.cueconnombre', 'cc.cueconcodigo','mc.cajaid', 'cct.agenid', 'mc.usuaid',
+                    ->select(DB::raw('DATE(ccd.cocodefechahora) as fechaMovimiento'), 'cc.cueconid','cc.cuecondescripcion', 'cc.cueconcodigo','mc.cajaid', 'cct.agenid', 'mc.usuaid',
                         DB::raw("CONCAT('$ ', (SELECT COALESCE(FORMAT(SUM(ccd.cocodemonto), 0), 0)
                             FROM comprobantecontabledetalle as ccd
                             INNER JOIN cuentacontable as cc1 ON cc1.cueconid = ccd.cueconid
@@ -68,7 +68,7 @@ class MovimientoCaja extends Model
                     ->where('mc.usuaid', $idUsuario)
                     ->where('cct.agenid', $agenciaId)
                     ->where('mc.cajaid', $cajaId)
-                    ->groupBy(DB::raw('DATE(ccd.cocodefechahora)'), 'cc.cueconid', 'cc.cueconnombre', 'cc.cueconcodigo', 'mc.cajaid', 'cct.agenid', 'mc.usuaid')
+                    ->groupBy(DB::raw('DATE(ccd.cocodefechahora)'), 'cc.cueconid', 'cc.cuecondescripcion', 'cc.cueconcodigo', 'mc.cajaid', 'cct.agenid', 'mc.usuaid')
                     ->orderBy('cc.cueconid')
                     ->get();
     }

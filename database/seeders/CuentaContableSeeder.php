@@ -158,8 +158,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '15',
-            'cueconnombre'      => 'cxpPagoEncomienda',
-            'cuecondescripcion' => 'CXP PAGO ENCOMIENDA',
+            'cueconnombre'      => 'cxpComisionEmpresa',
+            'cuecondescripcion' => 'CXP COMISIÓN ENCOMIENDA EMPRESA',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120015',
             'created_at'        => $fechaHoraActual,
@@ -168,8 +168,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '16',
-            'cueconnombre'      => 'cxpComisionEmpresa',
-            'cuecondescripcion' => 'CXP COMISIÓN EMPRESA',
+            'cueconnombre'      => 'cxpComisionAgencia',
+            'cuecondescripcion' => 'CXP COMISIÓN ENCOMIENDA AGENCIA',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120016',
             'created_at'        => $fechaHoraActual,
@@ -178,8 +178,8 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '17',
-            'cueconnombre'      => 'cxpComisionAgencia',
-            'cuecondescripcion' => 'CXP COMISIÓN AGENCIA',
+            'cueconnombre'      => 'cxpComisionVehiculo',
+            'cuecondescripcion' => 'CXP COMISIÓN ENCOMIENDA VEHÍCULO',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120017',
             'created_at'        => $fechaHoraActual,
@@ -188,30 +188,20 @@ class CuentaContableSeeder extends Seeder
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '18',
-            'cueconnombre'      => 'cxpComisionVehiculo',
-            'cuecondescripcion' => 'CXP COMISIÓN VEHÍCULO',
+            'cueconnombre'      => 'cxpPagoEncomiendaDomicilio',
+            'cuecondescripcion' => 'CXP PAGO ENCOMIENDA A DOMICILIO',
             'cueconnaturaleza'  => 'C',
-            'cueconcodigo'      => '120018',
+            'cueconcodigo'      => '1200018',
             'created_at'        => $fechaHoraActual,
             'updated_at'        => $fechaHoraActual,
         ]);
 
         DB::table('cuentacontable')->insert([
             'cueconid'          => '19',
-            'cueconnombre'      => 'cxpPagoEncomiendaDomicilio',
-            'cuecondescripcion' => 'CXP PAGO ENCOMIENDA A DOMICILIO',
-            'cueconnaturaleza'  => 'C',
-            'cueconcodigo'      => '1200019',
-            'created_at'        => $fechaHoraActual,
-            'updated_at'        => $fechaHoraActual,
-        ]);
-
-        DB::table('cuentacontable')->insert([
-            'cueconid'          => '20',
             'cueconnombre'      => 'cxpPagoEncomiendaContraentrega',
             'cuecondescripcion' => 'CXP PAGO ENCOMIENDA CONTRAENTREGA',
             'cueconnaturaleza'  => 'C',
-            'cueconcodigo'      => '1200020',
+            'cueconcodigo'      => '1200019',
             'created_at'        => $fechaHoraActual,
             'updated_at'        => $fechaHoraActual,
         ]);

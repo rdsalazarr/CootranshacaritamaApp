@@ -221,7 +221,7 @@ class PlanillaRutaController extends Controller
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
     }
-    
+
     public function registrarSalida(Request $request)
 	{
         $this->validate(request(),['codigo' => 'required', 'conductor' => 'required', 'vehiculo' => 'required']);
@@ -230,18 +230,24 @@ class PlanillaRutaController extends Controller
         try {
 
             $tiquete = DB::table('tiquete')
-                        ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'),
-                        DB::raw('SUM(tiquvalorfondoreposicion) as valorContabilizarFondoReposicion'),
-                        DB::raw('SUM(tiquvalorestampilla) as valorContabilizarEstampilla'),
-                        DB::raw('SUM(tiquvalorseguro) as valorContabilizarSeguro'))
+                            ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'),
+                            DB::raw('SUM(tiquvalorfondoreposicion) as valorContabilizarFondoReposicion'),
+                            DB::raw('SUM(tiquvalorestampilla) as valorContabilizarEstampilla'),
+                            DB::raw('SUM(tiquvalorseguro) as valorContabilizarSeguro'))
                         ->where('plarutid', $request->codigo)
                         ->where('tiqucontabilizado', 0)
                         ->groupBy('plarutid')
                         ->first();
 
-            $fechaHoraActual = Carbon::now();
-            $fechaActual     = $fechaHoraActual->format('Y-m-d');
-            $cajaAbierta     = MovimientoCaja::verificarCajaAbierta();
+            $generales            = new generales();
+            $fechaHoraActual      = Carbon::now();
+            $fechaActual          = $fechaHoraActual->format('Y-m-d');
+            $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
+            $valorContabilizar    = $generales->redondearCienMasCercano($tiquete->valorContabilizar);
+            $valorFondoReposicion = $generales->redondearCienMasCercano($tiquete->valorContabilizarFondoReposicion);
+            $valorEstampilla      = $generales->redondearCienMasCercano($tiquete->valorContabilizarEstampilla);
+            $valorSeguro          = $generales->redondearCienMasCercano($tiquete->valorContabilizarSeguro);
+            $valorTiquete         = $generales->redondearCienMasCercano($valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro);
 
             if($tiquete and !$cajaAbierta){
                 return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible despachar un vehículo sin antes haber abierto la caja para el día de hoy']);
@@ -258,6 +264,7 @@ class PlanillaRutaController extends Controller
                 return response()->json(['success' => false, 'message'=> 'Ocurrio un error al procesar la petición, el vehículo no se encuentra activo']);
             }
 
+            
             $planillaruta                   = PlanillaRuta::findOrFail($request->codigo);
             $planillaruta->usuaiddespacha   = Auth::id();
             $planillaruta->plarutdespachada = true;
@@ -280,15 +287,10 @@ class PlanillaRutaController extends Controller
             }
 
             if($tiquete){
-                //, DB::raw('SUM(tiquvalortotal) as valorContabilizar')
-                $tiquetes = DB::table('tiquete')
-                                ->select('tiquid')
-                                ->where('plarutid', $request->codigo)
-                                ->where('tiqucontabilizado', 0)
-                                ->get();
+                $tiquetes = DB::table('tiquete')->select('tiquid')->where('tiqucontabilizado', 0)->where('plarutid', $request->codigo)->get();
 
                 foreach($tiquetes as $tiqueteEstado){
-                    $tiqueteContabilizado                   = Tiquete::findOrFail($tiqueteEstado->tiquid); 
+                    $tiqueteContabilizado                    = Tiquete::findOrFail($tiqueteEstado->tiquid); 
                     $tiqueteContabilizado->tiqucontabilizado = true;
                     $tiqueteContabilizado->save();
                 }
@@ -299,40 +301,40 @@ class PlanillaRutaController extends Controller
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizar;
+                $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoTiquete');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizar;
+                $comprobantecontabledetalle->cocodemonto     = $valorTiquete;
                 $comprobantecontabledetalle->save();
 
-                if($tiquete->valorContabilizarFondoReposicion){
+                if($valorFondoReposicion){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpFondoReposicion');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizarFondoReposicion;
+                    $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
                     $comprobantecontabledetalle->save();
                 }
 
-                if($tiquete->valorContabilizarEstampilla){
+                if($valorEstampilla){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEstampilla');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizarEstampilla;
+                    $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
                     $comprobantecontabledetalle->save();  
-                }                
+                }
 
-                if($tiquete->valorContabilizarSeguro > 0 ){
+                if($valorSeguro > 0 ){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoSeguro');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $tiquete->valorContabilizarSeguro;
+                    $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
                     $comprobantecontabledetalle->save();
                 }
             }
@@ -351,24 +353,24 @@ class PlanillaRutaController extends Controller
 		try{
 
             $planillaruta  = DB::table('planillaruta as pr')
-                            ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida','v.vehiplaca','v.vehinumerointerno','p.persdocumento',
-                            'p.persnumerocelular','a.agennombre', 'a.agendireccion',
-                            DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),
-                            DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
-                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                            p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
-                            DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
-                            DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),
-                            DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"),
-                            DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'PLANILLA') AS mensajePlanilla"),
-                            DB::raw('(SELECT SUM(encovalorenvio) AS encovalorenvio FROM encomienda WHERE plarutid = pr.plarutid) AS valorEnvio'),
-                            DB::raw('(SELECT SUM(encovalordomicilio) AS encovalordomicilio FROM encomienda WHERE plarutid = pr.plarutid) AS valorDomicilioEnvio'),
-                            DB::raw('(SELECT SUM(encovalorcomisionseguro) AS encovalorcomisionseguro FROM encomienda WHERE plarutid = pr.plarutid) AS valorComisionEnvio'),
-                            DB::raw('(SELECT SUM(encovalortotal) AS encovalortotal FROM encomienda WHERE plarutid = pr.plarutid) AS valorTotalEnvio'),
-                            DB::raw('(SELECT SUM(tiquvalortiquete) AS tiquvalortiquete FROM tiquete WHERE plarutid = pr.plarutid) AS subTotalTiquete'),
-                            DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS valorFondoReposicion'),
-                            DB::raw('(SELECT SUM(tiquvalortotal) AS tiquvalortotal FROM tiquete WHERE plarutid = pr.plarutid) AS valorTotalTiquete'),
-                            DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))
+                                ->select('pr.plarutfechahoraregistro','pr.plarutfechahorasalida','v.vehiplaca','v.vehinumerointerno','p.persdocumento',
+                                'p.persnumerocelular','a.agennombre', 'a.agendireccion',
+                                DB::raw("CONCAT(pr.plarutanio,'',pr.plarutconsecutivo) as consecutivoPlanilla"),
+                                DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
+                                DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreConductor"),
+                                DB::raw("CONCAT(ur.usuanombre,' ',ur.usuaapellidos) as usuarioRegistra"),
+                                DB::raw("CONCAT(urd.usuanombre,' ',urd.usuaapellidos) as usuarioDespahcca"),
+                                DB::raw("CONCAT(a.agentelefonocelular, if(a.agentelefonofijo is null ,'', ' - '), a.agentelefonofijo) as telefonoAgencia"),
+                                DB::raw("(SELECT menimpvalor FROM mensajeimpresion WHERE menimpnombre = 'PLANILLA') AS mensajePlanilla"),
+                                DB::raw('(SELECT SUM(encovalorenvio) AS encovalorenvio FROM encomienda WHERE plarutid = pr.plarutid) AS valorEnvio'),
+                                DB::raw('(SELECT SUM(encovalordomicilio) AS encovalordomicilio FROM encomienda WHERE plarutid = pr.plarutid) AS valorDomicilioEnvio'),
+                                DB::raw('(SELECT SUM(encovalorcomisionseguro) AS encovalorcomisionseguro FROM encomienda WHERE plarutid = pr.plarutid) AS valorComisionEnvio'),
+                                DB::raw('(SELECT SUM(encovalortotal) AS encovalortotal FROM encomienda WHERE plarutid = pr.plarutid) AS valorTotalEnvio'),
+                                DB::raw('(SELECT SUM(tiquvalortiquete) AS tiquvalortiquete FROM tiquete WHERE plarutid = pr.plarutid) AS subTotalTiquete'),
+                                DB::raw('(SELECT SUM(tiquvalorfondoreposicion) AS tiquvalorfondoreposicion FROM tiquete WHERE plarutid = pr.plarutid) AS valorFondoReposicion'),
+                                DB::raw('(SELECT SUM(tiquvalortotal) AS tiquvalortotal FROM tiquete WHERE plarutid = pr.plarutid) AS valorTotalTiquete'),
+                                DB::raw('(SELECT SUM(tiqucantidad) AS tiqucantidad FROM tiquete WHERE plarutid = pr.plarutid) AS cantidadPasajeros'))
                             ->join('conductor as c', 'c.condid', '=', 'pr.condid')
                             ->join('persona as p', 'p.persid', '=', 'c.persid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')

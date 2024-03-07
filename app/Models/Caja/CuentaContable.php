@@ -12,7 +12,7 @@ class CuentaContable extends Model
 
     protected $table      = 'cuentacontable';
     protected $primaryKey = 'cueconid';
-    protected $fillable   = ['cueconnombre','cuecontitulo','cueconnaturaleza','cueconcodigo','cueconactiva'];
+    protected $fillable   = ['cueconnombre','cuecondescripcion','cueconnaturaleza','cueconcodigo','cueconactiva'];
     
     public static function consultarId($nombre)
     {         

@@ -70,17 +70,25 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
             if(formData.tipo === 'I' && res.success){
+                let valorEnvio     = configuracionEncomienda.conencvalorminimoenvio
+                let valorDeclarado = configuracionEncomienda.conencvalorminimodeclarado;
+                let valorSeguro    = (valorDeclarado * configuracionEncomienda.conencporcentajeseguro) / 100;
+                let valorTotal     = Number(valorEnvio) + Number(valorSeguro);
+
                 setFormData({codigo:encoid,             tipoIdentificacionRemitente:'', documentoRemitente:'',        primerNombreRemitente:'',
                             segundoNombreRemitente:'', primerApellidoRemitente:'',     segundoApellidoRemitente:'',  direccionRemitente:'',
                             correoRemitente:'',        telefonoCelularRemitente:'',    tipoIdentificacionDestino:'', documentoDestino:'',
                             primerNombreDestino:'',    segundoNombreDestino :'',       primerApellidoDestino:'',     segundoApellidoDestino:'',
                             direccionDestino:'',       correoDestino:'',               telefonoCelularDestino:'',    departamentoOrigen:'',
                             municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
-                            cantidad:'',               valorDeclarado :'',             valorEnvio:'',                valorDomicilio:'',
+                            cantidad:'',               valorDeclarado: valorDeclarado, valorEnvio: valorEnvio,       valorDomicilio:'',
                             contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',
-                            ruta:'',                   valorSeguro:'',                 valorTotal:'',                contabilizado:false, tipo:tipo });
+                            ruta:'',                   contabilizado:false,            valorSeguro: formatearNumero(valorSeguro),
+                            valorTotal: formatearNumero(valorTotal),                   tipo:tipo });
 
                 setIdEncomienda(res.encomiendaId);
+                setPagoContraEntrega(false);
+                setEnviarEncomienda(false);
                 setAbrirModal(true)
             }
             setLoader(false);
@@ -190,9 +198,9 @@ export default function New({data, tipo}){
 
         newFormData.ruta                = e.target.value;
         newFormData.municipioOrigen     = muniIdOrigen;
-        newFormData.departamentoOrigen  = depaIdOrigen; 
+        newFormData.departamentoOrigen  = depaIdOrigen;
         newFormData.departamentoDestino = depaIdDestino;
-        newFormData.municipioDestino    = muniIdDestino; 
+        newFormData.municipioDestino    = muniIdDestino;
 
         let municipiosDestino = [];
         municipios.forEach(function(muni){ 
@@ -271,7 +279,7 @@ export default function New({data, tipo}){
         let newFormData = {...formData}
         instance.post('/admin/despacho/encomienda/listar/datos', {tipo:tipo, codigo:formData.codigo}).then(res=>{
             (tipo === 'I' && !res.cajaAbierta) ? (showSimpleSnackbar(res.mensajeCaja, 'warning'), setHabilitado(false)): null;
-            let valorEnvio             =  res.configuracionEncomienda.conencvalorminimoenvio
+            let valorEnvio             = res.configuracionEncomienda.conencvalorminimoenvio
             let valorDeclarado         = res.configuracionEncomienda.conencvalorminimodeclarado;
             let valorSeguro            = (valorDeclarado * res.configuracionEncomienda.conencporcentajeseguro) / 100;
             let valorTotal             = Number(valorEnvio) + Number(valorSeguro);

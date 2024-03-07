@@ -58,8 +58,8 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
     public function collection()
     {
         $request         = $this->request;
-        $fechaInicial   = $request->fechaInicial;
-        $fechaFinal     = $request->fechaFinal;
+        $fechaInicial    = $request->fechaInicial;
+        $fechaFinal      = $request->fechaFinal;
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
         $idUsuario       = Auth::id();
@@ -67,25 +67,24 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
         $cajaId          = auth()->user()->cajaid;
 
         $consulta = DB::table('comprobantecontabledetalle as ccd')
-                        ->select('ccd.cocodefechahora', 'cc.cueconcodigo', 'cc.cueconnombre','a.agennombre',
+                        ->select('ccd.cocodefechahora', 'cc.cueconcodigo', 'cc.cuecondescripcion','a.agennombre',
                             DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 
                             DB::raw("(CASE WHEN cc.cueconnaturaleza = 'D' THEN COALESCE(ccd.cocodemonto, 0) ELSE 0 END) AS valorDebito"),
                             DB::raw("(CASE WHEN cc.cueconnaturaleza = 'C' THEN COALESCE(ccd.cocodemonto, 0) ELSE 0 END) AS valorCredito")
                         )
                         ->join('comprobantecontable as cct', 'cct.comconid', '=', 'ccd.comconid')
                         ->join('cuentacontable as cc', 'cc.cueconid', '=', 'ccd.cueconid')
-                        ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
-                        ->join('agencia as a', 'a.agenid', '=', 'cc.agenid')
-                        ->join('usuario as u', 'u.usuaid', '=', 'cc.usuaid')
+                        ->join('agencia as a', 'a.agenid', '=', 'cct.agenid')
+                        ->join('usuario as u', 'u.usuaid', '=', 'cct.usuaid')
                         ->join('movimientocaja as mc', function($join)
                         {
                             $join->on('mc.movcajid', '=', 'cct.movcajid');
                             $join->on('mc.usuaid', '=', 'cct.usuaid');
                         });
 
-                    if($fechaInicial !==''){
+                   if($fechaInicial !== null){
                         $consulta = $consulta->whereDate('mc.movcajfechahoraapertura', '>=', $fechaInicial)
-                                            ->whereDate('mc.movcajfechahoraapertura', '<=', $fechaFinal);
+                                             ->whereDate('mc.movcajfechahoraapertura', '<=', $fechaFinal);
                     }else{
                         $consulta = $consulta->whereDate('mc.movcajfechahoraapertura', $fechaActual)
                                             ->where('mc.usuaid', $idUsuario)
@@ -93,8 +92,6 @@ class MovimientosDiariosExport implements FromCollection, WithHeadings,WithPrope
                                             ->where('mc.cajaid', $cajaId);
                     }
 
-                $consulta = $consulta->orderBy('ccd.cocodefechahora')->get();
-
-        return $consulta;
+        return $consulta->orderBy('ccd.cocodefechahora')->get();
     }
 }
