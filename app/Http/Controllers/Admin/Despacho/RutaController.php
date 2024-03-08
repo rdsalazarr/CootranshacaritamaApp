@@ -112,6 +112,26 @@ class RutaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required']);
 
+
+       /* $planillaRutas        = DB::table('planillaruta as pr')
+                                ->select('pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino',
+                                'mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
+                                ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+                                ->join('municipio as mo', function($join)
+                                {
+                                    $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
+                                    $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
+                                })
+                                ->join('municipio as md', function($join)
+                                {
+                                    $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
+                                    $join->on('md.muniid', '=', 'r.rutamuniiddestino');
+                                })
+                                ->where('pr.plarutdespachada', false)
+                                ->get();**/
+
+
         $ruta           = DB::table('ruta as r')->select('md.muniid', 'md.muninombre')
                             ->join('municipio as md', function($join)
                             {

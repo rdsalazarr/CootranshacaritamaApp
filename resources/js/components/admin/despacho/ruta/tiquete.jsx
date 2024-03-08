@@ -23,7 +23,7 @@ ValidatorForm.addValidationRule('isTasaNominal', (value) => {
 
 export default function Tiquete({data}){
 
-    const [formDataTiquete, setFormDataTiquete] = useState({municipioId:'', nombreMunicipio:'', valorTiquete: '', valorTiqueteMostrar: '', valorSeguro:'', valorSeguroMostrar:'', valorEstampilla:'0', valorEstampillaMostrar:'', fondoReposicion:'1.00'});
+    const [formDataTiquete, setFormDataTiquete] = useState({municipioOrigen:'', nombreMunicipio:'', valorTiquete: '', valorTiqueteMostrar: '', valorSeguro:'', valorSeguroMostrar:'', valorEstampilla:'0', valorEstampillaMostrar:'', fondoReposicion:'1.00'});
     const [formData, setFormData]               = useState({codigo:data.rutaid, departamento: data.depaiddestino});
     const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
     const [tipoProceso, setTipoProceso] = useState('I');
@@ -50,6 +50,10 @@ export default function Tiquete({data}){
             (res.success) ? setHabilitado(false) : null;
             setLoader(false);
         })
+    }
+
+    const consultarMunicipioDestino = (e) =>{
+
     }
 
     const formatearNumero = (numero) =>{
@@ -176,45 +180,17 @@ export default function Tiquete({data}){
             <ValidatorForm onSubmit={adicionarFilaTarifa} >
                 <Grid container spacing={2}>
             
-                    <Grid item xl={3} md={3} sm={12} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Departamento origen</label>
-                            <span>{data.nombreDeptoOrigen}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={12} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Municipio origen</label>
-                            <span>{data.nombreMunicipioOrigen}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={12} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Departamento destino</label>
-                            <span>{data.nombreDeptoDestino}</span>
-                        </Box>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={12} xs={12}>
-                        <Box className='frmTexto'>
-                            <label>Municipio destino</label>
-                            <span>{data.nombreMunicipioDestino}</span>
-                        </Box>
-                    </Grid>
-                    
-                    <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <Grid item xl={3} md={3} sm={6} xs={12}>
                         <SelectValidator
                             name={'municipioOrigen'}
-                            value={formDataTiquete.municipioId}
-                            label={'Municipio origen'}
+                            value={formData.municipioOrigen}
+                            label={'Municipio nodo origen'}
                             className={'inputGeneral'}
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange} 
+                            onChange={consultarMunicipioDestino}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipios.map(res=>{
@@ -223,11 +199,11 @@ export default function Tiquete({data}){
                         </SelectValidator>
                     </Grid>
 
-                    <Grid item xl={4} md={4} sm={6} xs={12}>
+                    <Grid item xl={3} md={3} sm={6} xs={12}>
                         <SelectValidator
-                            name={'municipioId'}
-                            value={formDataTiquete.municipioId}
-                            label={'Municipio destino'}
+                            name={'municipioDestino'}
+                            value={formData.municipioDestino}
+                            label={'Municipio nodo destino'}
                             className={'inputGeneral'}
                             variant={"standard"} 
                             inputProps={{autoComplete: 'off'}}
@@ -240,8 +216,8 @@ export default function Tiquete({data}){
                                 return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
-                    </Grid>
-
+                    </Grid>                    
+            
                     <Grid item xl={4} md={4} sm={6} xs={12}>
                         <NumberValidator fullWidth
                             id={"valorTiquete"}
