@@ -11,5 +11,5 @@ class RutaNodo extends Model
 
     protected $table      = 'rutanodo';
     protected $primaryKey = 'rutnodid';
-    protected $fillable   = ['rutaid','muniid'];
+    protected $fillable   = ['rutaid','rutnoddepaid','rutnodmuniid'];
 }

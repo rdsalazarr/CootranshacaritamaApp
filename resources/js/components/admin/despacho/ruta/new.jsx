@@ -9,14 +9,16 @@ import instance from '../../../layout/instance';
 import AddIcon from '@mui/icons-material/Add';
 
 export default function New({data, tipo}){
+
     const [formData, setFormData] = useState(
-                                (tipo !== 'I') ? {codigo:data.rutaid,  departamentoOrigen:data.depaidorigen, municipioOrigen: data.muniidorigen, departamentoDestino: data.depaiddestino, 
-                                        municipioDestino:data.muniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, tipo:tipo 
+                                (tipo !== 'I') ? {codigo:data.rutaid,  departamentoOrigen:data.rutadepaidorigen, municipioOrigen: data.rutamuniidorigen, departamentoDestino: data.rutadepaiddestino, 
+                                        municipioDestino:data.rutamuniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, tipo:tipo 
                                     } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', tipo:tipo
                                 });
    
-    const [formDataAdicionarNodo, setFormDataAdicionarNodo] = useState({municipioId:'', nombreMunicipio: ''});
-    const [municipiosDestino, setMunicipiosDestino] = useState([]);
+    const [formDataAdicionarNodo, setFormDataAdicionarNodo] = useState({deptoNodoId:'', nombreDepto: '', municipioNodoId:'', nombreMunicipio: ''});
+    const [municipiosNodoDestino, setMunicipiosNodoDestino] = useState([]);
+    const [municipiosDestino, setMunicipiosDestino] = useState([]);    
     const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
@@ -27,6 +29,10 @@ export default function New({data, tipo}){
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
+
+    const handleChangeAdicionar = (e) =>{
+        setFormDataAdicionarNodo(prev => ({...prev, [e.target.name]: e.target.value}))
+     }
 
     const handleSubmit = () =>{
         if(formData.tieneNodos.toString() === '1' && rutaNodos.length === 0){
@@ -42,7 +48,7 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo === 'I' && res.success) ? setRutaNodos([]) : null; 
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', valorEstampilla:'', tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1',  tipo:tipo}) : null;
             setLoader(false);
         })
     }
@@ -77,21 +83,44 @@ export default function New({data, tipo}){
         setMunicipiosDestino(municipiosDestino);
     }
 
+    const consultarMunicipioNodoDestino = (e) =>{
+        setFormDataAdicionarNodo(prev => ({...prev, [e.target.name]: e.target.value}))
+        let municipiosDestino = [];
+        let deptoDestino      = e.target.value;
+        municipios.forEach(function(muni){ 
+            if(muni.munidepaid === deptoDestino){
+                municipiosDestino.push({
+                    muniid:     muni.muniid,
+                    muninombre: muni.muninombre
+                });
+            }
+        });
+        setMunicipiosNodoDestino(municipiosDestino);
+    }    
+
     const adicionarFilaNodo = () =>{
-        if(formDataAdicionarNodo.municipioId === ''){
+
+        if(formDataAdicionarNodo.deptoNodoId === ''){
+            showSimpleSnackbar('Debe seleccionar un departamento', 'error');
+            return
+        }
+
+        if(formDataAdicionarNodo.municipioNodoId === ''){
             showSimpleSnackbar('Debe seleccionar un municipio', 'error');
             return
         }
 
-        if(rutaNodos.some(nod => nod.municipioId == rutaNodos.municipioId)){
+        if(rutaNodos.some(nod => nod.municipioNodoId == rutaNodos.municipioNodoId)){
             showSimpleSnackbar('Este registro ya fue adicionado', 'error');
             return
         }
 
         let newRutaNodos               = [...rutaNodos];
-        const resultadoNombreMunicipio = municipiosDestino.filter((mun) => mun.muniid == formDataAdicionarNodo.municipioId);
-        newRutaNodos.push({identificador:'', municipioId:formDataAdicionarNodo.municipioId, nombreMunicipio: resultadoNombreMunicipio[0].muninombre, estado: 'I'});
-        setFormDataAdicionarNodo({municipioId:'', nombreMunicipio: '' });
+        const resultadoNombreDepto     = departamentos.filter((dep) => dep.depaid == formDataAdicionarNodo.deptoNodoId);
+        const resultadoNombreMunicipio = municipios.filter((mun) => mun.muniid == formDataAdicionarNodo.municipioNodoId);
+        newRutaNodos.push({identificador:'', deptoNodoId:formDataAdicionarNodo.deptoNodoId, nombreDepto: resultadoNombreDepto[0].depanombre, 
+                             municipioNodoId:formDataAdicionarNodo.municipioNodoId, nombreMunicipio: resultadoNombreMunicipio[0].muninombre, estado: 'I'});
+        setFormDataAdicionarNodo({deptoNodoId:'', nombreDepto: '', municipioNodoId:'', nombreMunicipio: '' });
         setRutaNodos(newRutaNodos);
     }
 
@@ -99,14 +128,18 @@ export default function New({data, tipo}){
         let newRutaNodos = [];
         rutaNodos.map((res,i) =>{
             if(res.estado === 'U' && i === id){
-                newRutaNodos.push({ identificador:res.identificador, municipioId: res.municipioId, nombreMunicipio:res.nombreMunicipio, estado: 'D' }); 
+                newRutaNodos.push({ identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'D' }); 
             }else if(res.estado === 'D' && i === id){
-                newRutaNodos.push({identificador:res.identificador, municipioId: res.municipioId, nombreMunicipio:res.nombreMunicipio, estado: 'U'});
+                newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'U'});
             }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
-                newRutaNodos.push({identificador:res.identificador, municipioId: res.municipioId, nombreMunicipio:res.nombreMunicipio, estado:res.estado});
+                newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado:res.estado});
             }else{
                 if(i != id){
-                    newRutaNodos.push({identificador:res.identificador,municipioId: res.municipioId, nombreMunicipio:res.nombreMunicipio, estado: 'I' });
+                    newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                        municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'I' });
                 }
             }
         })
@@ -121,7 +154,7 @@ export default function New({data, tipo}){
 
            if(tipo !== 'I'){ 
                 let municipiosOrigen = [];
-                let deptoOrigen      = data.depaidorigen;
+                let deptoOrigen      = data.rutadepaidorigen;
                 let rutasNodo        = res.rutasNodo;  
                 res.municipios.forEach(function(muni){ 
                     if(muni.munidepaid === deptoOrigen){
@@ -134,7 +167,7 @@ export default function New({data, tipo}){
                 setMunicipiosOrigen(municipiosOrigen);
 
                 let municipiosDestino = [];
-                let deptoDestino      = data.depaiddestino;
+                let deptoDestino      = data.rutadepaiddestino;
                 res.municipios.forEach(function(muni){ 
                     if(muni.munidepaid === deptoDestino){
                         municipiosDestino.push({
@@ -145,20 +178,24 @@ export default function New({data, tipo}){
                 });
                 setMunicipiosDestino(municipiosDestino);
 
-                let newRutaNodos = [];
+                /*let newRutaNodos = [];
                 rutasNodo.forEach(function(nodoRuta){
-                    const nodoEncontrado = municipiosDestino.find(mun => mun.muniid === nodoRuta.muniid);
-                    if(nodoEncontrado){
+                    const nodoDeptoEncontrado     = departamentos.filter((dep) => dep.depaid == nodoRuta.rutnoddepaid);
+                    const nodoMunicipioEncontrado = municipiosDestino.find(mun => mun.muniid === nodoRuta.rutnodmuniid);
+
+                    if(nodoMunicipioEncontrado){
                         newRutaNodos.push({
                             identificador:   nodoRuta.rutnodid,
-                            municipioId:     nodoRuta.muniid,
-                            nombreMunicipio: nodoEncontrado.muninombre,
+                            deptoNodoId:     nodoRuta.rutnoddepaid,
+                            municipioNodoId: nodoRuta.tutnomuniid,
+                            nombreDepto:     nodoDeptoEncontrado.depanombre,
+                            nombreMunicipio: nodoMunicipioEncontrado.muninombre,
                             estado: 'U'
                         });
                     }
-                });
+                });*/
 
-                setRutaNodos(newRutaNodos);
+                setRutaNodos(rutasNodo);
             }
             setLoader(false);
         })
@@ -292,33 +329,41 @@ export default function New({data, tipo}){
                             </Box>
                         </Grid>
 
-                        <Grid item xl={2} md={2} sm={1} xs={1}>
+                        <Grid item xl={3} md={3} sm={3} xs={3}>
+                            <SelectValidator
+                                name={'deptoNodoId'}
+                                value={formDataAdicionarNodo.deptoNodoId}
+                                label={'Departamento nodo'}
+                                className={'inputGeneral'}
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                onChange={consultarMunicipioNodoDestino}
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {departamentos.map(res=>{
+                                    return <MenuItem value={res.depaid} key={res.depaid} >{res.depanombre}</MenuItem>
+                                })}
+                            </SelectValidator>
                         </Grid>
 
-                        <Grid item xl={8} md={8} sm={10} xs={9}>
-                            <Autocomplete
-                                id="vehiculo"
-                                style={{height: "26px", width: "100%"}}
-                                options={municipiosDestino}
-                                getOptionLabel={(option) => option.muninombre} 
-                                value={municipiosDestino.find(v => v.muniid === formDataAdicionarNodo.municipioId) || null}
-                                filterOptions={createFilterOptions({ limit:10 })}
-                                onChange={(event, newInputValue) => {
-                                    if(newInputValue){
-                                        setFormDataAdicionarNodo({...formDataAdicionarNodo, municipioId: newInputValue.muniid})
-                                    }
-                                }}
-                                renderInput={(params) =>
-                                    <TextValidator {...params}
-                                        label="Consultar municipio"
-                                        className="inputGeneral"
-                                        variant="standard"
-                                        value={formDataAdicionarNodo.municipioId}
-                                        placeholder="Consulte el municipio aquí..." />}
-                            />
-                        </Grid> 
+                        <Grid item xl={7} md={7} sm={9} xs={9}>
+                            <SelectValidator
+                                name={'municipioNodoId'}
+                                value={formDataAdicionarNodo.municipioNodoId}
+                                label={'Municipio nodo'}
+                                className={'inputGeneral'}
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                onChange={handleChangeAdicionar}
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {municipiosNodoDestino.map(res=>{
+                                    return <MenuItem value={res.muniid} key={res.muniid} >{res.muninombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
 
-                        <Grid item xl={2} md={2} sm={12} xs={12}>
+                        <Grid item xl={2} md={2} sm={12} xs={12} style={{textAlign:'center'}}>
                             <Button type={"button"} className={'modalBtnIcono'} 
                                 startIcon={<AddIcon className='icono' />} onClick={() => {adicionarFilaNodo()}}> {"Agregar"}
                             </Button>
@@ -337,6 +382,7 @@ export default function New({data, tipo}){
                                         <Table key={'tablePersona'} className={'tableAdicional'} xl={{width: '60%', margin:'auto'}} md={{width: '70%', margin:'auto'}}  sx={{width: '80%', margin:'auto'}} sm={{maxHeight: '90%', margin:'auto'}}>
                                             <TableHead>
                                                 <TableRow>
+                                                    <TableCell>Departamento</TableCell>
                                                     <TableCell>Municipio</TableCell>
                                                     <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                                                 </TableRow>
@@ -348,9 +394,13 @@ export default function New({data, tipo}){
                                                     <TableRow key={'rowA-' +a} className={(muni['estado'] == 'D')? 'tachado': null}>
 
                                                         <TableCell>
-                                                            <p> {muni['nombreMunicipio']}</p>
+                                                            {muni['nombreDepto']}
                                                         </TableCell>
-                                                        
+
+                                                        <TableCell>
+                                                            {muni['nombreMunicipio']}
+                                                        </TableCell>
+
                                                         <TableCell className='cellCenter'>
                                                             <Icon key={'iconDelete'+a} className={'icon top red'}
                                                                     onClick={() => {eliminarFilaNodo(a);}}

@@ -65,7 +65,6 @@ class TiqueteController extends Controller
             $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
             $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
             $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-                                        //->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
                                         ->join('tarifatiquete as tt', function($join)
                                         {
                                             $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
@@ -313,8 +312,7 @@ class TiqueteController extends Controller
                         ->select('t.tiquid', 't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad','t.tiquvalorseguro','t.tiquvalorestampilla',
                         DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"), 't.plarutid', 'pr.vehiid','tt.tartiqvalorseguro',
                         'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino', 'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
-                        'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular',
-                        'ti.tipidenombre as tipoIdentificacion')
+                        'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'ti.tipidenombre as tipoIdentificacion')
                         ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'ps.tipideid')
                         ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')

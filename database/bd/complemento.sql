@@ -311,3 +311,7 @@ ALTER TABLE `encomienda` CHANGE `depaidorigen` `encodepaidorigen` TINYINT(3) UNS
 ALTER TABLE `tiquete` CHANGE `depaidorigen` `tiqudepaidorigen` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de origen del tiquete', CHANGE `muniidorigen` `tiqumuniidorigen` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de origen del tiquete', CHANGE `depaiddestino` `tiqudepaiddestino` TINYINT(3) UNSIGNED NOT NULL COMMENT 'Identificador del departamento de destino del tiquete', CHANGE `muniiddestino` `tiqumuniiddestino` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio de destino del tiquete';
 
 ALTER TABLE `tarifatiquete` ADD `tartiqdepaiddestino` TINYINT(3) NULL AFTER `tartiqmuniidorigen`, ADD `tartiqmuniiddestino` SMALLINT(5) NULL AFTER `tartiqdepaiddestino`;
+
+
+ALTER TABLE `rutanodo` ADD `rutnoddepaid` TINYINT(3) NULL COMMENT 'Identificador del departamento del nodo de la ruta' AFTER `rutaid`;
+ALTER TABLE `rutanodo` CHANGE `muniid` `rutnodmuniid` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio del nodo de la ruta';

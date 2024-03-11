@@ -44,7 +44,16 @@ class RutaController extends Controller
         $rutasNodo      = [];
 
         if($request->tipo === 'U'){
-            $rutasNodo      = DB::table('rutanodo')->select('rutnodid','muniid')->where('rutaid', $request->codigo)->get();
+            $rutasNodo      = DB::table('rutanodo as rn')->select('rn.rutnodid as identificador','rn.rutnoddepaid as deptoNodoId',
+                                    'rn.rutnodmuniid as municipioNodoId', 'd.depanombre as nombreDepto', 'm.muninombre as nombreMunicipio', 
+                                    DB::raw("CONCAT('U') as estado"))
+                    ->join('departamento as d', 'd.depaid', '=', 'rn.rutnoddepaid')
+                    ->join('municipio as m', function($join)
+                    {
+                        $join->on('m.munidepaid', '=', 'rn.rutnoddepaid');
+                        $join->on('m.muniid', '=', 'rn.rutnodmuniid'); 
+                    })
+                    ->where('rn.rutaid', $request->codigo)->get();
         }
 
         return response()->json(["departamentos" => $departamentos, "municipios" => $municipios, "rutasNodo" => $rutasNodo]);
@@ -56,13 +65,13 @@ class RutaController extends Controller
         $ruta    = ($rutaid != 000) ? Ruta::findOrFail($rutaid) : new Ruta();
 
         $this->validate(request(),[
-            'departamentoOrigen'   => 'required|numeric',
-            'municipioOrigen'      => 'required|numeric',
-            'departamentoDestino'  => 'required|numeric',
-            'municipioDestino'     => 'required|numeric',
-            'tieneNodos'           => 'required|numeric',
-            'estado'               => 'required',
-            'nodos'                => 'nullable|array|min:1'
+            'departamentoOrigen'  => 'required|numeric',
+            'municipioOrigen'     => 'required|numeric',
+            'departamentoDestino' => 'required|numeric',
+            'municipioDestino'    => 'required|numeric',
+            'tieneNodos'          => 'required|numeric',
+            'estado'              => 'required',
+            'nodos'               => 'nullable|array|min:1'
         ]);
 
         DB::beginTransaction();
@@ -85,12 +94,14 @@ class RutaController extends Controller
             if($request->nodos !== null) {
                 foreach($request->nodos as $dataNodo){
                     $identificador = $dataNodo['identificador'];
-                    $municipio     = $dataNodo['municipioId'];
+                    $departamento  = $dataNodo['deptoNodoId'];
+                    $municipio     = $dataNodo['municipioNodoId'];
                     $nodoEstado    = $dataNodo['estado'];
                     if($nodoEstado === 'I'){
-                        $rutaNodo         = new RutaNodo();
-                        $rutaNodo->rutaid = $rutaid;
-                        $rutaNodo->muniid = $municipio;
+                        $rutaNodo               = new RutaNodo();
+                        $rutaNodo->rutaid       = $rutaid;
+                        $rutaNodo->rutnoddepaid = $departamento;
+                        $rutaNodo->rutnodmuniid = $municipio;
                         $rutaNodo->save();
                     }else if($nodoEstado === 'D'){
                         $rutaNodo = RutaNodo::findOrFail($identificador);
@@ -141,7 +152,7 @@ class RutaController extends Controller
                             ->where('rutaid', $request->codigo)->first();
 
         $rutaNodos   = DB::table('rutanodo as rn')->select('m.muniid', 'm.muninombre')
-                                ->join('municipio as m', 'm.muniid', '=', 'rn.muniid')
+                                ->join('municipio as m', 'm.muniid', '=', 'rn.rutnodmuniid')
                                 ->where('rn.rutaid', $request->codigo)
                                 ->orderBy('m.muninombre')->get();
 
@@ -165,9 +176,10 @@ class RutaController extends Controller
     public function tiquete(Request $request)
 	{
         $this->validate(request(),[
-            'codigo'         => 'required|numeric',
-            'departamento'   => 'required|numeric',
-            'tarifaTiquetes' => 'required|array|min:1'
+            'codigo'              => 'required|numeric',
+            'departamentoOrigen'  => 'required|numeric',
+            'departamentoDestino' => 'required|numeric',
+            'tarifaTiquetes'      => 'required|array|min:1'
         ]);
 
         DB::beginTransaction();

@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('rutanodo', function (Blueprint $table) {
             $table->bigIncrements('rutnodid')->unsigned()->comment('Identificador de la tabla ruta nodo');
             $table->integer('rutaid')->unsigned()->comment('Identificador de la ruta');
-            $table->smallInteger('muniid')->unsigned()->comment('Identificador del municipio del nodo de la ruta');
+            $table->tinyInteger('rutnoddepaid')->unsigned()->comment('Identificador del departamento del nodo de la ruta');
+            $table->smallInteger('rutnodmuniid')->unsigned()->comment('Identificador del municipio del nodo de la ruta');
             $table->timestamps();
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutarutnod');
-            $table->foreign('muniid')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munirutnod');
+            $table->foreign('rutnoddepaid')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_deparutnod');
+            $table->foreign('rutnodmuniid')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munirutnod');
         });
     }
 
