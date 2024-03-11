@@ -73,21 +73,22 @@ class TiqueteController extends Controller
                                         ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->distinct()->get();
 
             $tarifaTiquetes         = DB::table('tarifatiquete as tt')
-                                        ->select('tt.rutaid','tt.tartiqdepaidorigen','tt.tartiqmuniidorigen', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro')
+                                        ->select('tt.rutaid','tt.tartiqdepaidorigen','tt.tartiqmuniidorigen', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro','tt.tartiqvalorfondorecaudo')
                                         ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')
                                         ->where('r.rutaactiva', true)
                                         ->get();
 
             $planillaRutas        = DB::table('planillaruta as pr')
-                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.depaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.muniiddestino',                                        
-                                        'tt.depaidorigen as depaidorigentarifa','tt.muniidorigen as muniidorigentarifa', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro',
+                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino',                                        
+                                        'tt.tartiqdepaidorigen as depaidorigentarifa','tt.tartiqmuniidorigen as muniidorigentarifa', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 
+                                        'tt.tartiqvalorestampilla','tt.tartiqvalorseguro','tt.tartiqvalorfondorecaudo',
                                         DB::raw("CONCAT(pr.agenid,pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                         ->join('tarifatiquete as tt', function($join)
                                         {
                                             $join->on('tt.rutaid', '=', 'r.rutaid');
-                                            $join->on('tt.depaidorigen', '=', 'r.rutadepaiddestino');
-                                            $join->on('tt.muniidorigen', '=', 'r.rutamuniiddestino');
+                                            $join->on('tt.tartiqdepaidorigen', '=', 'r.rutadepaiddestino');
+                                            $join->on('tt.tartiqmuniidorigen', '=', 'r.rutamuniiddestino');
                                         })
                                         ->join('municipio as mo', function($join)
                                         {
@@ -101,6 +102,8 @@ class TiqueteController extends Controller
                                         })
                                         ->where('pr.plarutdespachada', false)
                                         ->get();
+
+           // dd( $planillaRutas);
 
             $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
                                         ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',

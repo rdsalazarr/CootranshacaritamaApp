@@ -315,3 +315,5 @@ ALTER TABLE `tarifatiquete` ADD `tartiqdepaiddestino` TINYINT(3) NULL AFTER `tar
 
 ALTER TABLE `rutanodo` ADD `rutnoddepaid` TINYINT(3) NULL COMMENT 'Identificador del departamento del nodo de la ruta' AFTER `rutaid`;
 ALTER TABLE `rutanodo` CHANGE `muniid` `rutnodmuniid` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio del nodo de la ruta';
+
+ALTER TABLE `tarifatiquete` ADD `tartiqvalorfondorecaudo` DECIMAL(6,0) NULL AFTER `tartiqfondoreposicion`;

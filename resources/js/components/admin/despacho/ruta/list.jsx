@@ -38,7 +38,7 @@ export default function List(){
         instance.get('/admin/despacho/ruta/list').then(res=>{
             setData(res.data);
             setLoader(false);
-        }) 
+        })
     }
 
     useEffect(()=>{inicio();}, []);

@@ -197,8 +197,6 @@ export default function New({data, tipo}){
         let depaIdOrigenTarifa        = planillaRutasFiltradas[0].depaidorigentarifa;
         let muniIdOrigenTarifa        = planillaRutasFiltradas[0].muniidorigentarifa;
 
-
-
         setLoader(true);
         instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {planillaId: e.target.value}).then(res=>{
             const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
@@ -326,6 +324,8 @@ export default function New({data, tipo}){
             setCajaAbierta(res.cajaAbierta);
             setMunicipios(res.municipios);
 
+            console.log(res.planillaRutas);
+
             if(!res.cajaAbierta){
                 showSimpleSnackbar('Advertencia: No se ha encontrado ninguna caja abierta para el día de hoy. Sin embargo, aún es posible vender tiquetes', 'warning');
             }
@@ -452,6 +452,25 @@ export default function New({data, tipo}){
                         </SelectValidator>
                     </Grid>
 
+                    <Grid item xl={3} md={3} sm={6} xs={12}>
+                        <SelectValidator
+                            name={'municipioDestino'}
+                            value={formData.municipioDestino}
+                            label={'Municipio destino'}
+                            className={'inputGeneral'}
+                            variant={"standard"} 
+                            inputProps={{autoComplete: 'off'}}
+                            validators={["required"]}
+                            errorMessages={["Debe hacer una selección"]}
+                            onChange={consultarValorTiqueteOrigen}
+                        >
+                            <MenuItem value={""}>Seleccione</MenuItem>
+                            {municipiosOrigen.map(res=>{
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
+                            })}
+                        </SelectValidator>
+                    </Grid>
+
                     <Grid item md={3} xl={3} sm={6} xs={12} style={{textAlign:'center'}}>
                         <FormControlLabel
                             control={<Switch name={'tomarSeguro'} 
@@ -459,16 +478,7 @@ export default function New({data, tipo}){
                             color="secondary" checked={(tomarSeguro) ? true : false}/>} 
                             label="Tomar seguro"
                         />
-                    </Grid>
-                    
-                    {(tomarSeguro) ?
-                        <Grid item xl={3} md={3} sm={6} xs={12}>
-                            <Box className='frmTextoColor'>
-                                <label>Valor seguro:  $ </label>
-                                <span className='textoRojo'>{'\u00A0'+ formData.valorSeguroMostrar}</span>
-                            </Box>
-                        </Grid>
-                    : null}
+                    </Grid>              
 
                 </Grid>
 
@@ -526,7 +536,7 @@ export default function New({data, tipo}){
                                     <label>Cantidad de puestos: </label>
                                     <span className='textoRojo'>{'\u00A0'+ formData.cantidadPuesto}</span>
                                 </Box>
-                            </Grid>
+                            </Grid>                        
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>
                                 <Box className='frmTextoColor'>
@@ -547,6 +557,15 @@ export default function New({data, tipo}){
                                     onChange={calcularValorTotalDescuento}
                                 />
                             </Grid> 
+
+                            {(tomarSeguro) ?
+                                <Grid item xl={12} md={12} sm={12} xs={12}>
+                                    <Box className='frmTextoColor'>
+                                        <label>Valor seguro:  $ </label>
+                                        <span className='textoRojo'>{'\u00A0'+ formData.valorSeguroMostrar}</span>
+                                    </Box>
+                                </Grid>
+                            : null}
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>
                                 <Box className='frmTextoColor'>

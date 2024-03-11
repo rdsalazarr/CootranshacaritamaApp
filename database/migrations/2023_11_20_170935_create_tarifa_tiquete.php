@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('tartiqvalorseguro', 6, 0)->default(0)->comment('Valor del seguro para el tiquete');
             $table->decimal('tartiqvalorestampilla', 6, 0)->nullable()->comment('Valor de la estampilla para el tiquete');
             $table->decimal('tartiqfondoreposicion', 6, 2)->comment('Porcentaje para el fondo de reposición del tiquete');
+            $table->decimal('tartiqvalorfondorecaudo', 6, 0)->default(0)->comment('Valor del fondo de recaudo para el tiquete');
             $table->timestamps();
             $table->foreign('rutaid')->references('rutaid')->on('ruta')->onUpdate('cascade')->index('fk_rutatartiq');
             $table->foreign('tartiqdepaidorigen')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depatartiqorigen');

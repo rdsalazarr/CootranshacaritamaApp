@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
-import { Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell, Autocomplete, createFilterOptions} from '@mui/material';
+import { Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
@@ -15,10 +15,10 @@ export default function New({data, tipo}){
                                         municipioDestino:data.rutamuniiddestino, tieneNodos:data.rutatienenodos, estado:data.rutaactiva, tipo:tipo 
                                     } : {codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1', tipo:tipo
                                 });
-   
+
     const [formDataAdicionarNodo, setFormDataAdicionarNodo] = useState({deptoNodoId:'', nombreDepto: '', municipioNodoId:'', nombreMunicipio: ''});
     const [municipiosNodoDestino, setMunicipiosNodoDestino] = useState([]);
-    const [municipiosDestino, setMunicipiosDestino] = useState([]);    
+    const [municipiosDestino, setMunicipiosDestino] = useState([]);
     const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
     const [habilitado, setHabilitado] = useState(true);
@@ -126,22 +126,15 @@ export default function New({data, tipo}){
 
     const eliminarFilaNodo = (id) =>{
         let newRutaNodos = [];
+        let estado       = 'I';
         rutaNodos.map((res,i) =>{
-            if(res.estado === 'U' && i === id){
-                newRutaNodos.push({ identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
-                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'D' }); 
-            }else if(res.estado === 'D' && i === id){
-                newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
-                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'U'});
-            }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
-                newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
-                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado:res.estado});
-            }else{
-                if(i != id){
-                    newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
-                                        municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'I' });
-                }
+            if (i === id) {
+                estado = res.estado === 'U' ? 'D' : 'U';
+            } else {
+                estado = (res.estado === 'D' || res.estado === 'U') ? res.estado : 'I';
             }
+            newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: estado });
         })
         setRutaNodos(newRutaNodos);
     }
@@ -155,7 +148,7 @@ export default function New({data, tipo}){
            if(tipo !== 'I'){ 
                 let municipiosOrigen = [];
                 let deptoOrigen      = data.rutadepaidorigen;
-                let rutasNodo        = res.rutasNodo;  
+                let rutasNodo        = res.rutasNodo;
                 res.municipios.forEach(function(muni){ 
                     if(muni.munidepaid === deptoOrigen){
                         municipiosOrigen.push({
@@ -177,24 +170,6 @@ export default function New({data, tipo}){
                     }
                 });
                 setMunicipiosDestino(municipiosDestino);
-
-                /*let newRutaNodos = [];
-                rutasNodo.forEach(function(nodoRuta){
-                    const nodoDeptoEncontrado     = departamentos.filter((dep) => dep.depaid == nodoRuta.rutnoddepaid);
-                    const nodoMunicipioEncontrado = municipiosDestino.find(mun => mun.muniid === nodoRuta.rutnodmuniid);
-
-                    if(nodoMunicipioEncontrado){
-                        newRutaNodos.push({
-                            identificador:   nodoRuta.rutnodid,
-                            deptoNodoId:     nodoRuta.rutnoddepaid,
-                            municipioNodoId: nodoRuta.tutnomuniid,
-                            nombreDepto:     nodoDeptoEncontrado.depanombre,
-                            nombreMunicipio: nodoMunicipioEncontrado.muninombre,
-                            estado: 'U'
-                        });
-                    }
-                });*/
-
                 setRutaNodos(rutasNodo);
             }
             setLoader(false);

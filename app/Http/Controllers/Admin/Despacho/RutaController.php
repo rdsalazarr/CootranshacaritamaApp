@@ -45,15 +45,15 @@ class RutaController extends Controller
 
         if($request->tipo === 'U'){
             $rutasNodo      = DB::table('rutanodo as rn')->select('rn.rutnodid as identificador','rn.rutnoddepaid as deptoNodoId',
-                                    'rn.rutnodmuniid as municipioNodoId', 'd.depanombre as nombreDepto', 'm.muninombre as nombreMunicipio', 
-                                    DB::raw("CONCAT('U') as estado"))
-                    ->join('departamento as d', 'd.depaid', '=', 'rn.rutnoddepaid')
-                    ->join('municipio as m', function($join)
-                    {
-                        $join->on('m.munidepaid', '=', 'rn.rutnoddepaid');
-                        $join->on('m.muniid', '=', 'rn.rutnodmuniid'); 
-                    })
-                    ->where('rn.rutaid', $request->codigo)->get();
+                                        'rn.rutnodmuniid as municipioNodoId', 'd.depanombre as nombreDepto', 'm.muninombre as nombreMunicipio', 
+                                        DB::raw("CONCAT('U') as estado"))
+                                    ->join('departamento as d', 'd.depaid', '=', 'rn.rutnoddepaid')
+                                    ->join('municipio as m', function($join)
+                                    {
+                                        $join->on('m.munidepaid', '=', 'rn.rutnoddepaid');
+                                        $join->on('m.muniid', '=', 'rn.rutnodmuniid'); 
+                                    })
+                                    ->where('rn.rutaid', $request->codigo)->get();
         }
 
         return response()->json(["departamentos" => $departamentos, "municipios" => $municipios, "rutasNodo" => $rutasNodo]);
@@ -123,51 +123,50 @@ class RutaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required']);
 
-
-       /* $planillaRutas        = DB::table('planillaruta as pr')
-                                ->select('pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino',
-                                'mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
-                                DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
-                                ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
+        $ruta           = DB::table('ruta as r')
+                                ->select('do.depaid as deptoIdOrigen','do.depanombre as deptoNombreOrigen', 'mo.muniid as municipioIdOrigen', 'mo.muninombre as municipioNombreOrigen',
+                                    'dd.depaid as deptoIdDestino','dd.depanombre as deptoNormbreDestino', 'md.muniid as municipioIdDestino', 'md.muninombre as municipioNombreDestino')
+                                ->join('departamento as do', 'do.depaid', '=', 'r.rutadepaidorigen')
                                 ->join('municipio as mo', function($join)
                                 {
                                     $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
-                                    $join->on('mo.muniid', '=', 'r.rutamuniidorigen');
+                                    $join->on('mo.muniid', '=', 'r.rutamuniidorigen'); 
                                 })
+                                ->join('departamento as dd', 'dd.depaid', '=', 'r.rutadepaiddestino')
                                 ->join('municipio as md', function($join)
                                 {
                                     $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
-                                    $join->on('md.muniid', '=', 'r.rutamuniiddestino');
+                                    $join->on('md.muniid', '=', 'r.rutamuniiddestino'); 
                                 })
-                                ->where('pr.plarutdespachada', false)
-                                ->get();**/
-
-
-        $ruta           = DB::table('ruta as r')->select('md.muniid', 'md.muninombre')
-                            ->join('municipio as md', function($join)
-                            {
-                                $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
-                                $join->on('md.muniid', '=', 'r.rutamuniiddestino');
-                            })
-                            ->where('rutaid', $request->codigo)->first();
-
-        $rutaNodos   = DB::table('rutanodo as rn')->select('m.muniid', 'm.muninombre')
-                                ->join('municipio as m', 'm.muniid', '=', 'rn.rutnodmuniid')
-                                ->where('rn.rutaid', $request->codigo)
-                                ->orderBy('m.muninombre')->get();
+                                ->where('r.rutaid', $request->codigo)
+                                ->orderBy('mo.muninombre')
+                                ->orderBy('md.muninombre')->first();
 
         $municipioRutas   = [];
-        $municipioRutas[] = ['muniid' => $ruta->muniid, 'muninombre' => $ruta->muninombre]; 
-                                    
+        $municipioRutas[] = ['depaid' => $ruta->deptoIdOrigen, 'depanombre' => $ruta->deptoNombreOrigen, 'muniid' => $ruta->municipioIdOrigen, 'muninombre' => $ruta->municipioNombreOrigen]; 
+        $municipioRutas[] = ['depaid' => $ruta->deptoIdDestino, 'depanombre' => $ruta->deptoNormbreDestino, 'muniid' => $ruta->municipioIdDestino, 'muninombre' => $ruta->municipioNombreDestino]; 
+
+        $rutaNodos   = DB::table('rutanodo as rn')->select('d.depaid','d.depanombre','m.muniid', 'm.muninombre')
+                                            ->join('departamento as d', 'd.depaid', '=', 'rn.rutnoddepaid')
+                                            ->join('municipio as m', function($join)
+                                            {
+                                                $join->on('m.munidepaid', '=', 'rn.rutnoddepaid');
+                                                $join->on('m.muniid', '=', 'rn.rutnodmuniid');
+                                            })
+                                            ->where('rn.rutaid', $request->codigo)
+                                            ->orderBy('m.muninombre')->get(); 
+
         foreach ($rutaNodos as $item) {
             $municipioRutas[] = $item;
         }
 
         $tarifaTiquetes = DB::table('tarifatiquete')
-                                ->select('tartiqid','tartiqdepaidorigen','tartiqmuniidorigen','tartiqdepaiddestino','tartiqmuniiddestino','tartiqvalor','tartiqfondoreposicion','tartiqvalorestampilla','tartiqvalorseguro',
+                                ->select('tartiqid','tartiqdepaidorigen','tartiqmuniidorigen','tartiqdepaiddestino','tartiqmuniiddestino','tartiqvalor',
+                                'tartiqfondoreposicion','tartiqvalorestampilla','tartiqvalorseguro','tartiqvalorfondorecaudo',
                                 DB::raw("CONCAT(FORMAT(tartiqvalor, 0)) as valorTiquete"),
                                 DB::raw("CONCAT(FORMAT(tartiqvalorestampilla, 0)) as valorEstampilla"),
-                                DB::raw("CONCAT(FORMAT(tartiqvalorseguro, 0)) as valorSeguro"))
+                                DB::raw("CONCAT(FORMAT(tartiqvalorseguro, 0)) as valorSeguro"),
+                                DB::raw("CONCAT(FORMAT(tartiqvalorfondorecaudo, 0)) as valorFondoRecaudo"))
                                 ->where('rutaid', $request->codigo)->get();
 
         return response()->json(["municipioRutas" => $municipioRutas, "tarifaTiquetes" => $tarifaTiquetes]);
@@ -176,48 +175,51 @@ class RutaController extends Controller
     public function tiquete(Request $request)
 	{
         $this->validate(request(),[
-            'codigo'              => 'required|numeric',
-            'departamentoOrigen'  => 'required|numeric',
-            'departamentoDestino' => 'required|numeric',
-            'tarifaTiquetes'      => 'required|array|min:1'
+            'codigo'         => 'required|numeric',
+            'tarifaTiquetes' => 'required|array|min:1'
         ]);
 
         DB::beginTransaction();
         try {
            foreach($request->tarifaTiquetes as $data){
 				$identificador       = $data['identificador'];
-                $municipioOrigen     = $data['municipioOrigen'];
-                $municipioDestino    = $data['municipioDestino'];
+                $deptoIdOrigen       = $data['deptoIdOrigen'];
+                $municipioOrigen     = $data['municipioIdOrigen'];
+                $deptoIdDestino      = $data['deptoIdDestino'];
+                $municipioDestino    = $data['municipioIdDestino'];
                 $valorTiquete        = $data['valorTiquete'];
                 $valorSeguro         = $data['valorSeguro'];
                 $valorEstampilla     = $data['valorEstampilla'];
                 $fondoReposicion     = $data['fondoReposicion'];
+                $valorFondoRecaudo   = $data['valorFondoRecaudo'];
 				$tarifaTiqueteEstado = $data['estado'];
 				if($tarifaTiqueteEstado === 'I'){
-					$tarifaTiquete                        = new TarifaTiquete();
-					$tarifaTiquete->rutaid                = $request->codigo;
-					$tarifaTiquete->tartiqdepaidorigen    = $request->departamentoOrigen;
-                    $tarifaTiquete->tartiqmuniidorigen    = $municipioOrigen;
-                    $tarifaTiquete->tartiqdepaiddestino   = $request->departamentoDestino;
-                    $tarifaTiquete->tartiqmuniiddestino   = $municipioDestino;
-                    $tarifaTiquete->tartiqvalor           = $valorTiquete;
-                    $tarifaTiquete->tartiqvalorseguro     = $valorSeguro;
-                    $tarifaTiquete->tartiqvalorestampilla = $valorEstampilla;
-                    $tarifaTiquete->tartiqfondoreposicion = $fondoReposicion;
+					$tarifaTiquete                          = new TarifaTiquete();
+					$tarifaTiquete->rutaid                  = $request->codigo;
+					$tarifaTiquete->tartiqdepaidorigen      = $deptoIdOrigen;
+                    $tarifaTiquete->tartiqmuniidorigen      = $municipioOrigen;
+                    $tarifaTiquete->tartiqdepaiddestino     = $deptoIdDestino;
+                    $tarifaTiquete->tartiqmuniiddestino     = $municipioDestino;
+                    $tarifaTiquete->tartiqvalor             = $valorTiquete;
+                    $tarifaTiquete->tartiqvalorseguro       = $valorSeguro;
+                    $tarifaTiquete->tartiqvalorestampilla   = $valorEstampilla;
+                    $tarifaTiquete->tartiqfondoreposicion   = $fondoReposicion;
+                    $tarifaTiquete->tartiqvalorfondorecaudo = $valorFondoRecaudo;
 					$tarifaTiquete->save();
 				}else if($tarifaTiqueteEstado === 'D'){
 					$tarifaTiquete = TarifaTiquete::findOrFail($identificador);
 					$tarifaTiquete->delete();
 				}else{//Editar
-                    $tarifaTiquete                        = TarifaTiquete::findOrFail($identificador);
-                    $tarifaTiquete->tartiqdepaidorigen    = $request->departamentoOrigen;
-                    $tarifaTiquete->tartiqmuniidorigen    = $municipioOrigen;
-                    $tarifaTiquete->tartiqdepaiddestino   = $request->departamentoDestino;
-                    $tarifaTiquete->tartiqmuniiddestino   = $municipioDestino;
-                    $tarifaTiquete->tartiqvalor           = $valorTiquete;
-                    $tarifaTiquete->tartiqvalorseguro     = $valorSeguro;
-                    $tarifaTiquete->tartiqvalorestampilla = $valorEstampilla;
-                    $tarifaTiquete->tartiqfondoreposicion = $fondoReposicion;
+                    $tarifaTiquete                          = TarifaTiquete::findOrFail($identificador);
+                    $tarifaTiquete->tartiqdepaidorigen      = $deptoIdOrigen;
+                    $tarifaTiquete->tartiqmuniidorigen      = $municipioOrigen;
+                    $tarifaTiquete->tartiqdepaiddestino     = $deptoIdDestino;
+                    $tarifaTiquete->tartiqmuniiddestino     = $municipioDestino;
+                    $tarifaTiquete->tartiqvalor             = $valorTiquete;
+                    $tarifaTiquete->tartiqvalorseguro       = $valorSeguro;
+                    $tarifaTiquete->tartiqvalorestampilla   = $valorEstampilla;
+                    $tarifaTiquete->tartiqfondoreposicion   = $fondoReposicion;
+                    $tarifaTiquete->tartiqvalorfondorecaudo = $valorFondoRecaudo;
                     $tarifaTiquete->save();
 				}
 			}
@@ -234,7 +236,7 @@ class RutaController extends Controller
 	{
         $planillaruta = DB::table('planillaruta')->select('rutaid')->where('rutaid', $request->codigo)->first();
 		if($planillaruta){
-			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una dependencia del sistema']);
+			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a una planilla del sistema']);
 		}else{
             DB::beginTransaction();
 			try {

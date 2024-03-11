@@ -75,7 +75,7 @@ class EncomiendaController extends Controller
         $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
         $municipios              = DB::table('municipio as m')
                                         ->select('m.muniid','m.munidepaid','m.muninombre')
-                                        ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
+                                        ->join('rutanodo as rn', 'rn.rutnodmuniid', '=', 'm.muniid')
                                         ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
 
         $tipoIdentificaciones    = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
@@ -120,7 +120,7 @@ class EncomiendaController extends Controller
 
             $municipiosNodoDestino  = DB::table('municipio as m')
                                         ->select('m.muniid','m.munidepaid','m.muninombre')
-                                        ->join('rutanodo as rn', 'rn.muniid', '=', 'm.muniid')
+                                        ->join('rutanodo as rn', 'rn.rutnodmuniid', '=', 'm.muniid')
                                         ->join('planillaruta as pr', 'pr.rutaid', '=', 'rn.rutaid')
                                         ->where('m.munihacepresencia', true)
                                         ->where('pr.plarutid', $encomienda->plarutid)

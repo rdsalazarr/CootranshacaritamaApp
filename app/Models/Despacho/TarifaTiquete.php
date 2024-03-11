@@ -12,5 +12,5 @@ class TarifaTiquete extends Model
     protected $table      = 'tarifatiquete';
     protected $primaryKey = 'tartiqid';
     protected $fillable   = ['rutaid','tartiqdepaidorigen','tartiqmuniidorigen','tartiqdepaiddestino','tartiqmuniiddestino','tartiqvalor',
-                            'tartiqvalorseguro', 'tartiqvalorestampilla','tartiqfondoreposicion'];
+                            'tartiqvalorseguro', 'tartiqvalorestampilla','tartiqfondoreposicion','tartiqvalorfondorecaudo'];
 }
