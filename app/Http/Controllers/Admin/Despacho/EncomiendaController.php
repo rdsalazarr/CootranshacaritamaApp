@@ -72,7 +72,25 @@ class EncomiendaController extends Controller
 	{
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
-        $tiposEncomiendas        = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
+        $tiposEncomiendas       = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
+        /*$municipiosOrigen       = DB::table('municipio as m')->distinct()
+                                        ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
+                                        ->join('tarifatiquete as tt', function($join)
+                                        {
+                                            $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
+                                            $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
+                                        })
+                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
+
+        $municipiosDestino              = DB::table('municipio as m')->distinct()
+                                        ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
+                                        ->join('tarifatiquete as tt', function($join)
+                                        {
+                                            $join->on('tt.tartiqdepaiddestino', '=', 'm.munidepaid');
+                                            $join->on('tt.tartiqmuniiddestino', '=', 'm.muniid');
+                                        })
+                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();*/
+
         $municipios              = DB::table('municipio as m')
                                         ->select('m.muniid','m.munidepaid','m.muninombre')
                                         ->join('rutanodo as rn', 'rn.rutnodmuniid', '=', 'm.muniid')

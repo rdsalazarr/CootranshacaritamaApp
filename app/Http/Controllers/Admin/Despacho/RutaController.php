@@ -146,15 +146,16 @@ class RutaController extends Controller
         $municipioRutas[] = ['depaid' => $ruta->deptoIdOrigen, 'depanombre' => $ruta->deptoNombreOrigen, 'muniid' => $ruta->municipioIdOrigen, 'muninombre' => $ruta->municipioNombreOrigen]; 
         $municipioRutas[] = ['depaid' => $ruta->deptoIdDestino, 'depanombre' => $ruta->deptoNormbreDestino, 'muniid' => $ruta->municipioIdDestino, 'muninombre' => $ruta->municipioNombreDestino]; 
 
-        $rutaNodos   = DB::table('rutanodo as rn')->select('d.depaid','d.depanombre','m.muniid', 'm.muninombre')
-                                            ->join('departamento as d', 'd.depaid', '=', 'rn.rutnoddepaid')
-                                            ->join('municipio as m', function($join)
-                                            {
-                                                $join->on('m.munidepaid', '=', 'rn.rutnoddepaid');
-                                                $join->on('m.muniid', '=', 'rn.rutnodmuniid');
-                                            })
-                                            ->where('rn.rutaid', $request->codigo)
-                                            ->orderBy('m.muninombre')->get(); 
+        $rutaNodos   = DB::table('rutanodo as rn')
+                            ->select('d.depaid','d.depanombre','m.muniid', 'm.muninombre')
+                            ->join('departamento as d', 'd.depaid', '=', 'rn.rutnoddepaid')
+                            ->join('municipio as m', function($join)
+                            {
+                                $join->on('m.munidepaid', '=', 'rn.rutnoddepaid');
+                                $join->on('m.muniid', '=', 'rn.rutnodmuniid');
+                            })
+                            ->where('rn.rutaid', $request->codigo)
+                            ->orderBy('m.muninombre')->get(); 
 
         foreach ($rutaNodos as $item) {
             $municipioRutas[] = $item;

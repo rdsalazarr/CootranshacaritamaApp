@@ -1,7 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Box, Icon, Table, TableHead, TableBody, TableRow, TableCell} from '@mui/material';
-import NumberValidator from '../../../layout/numberValidator';
+import { ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
@@ -96,7 +95,7 @@ export default function New({data, tipo}){
             }
         });
         setMunicipiosNodoDestino(municipiosDestino);
-    }    
+    }
 
     const adicionarFilaNodo = () =>{
 
@@ -110,7 +109,7 @@ export default function New({data, tipo}){
             return
         }
 
-        if(rutaNodos.some(nod => nod.municipioNodoId == rutaNodos.municipioNodoId)){
+        if(rutaNodos.some(nod => nod.deptoNodoId === formDataAdicionarNodo.deptoNodoId && nod.municipioNodoId == formDataAdicionarNodo.municipioNodoId)){
             showSimpleSnackbar('Este registro ya fue adicionado', 'error');
             return
         }

@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreign('tartiqdepaidorigen')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depatartiqorigen');
             $table->foreign('tartiqmuniidorigen')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munitartiqorigen');
             $table->foreign('tartiqdepaiddestino')->references('depaid')->on('departamento')->onUpdate('cascade')->index('fk_depatartiqdestino');
-            $table->foreign('tartiqmuniidestino')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munitartiqdestino');
+            $table->foreign('tartiqmuniiddestino')->references('muniid')->on('municipio')->onUpdate('cascade')->index('fk_munitartiqdestino');
         });
     }
 

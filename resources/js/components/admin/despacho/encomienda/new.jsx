@@ -222,7 +222,7 @@ export default function New({data, tipo}){
         setFormData(newFormData);
         setMunicipiosOrigen(municipiosOrigen);
         setMunicipiosDestino(municipiosDestino);
-    }
+    }  
 
     const consultarMunicipioDestino = (e) =>{
         let newFormData                 = {...formData}
@@ -232,6 +232,8 @@ export default function New({data, tipo}){
         newFormData.municipioOrigen     = e.target.value;
 
         const planillaRutasFiltradas    = planillaRutas.filter(planilla => planilla.plarutid === formData.ruta);
+
+        console.log(planillaRutasFiltradas);
         let muniIdDestino               = planillaRutasFiltradas[0].muniiddestino;
         let municipioDestino            = planillaRutasFiltradas[0].municipioDestino;
 
@@ -252,6 +254,17 @@ export default function New({data, tipo}){
 
         setFormData(newFormData);
         setMunicipiosDestino(municipiosDestino);
+    }
+
+    const obtenerMunicipioDestino = (e) =>{
+        console.log(e.target.value, municipios);
+        /*let newFormData           = {...formData}
+        const municipiosDestino   = municipios.filter((mun) => mun.muniid == e.target.value);
+
+        console.log(municipiosDestino);
+        newFormData.departamentoDestino = municipiosDestino[0].depaid;
+        newFormData.municipioDestino    = e.target.value;
+        setFormData(newFormData);*/
     }
 
     const formatearNumero = (numero) =>{
@@ -439,11 +452,11 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={handleChange} 
+                            onChange={obtenerMunicipioDestino} 
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosDestino.map(res=>{
-                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
