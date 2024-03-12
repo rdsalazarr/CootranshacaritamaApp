@@ -170,7 +170,7 @@ class RecibirPlanillaRutaController extends Controller
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEncomiendaContraentrega');
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEncomiendaContraentrega');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $encomienda->encovalortotal;
                 $comprobantecontabledetalle->save();

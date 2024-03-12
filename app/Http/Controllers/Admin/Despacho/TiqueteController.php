@@ -63,96 +63,39 @@ class TiqueteController extends Controller
 
         try{
             $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
-            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();   
-            $municipios           = DB::table('municipio as m')->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
+            $tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
+            $municipios           = DB::table('municipio as m')->distinct()
+                                        ->select('m.muniid', 'm.munidepaid', 'm.muninombre as muninombre', 'tt.rutaid', DB::raw("CONCAT('ORIGEN') as tipo"))
+                                        ->join('tarifatiquete as tt', function ($join) {
                                             $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
                                             $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
                                         })
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->distinct()->get();
-
-
- $municipios = DB::table('municipio as m')
-    ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-    ->join('tarifatiquete as tt', function($join)
-    {
-        $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
-        $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
-    })
-    ->orWhere(function ($query) {
-        $query->join('tarifatiquete as tt', function($join)
-        {
-            $join->on('tt.tartiqdepaiddestino', '=', 'm.munidepaid');
-            $join->on('tt.tartiqmuniiddestino', '=', 'm.muniid');
-        });
-    })
-    ->where('m.munihacepresencia', true)
-    ->orderBy('m.muninombre')
-    ->get();
-
-    dd( $municipios);/**/
-
-
-    /*select m.muniid, m.munidepaid, m.muninombre, tt.rutaid from municipio as m 
-inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.tartiqmuniidorigen = m.muniid
- where m.munihacepresencia = 1 order by m.muninombre asc*/
-
-       $municipiosOrigen       = DB::table('municipio as m')->distinct()
-                                        ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
-                                            $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
-                                            $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
-                                        })
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
-
-        $municipiosDestino              = DB::table('municipio as m')->distinct()
-                                        ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
-                                            $join->on('tt.tartiqdepaiddestino', '=', 'm.munidepaid');
-                                            $join->on('tt.tartiqmuniiddestino', '=', 'm.muniid');
-                                        })
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
-
-                                        dd($municipiosOrigen, $municipiosDestino);
-
-            $municipios       = DB::table('municipio as m')->distinct()
-                                        ->select('m.muniid as municipioIdOrigen','m.munidepaid as deptoIdOrigen','m.muninombre as nombreOrigen ','tt.rutaid as rutaIdOrigen',
-                                        'm.muniid as municipioIdDestino','m.munidepaid as deptoIdDestino','m.muninombre as nombreDestino ','tt1.rutaid as rutaIdDestino')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
-                                            $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
-                                            $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
-                                        })
-                                        ->join('tarifatiquete as tt1', function($join)
-                                        {
-                                            $join->on('tt1.tartiqdepaiddestino', '=', 'm.munidepaid');
-                                            $join->on('tt1.tartiqmuniiddestino', '=', 'm.muniid');
-                                        })
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
-
-                                        dd( $municipios);
+                                        ->where('m.munihacepresencia', true)
+                                        ->unionAll(DB::table('municipio as m')->distinct()
+                                            ->select('m.muniid', 'm.munidepaid', 'm.muninombre as muninombre', 'tt.rutaid', DB::raw("CONCAT('DESTINO') as tipo"))
+                                            ->join('tarifatiquete as tt', function ($join) {
+                                                $join->on('tt.tartiqdepaiddestino', '=', 'm.munidepaid');
+                                                $join->on('tt.tartiqmuniiddestino', '=', 'm.muniid');
+                                            })
+                                            ->where('m.munihacepresencia', true)
+                                        )
+                                        ->orderBy('muninombre')
+                                        ->get();
+  
 
             $tarifaTiquetes         = DB::table('tarifatiquete as tt')
-                                        ->select('tt.rutaid','tt.tartiqdepaidorigen','tt.tartiqmuniidorigen', 'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro','tt.tartiqvalorfondorecaudo')
+                                        ->select('tt.rutaid','tt.tartiqdepaidorigen','tt.tartiqmuniidorigen','tt.tartiqdepaiddestino','tt.tartiqmuniiddestino', 
+                                        'tt.tartiqvalor', 'tt.tartiqfondoreposicion', 'tt.tartiqvalorestampilla','tt.tartiqvalorseguro','tt.tartiqvalorfondorecaudo')
                                         ->join('ruta as r', 'r.rutaid', '=', 'tt.rutaid')
+                                        ->join('planillaruta as pr', 'pr.rutaid', '=', 'tt.rutaid')
                                         ->where('r.rutaactiva', true)
+                                        ->where('pr.plarutdespachada', false)
                                         ->get();
 
             $planillaRutas        = DB::table('planillaruta as pr')
-                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid',                                       
-                                        'tt.tartiqdepaidorigen ','tt.tartiqmuniidorigen', 'tt.tartiqdepaiddestino','tt.tartiqmuniiddestino','tt.tartiqvalor', 'tt.tartiqfondoreposicion', 
-                                        'tt.tartiqvalorestampilla','tt.tartiqvalorseguro','tt.tartiqvalorfondorecaudo',
+                                        ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino',
                                         DB::raw("CONCAT(pr.agenid,pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
-                                            $join->on('tt.rutaid', '=', 'r.rutaid');
-                                            $join->on('tt.tartiqdepaidorigen', '=', 'r.rutadepaiddestino');
-                                            $join->on('tt.tartiqmuniidorigen', '=', 'r.rutamuniiddestino');
-                                        })
                                         ->join('municipio as mo', function($join)
                                         {
                                             $join->on('mo.munidepaid', '=', 'r.rutadepaidorigen');
@@ -166,8 +109,6 @@ inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.ta
                                         ->where('pr.plarutdespachada', false)
                                         ->get();
 
-           // dd( $planillaRutas);
-
             $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
                                         ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
                                         DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
@@ -180,9 +121,9 @@ inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.ta
             $tiquetePuestosPlanilla = [];
             if($request->tipo === 'U'){
                 $tiquete  = DB::table('tiquete as t')
-                                    ->select('t.tiquid','t.plarutid','t.perserid','t.tiqudepaidorigen','t.tiqumuniidorigen','t.tiqudepaiddestino','t.tiqumuniiddestino', 't.tiquvalortiquete','t.tiquvalordescuento', 
-                                     DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),
-                                    't.tiquvalorseguro','t.tiquvalorestampilla','t.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad',
+                                    ->select('t.tiquid','t.plarutid','t.perserid','t.tiqudepaidorigen','t.tiqumuniidorigen','t.tiqudepaiddestino','t.tiqumuniiddestino', 
+                                    't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondorecaudo','t.tiquvalorseguro','t.tiquvalorestampilla',
+                                    't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad', DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),                                    
                                     'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido','ps.perserpermitenotificacion',
                                     'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'pr.vehiid','pr.rutaid')
                                     ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
@@ -195,7 +136,7 @@ inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.ta
                 $tiquetePuestosPlanilla  = DB::table('tiquetepuesto as tp')->select('tp.tiqpuenumeropuesto')
                                         ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
                                         ->where('t.plarutid', $request->planillaId)
-                                        ->where('t.tiquid1', '<>', $request->codigo)->get();
+                                        ->where('t.tiquid', '<>', $request->codigo)->get();
             }
 
             return response()->json([ "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"          => $planillaRutas,         "tarifaTiquetes" => $tarifaTiquetes,
@@ -248,27 +189,28 @@ inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.ta
         $personaservicio = ($personaId != 000) ? PersonaServicio::findOrFail($personaId) : new PersonaServicio(); 
 
 	    $this->validate(request(),[
-			    'tipoIdentificacion'   => 'required|numeric',
-				'documento'            => 'required|string|min:6|max:15|unique:personaservicio,perserdocumento,'.$personaservicio->perserid.',perserid',
-				'primerNombre'         => 'required|string|min:3|max:140',
-				'segundoNombre'        => 'nullable|string|min:3|max:40',
-				'primerApellido'       => 'nullable|string|min:4|max:40',
-				'segundoApellido'      => 'nullable|string|min:4|max:40',
-				'direccion'            => 'required|string|min:4|max:100',
-				'correo'               => 'nullable|email|string|max:80',
-				'telefonoCelular'      => 'nullable|string|max:20',
-                'departamentoOrigen'   => 'required|numeric',
-                'municipioOrigen'      => 'required|numeric',
-                'departamentoDestino'  => 'required|numeric',
-                'municipioDestino'     => 'required|numeric',
-                'planillaId'           => 'required|numeric',
-                'valorTiquete'         => 'required|numeric|between:1,99999999',
-                'valorDescuento'       => 'nullable|numeric|between:1,99999999',
-                'valorFondoReposicion' => 'required|numeric|between:1,99999999',
-                'valorTotal'           => 'required|numeric|between:1,99999999',
-                'valorSeguro'          => 'required|numeric|between:1,99999999',
-                'valorTotalEstampilla' => 'required|numeric',
-                'puestosVendidos'      => 'required|array|min:1',
+			    'tipoIdentificacion'     => 'required|numeric',
+				'documento'              => 'required|string|min:6|max:15|unique:personaservicio,perserdocumento,'.$personaservicio->perserid.',perserid',
+				'primerNombre'           => 'required|string|min:3|max:140',
+				'segundoNombre'          => 'nullable|string|min:3|max:40',
+				'primerApellido'         => 'nullable|string|min:4|max:40',
+				'segundoApellido'        => 'nullable|string|min:4|max:40',
+				'direccion'              => 'required|string|min:4|max:100',
+				'correo'                 => 'nullable|email|string|max:80',
+				'telefonoCelular'        => 'nullable|string|max:20',
+                'departamentoOrigen'     => 'required|numeric',
+                'municipioOrigen'        => 'required|numeric',
+                'departamentoDestino'    => 'required|numeric',
+                'municipioDestino'       => 'required|numeric',
+                'planillaId'             => 'required|numeric',
+                'valorTiquete'           => 'required|numeric|between:1,99999999',
+                'valorDescuento'         => 'nullable|numeric|between:1,99999999',
+                'valorFondoReposicion'   => 'required|numeric|between:1,99999999',
+                'valorTotal'             => 'required|numeric|between:1,99999999',
+                'valorTotalSeguro'       => 'required|numeric|between:1,99999999',
+                'valorFondoRecaudoTotal' => 'required|numeric|between:1,99999',
+                'valorTotalEstampilla'   => 'required|numeric',
+                'puestosVendidos'        => 'required|array|min:1', 
 	        ]);
 
         DB::beginTransaction();
@@ -303,20 +245,19 @@ inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.ta
                 $tiquete->tiquconsecutivo       = $this->obtenerConsecutivo($anioActual);
             }
 
-            dd($request->departamentoOrigen, $request->municipioOrigen, $request->departamentoDestino, $request->municipioDestino );
-
             $tiquete->plarutid                 = $request->planillaId;
             $tiquete->perserid                 = $personaId;
 			$tiquete->tiqudepaidorigen         = $request->departamentoOrigen;
-			$tiquete->tiqumuniidorigen         = $request->municipioOrigen;            
+			$tiquete->tiqumuniidorigen         = $request->municipioOrigen;
 			$tiquete->tiqudepaiddestino        = $request->departamentoDestino;
             $tiquete->tiqumuniiddestino        = $request->municipioDestino;
             $tiquete->tiqucantidad             = $request->cantidadPuesto;
             $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
-            $tiquete->tiquvalorseguro          = $request->valorSeguro;
+            $tiquete->tiquvalorseguro          = $request->valorTotalSeguro;
             $tiquete->tiquvalorestampilla      = $request->valorTotalEstampilla;
             $tiquete->tiquvalorfondoreposicion = $request->valorFondoReposicion;
+            $tiquete->tiquvalorfondorecaudo    = $request->valorFondoRecaudoTotal;
             $tiquete->tiquvalortotal           = $request->valorTotal;
 			$tiquete->save();
 
@@ -386,8 +327,8 @@ inner join tarifatiquete as tt on tt.tartiqdepaidorigen = m.munidepaid and tt.ta
                         ->join('tarifatiquete as tt', function($join)
                         {
                             $join->on('tt.rutaid', '=', 'pr.rutaid');
-                            $join->on('tt.depaidorigen', '=', 't.tiqudepaidorigen');
-                            $join->on('tt.muniidorigen', '=', 't.tiqumuniidorigen');
+                            $join->on('tt.tartiqdepaidorigen', '=', 't.tiqudepaidorigen');
+                            $join->on('tt.tartiqmuniidorigen', '=', 't.tiqumuniidorigen');
                         })   
                         ->join('municipio as mo', function($join)
                         {

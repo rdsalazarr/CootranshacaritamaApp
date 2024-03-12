@@ -30,7 +30,7 @@ class CuentaContableController extends Controller
 
 	    $this->validate(request(),[
                 'nombre'         => 'required|string|min:5|max:50|unique:cuentacontable,cueconnombre,'.$cuentacontable->cueconid.',cueconid',
-				'descripcion'    => 'required|string|min:4|max:200',
+				'descripcion'    => 'required|string|min:4|max:100',
                 'naturaleza'     => 'required|string|max:1',
                 'codigoContable' => 'required|string|max:20',
                 'estado'         => 'required'

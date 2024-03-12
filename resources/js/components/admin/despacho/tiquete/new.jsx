@@ -22,15 +22,18 @@ export default function New({data, tipo}){
                                               valorDescuento:'',        valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
                                               valorTiqueteMostrar :'',  valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '',
                                               valorSeguro:'',           valorSeguroMostrar:'',          rutaId: '',            valorEstampilla:'',  
-                                              valorTotalEstampilla: '', fondoReposicion:'',             tipo:tipo});
+                                              valorTotalEstampilla: '', fondoReposicion:'',             valorFondoRecaudo:'',  valorFondoRecaudoTotal:'',
+                                              valorTotalSeguro:'',      valorTiqueteEditar:'',          valorSeguroEditar:'', fondoReposicionEditar:'',
+                                              valorEstampillaEditar:'', valorFondoRecaudoEditar:'',     tipo:tipo});
     
     const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral' + 'Venta');
     const [tiqueteContabilizado, setTiqueteContabilizado] = useState(false);
     const [distribucionVehiculos, setDistribucionVehiculos] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
-    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
+    const [municipiosDestino, setMunicipiosDestino] = useState([]);
+    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);    
     const [enviarTiquete, setEnviarTiquete] = useState(false);
-    ///const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
+    const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
     const [formDataPuesto, setFormDataPuesto] = useState([]);
     const [planillaRutas, setPlanillaRutas] = useState([]);
     const [puestoMarcado, setPuestoMarcado] = useState([]);
@@ -58,16 +61,18 @@ export default function New({data, tipo}){
 
     const handleChangeTomarSeguro= (e) => {
         setTomarSeguro(e.target.checked);
-        let valorTiquete              = Number(formData.valorTiquete);
-        let valorSeguro               = Number(formData.valorSeguro);
-        let valorDescuento            = Number(formData.valorDescuento)
-        let cantidadPuesto            = formData.cantidadPuesto;
-        let valorSeguroPuesto         = valorSeguro * cantidadPuesto;
-        let valorTiquetePuesto        = (valorTiquete * cantidadPuesto) - valorDescuento;
-        let valorTotalTiquete         = (e.target.checked) ? valorTiquetePuesto + valorSeguroPuesto : valorTiquetePuesto;
-        let newFormData               = {...formData}
-        newFormData.valorTotal        = valorTotalTiquete;
-        newFormData.valorTotalTiquete = formatearNumero(valorTotalTiquete);
+        let valorTiquete               = Number(formData.valorTiquete);
+        let valorSeguro                = Number(formData.valorSeguro);
+        let valorDescuento             = Number(formData.valorDescuento)
+        let cantidadPuesto             = formData.cantidadPuesto;
+        let valorSeguroPuesto          = valorSeguro * cantidadPuesto;
+        let valorTiquetePuesto         = (valorTiquete * cantidadPuesto) - valorDescuento;
+        let valorTotalTiquete          = (e.target.checked) ? valorTiquetePuesto + valorSeguroPuesto : valorTiquetePuesto;
+        let newFormData                = {...formData}
+        newFormData.valorTotal         = valorTotalTiquete;
+        newFormData.valorTotalSeguro   = valorSeguroPuesto;
+        newFormData.valorSeguroMostrar = formatearNumero(valorSeguroPuesto);
+        newFormData.valorTotalTiquete  = formatearNumero(valorTotalTiquete);
         setFormData(newFormData);
     }
 
@@ -80,23 +85,42 @@ export default function New({data, tipo}){
     }
 
     const calcularValorTiquete = (cantidadPuesto) =>{
-        let newFormData                         = {...formData}
-        let valorEstampilla                     = formData.valorEstampilla;
-        let valorTiquete                        = formData.valorTiquete;
-        let fondoReposicion                     = formData.fondoReposicion;
+        let newFormData       = {...formData}
+        let valorEstampilla   = 0;
+        let valorTiquete      = 0;
+        let fondoReposicion   = 0;
+        let valorFondoRecaudo = 0;
+        let valorSeguro       = 0;
+
+        if(tipo === 'U'){
+            valorEstampilla   = formData.valorEstampillaEditar;
+            valorTiquete      = formData.valorTiqueteEditar;
+            fondoReposicion   = formData.fondoReposicionEditar;
+            valorFondoRecaudo = formData.valorFondoRecaudoEditar;
+            valorSeguro       = formData.valorSeguroEditar;
+        }else{
+            valorEstampilla   = formData.valorEstampilla;
+            valorTiquete      = formData.valorTiquete;
+            fondoReposicion   = formData.fondoReposicion;
+            valorFondoRecaudo = formData.valorFondoRecaudo;
+            valorSeguro       = formData.valorSeguro;
+        }
 
         let valorTiquetePuesto                  = valorTiquete * cantidadPuesto;
         let valorFondoReposicion                = (valorTiquetePuesto * fondoReposicion) / 100;
-        let valorSeguroPuesto                   = (tomarSeguro) ? Number(formData.valorSeguro * cantidadPuesto) : 0;
+        let valorSeguroPuesto                   = (tomarSeguro) ? Number(valorSeguro * cantidadPuesto) : 0;
         let valorTotalTiquete                   = valorTiquetePuesto + valorSeguroPuesto - Number(formData.valorDescuento);
         newFormData.valorFondoReposicion        = valorFondoReposicion;
         newFormData.valorTiquete                = valorTiquete;
         newFormData.valorTotal                  = valorTotalTiquete;
+        newFormData.valorTotalSeguro            = valorSeguroPuesto;
         newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
         newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
         newFormData.valorTotalTiquete           = formatearNumero(valorTotalTiquete);
+        newFormData.valorSeguroMostrar          = formatearNumero(valorSeguroPuesto);
         newFormData.cantidadPuesto              = cantidadPuesto;
         newFormData.valorTotalEstampilla        = valorEstampilla * cantidadPuesto;
+        newFormData.valorFondoRecaudoTotal      = cantidadPuesto * valorFondoRecaudo;
         setFormData(newFormData);
     }
 
@@ -129,7 +153,8 @@ export default function New({data, tipo}){
                             departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planillaId:'',
                             valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
                             valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: 0,
-                            valorSeguro:'',          valorSeguroMostrar:'',          rutaId: '',            valorEstampilla:'',  tipo:tipo });
+                            valorSeguro:'',          valorSeguroMostrar:'',          rutaId: '',            valorEstampilla:'', 
+                            valorFondoRecaudo:'',    valorFondoRecaudoTotal:'',     valorTotalSeguro:'',    tipo:tipo });
                 setEnviarTiquete(false);
                 setTomarSeguro(false);
                 setDataPuestos([]);
@@ -180,22 +205,34 @@ export default function New({data, tipo}){
     }
 
     const consultarMuncipioOrigen = (e) =>{
-        let newFormData               = {...formData}
-        const planillaRutasFiltradas  = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
+        if(e.target.value === '' || e.target.value === null){
+            return;
+        }
 
+        let newFormData               = {...formData}
+        let valorTiquete              = 0;
+        let fondoReposicion           = 0;
+        let valorSeguro               = 0;
+        let valorEstampilla           = 0;
+        let valorFondoRecaudo         = 0;
+        const planillaRutasFiltradas  = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
         let rutaId                    = planillaRutasFiltradas[0].rutaid;
         let vehiculoId                = planillaRutasFiltradas[0].vehiid;
-        let depaIdOrigen              = planillaRutasFiltradas[0].depaidorigen;
-        let muniIdOrigen              = planillaRutasFiltradas[0].muniidorigen;
-        let depaIdDestino             = planillaRutasFiltradas[0].depaiddestino;
-        let muniIdDestino             = planillaRutasFiltradas[0].muniiddestino;
-        let valorTiquete              = planillaRutasFiltradas[0].tartiqvalor;
-        let valorSeguro               = planillaRutasFiltradas[0].tartiqvalorseguro;
-        let fondoReposicion           = planillaRutasFiltradas[0].tartiqfondoreposicion;
-        let valorEstampilla           = planillaRutasFiltradas[0].tartiqvalorestampilla;
+        let depaIdOrigen              = planillaRutasFiltradas[0].rutadepaidorigen;
+        let muniIdOrigen              = planillaRutasFiltradas[0].rutamuniidorigen;
+        let depaIdDestino             = planillaRutasFiltradas[0].rutadepaiddestino;
+        let muniIdDestino             = planillaRutasFiltradas[0].rutamuniiddestino;
 
-        let depaIdOrigenTarifa        = planillaRutasFiltradas[0].depaidorigentarifa;
-        let muniIdOrigenTarifa        = planillaRutasFiltradas[0].muniidorigentarifa;
+        const tarifaTiquetesFiltradas = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.tartiqdepaidorigen === depaIdOrigen && tt.tartiqmuniidorigen === muniIdOrigen 
+                                                                    && tt.tartiqdepaiddestino === depaIdDestino && tt.tartiqmuniiddestino === muniIdDestino);
+
+        if(tarifaTiquetesFiltradas.length === 0){
+            showSimpleSnackbar("No existe valor del tiquete gestionado para la ruta "+municipioOrigen+' - '+municipioDestino, 'error');
+            newFormData.valorTiquete         = 0;
+            newFormData.valorFondoReposicion = 0;
+            setFormData(newFormData);
+            return;
+        }
 
         setLoader(true);
         instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {planillaId: e.target.value}).then(res=>{
@@ -203,11 +240,17 @@ export default function New({data, tipo}){
             distribucionVehiculo(distribucionVehiculosFiltrados, res.data);
 
             newFormData.planillaId                  = e.target.value;
-            newFormData.municipioOrigen             = muniIdOrigen;
             newFormData.departamentoOrigen          = depaIdOrigen;
+            newFormData.municipioOrigen             = muniIdOrigen;
             newFormData.departamentoDestino         = depaIdDestino;
             newFormData.municipioDestino            = muniIdDestino;
             newFormData.rutaId                      = rutaId;
+
+            valorTiquete                            = tarifaTiquetesFiltradas[0].tartiqvalor;
+            valorSeguro                             = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
+            fondoReposicion                         = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+            valorEstampilla                         = tarifaTiquetesFiltradas[0].tartiqvalorestampilla;
+            valorFondoRecaudo                       = tarifaTiquetesFiltradas[0].tartiqvalorfondorecaudo;
 
             let valorFondoReposicion                = (valorTiquete * fondoReposicion) / 100;
             newFormData.valorSeguro                 = valorSeguro;
@@ -215,16 +258,26 @@ export default function New({data, tipo}){
             newFormData.valorEstampilla             = valorEstampilla;
             newFormData.fondoReposicion             = fondoReposicion;
             newFormData.valorFondoReposicion        = valorFondoReposicion;
+            newFormData.valorFondoRecaudo           = valorFondoRecaudo;
             newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
             newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
             newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
             newFormData.valorTotalTiquete           = 0;
             newFormData.cantidadPuesto              = 0;
 
-            let municipiosOrigen = [];
+            let municipiosOrigen  = [];
+            let municipiosDestino = [];
             municipios.forEach(function(muni){
-                if(muni.rutaid === rutaId && muni.munidepaid === depaIdDestino){
+                if(muni.rutaid === rutaId && muni.tipo === 'ORIGEN'){
                     municipiosOrigen.push({
+                        muniid:     muni.muniid,
+                        munidepaid: muni.munidepaid,
+                        muninombre: muni.muninombre
+                    });
+                }
+
+                if(muni.rutaid === rutaId && muni.tipo === 'DESTINO'){
+                    municipiosDestino.push({
                         muniid:     muni.muniid,
                         munidepaid: muni.munidepaid,
                         muninombre: muni.muninombre
@@ -234,19 +287,44 @@ export default function New({data, tipo}){
 
             setFormData(newFormData);
             setMunicipiosOrigen(municipiosOrigen);
+            setMunicipiosDestino(municipiosDestino);
             setFormDataPuesto([]);
             setLoader(false);
         })
     }
 
     const consultarValorTiqueteOrigen = (e) =>{
-        let newFormData     = {...formData}
-        
-        let valorTiquete    = formData.valorTiquete;
-        let fondoReposicion = formData.valorFondoReposicion;
-        let valorSeguro     = formData.valorSeguro;
-        let valorEstampilla = formData.valorEstampilla;
-        let cantidadPuesto  = formData.cantidadPuesto;
+        if(e.target.value === '' || e.target.value === null){
+            return;
+        }
+        let newFormData         = {...formData}
+        let valorTiquete        = 0;
+        let fondoReposicion     = 0;
+        let valorSeguro         = 0;
+        let valorEstampilla     = 0;
+        let valorFondoRecaudo   = 0;
+
+        let municipiosFiltrados = municipios.filter(mun => mun.muniid ===  e.target.value);
+
+        let depaIdOrigen        = municipiosFiltrados[0].munidepaid;
+        let muniIdOrigen        = e.target.value;
+        let depaIdDestino       = formData.departamentoDestino;
+        let muniIdDestino       = formData.municipioDestino;
+        let cantidadPuesto      = formData.cantidadPuesto;
+        let rutaId              = formData.rutaId;
+
+        const tarifaTiquetesFiltradas = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.tartiqdepaidorigen === depaIdOrigen && tt.tartiqmuniidorigen === muniIdOrigen 
+                                                                 && tt.tartiqdepaiddestino === depaIdDestino && tt.tartiqmuniiddestino === muniIdDestino);
+
+        if(tarifaTiquetesFiltradas.length > 0){
+            valorTiquete      = tarifaTiquetesFiltradas[0].tartiqvalor;
+            valorSeguro       = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
+            fondoReposicion   = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+            valorEstampilla   = tarifaTiquetesFiltradas[0].tartiqvalorestampilla;
+            valorFondoRecaudo = tarifaTiquetesFiltradas[0].tartiqvalorfondorecaudo;
+        }else{
+            showSimpleSnackbar("No se han gestionado valores para el municipio de la ruta seleccionada", 'error');
+        }
 
         let valorTiquetePuesto                  = (cantidadPuesto > 0) ? valorTiquete * cantidadPuesto : valorTiquete
         let valorFondoReposicion                = (valorTiquetePuesto * fondoReposicion) / 100;
@@ -254,6 +332,7 @@ export default function New({data, tipo}){
         newFormData.valorTiquete                = valorTiquete;
         newFormData.valorFondoReposicion        = valorFondoReposicion;
         newFormData.valorEstampilla             = valorEstampilla;
+        newFormData.valorFondoRecaudo           = valorFondoRecaudo;
         newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
         newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
         newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
@@ -261,11 +340,60 @@ export default function New({data, tipo}){
         let valorTotalTiquete                   = valorTiquetePuesto + valorSeguroPuesto - Number(formData.valorDescuento);
         newFormData.valorTotalTiquete           = (valorTotalTiquete > 0) ? formatearNumero(valorTotalTiquete) : 0;
         newFormData.valorTotal                  = (valorTotalTiquete > 0) ? valorTotalTiquete: 0;
-        newFormData.municipioDestino            = e.target.value;
+        newFormData.departamentoOrigen          = depaIdOrigen;
+        newFormData.municipioOrigen             = muniIdOrigen;
         setFormData(newFormData);
+    }
 
-        /* newFormData.municipioOrigen             = muniIdOrigen;
-            newFormData.departamentoOrigen          = depaIdOrigen; */
+    const consultarValorTiqueteDestino = (e) =>{
+        if(e.target.value === '' || e.target.value === null){
+            return;
+        }
+        let newFormData         = {...formData}
+        let valorTiquete        = 0;
+        let fondoReposicion     = 0;
+        let valorSeguro         = 0;
+        let valorEstampilla     = 0;
+        let valorFondoRecaudo   = 0;
+
+        let municipiosFiltrados = municipios.filter(mun => mun.muniid ===  e.target.value);
+        let cantidadPuesto      = formData.cantidadPuesto;
+        let depaIdOrigen        = formData.departamentoOrigen;
+        let muniIdOrigen        = formData.municipioOrigen;
+        let depaIdDestino       = municipiosFiltrados[0].munidepaid;
+        let muniIdDestino       = e.target.value;
+        let rutaId              = formData.rutaId;
+
+        const tarifaTiquetesFiltradas = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.tartiqdepaidorigen === depaIdOrigen && tt.tartiqmuniidorigen === muniIdOrigen 
+                                                                 && tt.tartiqdepaiddestino === depaIdDestino && tt.tartiqmuniiddestino === muniIdDestino);
+
+        if(tarifaTiquetesFiltradas.length > 0){
+            valorTiquete      = tarifaTiquetesFiltradas[0].tartiqvalor;
+            valorSeguro       = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
+            fondoReposicion   = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+            valorEstampilla   = tarifaTiquetesFiltradas[0].tartiqvalorestampilla;
+            valorFondoRecaudo = tarifaTiquetesFiltradas[0].tartiqvalorfondorecaudo;
+        }else{
+            showSimpleSnackbar("No se han gestionado valores para el municipio de la ruta seleccionada", 'error');
+        }
+
+        let valorTiquetePuesto                  = (cantidadPuesto > 0) ? valorTiquete * cantidadPuesto : valorTiquete
+        let valorFondoReposicion                = (valorTiquetePuesto * fondoReposicion) / 100;
+        newFormData.valorSeguro                 = valorSeguro;
+        newFormData.valorTiquete                = valorTiquete;
+        newFormData.valorFondoReposicion        = valorFondoReposicion;
+        newFormData.valorEstampilla             = valorEstampilla;
+        newFormData.valorFondoRecaudo           = valorFondoRecaudo;
+        newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
+        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
+        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+        let valorSeguroPuesto                   = (tomarSeguro) ? Number(valorSeguro) * cantidadPuesto : 0
+        let valorTotalTiquete                   = valorTiquetePuesto + valorSeguroPuesto - Number(formData.valorDescuento);
+        newFormData.valorTotalTiquete           = (valorTotalTiquete > 0) ? formatearNumero(valorTotalTiquete) : 0;
+        newFormData.valorTotal                  = (valorTotalTiquete > 0) ? valorTotalTiquete: 0;
+        newFormData.departamentoDestino         = depaIdDestino;
+        newFormData.municipioDestino            = muniIdDestino;
+        setFormData(newFormData);
     }
 
     const distribucionVehiculo = (distribucionVehiculo, puestosVendidos, puestosVendidosGeneral = []) => {
@@ -318,13 +446,11 @@ export default function New({data, tipo}){
         instance.post('/admin/despacho/tiquete/listar/datos', {tipo:tipo, codigo:formData.codigo, planillaId: plarutid}).then(res=>{
             setDistribucionVehiculos(res.distribucionVehiculos);
             setTipoIdentificaciones(res.tipoIdentificaciones);
-           // setTarifaTiquetes(res.tarifaTiquetes);
+            setTarifaTiquetes(res.tarifaTiquetes);
             setPuestoMarcado(res.tiquetePuestos);
             setPlanillaRutas(res.planillaRutas);
             setCajaAbierta(res.cajaAbierta);
             setMunicipios(res.municipios);
-
-            console.log(res.planillaRutas);
 
             if(!res.cajaAbierta){
                 showSimpleSnackbar('Advertencia: No se ha encontrado ninguna caja abierta para el día de hoy. Sin embargo, aún es posible vender tiquetes', 'warning');
@@ -342,10 +468,10 @@ export default function New({data, tipo}){
                 newFormData.direccion                   = tiquete.perserdireccion;
                 newFormData.correo                      = (tiquete.persercorreoelectronico !== null) ? tiquete.persercorreoelectronico : '';
                 newFormData.telefonoCelular             = tiquete.persernumerocelular;
-                newFormData.departamentoOrigen          = tiquete.depaidorigen;
-                newFormData.municipioOrigen             = tiquete.muniidorigen;
-                newFormData.departamentoDestino         = tiquete.depaiddestino;
-                newFormData.municipioDestino            = tiquete.muniiddestino;
+                newFormData.departamentoOrigen          = tiquete.tartiqdepaidorigen;
+                newFormData.municipioOrigen             = tiquete.tiqumuniidorigen;
+                newFormData.departamentoDestino         = tiquete.tartiqdepaiddestino;
+                newFormData.municipioDestino            = tiquete.tiqumuniiddestino;
                 newFormData.rutaId                      = tiquete.rutaid;
                 newFormData.planillaId                  = tiquete.plarutid;
                 newFormData.cantidadPuesto              = tiquete.tiqucantidad;
@@ -357,16 +483,37 @@ export default function New({data, tipo}){
                 newFormData.valorTiqueteMostrar         = formatearNumero(tiquete.tiquvalortiquete);
                 newFormData.valorFondoReposicionMostrar = formatearNumero(tiquete.tiquvalorfondoreposicion);
                 newFormData.valorTotalTiquete           = formatearNumero(tiquete.tiquvalortotal);
-               // const tarifaTiquetesFiltradas           = res.tarifaTiquetes.filter(tt => tt.rutaid === tiquete.rutaid && tt.depaiddestino === tiquete.depaiddestino && tt.muniiddestino === tiquete.muniiddestino);
-               // let valorSeguroPuesto                   = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
-                newFormData.valorSeguro                 = Number(valorSeguroPuesto);
-                newFormData.valorSeguroMostrar          = formatearNumero(valorSeguroPuesto);
+                newFormData.valorFondoRecaudoTotal      = tiquete.tiquvalorfondorecaudo;
+                newFormData.valorSeguroMostrar          = tiquete.tiquvalorseguro;
+                newFormData.valorEstampilla             = tiquete.tiquvalorestampilla;
 
-                let municipiosOrigen = [];
-                let deptoDestino      = tiquete.depaiddestino;
-                res.municipios.forEach(function(muni){ 
-                    if(muni.rutaid === tiquete.rutaid && muni.munidepaid === deptoDestino){
+                const tarifaTiquetesFiltradas           = res.tarifaTiquetes.filter(tt => tt.rutaid === tiquete.rutaid  && tt.tartiqdepaidorigen === tiquete.tiqudepaidorigen && tt.tartiqmuniidorigen === tiquete.tiqumuniidorigen  &&
+                                                                                    tt.tartiqdepaiddestino === tiquete.tiqudepaiddestino && tt.tartiqmuniiddestino === tiquete.tiqumuniiddestino);
+
+                let valorTiquete                        = tarifaTiquetesFiltradas[0].tartiqvalor;
+                let valorSeguro                         = tarifaTiquetesFiltradas[0].tartiqvalorseguro;
+                let fondoReposicion                     = tarifaTiquetesFiltradas[0].tartiqfondoreposicion;
+                let valorEstampilla                     = tarifaTiquetesFiltradas[0].tartiqvalorestampilla;
+                let valorFondoRecaudo                   = tarifaTiquetesFiltradas[0].tartiqvalorfondorecaudo;
+                newFormData.valorTiqueteEditar          = valorTiquete;
+                newFormData.valorSeguroEditar           = valorSeguro;
+                newFormData.fondoReposicionEditar       = fondoReposicion;
+                newFormData.valorEstampillaEditar       = valorEstampilla;
+                newFormData.valorFondoRecaudoEditar     = valorFondoRecaudo;
+
+                let municipiosOrigen  = [];
+                let municipiosDestino = [];
+                res.municipios.forEach(function(muni){
+                    if(muni.rutaid === tiquete.rutaid && muni.tipo === 'ORIGEN'){
                         municipiosOrigen.push({
+                            muniid:     muni.muniid,
+                            munidepaid: muni.munidepaid,
+                            muninombre: muni.muninombre
+                        });
+                    }
+    
+                    if(muni.rutaid === tiquete.rutaid && muni.tipo === 'DESTINO'){
+                        municipiosDestino.push({
                             muniid:     muni.muniid,
                             munidepaid: muni.munidepaid,
                             muninombre: muni.muninombre
@@ -382,6 +529,7 @@ export default function New({data, tipo}){
 
                 setFormDataPuesto(newFormDataPuesto);
                 setMunicipiosOrigen(municipiosOrigen);
+                setMunicipiosDestino(municipiosDestino);
                 setEsEmpresa((tiquete.tipideid === 5) ? true : false);
                 setTomarSeguro((tiquete.tiquvalorseguro > 0) ? true : false);
                 setHabilitado((tiquete.contabilizado === 'SI') ? false : true );
@@ -447,7 +595,7 @@ export default function New({data, tipo}){
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosOrigen.map(res=>{
-                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>
@@ -462,11 +610,11 @@ export default function New({data, tipo}){
                             inputProps={{autoComplete: 'off'}}
                             validators={["required"]}
                             errorMessages={["Debe hacer una selección"]}
-                            onChange={consultarValorTiqueteOrigen}
+                            onChange={consultarValorTiqueteDestino}
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
-                            {municipiosOrigen.map(res=>{
-                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
+                            {municipiosDestino.map(res=>{
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>

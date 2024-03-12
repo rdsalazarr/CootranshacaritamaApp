@@ -65,7 +65,7 @@ export default function New({data, tipo}){
                         label={'Descripción'}
                         className={'inputGeneral'}
                         variant={"standard"}
-                        inputProps={{autoComplete: 'off', maxLength: 200}}
+                        inputProps={{autoComplete: 'off', maxLength: 100}}
                         validators={["required"]}
                         errorMessages={["Campo obligatorio"]}
                         onChange={handleChangeUpperCase}

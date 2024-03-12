@@ -234,7 +234,7 @@ class ProcesarMovimientoController extends Controller
 
             //Pago parcial
             if($request->formaPago === 'P'){
-                $cuentaContableId                             = CuentaContable::consultarId('cxpPagoMensualidadParcial');
+                $cuentaContableId                             = CuentaContable::consultarId('pagoMensualidadParcial');
                 $mensajeFactura                               = 'FACTURA DE PAGO MENSUALIDAD PARCIAL';
                 $vehiculoresponpagoparcial                    = new VehiculoResponsabilidadPagoParcial();
                 $vehiculoresponpagoparcial->vehiid            = $request->vehiculoId;
@@ -248,7 +248,7 @@ class ProcesarMovimientoController extends Controller
             //Pago mensual
             if($request->formaPago === 'M' ){
                 $mensajeFactura                             = 'FACTURA DE PAGO MENSUALIDAD'; 
-                $cuentaContableId                           = CuentaContable::consultarId('cxpPagoMensualidad');
+                $cuentaContableId                           = CuentaContable::consultarId('pagoMensualidad');
                 $vehiculoresponsabilidad                    = VehiculoResponsabilidad::findOrFail($request->idResponsabilidad);
                 $vehiculoresponsabilidad->vehresfechapagado = $fechaHoraActual;
                 $vehiculoresponsabilidad->vehresvalorpagado = $totalAPagarMensual;
@@ -261,7 +261,7 @@ class ProcesarMovimientoController extends Controller
             
             //Pago total
             if($request->formaPago === 'T'){
-                $cuentaContableId = CuentaContable::consultarId('cxpPagoMensualidadTotal');
+                $cuentaContableId = CuentaContable::consultarId('pagoMensualidadTotal');
                 $totalAPagar      = 0;
                 $mensajeFactura   = 'FACTURA DE PAGO MENSUALIDAD TOTAL';              
 
@@ -520,7 +520,7 @@ class ProcesarMovimientoController extends Controller
             $saldoCapital            = $saldoColocacion - $abonoCapital;
 
             if($request->formaPago === 'M'){//Pago mensual
-                $cuentaContableId                                  = CuentaContable::consultarId('cxpPagoCuotaCredito');
+                $cuentaContableId                                  = CuentaContable::consultarId('pagoCuotaCredito');
                 $mensajeFactura                                    = 'FACTURA DE PAGO CRÉDITO';
                 $colocacionliquidacion 				               = ColocacionLiquidacion::findOrFail($request->liquidacionId);
                 $colocacionliquidacion->colliqfechapago            = $fechaActual;
@@ -537,7 +537,7 @@ class ProcesarMovimientoController extends Controller
             if($request->formaPago === 'T'){//Pago total
                 $mensajeFactura          = 'FACTURA DE PAGO CRÉDITO TOTAL';
                 $cambiarEstadoColocacion = true;
-                $cuentaContableId        = CuentaContable::consultarId('cxpPagoCreditoTotal');
+                $cuentaContableId        = CuentaContable::consultarId('pagoCreditoTotal');
                 $estadoColocacion        = 'C';
                 $colocacionLiquidaciones = DB::table('colocacionliquidacion as cl')->select('cl.colliqid')->whereNull('cl.colliqfechapago')->get();
 
@@ -719,7 +719,7 @@ class ProcesarMovimientoController extends Controller
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        =  CuentaContable::consultarId('cxpPagoSancion');
+            $comprobantecontabledetalle->cueconid        =  CuentaContable::consultarId('pagoSancion');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $totalAPagar;
             $comprobantecontabledetalle->save();

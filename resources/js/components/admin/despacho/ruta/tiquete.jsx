@@ -138,8 +138,6 @@ export default function Tiquete({data}){
                 estado = (res.estado === 'D' || res.estado === 'U') ? res.estado : 'I';
             }
 
-            console.log(estado);
-
             newTarifaTiquetes.push({ identificador:res.identificador, deptoIdOrigen: res.deptoIdOrigen, municipioIdOrigen: res.municipioIdOrigen, nombreMunicipioOrigen:res.nombreMunicipioOrigen, 
                                     deptoIdDestino: res.deptoIdDestino, municipioIdDestino: res.municipioIdDestino, nombreMunicipioDestino:res.nombreMunicipioDestino,  valorTiquete: res.valorTiquete, 
                                     valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro: res.valorSeguro,valorSeguroMostrar: res.valorSeguroMostrar, valorEstampilla: res.valorEstampilla, 

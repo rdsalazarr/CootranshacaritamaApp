@@ -317,3 +317,8 @@ ALTER TABLE `rutanodo` ADD `rutnoddepaid` TINYINT(3) NULL COMMENT 'Identificador
 ALTER TABLE `rutanodo` CHANGE `muniid` `rutnodmuniid` SMALLINT(5) UNSIGNED NOT NULL COMMENT 'Identificador del municipio del nodo de la ruta';
 
 ALTER TABLE `tarifatiquete` ADD `tartiqvalorfondorecaudo` DECIMAL(6,0) NULL AFTER `tartiqfondoreposicion`;
+
+ALTER TABLE `tiquete` ADD `tiquvalorfondorecaudo` DECIMAL(6,0) NOT NULL AFTER `tiquvalorfondoreposicion`;
+
+INSERT INTO `cuentacontable` (`cueconid`, `cueconnombre`, `cuecondescripcion`, `cueconcodigo`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES ('21', 'valorFondoRecaudo', 'CXP FONDO DE RECAUDO', '1200020', 'C', '1', '2024-03-12 14:14:29', '2024-03-12 14:14:29');
+INSERT INTO `cuentacontable` (`cueconid`, `cueconnombre`, `cuecondescripcion`, `cueconcodigo`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES ('22', 'valorPuntoRedimir', 'CXP VALOR PUNTOS A REDIMIR', '1200021', 'D', '1', '2024-03-12 14:14:29', '2024-03-12 14:14:29');

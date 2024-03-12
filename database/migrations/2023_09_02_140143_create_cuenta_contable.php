@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cuentacontable', function (Blueprint $table) {
             $table->increments('cueconid')->unsigned()->comment('Identificador de la tabla cuenta contable');
             $table->string('cueconnombre', 50)->unique('uk_cuentacontable')->comment('Nombre de la cuenta contable para consultar el ID en el código fuente');
-            $table->string('cuecondescripcion', 200)->comment('Descripcion de la cuenta contable');
+            $table->string('cuecondescripcion', 100)->comment('Descripcion de la cuenta contable');
             $table->string('cueconcodigo', 20)->comment('Codigo contable de la cuenta contable');
             $table->string('cueconnaturaleza', 1)->default('D')->comment('Naturaleza de la cuenta contable');
             $table->boolean('cueconactiva')->default(true)->comment('Determina si la cuenta contable se encuentra activa');

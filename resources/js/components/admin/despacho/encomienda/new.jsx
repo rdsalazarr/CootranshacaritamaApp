@@ -170,41 +170,34 @@ export default function New({data, tipo}){
     }
 
     const consultarMunicipioOrigen = (e) =>{
-        let newFormData              = {...formData}
-        const planillaRutasFiltradas = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
-        let depaIdOrigen             = planillaRutasFiltradas[0].rutadepaidorigen;
-        let muniIdOrigen             = planillaRutasFiltradas[0].rutamuniidorigen;
-        let municipioOrigen          = planillaRutasFiltradas[0].municipioOrigen;
-        let depaIdDestino            = planillaRutasFiltradas[0].rutadepaiddestino;
-        let muniIdDestino            = planillaRutasFiltradas[0].rutamuniiddestino;
-        let municipioDestino         = planillaRutasFiltradas[0].municipioDestino;
+        if(e.target.value === '' || e.target.value === null){
+            return;
+        }
+        let newFormData                 = {...formData}
+        const planillaRutasFiltradas    = planillaRutas.filter(planilla => planilla.plarutid === e.target.value);
+        let depaIdOrigen                = planillaRutasFiltradas[0].rutadepaidorigen;
+        let muniIdOrigen                = planillaRutasFiltradas[0].rutamuniidorigen;
+        let depaIdDestino               = planillaRutasFiltradas[0].rutadepaiddestino;
+        let muniIdDestino               = planillaRutasFiltradas[0].rutamuniiddestino;
+        let rutaId                      = e.target.value;
+        newFormData.ruta                = rutaId;
+        newFormData.municipioOrigen     = muniIdOrigen;
+        newFormData.departamentoOrigen  = depaIdOrigen;
+        newFormData.departamentoDestino = depaIdDestino;
+        newFormData.municipioDestino    = muniIdDestino;
 
-        let municipiosOrigen = []; 
-        municipios.forEach(function(muni){ 
-            if(muni.munidepaid === depaIdDestino){
+        let municipiosOrigen  = [];
+        let municipiosDestino = [];
+        municipios.forEach(function(muni){
+            if(muni.rutaid === rutaId && muni.tipo === 'ORIGEN'){
                 municipiosOrigen.push({
                     muniid:     muni.muniid,
                     munidepaid: muni.munidepaid,
                     muninombre: muni.muninombre
                 });
             }
-        });
 
-        municipiosOrigen.push({
-            muniid:     muniIdOrigen,
-            munidepaid: depaIdOrigen,
-            muninombre: municipioOrigen
-        });
-  
-        newFormData.ruta                = e.target.value;
-        newFormData.municipioOrigen     = muniIdOrigen;
-        newFormData.departamentoOrigen  = depaIdOrigen;
-        newFormData.departamentoDestino = depaIdDestino;
-        newFormData.municipioDestino    = muniIdDestino;
-
-        let municipiosDestino = [];
-        municipios.forEach(function(muni){ 
-            if(muni.munidepaid === depaIdDestino){
+            if(muni.rutaid === rutaId && muni.tipo === 'DESTINO'){
                 municipiosDestino.push({
                     muniid:     muni.muniid,
                     munidepaid: muni.munidepaid,
@@ -213,58 +206,37 @@ export default function New({data, tipo}){
             }
         });
 
-        municipiosDestino.push({
-            muniid:     muniIdDestino,
-            munidepaid: depaIdDestino,
-            muninombre: municipioDestino
-        });
-
         setFormData(newFormData);
         setMunicipiosOrigen(municipiosOrigen);
         setMunicipiosDestino(municipiosDestino);
-    }  
+    }
 
     const consultarMunicipioDestino = (e) =>{
-        let newFormData                 = {...formData}
-        const municipiosOrigenFiltrados = municipiosOrigen.filter(mun => mun.muniid === e.target.value);
-        let depaIdOrigen                = municipiosOrigenFiltrados[0].munidepaid;   
-        newFormData.departamentoOrigen  = depaIdOrigen;
-        newFormData.municipioOrigen     = e.target.value;
+        if(e.target.value === '' || e.target.value === null){
+            return;
+        }
 
-        const planillaRutasFiltradas    = planillaRutas.filter(planilla => planilla.plarutid === formData.ruta);
-
-        console.log(planillaRutasFiltradas);
-        let muniIdDestino               = planillaRutasFiltradas[0].muniiddestino;
-        let municipioDestino            = planillaRutasFiltradas[0].municipioDestino;
-
-        let municipiosDestino = [];
-        municipios.forEach(function(muni){ 
-            if(muni.muniid !== e.target.value){
-                municipiosDestino.push({
-                    muniid:     muni.muniid,
-                    muninombre: muni.muninombre
-                });
-            }
-        });
-
-        municipiosDestino.push({
-            muniid:     muniIdDestino,
-            muninombre: municipioDestino
-        });
-
+        let newFormData                = {...formData}
+        let municipiosFiltrados        = municipios.filter(mun => mun.muniid ===  e.target.value);
+        let depaIdOrigen               = municipiosFiltrados[0].munidepaid;
+        let muniIdOrigen               = e.target.value;
+        newFormData.departamentoOrigen = depaIdOrigen;
+        newFormData.municipioOrigen    = muniIdOrigen;
         setFormData(newFormData);
-        setMunicipiosDestino(municipiosDestino);
     }
 
     const obtenerMunicipioDestino = (e) =>{
-        console.log(e.target.value, municipios);
-        /*let newFormData           = {...formData}
-        const municipiosDestino   = municipios.filter((mun) => mun.muniid == e.target.value);
+        if(e.target.value === '' || e.target.value === null){
+            return;
+        }
 
-        console.log(municipiosDestino);
-        newFormData.departamentoDestino = municipiosDestino[0].depaid;
-        newFormData.municipioDestino    = e.target.value;
-        setFormData(newFormData);*/
+        let newFormData                 = {...formData}
+        let municipiosFiltrados         = municipios.filter(mun => mun.muniid ===  e.target.value);
+        let depaIdDestino               = municipiosFiltrados[0].munidepaid;
+        let muniIdDestino               = e.target.value;
+        newFormData.departamentoDestino = depaIdDestino;
+        newFormData.municipioDestino    = muniIdDestino;
+        setFormData(newFormData);
     }
 
     const formatearNumero = (numero) =>{
@@ -348,33 +320,24 @@ export default function New({data, tipo}){
                 newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
                 newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal);
 
-                let municipiosOrigen         = [];
-                let municipiosDestino        = [];
-                const planillaRutasFiltradas = res.planillaRutas.filter(planilla => planilla.plarutid === encomienda.plarutid);
-                let depaIdOrigen             = planillaRutasFiltradas[0].rutadepaidorigen;
-                let muniIdOrigen             = planillaRutasFiltradas[0].rutamuniidorigen;
-                let municipioOrigen          = planillaRutasFiltradas[0].municipioOrigen;
-                let depaIdDestino            = planillaRutasFiltradas[0].rutadepaiddestino;
-                let muniIdDestino            = planillaRutasFiltradas[0].rutamuniiddestino;
-                let municipioDestino         = planillaRutasFiltradas[0].municipioDestino;
-
-                municipiosOrigen.push({
-                    muniid:     muniIdOrigen,
-                    munidepaid: depaIdOrigen,
-                    muninombre: municipioOrigen
-                });
-
-                municipiosDestino.push({
-                    muniid:     muniIdDestino,
-                    munidepaid: depaIdDestino,
-                    muninombre: municipioDestino
-                });
-
-                res.municipiosNodoDestino.forEach(function(muni){
-                    municipiosDestino.push({
-                        muniid:     muni.muniid,
-                        muninombre: muni.muninombre
-                    });
+                let municipiosOrigen  = [];
+                let municipiosDestino = []; 
+                res.municipios.forEach(function(muni){
+                    if(muni.rutaid === encomienda.rutaid && muni.tipo === 'ORIGEN'){
+                        municipiosOrigen.push({
+                            muniid:     muni.muniid,
+                            munidepaid: muni.munidepaid,
+                            muninombre: muni.muninombre
+                        });
+                    }
+    
+                    if(muni.rutaid === encomienda.rutaid && muni.tipo === 'DESTINO'){
+                        municipiosDestino.push({
+                            muniid:     muni.muniid,
+                            munidepaid: muni.munidepaid,
+                            muninombre: muni.muninombre
+                        });
+                    }
                 });
 
                 setMunicipiosOrigen(municipiosOrigen);
@@ -456,7 +419,7 @@ export default function New({data, tipo}){
                         >
                             <MenuItem value={""}>Seleccione</MenuItem>
                             {municipiosDestino.map(res=>{
-                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muniid} {res.muninombre}</MenuItem>
+                                return <MenuItem value={res.muniid} key={res.muniid}> {res.muninombre}</MenuItem>
                             })}
                         </SelectValidator>
                     </Grid>

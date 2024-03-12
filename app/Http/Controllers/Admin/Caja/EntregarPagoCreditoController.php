@@ -84,7 +84,7 @@ class EntregarPagoCreditoController extends Controller
             $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxcDesembolso');
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('desembolso');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = $request->valorDesembolsado;
             $comprobantecontabledetalle->save();

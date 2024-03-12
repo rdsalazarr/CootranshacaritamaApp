@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Util\generarPdf;
 use Exception, Auth, DB;
 use App\Util\notificar;
+use App\Util\generales;
 use Carbon\Carbon;
 
 class CerrarMovimientoController extends Controller
@@ -147,23 +148,39 @@ class CerrarMovimientoController extends Controller
     public function tiquete(Request $request)
 	{ 
         DB::beginTransaction();
-        try {        
+        try {
 
             $tiquetes = DB::table('tiquete')
-                                ->select('tiquid', 'tiquvalortotal')
+                                ->select('tiquid', 'tiquvalortotal','tiquvalorfondoreposicion','tiquvalorestampilla','tiquvalorseguro','tiquvalorfondorecaudo')
                                 ->where('usuaid', Auth::id())
                                 ->where('tiqucontabilizado', 0)
                                 ->get();
 
-            $valorContabilizar = 0;
-            $fechaHoraActual   = Carbon::now();
-            $fechaActual       = $fechaHoraActual->format('Y-m-d');
+            $valorContabilizar                = 0;
+            $valorContabilizarFondoReposicion = 0;
+            $valorContabilizarEstampilla      = 0;
+            $valorContabilizarSeguro          = 0;
+            $valorContabilizarFondoRecaudo    = 0;
+            $generales                        = new generales();
+            $fechaHoraActual                  = Carbon::now();
+            $fechaActual                      = $fechaHoraActual->format('Y-m-d');
             foreach($tiquetes as $tiqueteEstado){
                 $valorContabilizar                      += $tiqueteEstado->tiquvalortotal;
+                $valorContabilizarFondoReposicion       += $tiqueteEstado->tiquvalorfondoreposicion;
+                $valorContabilizarEstampilla            += $tiqueteEstado->tiquvalorestampilla;
+                $valorContabilizarSeguro                += $tiqueteEstado->tiquvalorseguro;
+                $valorContabilizarFondoRecaudo          += $tiqueteEstado->tiquvalorfondorecaudo;
                 $tiqueteContabilizado                   = Tiquete::findOrFail($tiqueteEstado->tiquid); 
                 $tiqueteContabilizado->tiqucontabilizado = true;
                 $tiqueteContabilizado->save();
             }
+
+            $valorContabilizar    = $generales->redondearCienMasCercano($valorContabilizar);
+            $valorFondoReposicion = $generales->redondearCienMasCercano($valorContabilizarFondoReposicion);
+            $valorEstampilla      = $generales->redondearCienMasCercano($valorContabilizarEstampilla);
+            $valorSeguro          = $generales->redondearCienMasCercano($valorContabilizarSeguro);
+            $valorFondoRecaudo    = $generales->redondearCienMasCercano($valorContabilizarFondoRecaudo);
+            $valorTiquete         = $generales->redondearCienMasCercano($valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro - $valorFondoRecaudo);
 
             $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
@@ -175,10 +192,46 @@ class CerrarMovimientoController extends Controller
 
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoTiquete');
+            $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoTiquete');
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-            $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
+            $comprobantecontabledetalle->cocodemonto     = $valorTiquete;
             $comprobantecontabledetalle->save();
+
+            if($valorFondoReposicion > 0){
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('fondoReposicion');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
+                $comprobantecontabledetalle->save();
+            }
+
+            if($valorEstampilla > 0){
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
+                $comprobantecontabledetalle->save();  
+            }
+
+            if($valorSeguro > 0 ){
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoSeguro');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
+                $comprobantecontabledetalle->save();
+            }
+
+            if($valorFondoRecaudo > 0 ){
+                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorFondoRecaudo');
+                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                $comprobantecontabledetalle->cocodemonto     = $valorFondoRecaudo;
+                $comprobantecontabledetalle->save();
+            }
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Proceso realizado con éxito']);
@@ -186,5 +239,5 @@ class CerrarMovimientoController extends Controller
             DB::rollback();
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);
         }
-    }    
+    }
 }

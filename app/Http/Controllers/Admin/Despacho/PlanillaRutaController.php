@@ -233,7 +233,8 @@ class PlanillaRutaController extends Controller
                             ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'),
                             DB::raw('SUM(tiquvalorfondoreposicion) as valorContabilizarFondoReposicion'),
                             DB::raw('SUM(tiquvalorestampilla) as valorContabilizarEstampilla'),
-                            DB::raw('SUM(tiquvalorseguro) as valorContabilizarSeguro'))
+                            DB::raw('SUM(tiquvalorseguro) as valorContabilizarSeguro'),
+                            DB::raw('SUM(tiquvalorfondorecaudo) as valorContabilizarFondoRecaudo'))
                         ->where('plarutid', $request->codigo)
                         ->where('tiqucontabilizado', 0)
                         ->groupBy('plarutid')
@@ -247,7 +248,8 @@ class PlanillaRutaController extends Controller
             $valorFondoReposicion = $generales->redondearCienMasCercano($tiquete->valorContabilizarFondoReposicion);
             $valorEstampilla      = $generales->redondearCienMasCercano($tiquete->valorContabilizarEstampilla);
             $valorSeguro          = $generales->redondearCienMasCercano($tiquete->valorContabilizarSeguro);
-            $valorTiquete         = $generales->redondearCienMasCercano($valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro);
+            $valorFondoRecaudo    = $generales->redondearCienMasCercano($tiquete->valorContabilizarFondoRecaudo);
+            $valorTiquete         = $generales->redondearCienMasCercano($valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro - $valorFondoRecaudo);
 
             if($tiquete and !$cajaAbierta){
                 return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible despachar un vehículo sin antes haber abierto la caja para el día de hoy']);
@@ -301,40 +303,49 @@ class PlanillaRutaController extends Controller
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
+                $comprobantecontabledetalle->cocodemonto     = -$valorContabilizar;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoTiquete');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $valorTiquete;
+                $comprobantecontabledetalle->cocodemonto     = -$valorTiquete;
                 $comprobantecontabledetalle->save();
 
-                if($valorFondoReposicion){
+                if($valorFondoReposicion > 0){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpFondoReposicion');
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('fondoReposicion');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
+                    $comprobantecontabledetalle->cocodemonto     = -$valorFondoReposicion;
                     $comprobantecontabledetalle->save();
                 }
 
-                if($valorEstampilla){
+                if($valorEstampilla > 0){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEstampilla');
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
+                    $comprobantecontabledetalle->cocodemonto     = -$valorEstampilla;
                     $comprobantecontabledetalle->save();  
                 }
 
-                if($valorSeguro > 0 ){
+                if($valorSeguro > 0){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoSeguro');
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoSeguro');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
+                    $comprobantecontabledetalle->cocodemonto     = -$valorSeguro;
+                    $comprobantecontabledetalle->save();
+                }
+
+                if($valorFondoRecaudo > 0){
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorFondoRecaudo');
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = -$valorFondoRecaudo;
                     $comprobantecontabledetalle->save();
                 }
             }

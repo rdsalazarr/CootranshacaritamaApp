@@ -73,28 +73,23 @@ class EncomiendaController extends Controller
         $this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 
         $tiposEncomiendas       = DB::table('tipoencomienda')->select('tipencid','tipencnombre')->orderBy('tipencnombre')->get();
-        /*$municipiosOrigen       = DB::table('municipio as m')->distinct()
-                                        ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
+        $municipios             = DB::table('municipio as m')->distinct()
+                                        ->select('m.muniid', 'm.munidepaid', 'm.muninombre as muninombre', 'tt.rutaid', DB::raw("CONCAT('ORIGEN') as tipo"))
+                                        ->join('tarifatiquete as tt', function ($join) {
                                             $join->on('tt.tartiqdepaidorigen', '=', 'm.munidepaid');
                                             $join->on('tt.tartiqmuniidorigen', '=', 'm.muniid');
                                         })
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
-
-        $municipiosDestino              = DB::table('municipio as m')->distinct()
-                                        ->select('m.muniid','m.munidepaid','m.muninombre','tt.rutaid')
-                                        ->join('tarifatiquete as tt', function($join)
-                                        {
-                                            $join->on('tt.tartiqdepaiddestino', '=', 'm.munidepaid');
-                                            $join->on('tt.tartiqmuniiddestino', '=', 'm.muniid');
-                                        })
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();*/
-
-        $municipios              = DB::table('municipio as m')
-                                        ->select('m.muniid','m.munidepaid','m.muninombre')
-                                        ->join('rutanodo as rn', 'rn.rutnodmuniid', '=', 'm.muniid')
-                                        ->where('m.munihacepresencia', true)->orderBy('m.muninombre')->get();
+                                        ->where('m.munihacepresencia', true)
+                                        ->unionAll(DB::table('municipio as m')->distinct()
+                                            ->select('m.muniid', 'm.munidepaid', 'm.muninombre as muninombre', 'tt.rutaid', DB::raw("CONCAT('DESTINO') as tipo"))
+                                            ->join('tarifatiquete as tt', function ($join) {
+                                                $join->on('tt.tartiqdepaiddestino', '=', 'm.munidepaid');
+                                                $join->on('tt.tartiqmuniiddestino', '=', 'm.muniid');
+                                            })
+                                            ->where('m.munihacepresencia', true)
+                                        )
+                                        ->orderBy('muninombre')
+                                        ->get();
 
         $tipoIdentificaciones    = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4', '5'])->orderBy('tipidenombre')->get();
         $configuracionEncomienda = DB::table('configuracionencomienda')
@@ -102,7 +97,7 @@ class EncomiendaController extends Controller
                                             'conencporcencomisionagencia', 'conencporcencomisionvehiculo')->where('conencid', 1)->first();
 
         $planillaRutas        = DB::table('planillaruta as pr')
-                                    ->select('pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
+                                    ->select('pr.plarutid','r.rutaid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino','mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
                                     DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                     ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                     ->join('municipio as mo', function($join)
@@ -121,11 +116,10 @@ class EncomiendaController extends Controller
         $encomienda            = [];
         $cajaAbierta           = false;
         $mensajeCaja           = 'Lo sentimos, no es posible registrar una encomienda sin antes haber abierto la caja para el día de hoy';
-        $municipiosNodoDestino = [];
         if($request->tipo === 'U'){
             $encomienda  = DB::table('encomienda as e')
                                 ->select('e.encoid','e.plarutid','e.perseridremitente','e.perseriddestino','e.encodepaidorigen','e.encomuniidorigen','e.encodepaiddestino','e.encomuniiddestino','e.tipencid',
-                                'e.encocontenido','e.encocantidad','e.encovalorcomisionseguro','e.encovalordeclarado','e.encovalorenvio','e.encovalortotal','e.encovalordomicilio', 'e.encoobservacion',
+                                'e.encocontenido','e.encocantidad','e.encovalorcomisionseguro','e.encovalordeclarado','e.encovalorenvio','e.encovalortotal','e.encovalordomicilio', 'e.encoobservacion','pr.rutaid',
                                 'e.encopagocontraentrega','e.encocontabilizada','psr.tipideid','psr.perserdocumento','psr.perserprimernombre','psr.persersegundonombre','psr.perserprimerapellido',
                                 'psr.persersegundoapellido','psr.perserdireccion', 'psr.persercorreoelectronico','psr.persernumerocelular','psr.perserpermitenotificacion',
                                 'psd.tipideid as tipideidDestino','psd.perserdocumento as perserdocumentoDestino','psd.perserprimernombre as perserprimernombreDestino',
@@ -134,15 +128,8 @@ class EncomiendaController extends Controller
                                 'psd.persercorreoelectronico as persercorreoelectronicoDestino', 'psd.persernumerocelular as persernumerocelularDestino')
                                 ->join('personaservicio as psr', 'psr.perserid', '=', 'e.perseridremitente')
                                 ->join('personaservicio as psd', 'psd.perserid', '=', 'e.perseriddestino')
+                                ->join('planillaruta as pr', 'pr.plarutid', '=', 'e.plarutid')
                                 ->where('e.encoid', $request->codigo)->first();
-
-            $municipiosNodoDestino  = DB::table('municipio as m')
-                                        ->select('m.muniid','m.munidepaid','m.muninombre')
-                                        ->join('rutanodo as rn', 'rn.rutnodmuniid', '=', 'm.muniid')
-                                        ->join('planillaruta as pr', 'pr.rutaid', '=', 'rn.rutaid')
-                                        ->where('m.munihacepresencia', true)
-                                        ->where('pr.plarutid', $encomienda->plarutid)
-                                        ->orderBy('m.muninombre')->get();
         }else{
             $cajaAbierta = MovimientoCaja::verificarCajaAbierta();
             $mensajeCaja = ($cajaAbierta) ? '' : $mensajeCaja;
@@ -150,7 +137,7 @@ class EncomiendaController extends Controller
 
         return response()->json(["tiposEncomiendas"       => $tiposEncomiendas,        "tipoIdentificaciones" => $tipoIdentificaciones, "planillaRutas"         => $planillaRutas,
                                 "configuracionEncomienda" => $configuracionEncomienda, "municipios"           => $municipios,           "encomienda"            => $encomienda,
-                                "cajaAbierta"             => $cajaAbierta,             "mensajeCaja"          => $mensajeCaja,          "municipiosNodoDestino" => $municipiosNodoDestino]);
+                                "cajaAbierta"             => $cajaAbierta,             "mensajeCaja"          => $mensajeCaja]);
     }
 
     public function consultarPersona(Request $request)
@@ -276,7 +263,7 @@ class EncomiendaController extends Controller
             $valorComisionVehiculo = $generales->redondearCienMasCercano(($valorTotalEncomienda * $porcentajeComisionVehiculo) / 100);
 
 			$encomienda->perseridremitente         = $personaIdRemitente;
-			$encomienda->perseriddestino           = $personaIdDestino; 
+			$encomienda->perseriddestino           = $personaIdDestino;
             $encomienda->plarutid                  = $request->ruta;
 			$encomienda->encodepaidorigen          = $request->departamentoOrigen;
 			$encomienda->encomuniidorigen          = $request->municipioOrigen;
@@ -310,21 +297,21 @@ class EncomiendaController extends Controller
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionEmpresa');
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('comisionEncomiendaEmpresa');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $valorComisionEmpresa;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionAgencia');
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('comisionEncomiendaAgencia');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $valorComisionAgencia;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpComisionVehiculo');
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('comisionEncomiendaVehiculo');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                 $comprobantecontabledetalle->cocodemonto     = $valorComisionVehiculo - $request->valorDomicilio;
                 $comprobantecontabledetalle->save();
@@ -332,7 +319,7 @@ class EncomiendaController extends Controller
                 if($request->valorDomicilio > 0){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoEncomiendaDomicilio');
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEncomiendaDomicilio');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                     $comprobantecontabledetalle->cocodemonto     = $request->valorDomicilio;
                     $comprobantecontabledetalle->save();
