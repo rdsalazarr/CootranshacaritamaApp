@@ -14,34 +14,41 @@ use Exception, DB, URL;
 class EmpresaController extends Controller
 {
 	public function index()
-	{  
-        $url  = URL::to('/');
-		$data = DB::table('empresa')->select('emprid','persidrepresentantelegal','emprdepaid', 'emprmuniid','emprnit','emprdigitoverificacion','emprbarrio',
-                            'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular','emprhorarioatencion',
-                            'emprurl', 'emprcodigopostal', 'emprlogo','emprpersoneriajuridica',
-                            DB::raw("CONCAT(emprtelefonocelular,' ', emprtelefonofijo ) as telefonos"),
-                            DB::raw("CONCAT('$url/archivos/logoEmpresa/', emprlogo ) as imagen") )->get(); 
-
-        return response()->json(["data" => $data]);
+	{
+        try{
+            $url  = URL::to('/');
+            $data = DB::table('empresa')->select('emprid','persidrepresentantelegal','emprdepaid', 'emprmuniid','emprnit','emprdigitoverificacion','emprbarrio',
+                                'emprnombre','emprsigla','emprlema','emprdireccion', 'emprcorreo','emprtelefonofijo','emprtelefonocelular','emprhorarioatencion',
+                                'emprurl', 'emprcodigopostal', 'emprlogo','emprpersoneriajuridica',
+                                DB::raw("CONCAT(emprtelefonocelular,' ', emprtelefonofijo ) as telefonos"),
+                                DB::raw("CONCAT('$url/archivos/logoEmpresa/', emprlogo ) as imagen") )->get(); 
+            return response()->json(['success' => true, "data" => $data]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
     public function datos()
 	{
-        $deptos     = DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
-        $municipios = DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
+        try{
+            $deptos     = DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
+            $municipios = DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
 
-       $jefes = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
-                       DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos")
-                       )
-                   ->whereIn('carlabid', [1, 4])->get();
+            $jefes = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
+                        DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos")
+                        )
+                    ->whereIn('carlabid', [1, 4])->get();
 
-        $mensajeImpresiones      = DB::table('mensajeimpresion')->select('menimpid','menimpnombre','menimpvalor')->OrderBy('menimpnombre')->get();
-        $configuracionEncomienda = DB::table('configuracionencomienda')->select('conencid','conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro',
-                                    'conencporcencomisionempresa', 'conencporcencomisionagencia', 'conencporcencomisionvehiculo')
-                                    ->where('conencid', 1)->OrderBy('conencid')->first();
+            $mensajeImpresiones      = DB::table('mensajeimpresion')->select('menimpid','menimpnombre','menimpvalor')->OrderBy('menimpnombre')->get();
+            $configuracionEncomienda = DB::table('configuracionencomienda')->select('conencid','conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro',
+                                        'conencporcencomisionempresa', 'conencporcencomisionagencia', 'conencporcencomisionvehiculo')
+                                        ->where('conencid', 1)->OrderBy('conencid')->first();
 
-        return response()->json(["deptos" => $deptos, "municipios" => $municipios, "jefes" => $jefes,
-                                "mensajeImpresiones" => $mensajeImpresiones, "configuracionEncomienda" => $configuracionEncomienda]);
+            return response()->json(['success' => true, "deptos" => $deptos,    "municipios" => $municipios, "jefes" => $jefes,
+                                    "mensajeImpresiones" => $mensajeImpresiones, "configuracionEncomienda" => $configuracionEncomienda]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+        }
     }
 
 	public function salve(Request $request)

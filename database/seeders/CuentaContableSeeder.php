@@ -119,7 +119,7 @@ class CuentaContableSeeder extends Seeder
         DB::table('cuentacontable')->insert([
             'cueconid'          => '11',
             'cueconnombre'      => 'fondoReposicion',
-            'cuecondescripcion' => 'FONDO REPOSICION',
+            'cuecondescripcion' => 'FONDO REPOSICIÓN',
             'cueconnaturaleza'  => 'C',
             'cueconcodigo'      => '120011',
             'created_at'        => $fechaHoraActual,

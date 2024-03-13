@@ -158,6 +158,12 @@ php artisan make:migration create_tipo_solicitud
 php artisan make:migration create_tipo_medio_solicitud
 php artisan make:migration create_solicitud
 
+php artisan make:migration create_compania_aseguradora
+php artisan make:migration create_fidelizacion_cliente
+php artisan make:migration create_persona_servicio_fidelizacion
+
+
+
 
 php artisan make:model Festivo
 php artisan make:model TokenFirmaPersona
@@ -175,6 +181,9 @@ php artisan make:model Empresa
 
 php artisan make:model Empresa\MensajeImpresion
 php artisan make:model Empresa\ConfiguracionEncomienda
+
+php artisan make:model Empresa\CompaniaAseguradora
+php artisan make:model Empresa\FidelizacionCliente
 
 php artisan make:model Departamento
 php artisan make:model Municipio
@@ -281,6 +290,7 @@ vehiculocontratofirma
 php artisan make:model Despacho\Encomienda
 php artisan make:model Despacho\PersonaServicio
 php artisan make:model Despacho\EncomiendaCambioEstado
+php artisan make:model Despacho\PersonaServicioFidelizacion
 
 php artisan make:model Despacho\Tiquete
 php artisan make:model Despacho\TiquetePuesto
@@ -339,6 +349,9 @@ php artisan make:seeder ProcesoAutomaticoSeeder
 php artisan make:seeder TipoSolicitudSeeder
 php artisan make:seeder TipoMedioSolicitudSeeder
 
+php artisan make:seeder CompaniaAseguradoraSeeder
+php artisan make:seeder FidelizacionClienteSeeder
+
 
 php artisan make:request ActaRequests
 php artisan make:request CertificadoRequests
@@ -356,6 +369,8 @@ php artisan make:controller Admin\RolController
 php artisan make:controller Admin\DepartamentoController
 php artisan make:controller Admin\MunicipioController
 php artisan make:controller Admin\DependenciaController
+php artisan make:controller Admin\Empresa\CompaniaAseguradoraController
+php artisan make:controller Admin\Empresa\FidelizacionClienteController
 
 php artisan make:controller Admin\Series\SerieDocumentalController
 php artisan make:controller Admin\Series\SubSerieDocumentalController

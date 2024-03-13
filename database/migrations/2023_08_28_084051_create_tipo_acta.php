@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tipoacta', function (Blueprint $table) {
             $table->tinyInteger('tipactid')->unsigned()->comment('Identificador de la tabla tipo de acta');
             $table->string('tipactnombre', 30)->comment('Nombre del tipo de acta');
-            $table->primary('tipactid')->index('pk_tipact');   
+            $table->primary('tipactid')->index('pk_tipact');
         });
     }
 
