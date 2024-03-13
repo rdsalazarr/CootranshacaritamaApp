@@ -12,17 +12,17 @@ export default function New({data}){
  
     const [formData, setFormData] = useState(
                     {
-                        codigo: data.emprid, jefe: data.persidrepresentantelegal, departamento: data.emprdepaid, municipio: data.emprmuniid, 
-                        nit: data.emprnit, digitoVerificacion: data.emprdigitoverificacion,  nombre: data.emprnombre,  sigla: data.emprsigla,
-                        lema: (data.emprlema !== null ) ? data.emprlema : '',  direccion: data.emprdireccion, correo: (data.emprcorreo !== null ) ? data.emprcorreo : '',
-                        barrio: (data.emprbarrio !== null ) ? data.emprbarrio : '',telefono: (data.emprtelefonofijo !== null ) ? data.emprtelefonofijo : '',
-                        celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '', personeriaJuridica : (data.emprpersoneriajuridica !== null ) ? data.emprpersoneriajuridica : '',
-                        horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '',
-                        url: data.emprurl, codigoPostal: data.emprcodigopostal,  
-                        logo_old: data.emprlogo , imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: '',
-                        valorMinimoEnvio: '', valorMinimoDeclarado:'', porcentajeSeguro:'', porcentajeComisionEmpresa:'', porcentajeComisionAgencia:'', 
-                        porcentajeComisionVehiculo:''
-                    });  
+                        codigo: data.emprid, jefe: data.persidrepresentantelegal,                              departamento: data.emprdepaid, municipio: data.emprmuniid, 
+                        nit: data.emprnit,   digitoVerificacion: data.emprdigitoverificacion,                  nombre: data.emprnombre,       sigla: data.emprsigla,
+                        lema: (data.emprlema !== null ) ? data.emprlema : '',                                  direccion: data.emprdireccion, correo: (data.emprcorreo !== null ) ? data.emprcorreo : '',
+                        barrio: (data.emprbarrio !== null ) ? data.emprbarrio : '',                            telefono: (data.emprtelefonofijo !== null ) ? data.emprtelefonofijo : '',
+                        celular: (data.emprtelefonocelular !== null ) ? data.emprtelefonocelular : '',         personeriaJuridica : (data.emprpersoneriajuridica !== null ) ? data.emprpersoneriajuridica : '',
+                        horarioAtencion: (data.emprhorarioatencion !== null ) ? data.emprhorarioatencion : '', url: data.emprurl, codigoPostal: data.emprcodigopostal,  
+                        logo_old: data.emprlogo ,                                                              imagen: (data.emprlogo !== null ) ? data.imagen : '' , logo: '',
+                        valorMinimoEnvio: '',          valorMinimoDeclarado:'', porcentajeSeguro:'', porcentajeComisionEmpresa:'', porcentajeComisionAgencia:'', 
+                        porcentajeComisionVehiculo:'', codigoCompania:'',       nombreCompania:'',    numeroPoliza:'',      codigoFidelizacion:'', 
+                        valorFidelizacion:'',          valorPunto:'',           puntosMinimoRedimir:''
+                    });                      
 
     const logo = formData.imagen; 
     const [value, setValue] = useState(0); 
@@ -95,11 +95,22 @@ export default function New({data}){
         instance.get('/admin/empresa/list/datos').then(res=>{
             let configuracionEncomienda             = res.configuracionEncomienda;
             newFormData.valorMinimoEnvio            = configuracionEncomienda.conencvalorminimoenvio;
-            newFormData.valorMinimoDeclarado        = configuracionEncomienda.conencvalorminimodeclarado;            
+            newFormData.valorMinimoDeclarado        = configuracionEncomienda.conencvalorminimodeclarado;
             newFormData.porcentajeSeguro            = configuracionEncomienda.conencporcentajeseguro;
             newFormData.porcentajeComisionEmpresa   = configuracionEncomienda.conencporcencomisionempresa;
             newFormData.porcentajeComisionAgencia   = configuracionEncomienda.conencporcencomisionagencia;
             newFormData.porcentajeComisionVehiculo  = configuracionEncomienda.conencporcencomisionvehiculo;
+
+            let companiaAseguradora          = res.companiaAseguradora;
+            newFormData.codigoCompania       = companiaAseguradora.comaseid;
+            newFormData.nombreCompania       = companiaAseguradora.comasenombre;
+            newFormData.numeroPoliza = companiaAseguradora.comasenumeropoliza;
+
+            let fidelizacionCliente          = res.fidelizacionCliente;
+            newFormData.codigoFidelizacion   = fidelizacionCliente.fidcliid;
+            newFormData.valorFidelizacion    = fidelizacionCliente.fidclivalorfidelizacion;
+            newFormData.valorPunto           = fidelizacionCliente.fidclivalorpunto;
+            newFormData.puntosMinimoRedimir  = fidelizacionCliente.fidclipuntosminimoredimir;
  
             let dataMsj = [];
             res.mensajeImpresiones.forEach(function(msj){
@@ -422,9 +433,12 @@ export default function New({data}){
                         variant={variantTab} >
                         <Tab label="Mensajes de impresión" />
                         <Tab label="Configuracion  de encomiendas" />
+                        <Tab label="Compañia aseguradora" />
+                        <Tab label="Fidelización cliente" />
                     </Tabs>
 
                     <TabPanel value={value} index={0}>
+
                         <Grid container spacing={2}>
                             { formDataMensajeimpresion.map((msj, i) => { 
                                 return(
@@ -453,9 +467,11 @@ export default function New({data}){
                                 })
                             }
                         </Grid>
+
                     </TabPanel>
 
                     <TabPanel value={value} index={1}>
+
                         <Grid container spacing={2}>
                             <Grid item xl={3} md={3} sm={6} xs={12}>
                                 <NumberValidator fullWidth
@@ -544,7 +560,88 @@ export default function New({data}){
                             </Grid>
 
                         </Grid>
+
                     </TabPanel>
+
+                    <TabPanel value={value} index={2}>
+                        <Grid container spacing={2}>                            
+                            <Grid item xl={8} md={8} sm={7} xs={12}>
+                                <TextValidator
+                                    name={'nombreCompania'}
+                                    value={formData.nombreCompania}
+                                    label={'Nombre de la compañia'}
+                                    className={'inputGeneral'} 
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off', maxLength: 100}}
+                                    validators={['required']}
+                                    errorMessages={['Campo requerido']}
+                                    onChange={handleChange}
+                                />
+                            </Grid> 
+
+                            <Grid item xl={4} md={4} sm={5} xs={12}>
+                                <TextValidator
+                                    name={'numeroPoliza'}
+                                    value={formData.numeroPoliza}
+                                    label={'Número de póliza'}
+                                    className={'inputGeneral'} 
+                                    variant={"standard"} 
+                                    inputProps={{autoComplete: 'off', maxLength: 30}}
+                                    validators={['required']}
+                                    errorMessages={['Campo requerido']}
+                                    onChange={handleChange}
+                                />
+                            </Grid> 
+                        </Grid>
+
+                    </TabPanel>
+
+                    <TabPanel value={value} index={3}>
+
+                        <Grid container spacing={2}>
+                            <Grid item xl={4} md={4} sm={6} xs={12}>
+                                <NumberValidator fullWidth
+                                    id={"valorFidelizacion"}
+                                    name={"valorFidelizacion"}
+                                    label={"Valor fidelización"}
+                                    value={formData.valorFidelizacion}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:6']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 999999']}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xl={4} md={4} sm={6} xs={12}>
+                                <NumberValidator fullWidth
+                                    id={"valorPunto"}
+                                    name={"valorPunto"}
+                                    label={"Valor del punto"}
+                                    value={formData.valorPunto}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:6']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 99999']}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xl={4} md={4} sm={6} xs={12}>
+                                <NumberValidator fullWidth
+                                    id={"puntosMinimoRedimir"}
+                                    name={"puntosMinimoRedimir"}
+                                    label={"Puntos mínimo a redimir"}
+                                    value={formData.puntosMinimoRedimir}
+                                    type={'numeric'}
+                                    require={['required', 'maxStringLength:6']}
+                                    error={['Campo obligatorio','Número máximo permitido es el 99999']}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                        </Grid>
+
+                    </TabPanel>
+
                 </Grid>
 
             </Grid>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('fidclivalorpunto', 6, 0)->comment('Valor del punto de la fidelización');
             $table->decimal('fidclipuntosminimoredimir', 6, 0)->comment('Puntos mínimo para redimir en la la fidelización');
             $table->primary('fidcliid')->index('pk_fidcli');
+            $table->timestamps();
         });
     }
 

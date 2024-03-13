@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('comasenombre', 100)->comment('Nombre de la  compañia aseguradora');
             $table->string('comasenumeropoliza', 30)->comment('Número de póliza de la compañia aseguradora');
             $table->primary('comaseid')->index('pk_comase');
+            $table->timestamps();
         });
     }
 

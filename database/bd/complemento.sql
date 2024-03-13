@@ -331,3 +331,7 @@ UPDATE `cuentacontable` SET `cueconnombre` = 'pagoEncomiendaDomicilio', `cuecond
 
 
 UPDATE `migrations` SET `migration` = '2023_11_20_170953_create_consignacion_bancaria' WHERE `migrations`.`id` = 133;
+
+
+ALTER TABLE `companiaaseguradora` ADD `created_at` TIMESTAMP NULL AFTER `comasenumeropoliza`, ADD `updated_at` TIMESTAMP NULL AFTER `created_at`;
+ALTER TABLE `fidelizacioncliente` ADD `created_at` TIMESTAMP NULL AFTER `fidclipuntosminimoredimir`, ADD `updated_at` TIMESTAMP NULL AFTER `created_at`;

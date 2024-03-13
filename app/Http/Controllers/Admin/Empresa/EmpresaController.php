@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Empresa;
 
 use App\Models\Empresa\ConfiguracionEncomienda;
+use App\Models\Empresa\FidelizacionCliente;
+use App\Models\Empresa\CompaniaAseguradora;
 use App\Models\Empresa\MensajeImpresion;
 use App\Http\Controllers\Controller;
 use App\Util\redimencionarImagen;
@@ -34,18 +36,20 @@ class EmpresaController extends Controller
             $deptos     = DB::table('departamento')->select('depaid','depanombre')->OrderBy('depanombre')->get();
             $municipios = DB::table('municipio')->select('muniid','muninombre','munidepaid')->OrderBy('muninombre')->get(); 
 
-            $jefes = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
-                        DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos")
-                        )
-                    ->whereIn('carlabid', [1, 4])->get();
+            $jefes      = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
+                                            DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos"))
+                                        ->whereIn('carlabid', [1, 4])->get();
 
             $mensajeImpresiones      = DB::table('mensajeimpresion')->select('menimpid','menimpnombre','menimpvalor')->OrderBy('menimpnombre')->get();
             $configuracionEncomienda = DB::table('configuracionencomienda')->select('conencid','conencvalorminimoenvio','conencvalorminimodeclarado','conencporcentajeseguro',
                                         'conencporcencomisionempresa', 'conencporcencomisionagencia', 'conencporcencomisionvehiculo')
                                         ->where('conencid', 1)->OrderBy('conencid')->first();
+            $companiaAseguradora     = DB::table('companiaaseguradora')->select('comaseid','comasenombre','comasenumeropoliza')->first();
+            $fidelizacionCliente     = DB::table('fidelizacioncliente')->select('fidcliid','fidclivalorfidelizacion','fidclivalorpunto','fidclipuntosminimoredimir')->first();
 
-            return response()->json(['success' => true, "deptos" => $deptos,    "municipios" => $municipios, "jefes" => $jefes,
-                                    "mensajeImpresiones" => $mensajeImpresiones, "configuracionEncomienda" => $configuracionEncomienda]);
+            return response()->json(['success' => true, "deptos" => $deptos,       "municipios" => $municipios, "jefes" => $jefes,
+                                    "mensajeImpresiones"  => $mensajeImpresiones,  "configuracionEncomienda" => $configuracionEncomienda,
+                                    "companiaAseguradora" => $companiaAseguradora, "fidelizacionCliente" => $fidelizacionCliente]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
@@ -54,24 +58,29 @@ class EmpresaController extends Controller
 	public function salve(Request $request)
 	{
 		$this->validate(request(),[
-                'jefe'               => 'required|numeric', 
-                'departamento'       => 'required|numeric',
-                'municipio'          => 'required|numeric',
-                'nit'                => 'required|string|min:6|max:12',
-                'digitoVerificacion' => 'required|numeric|max:9',
-                'nombre'             => 'required|string|min:4|max:99',
-                'sigla'              => 'nullable|string|min:4|max:20',
-                'lema'               => 'nullable|string|min:4|max:100',
-                'direccion'          => 'required|string|min:4|max:100',
-                'barrio'             => 'nullable|string|min:4|max:80',
-                'correo'             => 'nullable|email|min:4|max:80',
-                'personeriaJuridica' => 'nullable|string|min:4|max:50',
-                'telefono'           => 'nullable|max:20',
-                'celular'            => 'nullable|max:20',
-                'horarioAtencion'    => 'nullable|max:200',
-                'url'                => 'nullable|max:100',
-                'codigoPostal'       => 'nullable|max:10',
-                'logo'               => 'nullable|mimes:png|max:1000'
+                'jefe'                => 'required|numeric',
+                'departamento'        => 'required|numeric',
+                'municipio'           => 'required|numeric',
+                'nit'                 => 'required|string|min:6|max:12',
+                'digitoVerificacion'  => 'required|numeric|max:9',
+                'nombre'              => 'required|string|min:4|max:99',
+                'sigla'               => 'nullable|string|min:4|max:20',
+                'lema'                => 'nullable|string|min:4|max:100',
+                'direccion'           => 'required|string|min:4|max:100',
+                'barrio'              => 'nullable|string|min:4|max:80',
+                'correo'              => 'nullable|email|min:4|max:80',
+                'personeriaJuridica'  => 'nullable|string|min:4|max:50',
+                'telefono'            => 'nullable|max:20',
+                'celular'             => 'nullable|max:20',
+                'horarioAtencion'     => 'nullable|max:200',
+                'url'                 => 'nullable|max:100',
+                'codigoPostal'        => 'nullable|max:10',
+                'logo'                => 'nullable|mimes:png|max:1000',
+                'nombreCompania'      => 'required|string|min:4|max:99',
+                'numeroPoliza'        => 'required|string|min:4|max:30',
+                'valorFidelizacion'   => 'required|numeric|between:1,999999',
+                'valorPunto'          => 'required|numeric|between:1,999999',
+                'puntosMinimoRedimir' => 'required|numeric|between:1,999999',
 			]);
  
         DB::beginTransaction();
@@ -104,7 +113,7 @@ class EmpresaController extends Controller
             $empresa->emprdireccion            = $request->direccion;
             $empresa->emprbarrio               = $request->barrio;
             $empresa->emprcorreo               = $request->correo;
-            $empresa->emprpersoneriajuridica   = $request->personeriaJuridica;            
+            $empresa->emprpersoneriajuridica   = $request->personeriaJuridica;
             $empresa->emprtelefonofijo         = $request->telefono;
             $empresa->emprtelefonocelular      = $request->celular;
             $empresa->emprhorarioatencion      = $request->horarioAtencion;
@@ -126,9 +135,20 @@ class EmpresaController extends Controller
                 $identificador = 'mensajeImpresionCodigo'.$i;
                 $valor         = 'mensajeImpresionValor'.$i;
                 $mensajeimpresion               = MensajeImpresion::findOrFail($request->$identificador);
-                 $mensajeimpresion->menimpvalor  = $request->$valor;
+                 $mensajeimpresion->menimpvalor = $request->$valor;
                 $mensajeimpresion->save();
             }
+
+            $companiaaseguradora                     = CompaniaAseguradora::findOrFail($request->codigo);
+            $companiaaseguradora->comasenombre       = $request->nombreCompania;
+			$companiaaseguradora->comasenumeropoliza = $request->numeroPoliza;
+			$companiaaseguradora->save();
+
+            $fidelizacioncliente                            = FidelizacionCliente::findOrFail($request->codigo);
+            $fidelizacioncliente->fidclivalorfidelizacion   = $request->valorFidelizacion;
+			$fidelizacioncliente->fidclivalorpunto          = $request->valorPunto;
+            $fidelizacioncliente->fidclipuntosminimoredimir = $request->puntosMinimoRedimir;
+			$fidelizacioncliente->save();
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
