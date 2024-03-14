@@ -7,6 +7,7 @@ import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
 import instanceFile from '../../../layout/instanceFile';
 import VisualizarPdf from '../movimiento/visualizarPdf';
+import {FormatearNumero} from "../../../layout/general";
 import LocalAtmIcon from '@mui/icons-material/LocalAtm'
 import {CerrarCaja} from '../../../layout/modalFijas';
 import {LoaderModal} from "../../../layout/loader";
@@ -70,11 +71,11 @@ export default function Closed(){
             if(res.success){
                 let movimientocaja                      = res.movimientoCaja;
                 newMovimientoCaja.saldoInicial          = movimientocaja.saldoInicial;
-                newMovimientoCaja.valorDebito           = formatearNumero(movimientocaja.valorDebito);
-                newMovimientoCaja.valorCredito          = formatearNumero(movimientocaja.valorCredito);
-                newMovimientoCaja.saldoCerrarFormateado = formatearNumero(parseInt(movimientocaja.movcajsaldoinicial) + parseInt((movimientocaja.valorDebito === null) ? 0 : movimientocaja.valorDebito ));
+                newMovimientoCaja.valorDebito           = FormatearNumero({numero: movimientocaja.valorDebito});
+                newMovimientoCaja.valorCredito          = FormatearNumero({numero: movimientocaja.valorCredito});
+                newMovimientoCaja.saldoCerrarFormateado = FormatearNumero({numero: parseInt(movimientocaja.movcajsaldoinicial) + parseInt((movimientocaja.valorDebito === null) ? 0 : movimientocaja.valorDebito )});
                 newMovimientoCaja.saldoCerrar           = parseInt(movimientocaja.movcajsaldoinicial) + parseInt(movimientocaja.valorDebito);
-                newMovimientoCaja.saldoTiquete          = formatearNumero(movimientocaja.saldoTiquete);
+                newMovimientoCaja.saldoTiquete          = FormatearNumero({numero: movimientocaja.saldoTiquete});
                 setMovimientoCaja(newMovimientoCaja);
                 setData(res.data);
             }else{
@@ -84,11 +85,6 @@ export default function Closed(){
             setCajaAbierta(res.success);
             setLoader(false);
         })
-    }
-
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
     }
 
     useEffect(()=>{inicio();}, []);

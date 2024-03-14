@@ -5,6 +5,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
+import {FormatearNumero} from "../../../layout/general";
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
@@ -39,22 +40,17 @@ export default function Procesar({data, lineasCreditos, ocultarDatos}){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
-
     const registrarSolicitudCredito = () =>{
         if(formData.tasaNominal > formData.tasaNominalLineaCredito){
             showSimpleSnackbar("La tasa máxima permita es "+formData.tasaNominalLineaCredito , 'error');
             return;
         }
         if(Number(formData.valorSolicitado) < Number(formData.valorMinimoLineaCredito)){
-            showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
+            showSimpleSnackbar("El monto mínimo permito es "+FormatearNumero({numero: formData.valorMinimoLineaCredito}), 'error');
             return;
         }
         if(Number(formData.valorSolicitado) > Number(formData.valorMaximoLineaCredito)){
-            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
+            showSimpleSnackbar("El monto máximo permito es "+FormatearNumero({numero: formData.valorMaximoLineaCredito}), 'error');
             return;
         }
         if(Number(formData.plazo) > Number(formData.plazoMaximoLineaCredito)){
@@ -115,11 +111,11 @@ export default function Procesar({data, lineasCreditos, ocultarDatos}){
             return;
         }
         if(Number(formData.valorSolicitado) < Number(formData.valorMinimoLineaCredito)) {
-            showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formData.valorMinimoLineaCredito), 'error');
+            showSimpleSnackbar("El monto mínimo permito es "+FormatearNumero({numero: formData.valorMinimoLineaCredito}), 'error');
             return;
         }
         if(Number(formData.valorSolicitado) > Number(formData.valorMaximoLineaCredito)) {
-            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formData.valorMaximoLineaCredito), 'error');
+            showSimpleSnackbar("El monto máximo permito es "+FormatearNumero({numero: formData.valorMaximoLineaCredito}), 'error');
             return;
         }
         if(Number(formData.plazo) > Number(formData.plazoMaximoLineaCredito)) {

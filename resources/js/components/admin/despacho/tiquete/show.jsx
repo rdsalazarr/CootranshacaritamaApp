@@ -1,4 +1,5 @@
 import React, {useState, useEffect, Fragment} from 'react';
+import {FormatearNumero} from "../../../layout/general";
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import {Grid, Box } from '@mui/material';
@@ -15,11 +16,6 @@ export default function Show({data}){
     const [dataPuestos, setDataPuestos] = useState([]);
     const [esEmpresa, setEsEmpresa] = useState(false);
     const [loader, setLoader] = useState(false);    
-
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
 
     const distribucionVehiculo = (distribucionVehiculo, puestosVendidos) => {
         let totalFilas = distribucionVehiculo[0].totalFilas;
@@ -63,12 +59,12 @@ export default function Show({data}){
             newFormData.municipioDestino            = tiquete.municipioDestino;
             newFormData.planilla                    = tiquete.nombreRuta;
             newFormData.valorTiquete                = tiquete.tiquvalortiquete;
-            newFormData.valorDescuento              = formatearNumero(tiquete.tiquvalordescuento);
+            newFormData.valorDescuento              = FormatearNumero({numero: tiquete.tiquvalordescuento});
             newFormData.cantidadPuesto              = tiquete.tiqucantidad;
-            newFormData.valorTiqueteMostrar         = formatearNumero(tiquete.tiquvalortiquete);
-            newFormData.valorFondoReposicionMostrar = formatearNumero(tiquete.tiquvalorfondoreposicion);
-            newFormData.valorTotalTiquete           = formatearNumero(tiquete.tiquvalortotal);
-            newFormData.valorSeguro                 = formatearNumero(tiquete.tartiqvalorseguro);
+            newFormData.valorTiqueteMostrar         = FormatearNumero({numero: tiquete.tiquvalortiquete});
+            newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: tiquete.tiquvalorfondoreposicion});
+            newFormData.valorTotalTiquete           = FormatearNumero({numero: tiquete.tiquvalortotal});
+            newFormData.valorSeguro                 = FormatearNumero({numero: tiquete.tartiqvalorseguro});
 
             setEsEmpresa((tiquete.tipideid === 5) ? true : false);
             setFormData(newFormData);

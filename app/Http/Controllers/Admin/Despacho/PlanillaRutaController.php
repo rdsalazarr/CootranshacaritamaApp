@@ -303,14 +303,14 @@ class PlanillaRutaController extends Controller
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                 $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = -$valorContabilizar;
+                $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
                 $comprobantecontabledetalle->save();
 
                 $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                 $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('cxpPagoTiquete');
+                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoTiquete');
                 $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = -$valorTiquete;
+                $comprobantecontabledetalle->cocodemonto     = $valorTiquete;
                 $comprobantecontabledetalle->save();
 
                 if($valorFondoReposicion > 0){
@@ -318,7 +318,7 @@ class PlanillaRutaController extends Controller
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('fondoReposicion');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = -$valorFondoReposicion;
+                    $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
                     $comprobantecontabledetalle->save();
                 }
 
@@ -327,7 +327,7 @@ class PlanillaRutaController extends Controller
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = -$valorEstampilla;
+                    $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
                     $comprobantecontabledetalle->save();  
                 }
 
@@ -336,7 +336,7 @@ class PlanillaRutaController extends Controller
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoSeguro');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = -$valorSeguro;
+                    $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
                     $comprobantecontabledetalle->save();
                 }
 
@@ -345,9 +345,11 @@ class PlanillaRutaController extends Controller
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
                     $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorFondoRecaudo');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = -$valorFondoRecaudo;
+                    $comprobantecontabledetalle->cocodemonto     = $valorFondoRecaudo;
                     $comprobantecontabledetalle->save();
                 }
+
+                
             }
 
             DB::commit();

@@ -5,19 +5,14 @@ import { ValidatorForm } from 'react-material-ui-form-validator';
 import { Button, Box, Grid, Stack, Card } from '@mui/material';
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import {FormatearNumero} from "../../../layout/general";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 
 export default function AbrirCaja({saldoAnterior, usuario, caja}){
     const [formData, setFormData] = useState({saldoInicial: (saldoAnterior === 0 || saldoAnterior === null) ? '' : saldoAnterior.toString()});
-
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
-
-    const [valorSaldoAnterior, setValorSaldoAnterior] = useState(formatearNumero(saldoAnterior));
+    const [valorSaldoAnterior, setValorSaldoAnterior] = useState(FormatearNumero({numero: saldoAnterior}));
     const [cajaAbierta, setCajaAbierta] = useState(false);  
     const [continuar, setContinuar] = useState(false);
     const [loader, setLoader] = useState(false);

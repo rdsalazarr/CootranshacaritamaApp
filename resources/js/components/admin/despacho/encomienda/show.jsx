@@ -1,5 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import Trazabilidad from '../../../layout/trazabilidad';
+import {FormatearNumero} from "../../../layout/general";
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import {Grid, Box } from '@mui/material';
@@ -19,11 +20,6 @@ export default function Show({data}){
     const [esEmpresaRemitente, setEsEmpresaRemitente] = useState(false);
     const [esEmpresaDestino, setEsEmpresaDestino] = useState(false);
     const [loader, setLoader] = useState(false);    
-
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
 
     useEffect(()=>{
         setLoader(true);
@@ -55,14 +51,14 @@ export default function Show({data}){
             newFormData.municipioDestino            = encomienda.municipioDestino;
             newFormData.tipoEncomienda              = encomienda.tipencnombre;
             newFormData.cantidad                    = encomienda.encocantidad;
-            newFormData.valorDeclarado              = formatearNumero(encomienda.encovalordeclarado);
-            newFormData.valorEnvio                  = formatearNumero(encomienda.encovalorenvio);
-            newFormData.valorDomicilio              = formatearNumero(encomienda.encovalordomicilio);
+            newFormData.valorDeclarado              = FormatearNumero({numero: encomienda.encovalordeclarado});
+            newFormData.valorEnvio                  = FormatearNumero({numero: encomienda.encovalorenvio});
+            newFormData.valorDomicilio              = FormatearNumero({numero: encomienda.encovalordomicilio});
             newFormData.contenido                   = encomienda.encocontenido;
             newFormData.observaciones               = encomienda.encoobservacion;
             newFormData.ruta                        = encomienda.nombreRuta;
-            newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
-            newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal); 
+            newFormData.valorSeguro                 = FormatearNumero({numero: encomienda.encovalorcomisionseguro});
+            newFormData.valorTotal                  = FormatearNumero({numero: encomienda.encovalortotal}); 
             newFormData.pagoContraEntrega           = encomienda.pagoContraEntrega;
 
             setEsEmpresaRemitente((encomienda.tipideid === 5) ? true : false);

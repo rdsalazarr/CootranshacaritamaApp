@@ -158,7 +158,7 @@ class Noche
                     $enviarpiepagina    = $informacionCorreo->innocoenviarpiepagina;
                     $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
                     $msg                = str_replace($buscar, $remplazo, $innococontenido);
-                    $mensajeNotificar   = $notificar->correo([$correoAsociado], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                    ($correoAsociado !== '') ? $notificar->correo([$correoAsociado], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                     $mensaje            .= "Proceso de notificacion de pago de mensualidad en la fecha  ".$fechaProceso.", al correo ".$correoAsociado."\r\n";
                     $mensajeCorreo      .= $mensaje.'<br>';
                 }
@@ -265,7 +265,7 @@ class Noche
                 $enviarpiepagina    = $informacionCorreo->innocoenviarpiepagina;
                 $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg                = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar   = $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoUsuario !== '') ? $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje            .= "Proceso de notificacion de pago de mensualidad en la fecha  ".$fechaProceso.", al correo ".$correoUsuario."\r\n";
                 $mensajeCorreo      .= $mensaje.'<br>';
             }
@@ -335,7 +335,7 @@ class Noche
                 }
             }
 
-            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(14);
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(15);
             $procesoAutomatico->proautfechaejecucion = $fechaProceso;
             $procesoAutomatico->save();
 
@@ -350,7 +350,7 @@ class Noche
 
         echo $esEjecucionManual ? '' : $mensaje;
         return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
-    }   
+    }
 
     public static function marcarRedencionPuntos($esEjecucionManual = false)
     {
@@ -369,51 +369,58 @@ class Noche
             $fidelizacioncliente = DB::table('fidelizacioncliente')->select('fidclipuntosminimoredimir' ,'fidclivalorpunto')->where('fidcliid', 1)->first();
             $puntosMinimoRedimir = $fidelizacioncliente->fidclipuntosminimoredimir;
             $valorPunto          = $fidelizacioncliente->fidclivalorpunto;
+            $empresa             = FuncionesGenerales::consultarInfoEmpresa();
+            $correoEmpresa       = $empresa->emprcorreo;
+            $nombreGerente       = $empresa->nombreGerente;
 
-            $personasfidelizaciones = DB::table('personaserviciofidelizacion as psf')
-                                    ->select('psf.pesefiid','ps.persercorreoelectronico', DB::raw('SUM(psf.pesefinumeropunto) as totalPunto'),
-                                    DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
-                                             ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaServicio"))
+            $personasFidelizaciones = DB::table('personaserviciofidelizacion as psf')
+                                    ->select('psf.perserid', 'ps.persercorreoelectronico', 
+                                        DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                        ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaServicio"),
+                                        DB::raw('SUM(psf.pesefinumeropunto) as totalPuntos'))
                                     ->join('personaservicio as ps', 'ps.perserid', '=', 'psf.perserid')
-                                    ->where('totalPunto', '>=', $puntosMinimoRedimir)
+                                    ->groupBy('psf.perserid','ps.persercorreoelectronico','nombrePersonaServicio')
+                                    ->havingRaw('SUM(psf.pesefinumeropunto) >= ?', [$puntosMinimoRedimir])
                                     ->where('psf.pesefiredimido', false)
-                                    ->groupBy('psf.perserid')->get();
+                                    ->get();
 
-            $mensaje        = (count($planillaRutas) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaActual."\r\n" : '';
-            foreach($personasfidelizaciones as $personafidelizacion){ 
+            $mensaje        = (count($personasFidelizaciones) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaActual."\r\n" : '';
+            foreach($personasFidelizaciones as $personaFidelizacion){
 
-                $correoPersona = $personafidelizacion->persercorreoelectronico;
-                $nombrePersona = $personafidelizacion->nombrePersonaServicio;
-                //$correoEmpresa
+                $correoPersona = $personaFidelizacion->persercorreoelectronico;
+                $nombrePersona = $personaFidelizacion->nombrePersonaServicio;
 
+                $personasSerFidelizaciones = DB::table('personaserviciofidelizacion')->select('pesefiid')->where('perserid', $personaFidelizacion->perserid)->where('pesefiredimido', false)->get();
+                foreach($personasSerFidelizaciones  as $personaSerFidelizacion){
+                    $personaserviciofidelizacion                          = personaServicioFidelizacion::findOrFail($personaSerFidelizacion->pesefiid);
+                    $personaserviciofidelizacion->pesefifechahoraredimido = $fechaHoraActual;
+                    $personaserviciofidelizacion->pesefiredimido          = true;
+                    $personaserviciofidelizacion->save();
+                }
 
-                $valorRedimido               =  intval($personafidelizacion->totalPunto * $valorPunto);
-                $personaserviciofidelizacion                          = personaserviciofidelizacion::findOrFail($personafidelizacion->pesefiid);
-                $personaserviciofidelizacion->pesefifechahoraredimido = $fechaHoraActual;
-                $personaserviciofidelizacion->pesefiredimido          = true;
-                $personaserviciofidelizacion->save();
-
+                $valorRedimido                                   = $generales->redondearCienMasCercano($personaFidelizacion->totalPuntos * $valorPunto);
                 $personaserpuntosacomulados                      = new PersonaServicioPuntosAcomulados();
-                $personaserpuntosacomulados->perserid            = $fechaHoraActual;
+                $personaserpuntosacomulados->perserid            = $personaFidelizacion->perserid;
                 $personaserpuntosacomulados->pesepavalorredimido = $valorRedimido;
                 $personaserpuntosacomulados->save();
 
                 //Notificamos 
                 $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionRedencionPuntos')->first();
-                $buscar             = Array('nombrePersona', 'nombreGerente');
-                $remplazo           = Array($nombrePersona, $nombreGerente); 
+                $buscar             = Array('nombrePersona', 'nombreGerente','fechaPuntos','valorRedimido');
+                $remplazo           = Array($nombrePersona, $nombreGerente, $fechaProceso, number_format($valorRedimido,0,',','.') ); 
                 $innocoasunto       = $informacionCorreo->innocoasunto;
                 $innococontenido    = $informacionCorreo->innococontenido;
                 $enviarcopia        = $informacionCorreo->innocoenviarcopia;
                 $enviarpiepagina    = $informacionCorreo->innocoenviarpiepagina;
                 $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg                = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar   = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina); 
+               ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;           
+         
                 $mensaje            .= "Proceso de redencion de punto para la persona ".$nombrePersona."\r\n";
-                $mensajeCorreo      .= $mensaje.'<br>';               
+                $mensajeCorreo      .= $mensaje.'<br>';
             }
 
-            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(15);
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(16);
             $procesoAutomatico->proautfechaejecucion = $fechaProceso;
             $procesoAutomatico->save();
 
@@ -448,12 +455,12 @@ class Noche
             $resultado = Artisan::call('backup:run');
             $mensaje  .= ($resultado === 0) ? $mensaje1 : $mensaje2;
 
-            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(15);
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(17);
             $procesoAutomatico->proautfechaejecucion = $fechaProceso;
             $procesoAutomatico->save();
 
             $success      = true;
-            $mensajeVista = "Proceso de notificación de cerrar movimiento de caja realizado con éxito";
+            $mensajeVista = "Proceso de notificación de generar backup realizado con éxito";
             DB::commit();
         } catch (Exception $error){
             DB::rollback();

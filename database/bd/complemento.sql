@@ -335,3 +335,13 @@ UPDATE `migrations` SET `migration` = '2023_11_20_170953_create_consignacion_ban
 
 ALTER TABLE `companiaaseguradora` ADD `created_at` TIMESTAMP NULL AFTER `comasenumeropoliza`, ADD `updated_at` TIMESTAMP NULL AFTER `created_at`;
 ALTER TABLE `fidelizacioncliente` ADD `created_at` TIMESTAMP NULL AFTER `fidclipuntosminimoredimir`, ADD `updated_at` TIMESTAMP NULL AFTER `created_at`;
+
+--UPDATE `fidelizacioncliente` SET `fidclivalorfidelizacion` = '10000' WHERE `fidelizacioncliente`.`fidcliid` = 1;
+UPDATE `procesoautomatico` SET `proautid` = '17' WHERE `procesoautomatico`.`proautid` = 16;
+INSERT INTO `procesoautomatico` (`proautid`, `proautnombre`, `proautclasephp`, `proautmetodo`, `proautfechaejecucion`, `proauttipo`, `created_at`, `updated_at`) VALUES ('16', 'MarcarRedencionPuntos',  'Noche',  'marcarRedencionPuntos','2024-03-13', 'N', '2024-03-14 11:22:54', '2024-03-14 11:22:54');
+
+UPDATE `procesoautomatico` SET `proautclasephp` = 'Noche', `proautmetodo` = 'marcarRedencionPuntos' WHERE `procesoautomatico`.`proautid` = 16;
+
+ALTER TABLE `tiquete` ADD `tiquvalorpuntosredimido` DECIMAL(7,0) NULL AFTER `tiquvalorfondorecaudo`;
+
+INSERT INTO `cuentacontable` (`cueconid`, `cueconnombre`, `cuecondescripcion`, `cueconcodigo`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES (NULL, 'valorPuntoRedimir', 'VALOR PUNTOS A REDIMIR', '1200021', 'D', '1', '2024-03-14 17:08:21', '2024-03-14 17:08:21');

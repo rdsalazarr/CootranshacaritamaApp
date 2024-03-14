@@ -18,7 +18,7 @@ class FidelizacionClienteSeeder extends Seeder
 
         DB::table('fidelizacioncliente')->insert([
             'fidcliid'                  => '1',
-            'fidclivalorfidelizacion'   => '1000',
+            'fidclivalorfidelizacion'   => '10000',
             'fidclivalorpunto'          => '100',
             'fidclipuntosminimoredimir' => '100',
             'created_at'                => $fechaHoraActual,

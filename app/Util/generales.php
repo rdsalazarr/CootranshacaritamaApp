@@ -296,6 +296,10 @@ class generales
 		return ceil($valor/1000)*1000;
 	}
 
+	function redondearMilMasCercano($valor){
+		return round($valor/1000.0,0)*100;
+	}
+
 	function redondearCienMasCercano($valor){
 		return round($valor/100.0,0)*100;
 	}

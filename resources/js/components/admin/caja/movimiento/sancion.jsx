@@ -1,8 +1,9 @@
 import React, {useState, useEffect, Fragment} from 'react';
-import { Button, Grid, Stack, Icon, Autocomplete, createFilterOptions, Box, Card, Table, TableHead, TableBody, TableRow, TableCell, FormGroup, FormControlLabel, Checkbox,} from '@mui/material';
+import { Button, Grid, Stack, Autocomplete, createFilterOptions, Box, Card, Table, TableHead, TableBody, TableRow, TableCell, FormGroup, FormControlLabel, Checkbox} from '@mui/material';
 import { TextValidator, ValidatorForm} from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../layout/modal';
+import {FormatearNumero} from "../../../layout/general";
 import SearchIcon from '@mui/icons-material/Search';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
@@ -36,7 +37,7 @@ export default function Sancion(){
         })
 
         newFormData.totalAPagar  = totalSancion;
-        newFormData.totalSancion = formatearNumero(totalSancion);
+        newFormData.totalSancion = FormatearNumero({numero: totalSancion});
         setFormDataSancion(newFormDataSancion);
         setFormData(newFormData);
     }
@@ -87,7 +88,7 @@ export default function Sancion(){
                 })
 
                 newFormData.totalAPagar  = totalSancion;
-                newFormData.totalSancion = formatearNumero(totalSancion);
+                newFormData.totalSancion = FormatearNumero({numero: totalSancion});
                 setSancionesAsociado(sancionesAsociado);
                 setFormDataSancion(newFormDataSancion);
                 setFormData(newFormData);
@@ -95,11 +96,6 @@ export default function Sancion(){
             }
             setLoader(false);
         })
-    }
-
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
     }
 
     const inicio = () =>{

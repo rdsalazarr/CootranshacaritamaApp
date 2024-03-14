@@ -99,7 +99,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de suspender el conductor ".$nombreConductor." en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';
@@ -187,7 +187,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de suspender vehiculo por falta de SOAT en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';
@@ -276,7 +276,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de suspender vehiculo por falta de CRT en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';
@@ -365,7 +365,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de suspender vehiculo por falta de poliza en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';
@@ -454,7 +454,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de suspender vehiculo por falta de tarjeta de operacion en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';
@@ -540,7 +540,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de levantar suspensión del vehiculo al cumplirse el plazo establecido en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';

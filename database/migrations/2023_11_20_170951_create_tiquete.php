@@ -30,7 +30,8 @@ return new class extends Migration
             $table->decimal('tiquvalorseguro', 6, 0)->nullable()->comment('Valor del seguro para el tiquete');
             $table->decimal('tiquvalorestampilla', 6, 0)->nullable()->comment('Valor de la estampilla del tiquete');
             $table->decimal('tiquvalorfondoreposicion', 6, 0)->comment('Valor del fondo de reposición del tiquete');
-            $table->decimal('tiquvalorfondorecaudo', 6, 0)->comment('Valor del fondo de recaudo del tiquete');            
+            $table->decimal('tiquvalorfondorecaudo', 6, 0)->comment('Valor del fondo de recaudo del tiquete');
+            $table->decimal('tiquvalorpuntosredimido', 7, 0)->comment('Valor de los puntos redimidos por la fidelización de cliente');
             $table->decimal('tiquvalortotal', 10, 0)->comment('Valor total del tiquete');
             $table->boolean('tiqucontabilizado')->default(false)->comment('Determina si el tiquete ha sido contabilizado'); 
             $table->timestamps();

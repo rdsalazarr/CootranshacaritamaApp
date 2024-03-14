@@ -2,6 +2,7 @@ import React, {useState, useEffect, Fragment} from 'react';
 import { TextValidator, ValidatorForm, SelectValidator } from 'react-material-ui-form-validator';
 import { Button, Grid, MenuItem, Stack, Box, Card, Typography} from '@mui/material';
 import showSimpleSnackbar from '../../../layout/snackBar';
+import {FormatearNumero} from "../../../layout/general";
 import person from "../../../../../images/person.png";
 import SearchIcon from '@mui/icons-material/Search';
 import {LoaderModal} from "../../../layout/loader";
@@ -19,11 +20,6 @@ export default function Search(){
 
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
-    }
-
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
     }
 
     const consultarCredito = () =>{
@@ -50,7 +46,7 @@ export default function Search(){
                 newFormDataConsulta.showFotografia     = (colocacion.fotografia !== null) ? colocacion.fotografia : person;
 
                 newFormDataConsulta.numeroColocacion   = colocacion.numeroColocacion;
-                newFormDataConsulta.valorDesembolsado  = formatearNumero(colocacion.valorDesembolsado);
+                newFormDataConsulta.valorDesembolsado  = FormatearNumero({numero: colocacion.valorDesembolsado});
                 newFormData.colocacionId               = colocacion.coloid;
                 newFormData.valorDesembolsado          = colocacion.valorDesembolsado;
 

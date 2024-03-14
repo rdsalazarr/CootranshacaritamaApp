@@ -113,3 +113,8 @@ export function Contador({tiempoInicial, onTiempoFinalizado}){
         <>{contador} </> 
     );
 }
+
+export function FormatearNumero({numero}){
+    const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
+    return Number(numero).toLocaleString('es-CO', opciones);
+}

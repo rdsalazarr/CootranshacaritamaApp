@@ -4,6 +4,7 @@ import NumberValidator from '../../../../layout/numberValidator';
 import { ValidatorForm} from 'react-material-ui-form-validator';
 import showSimpleSnackbar from '../../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../../layout/modal';
+import {FormatearNumero} from "../../../../layout/general";
 import {Button, Grid, Stack, Box} from '@mui/material';
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
@@ -29,11 +30,6 @@ export default function PagarCuota({data, cerrarModal}){
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
 
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
-
     const handleChangeRadio = (event) => {
         setFormaPago(event.target.value);
         let newFormData = {...formData};
@@ -44,11 +40,11 @@ export default function PagarCuota({data, cerrarModal}){
             newFormData.interesDevuelto              = pagoGeneral.valorInteresDevuelto;
             newFormData.totalAPagar                  = pagoGeneral.totalAPagar;
             newFormData.interesCorrienteTotal        = pagoGeneral.interesMensualTotal;
-            newFormData.interesCorrienteMostrar      = formatearNumero(pagoGeneral.valorIntereses);
-            newFormData.interesMoraMostrar           = formatearNumero(pagoGeneral.valorInteresMora);
-            newFormData.interesDevueltoMostrar       = formatearNumero(pagoGeneral.valorInteresDevuelto);
-            newFormData.totalAPagarMostrar           = formatearNumero(pagoGeneral.totalAPagar);
-            newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoGeneral.interesMensualTotal);
+            newFormData.interesCorrienteMostrar      = FormatearNumero({numero:pagoGeneral.valorIntereses});
+            newFormData.interesMoraMostrar           = FormatearNumero({numero:pagoGeneral.valorInteresMora});
+            newFormData.interesDevueltoMostrar       = FormatearNumero({numero:pagoGeneral.valorInteresDevuelto});
+            newFormData.totalAPagarMostrar           = FormatearNumero({numero:pagoGeneral.totalAPagar});
+            newFormData.interesCorrienteTotalMostrar = FormatearNumero({numero:pagoGeneral.interesMensualTotal});
         }
 
         if(event.target.value === 'M'){
@@ -57,11 +53,11 @@ export default function PagarCuota({data, cerrarModal}){
             newFormData.interesDevuelto              = pagoMensualidad.valorInteresDevuelto;
             newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
             newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
-            newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
-            newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
-            newFormData.interesDevueltoMostrar       = formatearNumero(pagoMensualidad.valorInteresDevuelto);
-            newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
-            newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
+            newFormData.interesCorrienteMostrar      = FormatearNumero({numero:pagoMensualidad.valorIntereses});
+            newFormData.interesMoraMostrar           = FormatearNumero({numero:pagoMensualidad.valorInteresMora});
+            newFormData.interesDevueltoMostrar       = FormatearNumero({numero:pagoMensualidad.valorInteresDevuelto});
+            newFormData.totalAPagarMostrar           = FormatearNumero({numero:pagoMensualidad.totalAPagar});
+            newFormData.interesCorrienteTotalMostrar = FormatearNumero({numero:pagoMensualidad.interesMensualTotal});
         }
 
         if(event.target.value === 'A'){
@@ -98,12 +94,12 @@ export default function PagarCuota({data, cerrarModal}){
                 newFormData.interesDevuelto              = pagoMensualidad.valorInteresDevuelto;
                 newFormData.totalAPagar                  = pagoMensualidad.totalAPagar;
                 newFormData.interesCorrienteTotal        = pagoMensualidad.interesMensualTotal;
-                newFormData.valorCuotaMostrar            = formatearNumero(pagoMensualidad.valorCuota);
-                newFormData.interesCorrienteMostrar      = formatearNumero(pagoMensualidad.valorIntereses);
-                newFormData.interesMoraMostrar           = formatearNumero(pagoMensualidad.valorInteresMora);
-                newFormData.interesDevueltoMostrar       = formatearNumero(pagoMensualidad.valorInteresDevuelto);
-                newFormData.totalAPagarMostrar           = formatearNumero(pagoMensualidad.totalAPagar);
-                newFormData.interesCorrienteTotalMostrar = formatearNumero(pagoMensualidad.interesMensualTotal);
+                newFormData.valorCuotaMostrar            = FormatearNumero({numero:pagoMensualidad.valorCuota});
+                newFormData.interesCorrienteMostrar      = FormatearNumero({numero:pagoMensualidad.valorIntereses});
+                newFormData.interesMoraMostrar           = FormatearNumero({numero:pagoMensualidad.valorInteresMora});
+                newFormData.interesDevueltoMostrar       = FormatearNumero({numero:pagoMensualidad.valorInteresDevuelto});
+                newFormData.totalAPagarMostrar           = FormatearNumero({numero:pagoMensualidad.totalAPagar});
+                newFormData.interesCorrienteTotalMostrar = FormatearNumero({numero:pagoMensualidad.interesMensualTotal});
                 setPagoMensualidad(res.pagoMensualidad[0]);
                 setPagoGeneral(res.pagoTotal[0]);
                 setFormData(newFormData);

@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers\Admin\Despacho;
 
+use App\Models\Despacho\PersonaServicioPuntosAcomulados;
 use App\Models\Despacho\PersonaServicioFidelizacion;
+use App\Models\Caja\ComprobanteContableDetalle;
+use App\Models\Caja\ComprobanteContable;
 use App\Models\Despacho\PersonaServicio;
 use App\Models\Despacho\TiquetePuesto;
 use App\Http\Controllers\Controller;
 use App\Models\Caja\MovimientoCaja;
+use App\Models\Caja\CuentaContable;
 use App\Models\Despacho\Tiquete;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
 use App\Util\generarPdf;
 use App\Util\notificar;
+use App\Util\generales;
 use Carbon\Carbon;
 
 class TiqueteController extends Controller
@@ -81,8 +86,7 @@ class TiqueteController extends Controller
                                             ->where('m.munihacepresencia', true)
                                         )
                                         ->orderBy('muninombre')
-                                        ->get();
-  
+                                        ->get();  
 
             $tarifaTiquetes         = DB::table('tarifatiquete as tt')
                                         ->select('tt.rutaid','tt.tartiqdepaidorigen','tt.tartiqmuniidorigen','tt.tartiqdepaiddestino','tt.tartiqmuniiddestino', 
@@ -172,7 +176,8 @@ class TiqueteController extends Controller
         try{
             $data   = DB::table('personaservicio')
                                 ->select('perserid','tipideid','perserdocumento','perserprimernombre','persersegundonombre','perserprimerapellido',
-                                            'persersegundoapellido','perserdireccion', 'persercorreoelectronico','persernumerocelular','perserpermitenotificacion')
+                                        'persersegundoapellido','perserdireccion', 'persercorreoelectronico','persernumerocelular','perserpermitenotificacion',
+                                        DB::raw('(SELECT SUM(pspa.pesepavalorredimido) FROM personaserpuntosacomulados as pspa WHERE pesepapagado = "0" AND pspa.perserid = perserid ) AS totalPuntosAcomulados'))
                                 ->where('tipideid', $request->tipoIdentificacion)
                                 ->where('perserdocumento', $request->documento)->first();
 
@@ -187,9 +192,9 @@ class TiqueteController extends Controller
         $tiquid          = $request->codigo;
 		$personaId       = $request->personaId; 
         $tiquete         = ($tiquid != 000) ? Tiquete::findOrFail($tiquid) : new Tiquete();
-        $personaservicio = ($personaId != 000) ? PersonaServicio::findOrFail($personaId) : new PersonaServicio(); 
+        $personaservicio = ($personaId != 000) ? PersonaServicio::findOrFail($personaId) : new PersonaServicio();
 
-	    $this->validate(request(),[
+  	    $this->validate(request(),[
 			    'tipoIdentificacion'     => 'required|numeric',
 				'documento'              => 'required|string|min:6|max:15|unique:personaservicio,perserdocumento,'.$personaservicio->perserid.',perserid',
 				'primerNombre'           => 'required|string|min:3|max:140',
@@ -208,7 +213,7 @@ class TiqueteController extends Controller
                 'valorDescuento'         => 'nullable|numeric|between:1,99999999',
                 'valorFondoReposicion'   => 'required|numeric|between:1,99999999',
                 'valorTotal'             => 'required|numeric|between:1,99999999',
-                'valorTotalSeguro'       => 'required|numeric|between:1,99999999',
+                'valorTotalSeguro'       => 'nullable|numeric|between:0,99999999',
                 'valorFondoRecaudoTotal' => 'required|numeric|between:1,99999',
                 'valorTotalEstampilla'   => 'required|numeric',
                 'puestosVendidos'        => 'required|array|min:1', 
@@ -216,9 +221,18 @@ class TiqueteController extends Controller
 
         DB::beginTransaction();
         try {
-
+            $valorContabilizar                          = $request->valorTotal;
+            $valorFondoReposicion                       = $request->valorFondoReposicion;
+            $valorEstampilla                            = $request->valorTotalEstampilla;
+            $valorSeguro                                = $request->valorTotalSeguro;
+            $valorFondoRecaudo                          = $request->valorFondoRecaudoTotal;
+            $valorPuntosRedimidos                       = ($request->redimirPuntos === 'SI') ? $request->totalPuntosAcomulados : 0;
+            $valorTiqueteContabilizar                   = $valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro - $valorFondoRecaudo;
             $nombreCliente                              = $request->primerNombre.' '.$request->segundoNombre.' '.$request->primerApellido.' '.$request->segundoApellido;
             $fechaHoraActual                            = Carbon::now();
+            $generales                                  = new generales();
+
+            //Registra o actualiza la persona del servicio
 			$personaservicio->tipideid                  = $request->tipoIdentificacion;
 			$personaservicio->perserdocumento           = $request->documento;
 			$personaservicio->perserprimernombre        = mb_strtoupper($request->primerNombre,'UTF-8');
@@ -243,7 +257,7 @@ class TiqueteController extends Controller
                 $tiquete->usuaid                = Auth::id();
                 $tiquete->tiqufechahoraregistro = $fechaHoraActual;
                 $tiquete->tiquanio              = $anioActual;
-                $tiquete->tiquconsecutivo       = $this->obtenerConsecutivo($anioActual);
+                $tiquete->tiquconsecutivo       = Tiquete::obtenerConsecutivo($anioActual);
             }
 
             $tiquete->plarutid                 = $request->planillaId;
@@ -255,28 +269,113 @@ class TiqueteController extends Controller
             $tiquete->tiqucantidad             = $request->cantidadPuesto;
             $tiquete->tiquvalortiquete         = $request->valorTiquete;
             $tiquete->tiquvalordescuento       = $request->valorDescuento;
-            $tiquete->tiquvalorseguro          = $request->valorTotalSeguro;
-            $tiquete->tiquvalorestampilla      = $request->valorTotalEstampilla;
-            $tiquete->tiquvalorfondoreposicion = $request->valorFondoReposicion;
-            $tiquete->tiquvalorfondorecaudo    = $request->valorFondoRecaudoTotal;
-            $tiquete->tiquvalortotal           = $request->valorTotal;
+            $tiquete->tiquvalorseguro          = $valorSeguro;
+            $tiquete->tiquvalorestampilla      = $valorEstampilla;
+            $tiquete->tiquvalorfondoreposicion = $valorFondoReposicion;
+            $tiquete->tiquvalorfondorecaudo    = $valorFondoRecaudo;
+            $tiquete->tiquvalorpuntosredimido  = $valorPuntosRedimidos;
+            $tiquete->tiquvalortotal           = $valorContabilizar - $valorPuntosRedimidos;
+            $tiquete->tiqucontabilizado        = ($valorPuntosRedimidos > 0 ) ? 1 : 0; 
 			$tiquete->save();
 
             if($request->tipo === 'I'){
 				//Consulto el ultimo identificador de la tiquete
-				$tiqueteConsecutivo  = Tiquete::latest('tiquid')->first();
-				$tiquid              = $tiqueteConsecutivo->tiquid;
-                $fidelizacioncliente = DB::table('fidelizacioncliente')->select('fidclivalorfidelizacion')->where('fidcliid', 1)->first();
-                $totalPuntos         = intval($request->valorTotal / $fidelizacioncliente->fidclivalorfidelizacion);
+				$tiqueteConsecutivo      = Tiquete::latest('tiquid')->first();
+				$tiquid                  = $tiqueteConsecutivo->tiquid;
+                $fidelizacioncliente     = DB::table('fidelizacioncliente')->select('fidclivalorfidelizacion')->where('fidcliid', 1)->first();
+                $valorTotal              = $valorContabilizar - $valorPuntosRedimidos;
+                $totalPuntosFidelizacion = intval($valorTotal / $fidelizacioncliente->fidclivalorfidelizacion);
 
-                $personaserviciofidelizacion                          = new PersonaServicioFidelizacion();
-                $personaserviciofidelizacion->agenid                  = auth()->user()->agenid;
-                $personaserviciofidelizacion->usuaid                  = Auth::id();
-                $personaserviciofidelizacion->perserid                = $personaId;
-                $personaserviciofidelizacion->pesefifechahoraregistro = $fechaHoraActual;
-                $personaserviciofidelizacion->pesefitipoproceso       = 'E';
-                $personaserviciofidelizacion->pesefinumeropunto       = $totalPuntos;
-                $personaserviciofidelizacion->save();
+                if($totalPuntosFidelizacion > 0){
+                    $personaserviciofidelizacion                          = new PersonaServicioFidelizacion();
+                    $personaserviciofidelizacion->agenid                  = auth()->user()->agenid;
+                    $personaserviciofidelizacion->usuaid                  = Auth::id();
+                    $personaserviciofidelizacion->perserid                = $personaId;
+                    $personaserviciofidelizacion->pesefifechahoraregistro = $fechaHoraActual;
+                    $personaserviciofidelizacion->pesefitipoproceso       = 'E';
+                    $personaserviciofidelizacion->pesefinumeropunto       = $totalPuntosFidelizacion;
+                    $personaserviciofidelizacion->save();
+                }
+
+                if($request->redimirPuntos === 'SI'){
+                    $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
+                    if(!$cajaAbierta){
+                        return response()->json(['success' => false, 'message' => 'Para poder redimir puntos, es necesario tener una caja abierta. Sin la apertura de la caja, no es posible realizar la redención de puntos']);
+                    }
+
+                    //Marco los puntos como gastados
+                    $personasSerPuntosAcomulados = DB::table('personaserpuntosacomulados')->select('pesepaid')->where('perserid', $personaId)->get();
+                    foreach($personasSerPuntosAcomulados as $personaSerPuntoAcomulado){
+                        $personaserpuntosacomulados                        = PersonaServicioPuntosAcomulados::findOrFail($personaSerPuntoAcomulado->pesepaid);
+                        $personaserpuntosacomulados->usuaid                = Auth::id();
+                        $personaserpuntosacomulados->pesepafechahorapagado = $fechaHoraActual;
+                        $personaserpuntosacomulados->pesepapagado          = true;
+                        $personaserpuntosacomulados->save();
+                    }
+
+                    //Se realiza la contabilizacion
+                    $fechaActual                                 = $fechaHoraActual->format('Y-m-d');
+                    $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = $valorContabilizar - $valorPuntosRedimidos;
+                    $comprobantecontabledetalle->save();
+
+                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoTiquete');
+                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                    $comprobantecontabledetalle->cocodemonto     = $generales->redondearCienMasCercano($valorTiqueteContabilizar);
+                    $comprobantecontabledetalle->save();
+
+                    if($valorFondoReposicion > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('fondoReposicion');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
+                        $comprobantecontabledetalle->save();
+                    }
+
+                    if($valorEstampilla > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
+                        $comprobantecontabledetalle->save();  
+                    }
+
+                    if($valorSeguro > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoSeguro');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
+                        $comprobantecontabledetalle->save();
+                    }
+
+                    if($valorFondoRecaudo > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorFondoRecaudo');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorFondoRecaudo;
+                        $comprobantecontabledetalle->save();
+                    }
+
+                    if($valorPuntosRedimidos  > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorPuntoRedimir');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorPuntosRedimidos;
+                        $comprobantecontabledetalle->save();
+                    }
+                }
+
 			}else{
                 $tiquetePuestos  = DB::table('tiquetepuesto as tp')->select('tp.tiqpueid')
                                     ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')
@@ -300,7 +399,7 @@ class TiqueteController extends Controller
             if($request->enviarTiquete === 'SI' && $request->correo !== ''){//Notifico al correo
                 $arrayPdf   = [];
 			    array_push($arrayPdf, $this->generarFacturaPdf($tiquid, 'F')); 
-                $empresa            = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();		
+                $empresa            = DB::table('empresa')->select('emprnombre','emprsigla','emprcorreo')->where('emprid', 1)->first();
                 $notificar          = new notificar();
                 $informacioncorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionConfirmacionTiquete')->first(); 
                 $email              = $request->correo;
@@ -457,15 +556,5 @@ class TiqueteController extends Controller
         $generarPdf   = new generarPdf();
 
         return $generarPdf->facturaTiquete($arrayDatos);
-    }  
-
-    public function obtenerConsecutivo($anioActual)
-	{
-        $consecutivoTiquete = DB::table('tiquete')->select('tiquconsecutivo as consecutivo')
-                                                        ->where('tiquanio', $anioActual)
-                                                        ->where('agenid', auth()->user()->agenid)
-                                                        ->orderBy('tiquid', 'Desc')->first();
-        $consecutivo = ($consecutivoTiquete === null) ? 1 : $consecutivoTiquete->consecutivo + 1;
-        return str_pad($consecutivo,  4, "0", STR_PAD_LEFT);
     }
 }

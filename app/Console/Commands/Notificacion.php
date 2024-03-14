@@ -63,7 +63,7 @@ class Notificacion
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje          .= "Proceso de notificacion de vencimiento de licencia envidada hoy ".$fechaActual.", al correo ".$correoPersona."\r\n";
                 $mensajeCorreo    .= $mensaje.'<br>';
             }
@@ -129,7 +129,7 @@ class Notificacion
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje          .= "Proceso de notificacion de vencimiento de SOAT envidada hoy ".$fechaActual.", al correo ".$correoPersona."\r\n";
                 $mensajeCorreo    .= $mensaje.'<br>';
             }
@@ -195,7 +195,7 @@ class Notificacion
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje          .= "Proceso de notificacion de vencimiento de CRT envidada hoy ".$fechaActual.", al correo ".$correoPersona."\r\n";
                 $mensajeCorreo    .= $mensaje.'<br>';
             }
@@ -262,7 +262,7 @@ class Notificacion
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje          .= "Proceso de notificacion de vencimiento de polizas envidada hoy ".$fechaActual.", al correo ".$correoPersona."\r\n";
                 $mensajeCorreo    .= $mensaje.'<br>';
             }
@@ -328,7 +328,7 @@ class Notificacion
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje          .= "Proceso de notificacion de vencimiento de tarjeta de operacion envidada hoy ".$fechaActual.", al correo ".$correoPersona."\r\n";
                 $mensajeCorreo    .= $mensaje.'<br>';
             }
@@ -408,7 +408,7 @@ class Notificacion
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                $mensajeNotificar = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina);
+                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
                 $mensaje          .= "Proceso de notificacion de cuotas de creditos vencida en la fecha ".$fechaActual.", al correo ".$correoPersona."\r\n";
                 $mensajeCorreo    .= $mensaje.'<br>';
             }

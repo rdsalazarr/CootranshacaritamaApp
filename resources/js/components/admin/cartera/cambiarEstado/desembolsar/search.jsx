@@ -6,6 +6,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import showSimpleSnackbar from '../../../../layout/snackBar';
 import { ModalDefaultAuto } from '../../../../layout/modal';
 import SolicitudCredito from '../../show/solicitudCredito';
+import {FormatearNumero} from "../../../../layout/general";
 import person from "../../../../../../images/person.png";
 import {LoaderModal} from "../../../../layout/loader";
 import instance from '../../../../layout/instance';
@@ -116,16 +117,11 @@ export default function Search(){
         })
     }
 
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
-
     const desembolsarCredito = () =>{
         let validarLineaCredito = (formData.lineaCredito !== formDataConsulta.lineaCreditoId) ? true : false;
 
         if(formData.valorSolicitado > formDataConsulta.montoSolicitado){
-            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formDataConsulta.montoSolicitado), 'error');
+            showSimpleSnackbar("El monto máximo permito es "+FormatearNumero({numero: formDataConsulta.montoSolicitado}), 'error');
             return;
         }
 
@@ -145,12 +141,12 @@ export default function Search(){
         }
 
         if(validarLineaCredito && formData.valorSolicitado < formDataLineaCredito.valorMinimoLineaCredito){
-            showSimpleSnackbar("El monto mínimo permito es "+formatearNumero(formDataLineaCredito.valorMinimoLineaCredito), 'error');
+            showSimpleSnackbar("El monto mínimo permito es "+FormatearNumero({numero: formDataLineaCredito.valorMinimoLineaCredito}), 'error');
             return;
         }
 
         if(validarLineaCredito && formData.valorSolicitado > formDataLineaCredito.valorMaximoLineaCredito){
-            showSimpleSnackbar("El monto máximo permito es "+formatearNumero(formDataLineaCredito.valorMaximoLineaCredito), 'error');
+            showSimpleSnackbar("El monto máximo permito es "+FormatearNumero({numero: formDataLineaCredito.valorMaximoLineaCredito}), 'error');
             return;
         }
 

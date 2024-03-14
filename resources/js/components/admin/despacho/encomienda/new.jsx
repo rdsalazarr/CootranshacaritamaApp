@@ -4,6 +4,7 @@ import {Button, Grid, MenuItem, Stack, Box, FormControlLabel, Switch} from '@mui
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {ModalDefaultAuto } from '../../../layout/modal';
+import {FormatearNumero} from "../../../layout/general";
 import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
@@ -83,8 +84,8 @@ export default function New({data, tipo}){
                             municipioOrigen:'',        departamentoDestino:'',         municipioDestino:'',          tipoEncomienda:'',
                             cantidad:'',               valorDeclarado: valorDeclarado, valorEnvio: valorEnvio,       valorDomicilio:'',
                             contenido:'',              observaciones: observaciones,   personaIdRemitente:'000',     personaIdDestino:'000',
-                            ruta:'',                   contabilizado:false,            valorSeguro: formatearNumero(valorSeguro),
-                            valorTotal: formatearNumero(valorTotal),                   tipo:tipo });
+                            ruta:'',                   contabilizado:false,            valorSeguro: FormatearNumero({numero: valorSeguro}),
+                            valorTotal: FormatearNumero({numero: valorTotal}),                   tipo:tipo });
 
                 setIdEncomienda(res.encomiendaId);
                 setPagoContraEntrega(false);
@@ -239,11 +240,6 @@ export default function New({data, tipo}){
         setFormData(newFormData);
     }
 
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
-
     const calcularValorEncomienda = (e) =>{
         let newFormData            = {...formData}
         let valorDeclarado         = (e.target.name === 'valorDeclarado' ) ? e.target.value : formData.valorDeclarado;
@@ -254,8 +250,8 @@ export default function New({data, tipo}){
         newFormData.valorDeclarado = valorDeclarado;
         newFormData.valorEnvio     = valorEnvio;
         newFormData.valorDomicilio = valorDomicilio;
-        newFormData.valorSeguro    = formatearNumero(valorSeguro);
-        newFormData.valorTotal     = formatearNumero(valorTotal);
+        newFormData.valorSeguro    = FormatearNumero({numero: valorSeguro});
+        newFormData.valorTotal     = FormatearNumero({numero: valorTotal});
         setFormData(newFormData);
     }
 
@@ -270,8 +266,8 @@ export default function New({data, tipo}){
             let valorTotal             = Number(valorEnvio) + Number(valorSeguro);
             newFormData.valorDeclarado = valorDeclarado;
             newFormData.valorEnvio     = valorEnvio;
-            newFormData.valorSeguro    = formatearNumero(valorSeguro);
-            newFormData.valorTotal     = formatearNumero(valorTotal);
+            newFormData.valorSeguro    = FormatearNumero({numero: valorSeguro});
+            newFormData.valorTotal     = FormatearNumero({numero: valorTotal});
 
             setConfiguracionEncomienda(res.configuracionEncomienda);
             setTipoIdentificaciones(res.tipoIdentificaciones);
@@ -317,8 +313,8 @@ export default function New({data, tipo}){
                 newFormData.ruta                        = encomienda.plarutid;
                 newFormData.contabilizado               = encomienda.encocontabilizada;
                 newFormData.pagoContraEntrega           = encomienda.encopagocontraentrega;
-                newFormData.valorSeguro                 = formatearNumero(encomienda.encovalorcomisionseguro);
-                newFormData.valorTotal                  = formatearNumero(encomienda.encovalortotal);
+                newFormData.valorSeguro                 = FormatearNumero({numero: encomienda.encovalorcomisionseguro});
+                newFormData.valorTotal                  = FormatearNumero({numero: encomienda.encovalortotal});
 
                 let municipiosOrigen  = [];
                 let municipiosDestino = []; 

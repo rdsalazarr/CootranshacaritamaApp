@@ -6,6 +6,7 @@ import puestoVehiculo from "../../../../../images/iconoPuestoVehiculo.png";
 import NumberValidator from '../../../layout/numberValidator';
 import showSimpleSnackbar from '../../../layout/snackBar';
 import {ModalDefaultAuto } from '../../../layout/modal';
+import {FormatearNumero} from "../../../layout/general";
 import {LoaderModal} from "../../../layout/loader";
 import ErrorIcon from '@mui/icons-material/Error';
 import SaveIcon from '@mui/icons-material/Save';
@@ -15,23 +16,26 @@ import VisualizarPdf from './visualizarPdf';
 export default function New({data, tipo}){
     let tiquid        = (tipo === 'U') ? data.tiquid : '000';
     let plarutid      = (tipo === 'U') ? data.plarutid : '000';
-    const [formData, setFormData] = useState({codigo:tiquid,            tipoIdentificacion:'',          documento:'',          primerNombre:'',
-                                              segundoNombre:'',         primerApellido:'',              segundoApellido:'',    direccion:'',
-                                              correo:'',                telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
-                                              departamentoDestino:'',   municipioDestino:'',            valorTiquete :'',      planillaId:'',
-                                              valorDescuento:'',        valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
-                                              valorTiqueteMostrar :'',  valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: '',
-                                              valorSeguro:'',           valorSeguroMostrar:'',          rutaId: '',            valorEstampilla:'',  
-                                              valorTotalEstampilla: '', fondoReposicion:'',             valorFondoRecaudo:'',  valorFondoRecaudoTotal:'',
-                                              valorTotalSeguro:'',      valorTiqueteEditar:'',          valorSeguroEditar:'', fondoReposicionEditar:'',
-                                              valorEstampillaEditar:'', valorFondoRecaudoEditar:'',     tipo:tipo});
+    const [formData, setFormData] = useState({codigo:tiquid,            tipoIdentificacion:'',          documento:'',             primerNombre:'',
+                                              segundoNombre:'',         primerApellido:'',              segundoApellido:'',       direccion:'',
+                                              correo:'',                telefonoCelular:'',             departamentoOrigen:'',    municipioOrigen:'',
+                                              departamentoDestino:'',   municipioDestino:'',            valorTiquete :'',         planillaId:'',
+                                              valorDescuento:'',        valorFondoReposicion:'',        valorTotal:'',            personaId:'000',
+                                              valorTiqueteMostrar :'',  valorFondoReposicionMostrar:'', valorTotalTiquete:'',     cantidadPuesto: '',
+                                              valorSeguro:'',           valorSeguroMostrar:'',          rutaId: '',               valorEstampilla:'',  
+                                              valorTotalEstampilla: '', fondoReposicion:'',             valorFondoRecaudo:'',     valorFondoRecaudoTotal:'',
+                                              valorTotalSeguro:'',      valorTiqueteEditar:'',          valorSeguroEditar:'',     fondoReposicionEditar:'',
+                                              valorEstampillaEditar:'', valorFondoRecaudoEditar:'',     totalPuntosAcomulados:'', enviarTiquete:'', 
+                                              redimirPuntos:'',         valorPuntosAcomulados:'',        tipo:tipo});
     
     const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral' + 'Venta');
+    const [mostrarRedencionPuntos, setMostrarRedencionPuntos] = useState(false);
     const [tiqueteContabilizado, setTiqueteContabilizado] = useState(false);
     const [distribucionVehiculos, setDistribucionVehiculos] = useState([]);
     const [tipoIdentificaciones, setTipoIdentificaciones] = useState([]);
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
-    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);    
+    const [municipiosOrigen, setMunicipiosOrigen] = useState([]);
+    const [redimirPuntos, setRedimirPuntos] = useState(false);  
     const [enviarTiquete, setEnviarTiquete] = useState(false);
     const [tarifaTiquetes, setTarifaTiquetes] = useState([]);
     const [formDataPuesto, setFormDataPuesto] = useState([]);
@@ -59,7 +63,7 @@ export default function New({data, tipo}){
         setEnviarTiquete(e.target.checked);
     }
 
-    const handleChangeTomarSeguro= (e) => {
+    const handleChangeTomarSeguro = (e) => {
         setTomarSeguro(e.target.checked);
         let valorTiquete               = Number(formData.valorTiquete);
         let valorSeguro                = Number(formData.valorSeguro);
@@ -71,8 +75,18 @@ export default function New({data, tipo}){
         let newFormData                = {...formData}
         newFormData.valorTotal         = valorTotalTiquete;
         newFormData.valorTotalSeguro   = valorSeguroPuesto;
-        newFormData.valorSeguroMostrar = formatearNumero(valorSeguroPuesto);
-        newFormData.valorTotalTiquete  = formatearNumero(valorTotalTiquete);
+        newFormData.valorSeguroMostrar = FormatearNumero({numero: valorSeguroPuesto}); 
+        newFormData.valorTotalTiquete  = FormatearNumero({numero: valorTotalTiquete});
+        setFormData(newFormData);
+    }
+
+    const handleChangeRedimirPuntos = (e) => {
+        setRedimirPuntos(e.target.checked);
+        let newFormData               = {...formData}
+        let totalPuntosAcomulados     = Number(formData.totalPuntosAcomulados);
+        let valorTotal                = Number(formData.valorTotal);
+        let valorTotalTiquete         = (e.target.checked) ? (valorTotal - totalPuntosAcomulados) : valorTotal;
+        newFormData.valorTotalTiquete = FormatearNumero({numero: valorTotalTiquete});
         setFormData(newFormData);
     }
 
@@ -114,10 +128,10 @@ export default function New({data, tipo}){
         newFormData.valorTiquete                = valorTiquete;
         newFormData.valorTotal                  = valorTotalTiquete;
         newFormData.valorTotalSeguro            = valorSeguroPuesto;
-        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
-        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
-        newFormData.valorTotalTiquete           = formatearNumero(valorTotalTiquete);
-        newFormData.valorSeguroMostrar          = formatearNumero(valorSeguroPuesto);
+        newFormData.valorTiqueteMostrar         = FormatearNumero({numero: valorTiquete});
+        newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: valorFondoReposicion});
+        newFormData.valorTotalTiquete           = FormatearNumero({numero: valorTotalTiquete});
+        newFormData.valorSeguroMostrar          = FormatearNumero({numero: valorSeguroPuesto});
         newFormData.cantidadPuesto              = cantidadPuesto;
         newFormData.valorTotalEstampilla        = valorEstampilla * cantidadPuesto;
         newFormData.valorFondoRecaudoTotal      = cantidadPuesto * valorFondoRecaudo;
@@ -126,9 +140,10 @@ export default function New({data, tipo}){
 
     const handleSubmit = () =>{
         let newFormData             = {...formData}
-        newFormData.enviarTiquete   = (enviarTiquete) ? 'SI' : 'NO'; ;
+        newFormData.enviarTiquete   = (enviarTiquete) ? 'SI' : 'NO'; 
+        newFormData.redimirPuntos   = (redimirPuntos) ? 'SI' : 'NO'; 
         newFormData.puestosVendidos = formDataPuesto;
-
+        
         if(formDataPuesto.length === 0){
             showSimpleSnackbar('Por favor, seleccione al menos un puesto del vehículo', 'error');
             return;
@@ -147,15 +162,20 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
             if(formData.tipo === 'I' && res.success){
-                setFormData({codigo:tiquid,          tipoIdentificacion:'',          documento:'',          primerNombre:'',
-                            segundoNombre:'',        primerApellido:'',              segundoApellido:'',    direccion:'',
-                            correo:'',               telefonoCelular:'',             departamentoOrigen:'', municipioOrigen:'',
-                            departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',      planillaId:'',
-                            valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',         personaId:'000',
-                            valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',  cantidadPuesto: 0,
-                            valorSeguro:'',          valorSeguroMostrar:'',          rutaId: '',            valorEstampilla:'', 
-                            valorFondoRecaudo:'',    valorFondoRecaudoTotal:'',     valorTotalSeguro:'',    tipo:tipo });
+                setFormData({codigo:tiquid,          tipoIdentificacion:'',          documento:'',             primerNombre:'',
+                            segundoNombre:'',        primerApellido:'',              segundoApellido:'',       direccion:'',
+                            correo:'',               telefonoCelular:'',             departamentoOrigen:'',    municipioOrigen:'',
+                            departamentoDestino:'',  municipioDestino:'',            valorTiquete :'',         planillaId:'',
+                            valorDescuento:'',       valorFondoReposicion:'',        valorTotal:'',            personaId:'000',
+                            valorTiqueteMostrar :'', valorFondoReposicionMostrar:'', valorTotalTiquete:'',     cantidadPuesto: '',
+                            valorSeguro:'',          valorSeguroMostrar:'',          rutaId: '',               valorEstampilla:'', 
+                            valorTotalEstampilla: '', fondoReposicion:'',            valorFondoRecaudo:'',     valorFondoRecaudoTotal:'',
+                            valorTotalSeguro:'',      valorTiqueteEditar:'',         valorSeguroEditar:'',     fondoReposicionEditar:'',
+                            valorEstampillaEditar:'', valorFondoRecaudoEditar:'',    totalPuntosAcomulados:'', enviarTiquete:'', 
+                            redimirPuntos:'',         valorPuntosAcomulados:'',       tipo:tipo });
+                setMostrarRedencionPuntos(false);
                 setEnviarTiquete(false);
+                setRedimirPuntos(false);
                 setTomarSeguro(false);
                 setDataPuestos([]);
             }
@@ -176,25 +196,30 @@ export default function New({data, tipo}){
             setLoader(true);
             instance.post('/admin/despacho/tiquete/consultar/datos/persona', {tipoIdentificacion:tpIdentificacion, documento: documento}).then(res=>{
                 if(res.success){
-                    let personaservicio         = res.data;
-                    newFormData.personaId       = personaservicio.perserid;
-                    newFormData.primerNombre    = personaservicio.perserprimernombre;
-                    newFormData.segundoNombre   = (personaservicio.persersegundonombre !== undefined) ? personaservicio.persersegundonombre : '';
-                    newFormData.primerApellido  = (personaservicio.perserprimerapellido !== undefined) ? personaservicio.perserprimerapellido : '';
-                    newFormData.segundoApellido = (personaservicio.persersegundoapellido !== undefined) ? personaservicio.persersegundoapellido : '';
-                    newFormData.direccion       = (personaservicio.perserdireccion !== undefined) ? personaservicio.perserdireccion : '';
-                    newFormData.correo          = (personaservicio.persercorreoelectronico !== undefined) ? personaservicio.persercorreoelectronico : '';
-                    newFormData.telefonoCelular = (personaservicio.persernumerocelular !== undefined) ? personaservicio.persernumerocelular : '';
+                    let personaservicio               = res.data;
+                    let totalPuntosAcomulados         = personaservicio.totalPuntosAcomulados;
+                    newFormData.personaId             = personaservicio.perserid;
+                    newFormData.primerNombre          = personaservicio.perserprimernombre;
+                    newFormData.segundoNombre         = (personaservicio.persersegundonombre !== undefined) ? personaservicio.persersegundonombre : '';
+                    newFormData.primerApellido        = (personaservicio.perserprimerapellido !== undefined) ? personaservicio.perserprimerapellido : '';
+                    newFormData.segundoApellido       = (personaservicio.persersegundoapellido !== undefined) ? personaservicio.persersegundoapellido : '';
+                    newFormData.direccion             = (personaservicio.perserdireccion !== undefined) ? personaservicio.perserdireccion : '';
+                    newFormData.correo                = (personaservicio.persercorreoelectronico !== undefined) ? personaservicio.persercorreoelectronico : '';
+                    newFormData.telefonoCelular       = (personaservicio.persernumerocelular !== undefined) ? personaservicio.persernumerocelular : '';
+                    newFormData.totalPuntosAcomulados = (totalPuntosAcomulados !== undefined) ? totalPuntosAcomulados : '';
+                    newFormData.valorPuntosAcomulados = (totalPuntosAcomulados !== undefined) ? FormatearNumero({numero: totalPuntosAcomulados}) : '';
+                    setMostrarRedencionPuntos((totalPuntosAcomulados > 0) ? true : false);
                     setEnviarTiquete((personaservicio.perserpermitenotificacion) ? true : false);
                 }else{
-                    newFormData.personaId       = '000';
-                    newFormData.primerNombre    = '';
-                    newFormData.segundoNombre   = '';
-                    newFormData.primerApellido  = '';
-                    newFormData.segundoApellido = '';
-                    newFormData.direccion       = '';
-                    newFormData.correo          = '';
-                    newFormData.telefonoCelular = '';
+                    newFormData.personaId             = '000';
+                    newFormData.primerNombre          = '';
+                    newFormData.segundoNombre         = '';
+                    newFormData.primerApellido        = '';
+                    newFormData.segundoApellido       = '';
+                    newFormData.direccion             = '';
+                    newFormData.correo                = '';
+                    newFormData.telefonoCelular       = '';
+                    newFormData.totalPuntosAcomulados = '';
                     setEnviarTiquete(false);
                 }
                 setLoader(false); 
@@ -259,9 +284,9 @@ export default function New({data, tipo}){
             newFormData.fondoReposicion             = fondoReposicion;
             newFormData.valorFondoReposicion        = valorFondoReposicion;
             newFormData.valorFondoRecaudo           = valorFondoRecaudo;
-            newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
-            newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
-            newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+            newFormData.valorSeguroMostrar          = FormatearNumero({numero: valorSeguro});
+            newFormData.valorTiqueteMostrar         = FormatearNumero({numero: valorTiquete});
+            newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: valorFondoReposicion});
             newFormData.valorTotalTiquete           = 0;
             newFormData.cantidadPuesto              = 0;
 
@@ -333,12 +358,12 @@ export default function New({data, tipo}){
         newFormData.valorFondoReposicion        = valorFondoReposicion;
         newFormData.valorEstampilla             = valorEstampilla;
         newFormData.valorFondoRecaudo           = valorFondoRecaudo;
-        newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
-        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
-        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+        newFormData.valorSeguroMostrar          = FormatearNumero({numero: valorSeguro});
+        newFormData.valorTiqueteMostrar         = FormatearNumero({numero: valorTiquete});
+        newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: valorFondoReposicion});
         let valorSeguroPuesto                   = (tomarSeguro) ? Number(valorSeguro) * cantidadPuesto : 0
         let valorTotalTiquete                   = valorTiquetePuesto + valorSeguroPuesto - Number(formData.valorDescuento);
-        newFormData.valorTotalTiquete           = (valorTotalTiquete > 0) ? formatearNumero(valorTotalTiquete) : 0;
+        newFormData.valorTotalTiquete           = (valorTotalTiquete > 0) ? FormatearNumero({numero: valorTotalTiquete}): 0;
         newFormData.valorTotal                  = (valorTotalTiquete > 0) ? valorTotalTiquete: 0;
         newFormData.departamentoOrigen          = depaIdOrigen;
         newFormData.municipioOrigen             = muniIdOrigen;
@@ -384,12 +409,12 @@ export default function New({data, tipo}){
         newFormData.valorFondoReposicion        = valorFondoReposicion;
         newFormData.valorEstampilla             = valorEstampilla;
         newFormData.valorFondoRecaudo           = valorFondoRecaudo;
-        newFormData.valorSeguroMostrar          = formatearNumero(valorSeguro);
-        newFormData.valorTiqueteMostrar         = formatearNumero(valorTiquete);
-        newFormData.valorFondoReposicionMostrar = formatearNumero(valorFondoReposicion);
+        newFormData.valorSeguroMostrar          = FormatearNumero({numero: valorSeguro});
+        newFormData.valorTiqueteMostrar         = FormatearNumero({numero: valorTiquete});
+        newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: valorFondoReposicion});
         let valorSeguroPuesto                   = (tomarSeguro) ? Number(valorSeguro) * cantidadPuesto : 0
         let valorTotalTiquete                   = valorTiquetePuesto + valorSeguroPuesto - Number(formData.valorDescuento);
-        newFormData.valorTotalTiquete           = (valorTotalTiquete > 0) ? formatearNumero(valorTotalTiquete) : 0;
+        newFormData.valorTotalTiquete           = (valorTotalTiquete > 0) ? FormatearNumero({numero: valorTotalTiquete}) : 0;
         newFormData.valorTotal                  = (valorTotalTiquete > 0) ? valorTotalTiquete: 0;
         newFormData.departamentoDestino         = depaIdDestino;
         newFormData.municipioDestino            = muniIdDestino;
@@ -420,11 +445,6 @@ export default function New({data, tipo}){
        setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss + 'Venta');
     }
 
-    const formatearNumero = (numero) =>{
-        const opciones = { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 2 };
-        return Number(numero).toLocaleString('es-CO', opciones);
-    }
- 
     const calcularValorTotalDescuento = (e) =>{
         let newFormData               = {...formData}
         let valorDescuento            = (e.target.name === 'valorDescuento' ) ? e.target.value : formData.valorDescuento;
@@ -435,7 +455,7 @@ export default function New({data, tipo}){
         let valorTotalTiquete         = valorTiquetePuesto + valorSeguro - Number(valorDescuento);
         newFormData.valorDescuento    = valorDescuento;
         newFormData.valorTotal        = valorTotalTiquete;
-        newFormData.valorTotalTiquete = formatearNumero(valorTotalTiquete);
+        newFormData.valorTotalTiquete = FormatearNumero({numero: valorTotalTiquete});
         setFormData(newFormData);
     }
 
@@ -480,9 +500,9 @@ export default function New({data, tipo}){
                 newFormData.valorFondoReposicion        = tiquete.tiquvalorfondoreposicion;
                 newFormData.valorTotal                  = tiquete.tiquvalortotal;
                 newFormData.valorEstampilla             = tiquete.tiquvalorestampilla;
-                newFormData.valorTiqueteMostrar         = formatearNumero(tiquete.tiquvalortiquete);
-                newFormData.valorFondoReposicionMostrar = formatearNumero(tiquete.tiquvalorfondoreposicion);
-                newFormData.valorTotalTiquete           = formatearNumero(tiquete.tiquvalortotal);
+                newFormData.valorTiqueteMostrar         = FormatearNumero({numero: tiquvalortiquete});
+                newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: tiquvalorfondoreposicion});
+                newFormData.valorTotalTiquete           = FormatearNumero({numero: tiquvalortotal});
                 newFormData.valorFondoRecaudoTotal      = tiquete.tiquvalorfondorecaudo;
                 newFormData.valorSeguroMostrar          = tiquete.tiquvalorseguro;
                 newFormData.valorEstampilla             = tiquete.tiquvalorestampilla;
@@ -880,6 +900,26 @@ export default function New({data, tipo}){
                             label="Enviar copia del tiquete al correo"
                         />
                     </Grid>
+
+                    {(mostrarRedencionPuntos) ? 
+                        <Fragment>
+                            <Grid item md={3} xl={3} sm={6} xs={12}>
+                                <FormControlLabel
+                                    control={<Switch name={'redimirPuntos'} 
+                                    value={redimirPuntos} onChange={handleChangeRedimirPuntos}
+                                    color="secondary" checked={(redimirPuntos) ? true : false}/>} 
+                                    label="Redimir puntos"
+                                />
+                            </Grid> 
+
+                            <Grid item xl={2} md={2} sm={6} xs={12}>
+                                <Box className='frmTextoColor'>
+                                    <label>Valor a redimir:  $ </label>
+                                    <span className='textoRojo'>{'\u00A0'+ formData.valorPuntosAcomulados}</span>
+                                </Box>
+                            </Grid>
+                        </Fragment>
+                    : null}
                     
                     {(tiqueteContabilizado) ?
                         <Grid item md={12} xl={12} sm={12} xs={12} style={{marginTop:'1em'}}>
