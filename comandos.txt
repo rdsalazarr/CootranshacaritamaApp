@@ -161,6 +161,7 @@ php artisan make:migration create_solicitud
 php artisan make:migration create_compania_aseguradora
 php artisan make:migration create_fidelizacion_cliente
 php artisan make:migration create_persona_servicio_fidelizacion
+php artisan make:migration create_persona_servicio_puntos_acomulados
 
 
 

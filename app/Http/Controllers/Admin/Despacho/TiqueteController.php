@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Despacho;
 
+use App\Models\Despacho\PersonaServicioFidelizacion;
 use App\Models\Despacho\PersonaServicio;
 use App\Models\Despacho\TiquetePuesto;
 use App\Http\Controllers\Controller;
@@ -263,8 +264,19 @@ class TiqueteController extends Controller
 
             if($request->tipo === 'I'){
 				//Consulto el ultimo identificador de la tiquete
-				$tiqueteConsecutivo = Tiquete::latest('tiquid')->first();
-				$tiquid             = $tiqueteConsecutivo->tiquid;
+				$tiqueteConsecutivo  = Tiquete::latest('tiquid')->first();
+				$tiquid              = $tiqueteConsecutivo->tiquid;
+                $fidelizacioncliente = DB::table('fidelizacioncliente')->select('fidclivalorfidelizacion')->where('fidcliid', 1)->first();
+                $totalPuntos         = intval($request->valorTotal / $fidelizacioncliente->fidclivalorfidelizacion);
+
+                $personaserviciofidelizacion                          = new PersonaServicioFidelizacion();
+                $personaserviciofidelizacion->agenid                  = auth()->user()->agenid;
+                $personaserviciofidelizacion->usuaid                  = Auth::id();
+                $personaserviciofidelizacion->perserid                = $personaId;
+                $personaserviciofidelizacion->pesefifechahoraregistro = $fechaHoraActual;
+                $personaserviciofidelizacion->pesefitipoproceso       = 'E';
+                $personaserviciofidelizacion->pesefinumeropunto       = $totalPuntos;
+                $personaserviciofidelizacion->save();
 			}else{
                 $tiquetePuestos  = DB::table('tiquetepuesto as tp')->select('tp.tiqpueid')
                                     ->join('tiquete as t', 't.tiquid', '=', 'tp.tiquid')

@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Vehiculos\VehiculoResponsabilidadPagoParcial;
+use App\Models\Despacho\PersonaServicioPuntosAcomulados;
+use App\Models\Despacho\PersonaServicioFidelizacion;
 use App\Models\Vehiculos\VehiculoResponsabilidad;
 use App\Models\Despacho\EncomiendaCambioEstado;
 use App\Models\Caja\ComprobanteContableDetalle;
@@ -60,7 +62,7 @@ class Noche
             $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
-            
+
             $pagosParciales = DB::table('vehiculoresponpagoparcial')
                                 ->select('vehiid', DB::raw('SUM(vereppvalorpagado) as valorPagado'))
                                 ->where('vereppprocesado', 0)
@@ -342,13 +344,91 @@ class Noche
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
-            $mensaje       = "Ocurrio un error al generar  backup en la fecha ".$fechaProceso."\r\n";
+            $mensaje       = "Ocurrio un error al generar la marcacion de planilla en la fecha ".$fechaProceso."\r\n";
             $mensajeCorreo = $mensaje.'<br>';
         }
 
         echo $esEjecucionManual ? '' : $mensaje;
         return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
-    }    
+    }   
+
+    public static function marcarRedencionPuntos($esEjecucionManual = false)
+    {
+        $fechaHoraActual = Carbon::now();
+        $notificar       = new notificar();
+        $generales  	 = new generales();
+        $fechaProceso    = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("MarcarRedencionPuntos") : $fechaHoraActual->format('Y-m-d');
+        $mensaje         = "Iniciando proceso de redención de puntos en la fecha ".$fechaProceso."\r\n";
+        $mensajeCorreo   = '';
+        $success         = false;
+        $fechaProcesar   = Carbon::parse($fechaProceso)->subDays(5);
+
+        DB::beginTransaction();
+        try {
+
+            $fidelizacioncliente = DB::table('fidelizacioncliente')->select('fidclipuntosminimoredimir' ,'fidclivalorpunto')->where('fidcliid', 1)->first();
+            $puntosMinimoRedimir = $fidelizacioncliente->fidclipuntosminimoredimir;
+            $valorPunto          = $fidelizacioncliente->fidclivalorpunto;
+
+            $personasfidelizaciones = DB::table('personaserviciofidelizacion as psf')
+                                    ->select('psf.pesefiid','ps.persercorreoelectronico', DB::raw('SUM(psf.pesefinumeropunto) as totalPunto'),
+                                    DB::raw("CONCAT(ps.perserprimernombre,' ',if(ps.persersegundonombre is null ,'', ps.persersegundonombre),' ',
+                                             ps.perserprimerapellido,' ',if(ps.persersegundoapellido is null ,' ', ps.persersegundoapellido)) as nombrePersonaServicio"))
+                                    ->join('personaservicio as ps', 'ps.perserid', '=', 'psf.perserid')
+                                    ->where('totalPunto', '>=', $puntosMinimoRedimir)
+                                    ->where('psf.pesefiredimido', false)
+                                    ->groupBy('psf.perserid')->get();
+
+            $mensaje        = (count($planillaRutas) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaActual."\r\n" : '';
+            foreach($personasfidelizaciones as $personafidelizacion){ 
+
+                $correoPersona = $personafidelizacion->persercorreoelectronico;
+                $nombrePersona = $personafidelizacion->nombrePersonaServicio;
+                //$correoEmpresa
+
+
+                $valorRedimido               =  intval($personafidelizacion->totalPunto * $valorPunto);
+                $personaserviciofidelizacion                          = personaserviciofidelizacion::findOrFail($personafidelizacion->pesefiid);
+                $personaserviciofidelizacion->pesefifechahoraredimido = $fechaHoraActual;
+                $personaserviciofidelizacion->pesefiredimido          = true;
+                $personaserviciofidelizacion->save();
+
+                $personaserpuntosacomulados                      = new PersonaServicioPuntosAcomulados();
+                $personaserpuntosacomulados->perserid            = $fechaHoraActual;
+                $personaserpuntosacomulados->pesepavalorredimido = $valorRedimido;
+                $personaserpuntosacomulados->save();
+
+                //Notificamos 
+                $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionRedencionPuntos')->first();
+                $buscar             = Array('nombrePersona', 'nombreGerente');
+                $remplazo           = Array($nombrePersona, $nombreGerente); 
+                $innocoasunto       = $informacionCorreo->innocoasunto;
+                $innococontenido    = $informacionCorreo->innococontenido;
+                $enviarcopia        = $informacionCorreo->innocoenviarcopia;
+                $enviarpiepagina    = $informacionCorreo->innocoenviarpiepagina;
+                $asunto             = str_replace($buscar, $remplazo, $innocoasunto);
+                $msg                = str_replace($buscar, $remplazo, $innococontenido);
+                $mensajeNotificar   = $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina); 
+                $mensaje            .= "Proceso de redencion de punto para la persona ".$nombrePersona."\r\n";
+                $mensajeCorreo      .= $mensaje.'<br>';               
+            }
+
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(15);
+            $procesoAutomatico->proautfechaejecucion = $fechaProceso;
+            $procesoAutomatico->save();
+
+            $success      = true;
+            $mensajeVista = "Proceso de redención de punto realizado con éxito";
+            DB::commit();
+        } catch (Exception $error){
+            DB::rollback();
+            $mensaje       = "Ocurrio un error al marcar la redención de punto en la fecha ".$fechaProceso."\r\n";
+            $mensajeCorreo = $mensaje.'<br>';
+        }
+
+        echo $esEjecucionManual ? '' : $mensaje;
+        return $esEjecucionManual ? ['success' => $success, 'message' => $mensajeVista] : $mensajeCorreo.'<br>';
+    }
 
     public static function crearBackup($esEjecucionManual = false)
     {
@@ -377,7 +457,7 @@ class Noche
             DB::commit();
         } catch (Exception $error){
             DB::rollback();
-            $mensaje       = "Ocurrio un error al generar  backup en la fecha ".$fechaProceso."\r\n";
+            $mensaje       = "Ocurrio un error al generar backup en la fecha ".$fechaProceso."\r\n";
             $mensajeCorreo = $mensaje.'<br>';
         }
 
