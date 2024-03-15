@@ -97,15 +97,34 @@ class ConductorController extends Controller
     public function destroy(Request $request)
 	{
 		$conductorvehiculo  = DB::table('conductorvehiculo')->select('condid')->where('condid', $request->codigo)->first();
+        $conductorCertificado  = DB::table('conductorcertificado')->select('condid')->where('condid', $request->codigo)->first();
 
 		if($conductorvehiculo){
 			return response()->json(['success' => false, 'message'=> 'Este registro no se puede eliminar, porque está asignado a un vehículo del sistema']);
-		}else{
+		}else if($conductorCertificado){
+			return response()->json(['success' => false, 'message'=> 'Este registro no puede ser eliminado porque está asignado a un certificado. Por favor elimine los certificados y vuelva a intentarlo']);
+		}
+        else{
+            DB::beginTransaction();
 			try {
-				$asociado = Conductor::findOrFail($request->codigo);
-				$asociado->delete();
+				$conductor = Conductor::findOrFail($request->codigo);
+				if ($conductor->has('conductorCambioEstado')){ 
+					foreach ($conductor->conductorCambioEstado as $idConductorCambioEstado){
+						$conductor->conductorCambioEstado()->delete($idConductorCambioEstado);
+					}
+				}
+
+                if ($conductor->has('conductorLicencia')){ 
+					foreach ($conductor->conductorLicencia as $idConductorLicencia){
+						$conductor->conductorLicencia()->delete($idConductorLicencia);
+					}
+				}
+
+                $conductor->delete();
+				DB::commit();
 				return response()->json(['success' => true, 'message' => 'Registro eliminado con éxito']);
-			} catch (Exception $error){
+			} catch (Exception $error){ 
+				DB::rollback();
 				return response()->json(['success' => false, 'message'=> 'Ocurrio un error en la eliminación => '.$error->getMessage()]);
 			}
 		}

@@ -58,7 +58,8 @@ class PersonaRequests extends FormRequest
             'numeroLicencia'          => 'nullable|string|min:4|max:30|required_if:formulario,CONDUCTOR',
             'fechaExpedicionLicencia' => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
             'fechaVencimiento'        => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
-            'imagenLicencia' 	      => 'nullable|mimes:jpg,png,jpeg,pdf,JPG,PNG,JPEG,PDF|max:1000'
+            'imagenLicencia' 	      => 'nullable|mimes:jpg,png,jpeg,pdf,JPG,PNG,JPEG,PDF|max:1000',
+            'certificadoConductor.*'  => 'nullable|mimes:pdf,PFG|max:1000' 
         ];
     }
 }

@@ -25,6 +25,7 @@ class DatosPersonaController extends Controller
             $tpCateLicencias       = [];
             $conductorLicencia     = [];
             $historialLicencias    = [];
+            $conductorCertificados = [];
             $maxFechaVencimiento   = '';
             $cargoLaborales        = DB::table('cargolaboral')->select('carlabid','carlabnombre')->where('carlabid', '>', 3)->where('carlabactivo', true)->orderBy('carlabnombre')->get();
             $tipoIdentificaciones  = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->whereIn('tipideid', ['1','4'])->orderBy('tipidenombre')->get();
@@ -52,6 +53,7 @@ class DatosPersonaController extends Controller
                                     DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',p.persrutapem ) as rutaPem"),
                                     DB::raw("CONCAT('/download/certificado/',p.persdocumento,'/',a.asocrutacertificado ) as rutaCertificado"),
                                     'a.asocrutacertificado','a.asocfechaingreso', 'c.condid','c.tiescoid','c.tipconid','c.agenid','c.condfechaingreso',
+                                    DB::raw('(SELECT COUNT(concerid) AS concerid FROM conductorcertificado WHERE condid = c.condid ) AS totalCertificadoConductor'),
                                     DB::raw("(SELECT MAX(cl.conlicfechavencimiento) FROM conductorlicencia as cl
                                                             INNER JOIN conductor as c on c.condid = cl.condid
                                                             WHERE c.persid = p.persid) AS maxFechaVencimiento") )
@@ -83,13 +85,25 @@ class DatosPersonaController extends Controller
                                                     ->join('tipocategorialicencia as tcl', 'tcl.ticaliid', '=', 'cl.ticaliid')
                                                     ->where('cl.condid', $persona->condid)
                                                     ->whereRaw('cl.conlicfechavencimiento '.$comparadorConsulta.' (SELECT MAX(conlicfechavencimiento) FROM conductorlicencia WHERE condid = cl.condid )') ->get();
+
+
+                    if($persona->totalCertificadoConductor > 0 ){               
+                        $conductorCertificados  = DB::table('conductorcertificado as cc')
+                                                    ->select('cc.concerid as id', 'cc.concernombrearchivooriginal as nombreOriginal', 
+                                                    'cc.concernombrearchivoeditado as nombreEditado', 'cc.concerrutaarchivo as rutaCertificado',
+                                                     DB::raw("CONCAT($documento) as documento"),
+                                                     DB::raw("CONCAT('archivos/persona/',$documento,'/', cc.concerrutaarchivo) as rutaDescargar"))
+                                                    ->join('conductor as c', 'c.condid', '=', 'cc.condid')
+                                                    ->where('c.persid', $request->codigo)->get();
+                    }
                 }
             }
 
-            return response()->json(['success'            => true,               "tipoCargoLaborales" => $cargoLaborales,     "tipoIdentificaciones" => $tipoIdentificaciones,  
-                                    "agencias"            => $agencias,          "departamentos"      => $departamentos,      "municipios"           => $municipios,           
-                                    "persona"            => $persona,            "tipoConductores"    => $tipoConductores,    "tpCateLicencias"      => $tpCateLicencias,      
-                                    "conductorLicencia" => $conductorLicencia,   "historialLicencias" => $historialLicencias, "debeCrearRegistro"    => $debeCrearRegistro]);
+            return response()->json(['success'              => true,                  "tipoCargoLaborales" => $cargoLaborales,     "tipoIdentificaciones" => $tipoIdentificaciones,  
+                                    "agencias"              => $agencias,             "departamentos"      => $departamentos,      "municipios"           => $municipios,           
+                                    "persona"               => $persona,              "tipoConductores"    => $tipoConductores,    "tpCateLicencias"      => $tpCateLicencias,      
+                                    "conductorLicencia"     => $conductorLicencia,    "historialLicencias" => $historialLicencias, "debeCrearRegistro"    => $debeCrearRegistro,
+                                    "conductorCertificados" => $conductorCertificados]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
@@ -145,7 +159,7 @@ class DatosPersonaController extends Controller
                                         ->where('p.persid', $id)->first();
 
             $licenciasConducion     = [];
-            $conductorCertificado   = [];
+            $conductorCertificados  = [];
             $cambiosEstadoConductor = [];
             if($frm === 'CONDUCTOR'){
                 $documento           = $persona->persdocumento;
@@ -158,11 +172,13 @@ class DatosPersonaController extends Controller
                                         ->where('c.persid', $id)->get();
 
                 if($persona->totalCertificadoConductor > 0 ){
-                    $conductorCertificado  = DB::table('conductorcertificado as cc')
-                                                ->select('cc.concerextension', 'cc.concernombrearchivooriginal', 'cc.concernombrearchivoeditado', 'cc.concerrutaarchivo',
-                                                        DB::raw("CONCAT('archivos/persona/',$documento) as rutaAdjuntoCertificado"))
-                                                ->join('conductor as c', 'c.condid', '=', 'cc.condid')
-                                                ->where('c.persid', $id)->get();
+                    $conductorCertificados  = DB::table('conductorcertificado as cc')
+                                                    ->select('cc.concerid as id', 'cc.concernombrearchivooriginal as nombreOriginal', 
+                                                    'cc.concernombrearchivoeditado as nombreEditado', 'cc.concerrutaarchivo as rutaCertificado',
+                                                     DB::raw("CONCAT($documento) as documento"),
+                                                     DB::raw("CONCAT('archivos/persona/',$documento,'/', cc.concerrutaarchivo) as rutaDescargar"))
+                                                    ->join('conductor as c', 'c.condid', '=', 'cc.condid')
+                                                    ->where('c.persid', $id)->get();
                 }
 
                 if($persona->totalCambioEstadoConductor > 0 ){
@@ -189,7 +205,7 @@ class DatosPersonaController extends Controller
 
             return response()->json(['success' => true,   "persona" => $persona,         "cambiosEstadoAsociado" => $cambiosEstadoAsociado, 
                                     "cambiosEstadoConductor" => $cambiosEstadoConductor, "licenciasConducion"    => $licenciasConducion,     
-                                    "conductorCertificado"   => $conductorCertificado]);
+                                    "conductorCertificados"   => $conductorCertificados]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }

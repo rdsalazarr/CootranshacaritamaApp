@@ -3,6 +3,7 @@
 namespace App\Util;
 
 use App\Models\Conductor\ConductorCambioEstado;
+use App\Models\Conductor\ConductorCertificado;
 use App\Models\Conductor\ConductorLicencia;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Conductor\Conductor;
@@ -228,6 +229,29 @@ class personaManager {
                     }
 
                     $conductorlicencia->save();
+                }
+
+                //Registramos los certificados
+                if($request->hasFile('certificadoConductor')){
+                    $conductor       = DB::table('conductor')->select('condid')->where('persid', $persona->persid)->first();
+                    $numeroAleatorio = rand(100, 1000);
+                    $files           = $request->file('certificadoConductor');
+                    foreach($files as $file){
+                        $nombreOriginal = $file->getclientOriginalName();
+                        $filename       = pathinfo($nombreOriginal, PATHINFO_FILENAME);
+                        $extension      = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+                        $nombreArchivo  = $numeroAleatorio."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+                        $file->move($rutaCarpeta, $nombreArchivo);
+                        $rutaArchivo    = Crypt::encrypt($nombreArchivo);
+
+                        $conductorcertificado                              = new ConductorCertificado();
+                        $conductorcertificado->condid                      = $conductor->condid;
+                        $conductorcertificado->concerextension             = $extension;
+                        $conductorcertificado->concernombrearchivooriginal = $nombreOriginal;
+                        $conductorcertificado->concernombrearchivoeditado  = $nombreArchivo;
+                        $conductorcertificado->concerrutaarchivo           = $rutaArchivo;
+                        $conductorcertificado->save();
+                    }
                 }
             }
 

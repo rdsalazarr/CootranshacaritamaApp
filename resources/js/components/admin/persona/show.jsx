@@ -2,6 +2,7 @@ import React, {useState, useEffect, Fragment} from 'react';
 import {Grid, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar} from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CertificadoConductor from './certificadoConductor'
 import { ModalDefaultAuto  } from '../../layout/modal';
 import Trazabilidad from '../../layout/trazabilidad';
 import {LoaderModal} from "../../layout/loader";
@@ -18,10 +19,11 @@ export default function Show({id, frm}){
                                     genero:'',firma:'', foto:'', showFotografia:'', showFirmaPersona:'', estado: ''
                                     } );
 
-    const [cambiosEstadoAsociado, setCambiosEstadoAsociado] = useState([]);
-    const [cambiosEstadoConductor, setCambiosEstadoConductor] = useState([]);
-    const [licenciasConducion, setLicenciasConducion] = useState([]);
     const [modal, setModal] = useState({open : false, extencion:'', ruta:''});
+    const [cambiosEstadoConductor, setCambiosEstadoConductor] = useState([]);
+    const [cambiosEstadoAsociado, setCambiosEstadoAsociado] = useState([]);
+    const [conductorCertificados, setConductorCertificados] = useState([]);
+    const [licenciasConducion, setLicenciasConducion] = useState([]);
 
     const cerrarModal = () =>{
         setModal({open : false});
@@ -61,11 +63,13 @@ export default function Show({id, frm}){
             newFormData.firmaDigital               = persona.firmaDigital;
             newFormData.rutaDescargaCrt            = persona.rutaCrt;
             newFormData.rutaDescargaPem            = persona.rutaPem;
-            newFormData.totalCambioEstadoAsociado  = persona.totalCambioEstadoAsociado
-            newFormData.totalCambioEstadoConductor = persona.totalCambioEstadoConductor
+            newFormData.totalCambioEstadoAsociado  = persona.totalCambioEstadoAsociado;
+            newFormData.totalCambioEstadoConductor = persona.totalCambioEstadoConductor;
+            newFormData.totalCertificadoConductor  = persona.totalCertificadoConductor;            
 
             if(frm == 'ASOCIADO'){
                 newFormData.fechaIngresoAsociado  = persona.asocfechaingreso;
+                newFormData.rutaDescargaCertificado    = (persona.asocrutacertificado !== null) ? persona.rutaCertificado : '';
             }
 
             if(frm == 'CONDUCTOR'){
@@ -77,6 +81,7 @@ export default function Show({id, frm}){
 
             setFormData(newFormData);
             setCambiosEstadoAsociado(res.cambiosEstadoAsociado);
+            setConductorCertificados(res.conductorCertificados);
             setCambiosEstadoConductor(res.cambiosEstadoConductor);
             setLoader(false);
         }) 
@@ -304,6 +309,16 @@ export default function Show({id, frm}){
                                 <span>{formData.fechaIngresoAsociado}</span>
                             </Box>
                         </Grid>
+
+                        {( formData.rutaDescargaCertificado !== '') ?
+                            <Grid item md={3} xl={3} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                    <label>Descargar certificado curso cooperativismo</label>
+                                    <Link href={formData.rutaDescargaCertificado} ><CloudDownloadIcon className={'iconoDownload'} /></Link>
+                                </Box>
+                            </Grid>
+                        : null}
+                        
                     </Fragment>
                 : null}
 
@@ -359,19 +374,19 @@ export default function Show({id, frm}){
                                         return(
                                             <TableRow key={'rowD-' +a}>
                                                 <TableCell>
-                                                    <p>{historial['ticalinombre']}</p>
+                                                    {historial['ticalinombre']}
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <p>{historial['conlicnumero']}</p>
+                                                    {historial['conlicnumero']}
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <p>{historial['conlicfechaexpedicion']}</p>
+                                                    {historial['conlicfechaexpedicion']}
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <p>{historial['conlicfechavencimiento']} {historial['conlicextension']}</p>
+                                                    {historial['conlicfechavencimiento']}
                                                 </TableCell>
 
                                                 <TableCell>
@@ -390,6 +405,12 @@ export default function Show({id, frm}){
                                 </Table>
                             </Box>
                         </Grid>
+
+                        {(formData.totalCertificadoConductor > 0) ? 
+                            <Grid item md={12} xl={12} sm={12} xs={12}>
+                                <CertificadoConductor data={conductorCertificados} eliminar= {false}  />
+                            </Grid>
+                         : null }
 
                     </Fragment>
                 : null}

@@ -12,4 +12,19 @@ class Conductor extends Model
     protected $table      = 'conductor';
     protected $primaryKey = 'condid';
     protected $fillable   = ['persid','tiescoid','tipconid','agenid','condfechaingreso'];
+
+    //Para realizar la relacion con cambio estado
+    public function conductorCambioEstado(){
+        return $this->hasMany('App\Models\Conductor\ConductorCambioEstado', 'condid', 'condid');
+    }
+
+    //Para realizar la relacion con las licencias
+    public function conductorLicencia(){
+        return $this->hasMany('App\Models\Conductor\ConductorLicencia', 'condid', 'condid');
+    }
+
+    //Para realizar la relacion con las certificado
+    public function conductorCertificado(){
+        return $this->hasMany('App\Models\Conductor\ConductorCertificado', 'condid', 'condid');
+    }
 }
