@@ -29,7 +29,7 @@ return new class extends Migration
             $table->foreign('peradoid')->references('peradoid')->on('personaradicadocumento')->onUpdate('cascade')->index('fk_peradosoli');
             $table->foreign('tipsolid')->references('tipsolid')->on('tiposolicitud')->onUpdate('cascade')->index('fk_tipsolsoli');
             $table->foreign('timesoid')->references('timesoid')->on('tipomediosolicitud')->onUpdate('cascade')->index('fk_timesosoli');
-            $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehisoli'); 
+            $table->foreign('vehiid')->references('vehiid')->on('vehiculo')->onUpdate('cascade')->index('fk_vehisoli');
             $table->foreign('condid')->references('condid')->on('conductor')->onUpdate('cascade')->index('fk_condsoli');
         });
     }

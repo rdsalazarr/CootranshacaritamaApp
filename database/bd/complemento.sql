@@ -345,3 +345,8 @@ UPDATE `procesoautomatico` SET `proautclasephp` = 'Noche', `proautmetodo` = 'mar
 ALTER TABLE `tiquete` ADD `tiquvalorpuntosredimido` DECIMAL(7,0) NULL AFTER `tiquvalorfondorecaudo`;
 
 INSERT INTO `cuentacontable` (`cueconid`, `cueconnombre`, `cuecondescripcion`, `cueconcodigo`, `cueconnaturaleza`, `cueconactiva`, `created_at`, `updated_at`) VALUES (NULL, 'valorPuntoRedimir', 'VALOR PUNTOS A REDIMIR', '1200021', 'D', '1', '2024-03-14 17:08:21', '2024-03-14 17:08:21');
+
+
+UPDATE `migrations` SET `migration` = '2023_10_18_043518_create_tipo_solicitud' WHERE `migrations`.`id` = 105; UPDATE `migrations` SET `migration` = '2023_10_18_043519_create_solicitud' WHERE `migrations`.`id` = 106;
+
+ALTER TABLE `asociado`  ADD `asocrutacertificado` VARCHAR(500) NULL AFTER `asocnombrearchivoeditado`;

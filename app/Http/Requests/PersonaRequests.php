@@ -48,7 +48,8 @@ class PersonaRequests extends FormRequest
             //'fotografia'             => 'nullable|mimes:png,jpg,jpeg,PNG,JPG,JPEG|max:1000',
             'fotografia'             => 'nullable|mimetypes:image/png,image/jpg,image/jpeg|max:1000',
             'claveCertificado'       => 'nullable|string|max:20',
-            'fechaIngresoAsociado'   => 'nullable|date_format:Y-m-d|required_if:formulario,ASOCIADO',
+            'fechaIngresoAsociado'    => 'nullable|date_format:Y-m-d|required_if:formulario,ASOCIADO',
+            'rutaCertificadoAsociado' => 'nullable|mimes:pdf,PDF|max:1000',
 
             'fechaIngresoConductor'   => 'nullable|date_format:Y-m-d|required_if:formulario,CONDUCTOR',
             'tipoConductor'           => 'nullable|string|required_if:formulario,CONDUCTOR',

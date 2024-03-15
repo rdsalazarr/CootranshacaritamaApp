@@ -11,5 +11,5 @@ class Asociado extends Model
 
     protected $table      = 'asociado';
     protected $primaryKey = 'asocid';
-    protected $fillable   = ['persid','tiesasid','asocfechaingreso', 'asocfecharetiro'];
+    protected $fillable   = ['persid','tiesasid','asocfechaingreso', 'asocfecharetiro','asocrutaarchivo'];
 }

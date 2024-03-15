@@ -23,10 +23,11 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                         departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                         segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                         estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm, fechaIngresoAsociado:'', fechaIngresoConductor:'',
-                                        tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', firmaElectronica:''
+                                        tipoConductor:'', agencia:'', tipoCategoria:'', numeroLicencia:'', fechaExpedicionLicencia:'', fechaVencimiento:'', firmaElectronica:'',
+                                        rutaCrtOld:'', rutaPemOld:'', rutaDescargaCertificado:'', rutaCertificadoAsociadoOld:''
                                 }); 
 
-    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]});
+    const [formDataFile, setFormDataFile] = useState({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], rutaCertificadoAsociado: [], imagenLicencia:[]});
     const [extencionArchivoLicencia, setExtencionArchivoLicencia] = useState(null);
     const [modal, setModal] = useState({open : false, extencion:'', ruta:''}); 
     const [tipoCategoriaLicencias, setTipoCategoriaLicencias] = useState([]);
@@ -72,11 +73,15 @@ export default function New({data, tipo, frm, url, tpRelacion}){
 
     const removeFIleRutaPem = (nombre)=>{ 
         setFormDataFile(prev => ({...prev, rutaPem: prev.rutaPem.filter(item => item.name !== nombre)}));
+    }   
+
+    const removeFIleRutaCertificadoAsociado = (nombre)=>{ 
+        setFormDataFile(prev => ({...prev, rutaCertificadoAsociado: prev.rutaCertificadoAsociado.filter(item => item.name !== nombre)}));
     }
 
-     const removeFIleImagenLicencia = (nombre)=>{ 
+    const removeFIleImagenLicencia = (nombre)=>{ 
         setFormDataFile(prev => ({...prev, imagenLicencia: prev.imagenLicencia.filter(item => item.name !== nombre)}));
-    } 
+    }    
 
     const onFilesError = (error, file) => {
         let msj = (error.code === 2) ? 'El archivo "'+ file.name + '" es demasiado grande y no se puede subir' : error.message  
@@ -114,6 +119,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
         dataFile.append('fotografia', (fotografia[0] != undefined) ? fotografia[0] : '');
         dataFile.append('rutaCrt', (rutaCrt[0] != undefined) ? rutaCrt[0] : '');
         dataFile.append('rutaPem', (rutaPem[0] != undefined) ? rutaPem[0] : '');
+        dataFile.append('rutaCertificadoAsociado', (rutaCertificadoAsociado[0] != undefined) ? rutaCertificadoAsociado[0] : '');
         dataFile.append('imagenLicencia', (imagenLicencia[0] != undefined) ? imagenLicencia[0] : '');
 
         setLoader(true);
@@ -125,7 +131,7 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                                                 departamentoExpedicion:'', municipioExpedicion:'', primerNombre:'', segundoNombre: '', primerApellido: '', 
                                                                 segundoApellido:'', fechaNacimiento:'',   direccion:'', correo:'', fechaExpedicion: '', telefonoFijo: '', numeroCelular:'', genero:'',firma:'', foto:'',
                                                                 estado: '1', firmaDigital: '0', claveCertificado:'',  rutaCrt:'', rutaPem:'', tipo:tipo, formulario:frm,  fechaIngresoAsociado:'', fechaIngresoConductor:'', 
-                                                                tipoConductor:'', agencia:'', firmaElectronica:''}) : null;
+                                                                tipoConductor:'', agencia:'', firmaElectronica:'', rutaCrtOld:'', rutaPemOld:'', rutaDescargaCertificado:'', rutaCertificadoAsociadoOld:''}) : null;
             (formData.tipo === 'I' && res.success) ? setFormDataFile({ fotografia: [], firma: [], rutaCrt:[], rutaPem: [], imagenLicencia:[]}) : null;
             setLoader(false);
         })
@@ -176,7 +182,9 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                 newFormData.estado                 = persona.persactiva;
 
                 if(frm == 'ASOCIADO'){
-                    newFormData.fechaIngresoAsociado  = persona.asocfechaingreso;
+                    newFormData.fechaIngresoAsociado       = persona.asocfechaingreso;
+                    newFormData.rutaDescargaCertificado    = (persona.asocrutacertificado !== null) ? persona.rutaCertificado : '';
+                    newFormData.rutaCertificadoAsociadoOld = (persona.asocrutacertificado !== null) ? persona.asocrutacertificado : '';
                 }
 
                 if(frm == 'CONDUCTOR'){
@@ -692,6 +700,17 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 })}
                             </Box>
                         </Grid>
+
+                        {(tipo === 'U' && formData.rutaDescargaCertificado !== null) ?                          
+                            <Grid item md={2} xl={2} sm={6} xs={12}>
+                            <Box className='frmTexto'>
+                                    <label>Descargar certificado curso cooperativismo</label>
+                                    <Link href={formData.rutaDescargaCertificado} ><CloudDownloadIcon className={'iconoDownload'}/></Link>
+                                </Box>
+                            </Grid>
+                        : null} 
+
+                        
                     </Fragment>
                 : null}
 
@@ -820,6 +839,32 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                 }}
                             />
                         </Grid>
+
+                        <Grid item md={3} xl={3} sm={6} xs={12}>
+                            <Files
+                                className='files-dropzone'
+                                onChange={(file ) =>{onFilesChange(file, 'rutaCertificadoAsociado') }}
+                                onError={onFilesError}
+                                accepts={['.pdf']}
+                                multiple
+                                maxFiles={1}
+                                maxFileSize={1000000}
+                                clickable
+                                dropActiveClassName={"files-dropzone-active"}
+                            >
+                            <ButtonFileImg title={"Adicionar certificado curso cooperativismo"} />
+                            </Files>
+                        </Grid>
+
+                        <Grid item md={2} xl={2} sm={6} xs={12}>
+                            <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                {formDataFile.rutaCertificadoAsociado.map((file, a) =>{
+                                    return <ContentFile file={file} name={file.name} remove={removeFIleRutaCertificadoAsociado} key={'ContentFile-' +a}/>
+                                })}
+                            </Box>
+                        </Grid>
+
+                        
                     </Fragment>
                 : null}
 

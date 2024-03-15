@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tiesasid', 2)->comment('Identificador del tipo de estado del asociado');
             $table->date('asocfechaingreso')->comment('Fecha de ingreso del asocado a la cooperativa');
             $table->date('asocfecharetiro')->nullable()->comment('Fecha de retiro del asocado a la cooperativa');
+            $table->string('asocrutacertificado', 500)->nullable()->comment('Ruta enfuscada del certifcado del asociado');
             $table->timestamps();
             $table->foreign('persid')->references('persid')->on('persona')->onUpdate('cascade')->index('fk_persasoc');
             $table->foreign('tiesasid')->references('tiesasid')->on('tipoestadoasociado')->onUpdate('cascade')->index('fk_tiesasasoc');

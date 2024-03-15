@@ -108,6 +108,7 @@ php artisan make:migration create_tipo_categoria_licencia
 php artisan make:migration create_conductor_licencia
 php artisan make:migration create_conductor_cambio_estado
 php artisan make:migration create_conductor_vehiculo
+php artisan make:migration create_conductor_certificado
 
 php artisan make:migration create_tipo_estado_solicitud_credito
 php artisan make:migration create_linea_credito
@@ -268,6 +269,7 @@ php artisan make:model Conductor\Conductor
 php artisan make:model Conductor\ConductorLicencia
 php artisan make:model Conductor\ConductorVehiculo
 php artisan make:model Conductor\ConductorCambioEstado
+php artisan make:model Conductor\ConductorCertificado
 php artisan make:model SolicitudCredito
 php artisan make:model SolicitudCreditoCambioEstado
 php artisan make:model SolicitudCreditoDesembolso
@@ -292,6 +294,7 @@ php artisan make:model Despacho\Encomienda
 php artisan make:model Despacho\PersonaServicio
 php artisan make:model Despacho\EncomiendaCambioEstado
 php artisan make:model Despacho\PersonaServicioFidelizacion
+php artisan make:model Despacho\PersonaServicioPuntosAcomulados
 
 php artisan make:model Despacho\Tiquete
 php artisan make:model Despacho\TiquetePuesto

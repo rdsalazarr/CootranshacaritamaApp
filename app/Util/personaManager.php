@@ -104,21 +104,37 @@ class personaManager {
             $persona->persactiva                = $request->estado;
             $persona->save();
 
-            if($request->formulario === 'ASOCIADO' and $request->tipo === 'I'){
-                $personaMaxConsecutio       = Persona::latest('persid')->first();
-				$persid                     = $personaMaxConsecutio->persid;
+            if($request->formulario === 'ASOCIADO'){
+                if($request->hasFile('rutaCertificadoAsociado')){
+                    $file                    = $request->file('rutaCertificadoAsociado');
+                    $nombreOriginalPem       = $file->getclientOriginalName();
+                    $filename                = pathinfo($nombreOriginalPem, PATHINFO_FILENAME);
+                    $extension               = pathinfo($nombreOriginalPem, PATHINFO_EXTENSION);
+                    $rutaCertificadoAsociado = $documentoPersona."_".$funcion->quitarCaracteres($filename).'.'.$extension;
+                    $file->move($rutaCarpeta, $rutaCertificadoAsociado);
+                    $rutaCertificadoAsociado = Crypt::encrypt($rutaCertificadoAsociado);
+                }else{
+                    $rutaCertificadoAsociado = $request->rutaCertificadoAsociadoOld;
+                }
+            }
 
-                $asociado                   = new Asociado();
-                $asociado->persid           = $persid;
-                $asociado->tiesasid         = 'A';
-                $asociado->asocfechaingreso = $request->fechaIngresoAsociado;
+            if($request->formulario === 'ASOCIADO' and $request->tipo === 'I'){
+                $personaMaxConsecutio          = Persona::latest('persid')->first();
+				$persid                        = $personaMaxConsecutio->persid;
+
+                $asociado                      = new Asociado();
+                $asociado->persid              = $persid;
+                $asociado->tiesasid            = 'A';
+                $asociado->asocfechaingreso    = $request->fechaIngresoAsociado;
+                $asociado->asocrutacertificado = $rutaCertificadoAsociado;
                 $asociado->save();
             }
 
             if($request->formulario === 'ASOCIADO' and $request->tipo === 'U'){
-                $asociado                   = DB::table('asociado')->select('asocid')->where('persid', $persona->persid)->first();
-                $asociado                   = Asociado::findOrFail($asociado->asocid);
-                $asociado->asocfechaingreso = $request->fechaIngresoAsociado;
+                $asociado                      = DB::table('asociado')->select('asocid')->where('persid', $persona->persid)->first();
+                $asociado                      = Asociado::findOrFail($asociado->asocid);
+                $asociado->asocfechaingreso    = $request->fechaIngresoAsociado;
+                $asociado->asocrutacertificado = $rutaCertificadoAsociado; 
                 $asociado->save();
             }
 
