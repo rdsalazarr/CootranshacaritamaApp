@@ -29,11 +29,11 @@ export function Header(){
 
 export function Footer(){
     var fechaActual = new Date();
-    var añoActual   = fechaActual.getFullYear();
+    var anioActual   = fechaActual.getFullYear();
     return (
         <Box className='piePagina'>
             <Box className='container'>
-                <span>COOTRANSHACARITAMA | Todos los derechos reservados | Copyright © {añoActual}</span>
+                <span>COOTRANSHACARITAMA | Todos los derechos reservados | Copyright © {anioActual}</span>
                 <span className='implesoft'>Diseño y desarrollo <a href="http://implesoft.com/" target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft.com</a></span>
             </Box>
         </Box>
@@ -81,6 +81,8 @@ export function HeaderAdmon(){
 }
 
 export function FooterAdmon(){
+    var fechaActual = new Date();
+    var anioActual   = fechaActual.getFullYear();
     return (
         <Box className={'footerAdmon'}>
             <div style={{borderRight: '1px solid rgb(149 144 144)'}}>
@@ -91,7 +93,7 @@ export function FooterAdmon(){
             <div style={{marginLeft: '4px'}}>
                 <span>
                     <strong>Todos los derechos Reservados | Copyright  | </strong>
-                    <a href='https://implesoft.com/' target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft</a> © 2024
+                    <a href='https://implesoft.com/' target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft</a> © {anioActual}
                 </span>
             </div>
         </Box>
