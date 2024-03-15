@@ -15,16 +15,29 @@ $rojoOscuro : var(--rojoOscuro);
     height: 3.5em;
     z-index: 3;
     box-shadow: rgb(0 0 0 / 20%) 0px 2px 1px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px;
-    .colAdmonLeft{
-        width: 80%;
+    color: #fdfdfd;
+    h2{    
         text-align: center;
-        float: left;
-        h2{
-            color: #fdfdfd;
-            text-align: center;
-            padding-right: 15%;
-            text-shadow: 1px 1px $verdeClaro, 1.2px 1.2px $verdeClaro;
-        }
+        padding-right: 15%;
+        text-shadow: 1px 1px $verdeClaro, 1.2px 1.2px $verdeClaro;
+    }
+    .informacionPersonal{ 
+        padding-left: calc(40% - 200px);
+        align-items: center;
+        display: flex;
+        margin-top: 0.5em;
+    }
+    .avatarHome{
+        background-color: #f9f9f9 !important;
+        margin-left: 5px;
+        color: #5f6d7d !important;
+        border: 2px solid #797d81;
+     }
+    .titleUsuario{
+        font-size: 1em;
+        color: #f9f9f9;
+        text-shadow: rgb(0, 0, 0) 1px 1px 3px;
+        text-transform: uppercase;
     }
     .colAdmonRight{
         width: 20%;
@@ -78,16 +91,9 @@ $rojoOscuro : var(--rojoOscuro);
 /*md*/
 @media (max-width: 768px) { 
     .headerAdmon{ 
-        .colAdmonLeft{
-            width: 85%;       
-            padding-left: 50px;
-            h2{
-                font-size: 1.2em;
-            }
-        } 
-        .colAdmonRight{
-            width: 15%;
-        }       
+        h2{
+            font-size: 1.2em;
+        }
     }
 
     .footerAdmon{
@@ -114,17 +120,14 @@ $rojoOscuro : var(--rojoOscuro);
 @media (max-width: 576px) {
 
     .headerAdmon{ 
-        .colAdmonLeft{
-            width: 90%;
-            padding-left: 40px;
-            h2{
-                font-size: 1em;
-            }
+        h2{
+            font-size: 0.8em;
         }
-        .colAdmonRight{
-            width: 10%;
+        .titleUsuario{
+            font-size: 1em;
+            padding-left: 5px;
         }
-    }
+    }   
 
     .footerAdmon{
         >div{

@@ -1307,10 +1307,10 @@ INSERT INTO `rol` (`rolid`, `rolnombre`, `rolactivo`, `created_at`, `updated_at`
 
 
 INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
-(1, 1, '100', 'GER', 'GERENCIA', 'rdsalazarr@ufpso.edu.co', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(1, 3, '100', 'GER', 'GERENCIA', 'rdsalazarr@ufpso.edu.co', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `dependencia` (`depeid`, `depejefeid`, `depecodigo`, `depesigla`, `depenombre`, `depecorreo`, `depeactiva`, `created_at`, `updated_at`) VALUES
-(2, 1, '200', 'CON', 'CONTABILIDAD', 'radasa10@hotmail.com', 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(2, 2, '200', 'CON', 'CONTABILIDAD', 'radasa10@hotmail.com', 1,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `dependenciapersona` (`depperid`, `depperdepeid`, `depperpersid`) VALUES
 (1, 1, 3),(2, 2, 2);

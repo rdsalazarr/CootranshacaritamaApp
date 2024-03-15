@@ -447,6 +447,7 @@ php artisan make:middleware PreloadSecurityMiddleware
 
 php artisan db:seed
 
+php artisan migrate:fresh
 
 
 npm install react-beautiful-dnd

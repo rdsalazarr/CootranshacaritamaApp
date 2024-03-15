@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import imagenVehiculo from "../../../../../images/vehiculo.png";
 import Trazabilidad from '../../../layout/trazabilidad';
+import SolicitudVehiculo from './solicitudVehiculo';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import {Grid, Box} from '@mui/material';
@@ -13,8 +14,10 @@ export default function Show({id}){
                                                 numeroChasis: '',    numeroSerie: '',    numeroEjes: '1',    motorRegrabado: '0', chasisRegrabado: '0', 
                                                 serieRegrabado: '0', observacion: '',    fotografia: ''
                                         });
-    const [loader, setLoader] = useState(false);
+    
     const [cambiosEstadoVehiculo, setCambiosEstadoVehiculo] = useState([]);
+    const [solicitudVehiculos, setSolicitudVehiculos] = useState([]);
+    const [loader, setLoader] = useState(false);
  
     const inicio = () =>{
         setLoader(true);
@@ -45,9 +48,11 @@ export default function Show({id}){
             newFormData.showFotografia            = (vehiculo.vehirutafoto !== null) ? vehiculo.rutaFotografia : imagenVehiculo;
             newFormData.nombreAsociado            = vehiculo.nombreAsociado;
             newFormData.estadoActual              = vehiculo.estadoActual;
-            newFormData.totalCambioEstadoVehiculo = vehiculo.totalCambioEstadoVehiculo;            
+            newFormData.totalCambioEstadoVehiculo = vehiculo.totalCambioEstadoVehiculo;
+            newFormData.totalSolicitudVehiculo    = vehiculo.totalSolicitudVehiculo;     
            
-            setCambiosEstadoVehiculo(res.cambiosEstadoVehiculo);
+            setSolicitudVehiculos(res.solicitudVehiculos);
+            setCambiosEstadoVehiculo(res.cambiosEstadoVehiculo);            
             setFormData(newFormData);
             setLoader(false);
         })
@@ -242,7 +247,13 @@ export default function Show({id}){
                         </Box>
                     </Grid>
                 </Grid>
-            </Grid>            
+            </Grid>
+
+            {(formData.totalSolicitudVehiculo > 0) ? 
+                <Grid item md={12} xl={12} sm={12} xs={12}>
+                    <SolicitudVehiculo data={solicitudVehiculos} />
+                </Grid>
+            : null }
 
             {(formData.totalCambioEstadoVehiculo > 0) ? 
                 <Grid item md={12} xl={12} sm={12} xs={12}>

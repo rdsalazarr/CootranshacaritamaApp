@@ -66,7 +66,7 @@ export default function Show({id}){
 
             <Grid item xl={12} md={12} sm={12} xs={12}>
                 <Box className='divisionFormulario'>
-                    Información del la solicitud
+                    Información de la solicitud
                 </Box>
             </Grid>
 

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Exception, DB, Auth, URL, File;
 use App\Http\Controllers\Controller;
 use App\Models\HistorialContrasena;
 use App\Models\Menu\Funcionalidad;
 use Illuminate\Http\Request;
-use Exception, DB, Auth;
 use App\Util\generales;
 use App\Models\User;
 use Carbon\Carbon;
@@ -32,8 +32,30 @@ class DashboardController extends Controller
 		return response()->json(["data" => $data]);
 	}
 
+	public function informacion()
+	{
+		try{
+			$imagen  = '';
+			$url     = URL::to('/');
+			$usuario = DB::table('usuario as u')
+							->select(DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"), 'p.persrutafoto',
+							DB::raw("CONCAT(p.persdocumento,'/',p.persrutafoto ) as fotografia"))
+							->join('persona as p', 'p.persid', '=', 'u.persid')
+							->where('usuaid', Auth::id())->first();
+							
+			if($usuario->persrutafoto !==''){
+				$ruta   = public_path().'/archivos/persona/'.$usuario->fotografia;
+				$imagen = (file_exists($ruta)) ? base64_encode(file_get_contents($ruta)) : '';
+			}
+	
+			return response()->json(['success' => true, "data" => $usuario, "fotografia" => $imagen]);
+		}catch(Exception $e){
+			return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+		}
+	}
+
 	public function generarMenu()
 	{
 		return response()->json(["data" => Funcionalidad::menus()]);
-	}
+	}	
 }

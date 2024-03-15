@@ -91,6 +91,7 @@ use App\Http\Controllers\Admin\Caja\EntregarPagoCreditoController;
 use App\Http\Controllers\Admin\Caja\CerrarMovimientoController;
 
 use App\Http\Controllers\Admin\AtencionUsuario\GestionarSolicitudController;
+use App\Http\Controllers\Admin\AtencionUsuario\ShowSolicitudController;
 
 use App\Http\Controllers\Admin\Informes\InformeDescargableController;
 use App\Http\Controllers\Admin\Informes\InformePdfController;
@@ -137,6 +138,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index']);
     Route::get('admin/welcome', [DashboardController::class, 'welcome']);
     Route::get('admin/generarMenu', [DashboardController::class, 'generarMenu'])->middleware('verifySource');
+    Route::get('admin/consultar/informacion/usuario', [DashboardController::class, 'informacion'])->middleware('verifySource');
 
     Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
@@ -575,7 +577,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/listar/datos', [GestionarSolicitudController::class, 'datos']);
             Route::post('/consultar/persona', [GestionarSolicitudController::class, 'consultarPersona']);
             Route::post('/salve/datos', [GestionarSolicitudController::class, 'salve']);
-            Route::post('/show/solicitud', [GestionarSolicitudController::class, 'show']);
+            Route::post('/show/solicitud', [ShowSolicitudController::class, 'index']);//No debe tener control de ruta
         });
 
         Route::prefix('/informes')->group(function(){

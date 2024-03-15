@@ -18,7 +18,7 @@ class AgenciaSeeder extends Seeder
 
         DB::table('agencia')->insert([
             'agenid'              => '101',
-            'persidresponsable'   => '2',
+            'persidresponsable'   => '3',
             'agendepaid'          => '18',
             'agenmuniid'          => '804',
             'agennombre'          => 'PRINCIPAL',

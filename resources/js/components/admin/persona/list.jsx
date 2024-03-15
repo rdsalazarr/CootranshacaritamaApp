@@ -58,7 +58,7 @@ export default function List(){
     }
 
     return (
-        <Box >   
+        <Box >
             <Box><Typography  component={'h2'} className={'titleGeneral'}>Gestionar personas</Typography>
             </Box>
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>

@@ -2,8 +2,9 @@ import React, {useState, useEffect, Fragment} from 'react';
 import {Grid, Box, Link, Table, TableHead, TableBody, TableRow, TableCell, Avatar} from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import CertificadoConductor from './certificadoConductor'
+import CertificadoConductor from './certificadoConductor';
 import { ModalDefaultAuto  } from '../../layout/modal';
+import SolicitudConductor from './solicitudConductor';
 import Trazabilidad from '../../layout/trazabilidad';
 import {LoaderModal} from "../../layout/loader";
 import ShowAnexo from '../vehiculos/showAnexo';
@@ -23,6 +24,7 @@ export default function Show({id, frm}){
     const [cambiosEstadoConductor, setCambiosEstadoConductor] = useState([]);
     const [cambiosEstadoAsociado, setCambiosEstadoAsociado] = useState([]);
     const [conductorCertificados, setConductorCertificados] = useState([]);
+    const [solicitudConductores, setSolicitudConductores] = useState([]);
     const [licenciasConducion, setLicenciasConducion] = useState([]);
 
     const cerrarModal = () =>{
@@ -65,7 +67,8 @@ export default function Show({id, frm}){
             newFormData.rutaDescargaPem            = persona.rutaPem;
             newFormData.totalCambioEstadoAsociado  = persona.totalCambioEstadoAsociado;
             newFormData.totalCambioEstadoConductor = persona.totalCambioEstadoConductor;
-            newFormData.totalCertificadoConductor  = persona.totalCertificadoConductor;            
+            newFormData.totalCertificadoConductor  = persona.totalCertificadoConductor;
+            newFormData.totalSolicitudConductor    = persona.totalSolicitudConductor;
 
             if(frm == 'ASOCIADO'){
                 newFormData.fechaIngresoAsociado  = persona.asocfechaingreso;
@@ -80,8 +83,9 @@ export default function Show({id, frm}){
             }
 
             setFormData(newFormData);
+            setSolicitudConductores(res.solicitudConductores);
             setCambiosEstadoAsociado(res.cambiosEstadoAsociado);
-            setConductorCertificados(res.conductorCertificados);
+            setConductorCertificados(res.conductorCertificados);               
             setCambiosEstadoConductor(res.cambiosEstadoConductor);
             setLoader(false);
         }) 
@@ -412,6 +416,12 @@ export default function Show({id, frm}){
                             </Grid>
                          : null }
 
+                        {(formData.totalSolicitudConductor > 0) ? 
+                            <Grid item md={12} xl={12} sm={12} xs={12}>
+                                <SolicitudConductor data={solicitudConductores} />
+                            </Grid>
+                         : null }
+    
                     </Fragment>
                 : null}
 

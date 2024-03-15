@@ -281,44 +281,64 @@ class VehiculoController extends Controller
     public function show(Request $request)
 	{
         $this->validate(request(),['vehiculoId' => 'required']);
-        $url      = URL::to('/');
-        $vehiculo = DB::table('vehiculo as v')
-                        ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
-                                'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
-                                'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion',
-                                'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
-                                'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto', 'tev.tiesvenombre as estadoActual',
-                                DB::raw("if(v.vehiesmotorregrabado = 1 ,'Sí', 'No') as motorRegrabado"),
-                                DB::raw("if(v.vehieschasisregrabado = 1 ,'Sí', 'No') as chasisRegrabado"),
-                                DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
-                                DB::raw("CONCAT('$url/archivos/vehiculo/', v.vehiplaca, '/', v.vehirutafoto ) as rutaFotografia"),
-                                DB::raw('(SELECT COUNT(vecaesid) AS vecaesid FROM vehiculocambioestado WHERE vehiid = v.vehiid ) AS totalCambioEstadoVehiculo'),
-                                DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-                                                    p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
-                        ->join('asociado as aso', 'aso.asocid', '=', 'v.asocid')
-                        ->join('persona as p', 'p.persid', '=', 'aso.persid')
-                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                        ->join('tiporeferenciavehiculo as trv', 'trv.tireveid', '=', 'v.tireveid')
-                        ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
-                        ->join('tipocolorvehiculo as tcv', 'tcv.ticoveid', '=', 'v.ticoveid')
-                        ->join('tipomodalidadvehiculo as tmvh', 'tmvh.timoveid', '=', 'v.timoveid')
-                        ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
-                        ->join('tipocombustiblevehiculo as tcvh', 'tcvh.ticovhid', '=', 'v.ticovhid')
-                        ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'v.tiesveid')
-                        ->join('agencia as a', 'a.agenid', '=', 'v.agenid')
-                        ->where('v.vehiid', $request->vehiculoId)->first(); 
+        try{
+            $url      = URL::to('/');
+            $vehiculo = DB::table('vehiculo as v')
+                            ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
+                                    'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
+                                    'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion',
+                                    'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
+                                    'v.vehinumeromotor','v.vehinumerochasis','v.vehinumeroserie','v.vehinumeroejes','v.vehirutafoto', 'tev.tiesvenombre as estadoActual',
+                                    DB::raw("if(v.vehiesmotorregrabado = 1 ,'Sí', 'No') as motorRegrabado"),
+                                    DB::raw("if(v.vehieschasisregrabado = 1 ,'Sí', 'No') as chasisRegrabado"),
+                                    DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
+                                    DB::raw("CONCAT('$url/archivos/vehiculo/', v.vehiplaca, '/', v.vehirutafoto ) as rutaFotografia"),
+                                    DB::raw('(SELECT COUNT(vecaesid) AS vecaesid FROM vehiculocambioestado WHERE vehiid = v.vehiid ) AS totalCambioEstadoVehiculo'),
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),                                                    
+                                    DB::raw('(SELECT COUNT(soliid) AS soliid FROM solicitud WHERE vehiid = v.vehiid ) AS totalSolicitudVehiculo'))
+                            ->join('asociado as aso', 'aso.asocid', '=', 'v.asocid')
+                            ->join('persona as p', 'p.persid', '=', 'aso.persid')
+                            ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
+                            ->join('tiporeferenciavehiculo as trv', 'trv.tireveid', '=', 'v.tireveid')
+                            ->join('tipomarcavehiculo as tmv', 'tmv.timaveid', '=', 'v.timaveid')
+                            ->join('tipocolorvehiculo as tcv', 'tcv.ticoveid', '=', 'v.ticoveid')
+                            ->join('tipomodalidadvehiculo as tmvh', 'tmvh.timoveid', '=', 'v.timoveid')
+                            ->join('tipocarroceriavehiculo as tcrh', 'tcrh.ticaveid', '=', 'v.ticaveid')
+                            ->join('tipocombustiblevehiculo as tcvh', 'tcvh.ticovhid', '=', 'v.ticovhid')
+                            ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'v.tiesveid')
+                            ->join('agencia as a', 'a.agenid', '=', 'v.agenid')
+                            ->where('v.vehiid', $request->vehiculoId)->first(); 
 
-        $cambiosEstadoVehiculo  = [];
-        if($vehiculo->totalCambioEstadoVehiculo > 0 ){
-            $cambiosEstadoVehiculo =  DB::table('vehiculocambioestado as vce')
-                            ->select('vce.vecaesfechahora as fecha','vce.vecaesobservacion as observacion','tev.tiesvenombre as estado',
-                                DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
-                            ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'vce.tiesveid')
-                            ->join('usuario as u', 'u.usuaid', '=', 'vce.vecaesusuaid')
-                            ->where('vce.vehiid', $request->vehiculoId)->get();
+            $cambiosEstadoVehiculo = [];
+            $solicitudVehiculos    = [];
+            if($vehiculo->totalCambioEstadoVehiculo > 0 ){
+                $cambiosEstadoVehiculo =  DB::table('vehiculocambioestado as vce')
+                                ->select('vce.vecaesfechahora as fecha','vce.vecaesobservacion as observacion','tev.tiesvenombre as estado',
+                                    DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"))
+                                ->join('tipoestadovehiculo as tev', 'tev.tiesveid', '=', 'vce.tiesveid')
+                                ->join('usuario as u', 'u.usuaid', '=', 'vce.vecaesusuaid')
+                                ->where('vce.vehiid', $request->vehiculoId)->get();
+            }
+
+            if($vehiculo->totalSolicitudVehiculo > 0 ){
+                $solicitudVehiculos   = DB::table('solicitud as s')
+                                                ->select('s.soliid', 's.solifechahoraregistro',
+                                                    DB::raw('SUBSTRING(s.solimotivo, 1, 200) AS asunto'),'ts.tipsolnombre as tipoSolicitud',
+                                                    DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                                    DB::raw("CONCAT(prd.peradoprimernombre,' ',IFNULL(prd.peradosegundonombre,''),' ',prd.peradoprimerapellido,' ',IFNULL(prd.peradosegundoapellido,'')) as nombrePersonaRadica"))
+                                                ->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 's.radoenid')
+                                                ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                                                ->join('tiposolicitud as ts', 'ts.tipsolid', '=', 's.tipsolid')
+                                                ->join('vehiculo as v', 'v.vehiid', '=', 's.vehiid')
+                                                ->where('v.vehiid', $request->vehiculoId)
+                                                ->orderBy('rde.radoenid', 'Desc')->get();
+            }
+
+            return response()->json(['success' => true, "vehiculo"           => $vehiculo, "cambiosEstadoVehiculo" => $cambiosEstadoVehiculo, 
+                                                        "solicitudVehiculos" => $solicitudVehiculos]);
+        }catch(Exception $e){
+            return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }
-
-        return response()->json([ "vehiculo" => $vehiculo, "cambiosEstadoVehiculo" => $cambiosEstadoVehiculo]);
     }
 
     public function destroy(Request $request)

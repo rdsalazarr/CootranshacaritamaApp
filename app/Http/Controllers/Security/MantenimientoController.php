@@ -95,283 +95,7 @@ class MantenimientoController extends Controller
        dd($mensajeCorreo);      
     }
 
-    function calcularPagoCuotaMensualArray($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora) {
-        //dd($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora);
-
-        $generales  = new generales();  
-
-		// Calcular la fecha actual
-		$fechaActual = Carbon::now();
-        $fechaVencimiento = Carbon::parse($fechaVencimiento);
-
-        		// Calcular la cuota mensual
-		if ($tasaInteresMensual == 0.0) {
-			$valorCuota = $montoPrestamo / $plazo;
-		} else {
-			$tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
-			$denominador = 1 - pow(1 + $tasaInteresMensual, -$plazo);    
-			$valorCuota = ($montoPrestamo * $tasaInteresMensual) / $denominador;
-		}
-
-	
-		// Inicializar los valores de retorno
-		$resultado = [
-			'cuota' => null,
-			'mora' => 0,
-			'descuento' => 0
-		];
-	
-		// Verificar si la fecha de vencimiento es anterior a la fecha actual
-		if ($fechaVencimiento->lt($fechaActual)) {
-			// Calcular los días de mora
-			$diasMora                 = $fechaActual->diffInDays($fechaVencimiento);
-            $porcentajeInteresMensual = $interesMora / 100;
-            $tasaInteresDiaria        = $tasaInteresMensual / 30;
-
-            //dd($valorCuota, $diasMora, $porcentajeInteresMensual, $tasaInteresDiaria);
-
-            $interesMoraTotal = $diasMora  * $porcentajeInteresMensual * $tasaInteresDiaria;
-
-            dd($interesMoraTotal);
-			
-			// Calcular el interés de mora
-			$interesMensual   = $interesMora / 100;    
-			$interesDiario    = $interesMensual / 30;
-			$interesMoraTotal = $interesDiario  * $diasMora;
-
-            dd($interesMoraTotal);
-	
-			// Actualizar el valor de la mora en el resultado
-			$resultado['mora'] = $interesMoraTotal;
-
-            $valorCuota += $interesMoraTotal;
-		} else {
-			// Calcular los días anticipados (días antes del vencimiento)
-			$diasAnticipados = $fechaVencimiento->diffInDays($fechaActual);
-			
-			// Calcular el descuento por pago anticipado
-			$descuentoDiario = $tasaInteresMensual / 100; // Utilizamos la tasa de interés mensual como descuento diario
-			$descuentoTotal = $descuentoDiario * $montoPrestamo * $diasAnticipados;
-	
-			// Actualizar el valor del descuento en el resultado
-			$resultado['descuento'] = $descuentoTotal;
-
-            $valorCuota -= $descuentoTotal;
-		}	
-
-	
-		// Actualizar el valor de la cuota en el resultado
-		$resultado['cuota'] = $generales->redondearMilSiguiente($valorCuota);
-	
-		return $resultado;
-	}
-
-    function calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha){
-        $generales  = new generales();      
-
-        $fechaActual         = Carbon::now();
-        $fechaVencimiento    = Carbon::parse($fechaVencimiento);
-        $interesMensual      = $montoPrestamo * ($tasaInteresMensual / 100);
-        $valorCambioFechas   = 0; 
-        $totalInteresMora    = 0;
-        $totalValorDescuento = 0;
-
-        dd($numeroDiasCambioFecha);
-
-        if($numeroDiasCambioFecha > 0){
-            $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
-            $interesMensual   += $generales->redonderarCienMasCercano($valorCambioFechas);
-        }
-
-        if ($fechaVencimiento->lt($fechaActual)) {//Tiene mora
-            $diasMora         = $fechaActual->diffInDays($fechaVencimiento);
-            $interesMora      = $montoPrestamo * ($interesMora / 100) * ($diasMora / 365);
-            $totalInteresMora = $generales->redonderarCienMasCercano($interesMora); 
-        }else{
-            $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
-            $valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
-            $totalValorDescuento = $generales->redonderarCienMasCercano($valorDescuento);
-        }
-
-        $resultado = [
-			'valorIntereses'   => $interesMensual,
-			'valorInteresMora' => $totalInteresMora,
-			'valorDescuento'   => $totalValorDescuento
-		];
-
-        return $resultado;
-    }
-
-    function calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaVencimiento){
-        $fechaDesembolso  = Carbon::parse($fechaDesembolso);
-        $fechaVencimiento = Carbon::parse($fechaVencimiento);
-        return  $fechaDesembolso->diffInDays($fechaVencimiento);
-    }
-
-    function obtenerFechaPagoCuota($fecha) {
-		$fechaActual   = Carbon::parse($fecha);
-        $nuevaFecha    = Carbon::parse($fecha);
-        $diaFecha      = $fechaActual->day;
-        $mesFecha      = $fechaActual->month;
-		$diasAdicionar = 30;
-		$nuevaFecha    = $fechaActual->addDays($diasAdicionar);
-
-        // Verificar si la fecha resultante es 28 o 29 de febrero para ajustar al 01 de abril
-		if (($diaFecha === 28 || $diaFecha === 29) && $mesFecha === 2) {            
-            $nuevaFecha->setMonth(4);
-            $nuevaFecha->setDay(1);
-        }
-
-        return $nuevaFecha;
-    }
-
-    function obtenerFechaPagoCuota12($fecha) {
-        $fechaActual   = Carbon::parse($fecha);
-        $nuevaFecha    = Carbon::parse($fecha);
-        $diaFecha      = $fechaActual->day;
-        $mesFecha      = $fechaActual->month;
-        $anioFecha     = $fechaActual->year;
-        $diasAdicionar = 30;
-
-       // dd($mesFecha);
     
-        // Si es 29, 30 o 31, ajustar al primer día del siguiente mes
-        if ($diaFecha >= 29 && $diaFecha <= 31) {
-            // Si es diciembre, ajustar a enero del siguiente año
-            if ($mesFecha == 12) {
-                dd("hola");
-                $nuevaFecha->year($anioFecha + 1)->month(1)->day(1);
-            } else {
-                //dd("hola 2");
-                $nuevaFecha->addMonthsNoOverflow(1)->startOfMonth();
-            }
-        } else {
-            dd('hola');
-            $nuevaFecha->addDays($diasAdicionar);
-        }
-    
-        // Verificar si es febrero y ajustar al 1 de abril
-        if ($mesFecha == 2 && $diaFecha >= 28) {
-            $nuevaFecha->year($anioFecha)->month(4)->day(1);
-        }
-    
-        return $nuevaFecha;
-    }
-
-    function obtenerFechaPagoCuota1aa($fecha) {
-        $fechaActual   = Carbon::parse($fecha);
-        $nuevaFecha    = Carbon::parse($fecha);
-        $diaFecha      = $fechaActual->day;
-        $mesFecha      = $fechaActual->month;
-        $anioFecha     = $fechaActual->year;
-        $diasAdicionar = 30;
-    
-        // Si es 29, 30 o 31, ajustar al primer día del siguiente mes
-        if ($diaFecha >= 29 && $diaFecha <= 31) {
-            // Si es diciembre, ajustar a enero del siguiente año
-            if ($mesFecha == 12) {
-                $nuevaFecha->year($anioFecha + 1)->month(1)->day(1);
-            } else {
-                $nuevaFecha->addMonthsNoOverflow(1)->startOfMonth();
-            }
-        } else {
-            $nuevaFecha->addDays($diasAdicionar);
-        }
-    
-        // Verificar si es febrero y ajustar al 1 de abril
-        if ($mesFecha == 2 && $diaFecha >= 28) {
-            $nuevaFecha->year($anioFecha)->month(4)->day(1);
-        }
-    
-        // Añadir los 30 días adicionales
-        $nuevaFecha->addDays($diasAdicionar);
-    
-        return $nuevaFecha;
-    }
-
-
-    function obtenerFechaPagoCuota1($fecha) {
-        $fechaActual   = Carbon::parse($fecha);
-        $nuevaFecha    = Carbon::parse($fecha);
-        $diaFecha      = $fechaActual->day;
-        $mesFecha      = $fechaActual->month;
-        $anioFecha     = $fechaActual->year;
-        $diasAdicionar = 30;
-    
-        // Si es 29, 30 o 31, ajustar al primer día del siguiente mes
-        if ($diaFecha >= 29 && $diaFecha <= 31) {
-            // Si es diciembre, ajustar a enero del siguiente año
-            if ($mesFecha == 12) {
-                $nuevaFecha->year($anioFecha + 1)->month(1)->day(1);
-            } else {
-                $nuevaFecha->addMonthsNoOverflow(1)->startOfMonth();
-            }
-        } else {
-            $nuevaFecha->addDays($diasAdicionar);
-        }
-    
-        // Verificar si es febrero y ajustar al 1 de abril
-        if ($mesFecha == 2 && $diaFecha >= 28) {
-            $nuevaFecha->year($anioFecha)->month(4)->day(1);
-        }
-    
-        // Añadir los 30 días adicionales
-        $nuevaFecha->addDays($diasAdicionar);
-    
-        return $nuevaFecha;
-    }
-
-    function fechaMesSiguiente($fecha) {
-        // Parseamos la fecha utilizando Carbon
-        $fechaCarbon = Carbon::parse($fecha);
-        
-        // Sumamos un mes a la fecha actual
-        $fechaSiguiente = $fechaCarbon->addMonth();
-    
-        return $fechaSiguiente;
-    }
-
-
-    function obtenerFechaPagoCuotaMia($fecha) {
-		$fechaActual  = Carbon::parse($fecha);
-        $nuevaFecha   = Carbon::parse($fecha);
-        $diaFecha     = $fechaActual->day;
-        $mesFecha     = $fechaActual->month;
-  
-        // Verificar si la fecha resultante es 28 o 29 de febrero para ajustar al 01 de abril
-		/*if (($diaFecha === 28 || $diaFecha === 29) && $mesFecha === 2) {            
-            $nuevaFecha->setMonth(4);
-            $nuevaFecha->setDay(1);
-        }else if ($diaFecha >= 29 && $diaFecha <= 31) {
-            $nuevaFecha->setMonth($mesFecha + 1);
-            $nuevaFecha->setDay(1); 
-        }else{           
-            $nuevaFecha = $nuevaFecha->addMonth();
-        }*/
-        if ($diaFecha >= 29 && $diaFecha <= 31) {
-            $nuevaFecha->setMonth($mesFecha + 1);
-            $nuevaFecha->setDay(1); 
-        }else{
-            $nuevaFecha = $fechaActual->addMonth();
-        }
-
-        return $nuevaFecha;
-    }
-
-    function obtenerFechaInicialColocacion(){
-        $fechaHoraActual  = Carbon::now();
-        $fechaActual      = Carbon::parse($fechaHoraActual->format('Y-m-d'));
-        $diaFecha         = $fechaActual->day;
-        $mesFecha         = $fechaActual->month;
-        $nuevaFecha       = Carbon::parse($fechaActual);
-
-        if ($diaFecha >= 29 && $diaFecha <= 31) {
-            $nuevaFecha->setMonth($mesFecha + 1);
-            $nuevaFecha->setDay(1);
-        }
-
-        return $nuevaFecha;
-    }
     
     public function Pdf()
     {
@@ -739,4 +463,283 @@ dd($consulta);
         PDF::Output();*/
        
 	}
+
+
+    function calcularPagoCuotaMensualArray($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora) {
+        //dd($montoPrestamo, $tasaInteresMensual, $plazo, $fechaVencimiento, $interesMora);
+
+        $generales  = new generales();  
+
+		// Calcular la fecha actual
+		$fechaActual = Carbon::now();
+        $fechaVencimiento = Carbon::parse($fechaVencimiento);
+
+        		// Calcular la cuota mensual
+		if ($tasaInteresMensual == 0.0) {
+			$valorCuota = $montoPrestamo / $plazo;
+		} else {
+			$tasaInteresMensual = $tasaInteresMensual / 100; // Convertir la tasa a formato decimal
+			$denominador = 1 - pow(1 + $tasaInteresMensual, -$plazo);    
+			$valorCuota = ($montoPrestamo * $tasaInteresMensual) / $denominador;
+		}
+
+	
+		// Inicializar los valores de retorno
+		$resultado = [
+			'cuota' => null,
+			'mora' => 0,
+			'descuento' => 0
+		];
+	
+		// Verificar si la fecha de vencimiento es anterior a la fecha actual
+		if ($fechaVencimiento->lt($fechaActual)) {
+			// Calcular los días de mora
+			$diasMora                 = $fechaActual->diffInDays($fechaVencimiento);
+            $porcentajeInteresMensual = $interesMora / 100;
+            $tasaInteresDiaria        = $tasaInteresMensual / 30;
+
+            //dd($valorCuota, $diasMora, $porcentajeInteresMensual, $tasaInteresDiaria);
+
+            $interesMoraTotal = $diasMora  * $porcentajeInteresMensual * $tasaInteresDiaria;
+
+            dd($interesMoraTotal);
+			
+			// Calcular el interés de mora
+			$interesMensual   = $interesMora / 100;    
+			$interesDiario    = $interesMensual / 30;
+			$interesMoraTotal = $interesDiario  * $diasMora;
+
+            dd($interesMoraTotal);
+	
+			// Actualizar el valor de la mora en el resultado
+			$resultado['mora'] = $interesMoraTotal;
+
+            $valorCuota += $interesMoraTotal;
+		} else {
+			// Calcular los días anticipados (días antes del vencimiento)
+			$diasAnticipados = $fechaVencimiento->diffInDays($fechaActual);
+			
+			// Calcular el descuento por pago anticipado
+			$descuentoDiario = $tasaInteresMensual / 100; // Utilizamos la tasa de interés mensual como descuento diario
+			$descuentoTotal = $descuentoDiario * $montoPrestamo * $diasAnticipados;
+	
+			// Actualizar el valor del descuento en el resultado
+			$resultado['descuento'] = $descuentoTotal;
+
+            $valorCuota -= $descuentoTotal;
+		}	
+
+	
+		// Actualizar el valor de la cuota en el resultado
+		$resultado['cuota'] = $generales->redondearMilSiguiente($valorCuota);
+	
+		return $resultado;
+	}
+
+    function calcularValorInteresDiario($montoPrestamo, $tasaInteresMensual, $fechaVencimiento, $interesMora, $numeroDiasCambioFecha){
+        $generales  = new generales();      
+
+        $fechaActual         = Carbon::now();
+        $fechaVencimiento    = Carbon::parse($fechaVencimiento);
+        $interesMensual      = $montoPrestamo * ($tasaInteresMensual / 100);
+        $valorCambioFechas   = 0; 
+        $totalInteresMora    = 0;
+        $totalValorDescuento = 0;
+
+        dd($numeroDiasCambioFecha);
+
+        if($numeroDiasCambioFecha > 0){
+            $valorCambioFechas = $montoPrestamo * ($tasaInteresMensual / 100) * ($numeroDiasCambioFecha / 365);
+            $interesMensual   += $generales->redonderarCienMasCercano($valorCambioFechas);
+        }
+
+        if ($fechaVencimiento->lt($fechaActual)) {//Tiene mora
+            $diasMora         = $fechaActual->diffInDays($fechaVencimiento);
+            $interesMora      = $montoPrestamo * ($interesMora / 100) * ($diasMora / 365);
+            $totalInteresMora = $generales->redonderarCienMasCercano($interesMora); 
+        }else{
+            $diasAnticipado      = $fechaActual->diffInDays($fechaVencimiento) + 1; //No toma la fecha actual
+            $valorDescuento      = $montoPrestamo * ($tasaInteresMensual / 100) * ($diasAnticipado / 365);
+            $totalValorDescuento = $generales->redonderarCienMasCercano($valorDescuento);
+        }
+
+        $resultado = [
+			'valorIntereses'   => $interesMensual,
+			'valorInteresMora' => $totalInteresMora,
+			'valorDescuento'   => $totalValorDescuento
+		];
+
+        return $resultado;
+    }
+
+    function calcularDiasCambiosFechaDesembolso($fechaDesembolso, $fechaVencimiento){
+        $fechaDesembolso  = Carbon::parse($fechaDesembolso);
+        $fechaVencimiento = Carbon::parse($fechaVencimiento);
+        return  $fechaDesembolso->diffInDays($fechaVencimiento);
+    }
+
+    function obtenerFechaPagoCuota($fecha) {
+		$fechaActual   = Carbon::parse($fecha);
+        $nuevaFecha    = Carbon::parse($fecha);
+        $diaFecha      = $fechaActual->day;
+        $mesFecha      = $fechaActual->month;
+		$diasAdicionar = 30;
+		$nuevaFecha    = $fechaActual->addDays($diasAdicionar);
+
+        // Verificar si la fecha resultante es 28 o 29 de febrero para ajustar al 01 de abril
+		if (($diaFecha === 28 || $diaFecha === 29) && $mesFecha === 2) {            
+            $nuevaFecha->setMonth(4);
+            $nuevaFecha->setDay(1);
+        }
+
+        return $nuevaFecha;
+    }
+
+    function obtenerFechaPagoCuota12($fecha) {
+        $fechaActual   = Carbon::parse($fecha);
+        $nuevaFecha    = Carbon::parse($fecha);
+        $diaFecha      = $fechaActual->day;
+        $mesFecha      = $fechaActual->month;
+        $anioFecha     = $fechaActual->year;
+        $diasAdicionar = 30;
+
+       // dd($mesFecha);
+    
+        // Si es 29, 30 o 31, ajustar al primer día del siguiente mes
+        if ($diaFecha >= 29 && $diaFecha <= 31) {
+            // Si es diciembre, ajustar a enero del siguiente año
+            if ($mesFecha == 12) {
+                dd("hola");
+                $nuevaFecha->year($anioFecha + 1)->month(1)->day(1);
+            } else {
+                //dd("hola 2");
+                $nuevaFecha->addMonthsNoOverflow(1)->startOfMonth();
+            }
+        } else {
+            dd('hola');
+            $nuevaFecha->addDays($diasAdicionar);
+        }
+    
+        // Verificar si es febrero y ajustar al 1 de abril
+        if ($mesFecha == 2 && $diaFecha >= 28) {
+            $nuevaFecha->year($anioFecha)->month(4)->day(1);
+        }
+    
+        return $nuevaFecha;
+    }
+
+    function obtenerFechaPagoCuota1aa($fecha) {
+        $fechaActual   = Carbon::parse($fecha);
+        $nuevaFecha    = Carbon::parse($fecha);
+        $diaFecha      = $fechaActual->day;
+        $mesFecha      = $fechaActual->month;
+        $anioFecha     = $fechaActual->year;
+        $diasAdicionar = 30;
+    
+        // Si es 29, 30 o 31, ajustar al primer día del siguiente mes
+        if ($diaFecha >= 29 && $diaFecha <= 31) {
+            // Si es diciembre, ajustar a enero del siguiente año
+            if ($mesFecha == 12) {
+                $nuevaFecha->year($anioFecha + 1)->month(1)->day(1);
+            } else {
+                $nuevaFecha->addMonthsNoOverflow(1)->startOfMonth();
+            }
+        } else {
+            $nuevaFecha->addDays($diasAdicionar);
+        }
+    
+        // Verificar si es febrero y ajustar al 1 de abril
+        if ($mesFecha == 2 && $diaFecha >= 28) {
+            $nuevaFecha->year($anioFecha)->month(4)->day(1);
+        }
+    
+        // Añadir los 30 días adicionales
+        $nuevaFecha->addDays($diasAdicionar);
+    
+        return $nuevaFecha;
+    }
+
+
+    function obtenerFechaPagoCuota1($fecha) {
+        $fechaActual   = Carbon::parse($fecha);
+        $nuevaFecha    = Carbon::parse($fecha);
+        $diaFecha      = $fechaActual->day;
+        $mesFecha      = $fechaActual->month;
+        $anioFecha     = $fechaActual->year;
+        $diasAdicionar = 30;
+    
+        // Si es 29, 30 o 31, ajustar al primer día del siguiente mes
+        if ($diaFecha >= 29 && $diaFecha <= 31) {
+            // Si es diciembre, ajustar a enero del siguiente año
+            if ($mesFecha == 12) {
+                $nuevaFecha->year($anioFecha + 1)->month(1)->day(1);
+            } else {
+                $nuevaFecha->addMonthsNoOverflow(1)->startOfMonth();
+            }
+        } else {
+            $nuevaFecha->addDays($diasAdicionar);
+        }
+    
+        // Verificar si es febrero y ajustar al 1 de abril
+        if ($mesFecha == 2 && $diaFecha >= 28) {
+            $nuevaFecha->year($anioFecha)->month(4)->day(1);
+        }
+    
+        // Añadir los 30 días adicionales
+        $nuevaFecha->addDays($diasAdicionar);
+    
+        return $nuevaFecha;
+    }
+
+    function fechaMesSiguiente($fecha) {
+        // Parseamos la fecha utilizando Carbon
+        $fechaCarbon = Carbon::parse($fecha);
+        
+        // Sumamos un mes a la fecha actual
+        $fechaSiguiente = $fechaCarbon->addMonth();
+    
+        return $fechaSiguiente;
+    }
+
+
+    function obtenerFechaPagoCuotaMia($fecha) {
+		$fechaActual  = Carbon::parse($fecha);
+        $nuevaFecha   = Carbon::parse($fecha);
+        $diaFecha     = $fechaActual->day;
+        $mesFecha     = $fechaActual->month;
+  
+        // Verificar si la fecha resultante es 28 o 29 de febrero para ajustar al 01 de abril
+		/*if (($diaFecha === 28 || $diaFecha === 29) && $mesFecha === 2) {            
+            $nuevaFecha->setMonth(4);
+            $nuevaFecha->setDay(1);
+        }else if ($diaFecha >= 29 && $diaFecha <= 31) {
+            $nuevaFecha->setMonth($mesFecha + 1);
+            $nuevaFecha->setDay(1); 
+        }else{           
+            $nuevaFecha = $nuevaFecha->addMonth();
+        }*/
+        if ($diaFecha >= 29 && $diaFecha <= 31) {
+            $nuevaFecha->setMonth($mesFecha + 1);
+            $nuevaFecha->setDay(1); 
+        }else{
+            $nuevaFecha = $fechaActual->addMonth();
+        }
+
+        return $nuevaFecha;
+    }
+
+    function obtenerFechaInicialColocacion(){
+        $fechaHoraActual  = Carbon::now();
+        $fechaActual      = Carbon::parse($fechaHoraActual->format('Y-m-d'));
+        $diaFecha         = $fechaActual->day;
+        $mesFecha         = $fechaActual->month;
+        $nuevaFecha       = Carbon::parse($fechaActual);
+
+        if ($diaFecha >= 29 && $diaFecha <= 31) {
+            $nuevaFecha->setMonth($mesFecha + 1);
+            $nuevaFecha->setDay(1);
+        }
+
+        return $nuevaFecha;
+    }
 }

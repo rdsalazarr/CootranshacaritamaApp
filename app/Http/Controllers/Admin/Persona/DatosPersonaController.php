@@ -136,7 +136,8 @@ class DatosPersonaController extends Controller
                                         'a.asocrutacertificado','a.asocfechaingreso', 'tc.tipconnombre','ag.agennombre','c.condfechaingreso',
                                         DB::raw('(SELECT COUNT(ascaesid) AS ascaesid FROM asociadocambioestado WHERE asocid = a.asocid ) AS totalCambioEstadoAsociado'),
                                         DB::raw('(SELECT COUNT(cocaesid) AS cocaesid FROM conductorcambioestado WHERE condid = c.condid ) AS totalCambioEstadoConductor'),
-                                        DB::raw('(SELECT COUNT(concerid) AS concerid FROM conductorcertificado WHERE condid = c.condid ) AS totalCertificadoConductor'))
+                                        DB::raw('(SELECT COUNT(concerid) AS concerid FROM conductorcertificado WHERE condid = c.condid ) AS totalCertificadoConductor'),
+                                        DB::raw('(SELECT COUNT(soliid) AS soliid FROM solicitud WHERE condid = c.condid ) AS totalSolicitudConductor'))
                                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
                                         ->join('cargolaboral as cl', 'cl.carlabid', '=', 'p.carlabid')
                                         ->join('tipopersona as tp', 'tp.tipperid', '=', 'p.tipperid')
@@ -161,6 +162,7 @@ class DatosPersonaController extends Controller
             $licenciasConducion     = [];
             $conductorCertificados  = [];
             $cambiosEstadoConductor = [];
+            $solicitudConductores   = [];
             if($frm === 'CONDUCTOR'){
                 $documento           = $persona->persdocumento;
                 $licenciasConducion  = DB::table('conductorlicencia as cl')
@@ -179,6 +181,20 @@ class DatosPersonaController extends Controller
                                                      DB::raw("CONCAT('archivos/persona/',$documento,'/', cc.concerrutaarchivo) as rutaDescargar"))
                                                     ->join('conductor as c', 'c.condid', '=', 'cc.condid')
                                                     ->where('c.persid', $id)->get();
+                }
+
+                if($persona->totalSolicitudConductor > 0 ){
+                    $solicitudConductores   = DB::table('solicitud as s')
+                                                    ->select('s.soliid', 's.solifechahoraregistro',
+                                                        DB::raw('SUBSTRING(s.solimotivo, 1, 200) AS asunto'),'ts.tipsolnombre as tipoSolicitud',
+                                                        DB::raw("CONCAT(rde.radoenanio,'-', rde.radoenconsecutivo) as consecutivo"),
+                                                        DB::raw("CONCAT(prd.peradoprimernombre,' ',IFNULL(prd.peradosegundonombre,''),' ',prd.peradoprimerapellido,' ',IFNULL(prd.peradosegundoapellido,'')) as nombrePersonaRadica"))
+                                                    ->join('radicaciondocumentoentrante as rde', 'rde.radoenid', '=', 's.radoenid')
+                                                    ->join('personaradicadocumento as prd', 'prd.peradoid', '=', 'rde.peradoid')
+                                                    ->join('tiposolicitud as ts', 'ts.tipsolid', '=', 's.tipsolid')
+                                                    ->join('conductor as c', 'c.condid', '=', 's.condid')
+                                                    ->where('c.persid', $id)
+                                                    ->orderBy('rde.radoenid', 'Desc')->get();
                 }
 
                 if($persona->totalCambioEstadoConductor > 0 ){
@@ -204,8 +220,8 @@ class DatosPersonaController extends Controller
             }
 
             return response()->json(['success' => true,   "persona" => $persona,         "cambiosEstadoAsociado" => $cambiosEstadoAsociado, 
-                                    "cambiosEstadoConductor" => $cambiosEstadoConductor, "licenciasConducion"    => $licenciasConducion,     
-                                    "conductorCertificados"   => $conductorCertificados]);
+                                    "cambiosEstadoConductor" => $cambiosEstadoConductor, "licenciasConducion"    => $licenciasConducion,
+                                    "conductorCertificados"   => $conductorCertificados, "solicitudConductores"  => $solicitudConductores]);
         }catch(Exception $e){
             return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
         }

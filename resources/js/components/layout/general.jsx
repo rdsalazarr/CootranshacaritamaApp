@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import "../../../scss/general.scss";
-import { Card, CardContent, Box, Grid } from '@mui/material';
+import { Card, CardContent, Box, Grid, Avatar, Stack } from '@mui/material';
 import logo from "../../../images/logoHome.png";
+import instance from "./instance";
 
 export function Header(){
     return (
@@ -40,14 +41,41 @@ export function Footer(){
 }
 
 export function HeaderAdmon(){
-        return (
+    const [nameUser , setNameUser] = useState('');
+    const [fotoUser , setFotoUser] = useState('');
+    const [mostarDatos , setMostarDatos] = useState(false);
+ 
+     useEffect(() => {
+         instance.get('/admin/consultar/informacion/usuario').then(res=>{
+             if(res.success){
+                setNameUser('Bienvenido, '+res.data.nombreUsuario);
+                (res.data.persrutafoto !== '') ? setFotoUser('data:application/jpg;base64,'+res.fotografia) : '';
+                setMostarDatos(true);
+             }
+         }); 
+     }, []);
+
+    return (
         <Box className={"headerAdmon"}>
-            <Box className='colAdmonLeft'>
-                <h2>Cooperativa de transportadores HACARITAMA</h2>
-            </Box>
-            <Box className='colAdmonRight'>
-                <img src={logo} alt="logo"  />
-            </Box> 
+            <Grid container spacing={2}>
+                <Grid item md={3} xl={3} sm={2} xs={1}>
+                </Grid>
+                <Grid item md={5} xl={5} sm={5} xs={6}>
+                    <h2>Cooperativa de transportadores HACARITAMA</h2>
+                </Grid>
+                <Grid item md={4} xl={4} sm={5} xs={5}>
+                    {(mostarDatos) ?
+                        <Box className='informacionPersonal'> 
+                            <Box className={'titleUsuario'}>{nameUser}</Box>
+                            <Box>
+                                <Stack direction="row" spacing={2}>
+                                    <Avatar src={fotoUser} className={'avatarHome'}/>
+                                </Stack>
+                            </Box>
+                        </Box>
+                    : null }
+                </Grid>
+            </Grid>  
         </Box>
     )
 }
@@ -63,7 +91,7 @@ export function FooterAdmon(){
             <div style={{marginLeft: '4px'}}>
                 <span>
                     <strong>Todos los derechos Reservados | Copyright  | </strong>
-                    <a href='https://implesoft.com/' target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft</a> © 2023
+                    <a href='https://implesoft.com/' target="_black" style={{color: '#5ab7de'}} title="Implesoft.com">Implesoft</a> © 2024
                 </span>
             </div>
         </Box>
