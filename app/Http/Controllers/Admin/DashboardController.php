@@ -42,8 +42,8 @@ class DashboardController extends Controller
 							DB::raw("CONCAT(p.persdocumento,'/',p.persrutafoto ) as fotografia"))
 							->join('persona as p', 'p.persid', '=', 'u.persid')
 							->where('usuaid', Auth::id())->first();
-							
-			if($usuario->persrutafoto !==''){
+
+			if($usuario->persrutafoto !== null){
 				$ruta   = public_path().'/archivos/persona/'.$usuario->fotografia;
 				$imagen = (file_exists($ruta)) ? base64_encode(file_get_contents($ruta)) : '';
 			}
