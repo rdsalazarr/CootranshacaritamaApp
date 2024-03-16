@@ -69,6 +69,8 @@ class notificar
 		$msj .='<div style="background-color:#44ac34; text-align:center; font-weight:bold; color:#fdfdfd; font-size: 15px; margin-top: -4px;"> Notificación del ERP COOTRANSHACARITAMA </div>';
 		$msj .='<div style="margin-top:5px; padding:8px; text-align:justify;">'; 
 		$msj .= $body;
+		$msj .='<div style="margin-top:5px; padding:8px; text-align:justify; color: #ea1820; font-weight: bold;">Estamos actualmente en la fase de desarrollo de un nuevo sistema de ERP HACARITAMA. Si ha recibido este correo, le solicitamos gentilmente que lo ignore, ya que se trata únicamente de una prueba de funcionamiento.</div>';		
+		
 		$msj .='</div>
 				<div style="margin-top:5px; font-size:11px; padding:8px; color:#8c8c8c; text-align:justify; ">'.$piePagina.'
 				</div>
