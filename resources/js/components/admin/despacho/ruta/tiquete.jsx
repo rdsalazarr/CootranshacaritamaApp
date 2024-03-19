@@ -98,7 +98,7 @@ export default function Tiquete({data}){
             let arrayTarifaTiquetes = [];
             tarifaTiquetes.map((res) =>{
                 if(res.identificador === formDataTiquete.identificador){
-                    arrayTarifaTiquetes.push({ identificador:res.identificador, deptoIdOrigen: formDataTiquete.deptoIdOrigen, municipioIdOrigen:formDataTiquete.municipioIdOrigen, municipioIdOrigen:resultadoNombreMunicipioOrigen[0].muninombre,
+                    arrayTarifaTiquetes.push({ identificador:res.identificador, deptoIdOrigen: formDataTiquete.deptoIdOrigen, municipioIdOrigen:formDataTiquete.municipioIdOrigen, nombreMunicipioOrigen:resultadoNombreMunicipioOrigen[0].muninombre,
                         deptoIdDestino:formDataTiquete.deptoIdDestino, municipioIdDestino:formDataTiquete.municipioIdDestino, nombreMunicipioDestino: resultadoNombreMunicipioDestino[0].muninombre,
                         valorTiquete: formDataTiquete.valorTiquete, valorTiqueteMostrar: FormatearNumero({numero: formDataTiquete.valorTiquete}),
                         valorSeguro: formDataTiquete.valorSeguro, valorSeguroMostrar: FormatearNumero({numero: formDataTiquete.valorSeguro}),

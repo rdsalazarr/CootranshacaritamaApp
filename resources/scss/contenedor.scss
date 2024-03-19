@@ -708,6 +708,11 @@ body{
   }
 }
 
+.tox .tox-insert-table-picker {
+  background-color: #fdfdfd !important;
+  cursor: pointer;
+}
+
 /*md*/
 @media (max-width: 768px) { 
   .containerAdmin{
