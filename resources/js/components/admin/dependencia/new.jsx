@@ -350,8 +350,8 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item xl={2} md={2} sm={12} xs={12}>
-                    <Button type={"button"} className={'modalBtn'} 
-                        startIcon={<AddIcon />} onClick={() => {adicionarFilaSubSerie()}}> {"Agregar"}
+                    <Button type={"button"} className={'modalBtnIcono'} 
+                        startIcon={<AddIcon className='icono'/>} onClick={() => {adicionarFilaSubSerie()}}> {"Agregar"}
                     </Button>
                 </Grid>
 
@@ -429,8 +429,8 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item xl={2} md={2} sm={6} xs={12}>
-                    <Button type={"button"} className={'modalBtn'} 
-                        startIcon={<AddIcon />} onClick={() => {adicionarFilaPersona()}}> {"Agregar"}
+                    <Button type={"button"} className={'modalBtnIcono'} 
+                        startIcon={<AddIcon className='icono' />} onClick={() => {adicionarFilaPersona()}}> {"Agregar"}
                     </Button>
                 </Grid>
 

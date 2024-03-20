@@ -16,6 +16,7 @@ class ProcesoAutomaticoSeeder extends Seeder
     {
         $fechaHoraActual = Carbon::now();
         $fechaActual     = $fechaHoraActual->format('Y-m-d');
+        $fechaAnterior   = $fechaHoraActual->subDay()->format('Y-m-d');
 
         DB::table('procesoautomatico')->insert([
             'proautid'             => '1',
@@ -154,7 +155,7 @@ class ProcesoAutomaticoSeeder extends Seeder
             'proautnombre'         => 'ProcesarPagoMensualidad',
             'proautmetodo'         => 'procesarPagoMensualidad',
             'proautclasephp'       => 'Noche',
-            'proautfechaejecucion' => $fechaActual,
+            'proautfechaejecucion' => $fechaAnterior,
             'proauttipo'           => 'N',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
@@ -165,7 +166,7 @@ class ProcesoAutomaticoSeeder extends Seeder
             'proautnombre'         => 'CerrarMovimientoCaja',
             'proautmetodo'         => 'cerrarMovimientoCaja',
             'proautclasephp'       => 'Noche',
-            'proautfechaejecucion' => $fechaActual,
+            'proautfechaejecucion' => $fechaAnterior,
             'proauttipo'           => 'N',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
@@ -176,7 +177,7 @@ class ProcesoAutomaticoSeeder extends Seeder
             'proautnombre'         => 'MarcarRecibidoPlanilla',
             'proautmetodo'         => 'marcarRecibidoPlanilla',
             'proautclasephp'       => 'Noche',
-            'proautfechaejecucion' => $fechaActual,
+            'proautfechaejecucion' => $fechaAnterior,
             'proauttipo'           => 'N',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
@@ -187,7 +188,7 @@ class ProcesoAutomaticoSeeder extends Seeder
             'proautnombre'         => 'MarcarRedencionPuntos',
             'proautmetodo'         => 'marcarRedencionPuntos',
             'proautclasephp'       => 'Noche',
-            'proautfechaejecucion' => $fechaActual,
+            'proautfechaejecucion' => $fechaAnterior,
             'proauttipo'           => 'N',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
@@ -198,7 +199,7 @@ class ProcesoAutomaticoSeeder extends Seeder
             'proautnombre'         => 'CrearBackup',
             'proautmetodo'         => 'crearBackup',
             'proautclasephp'       => 'Noche',
-            'proautfechaejecucion' => $fechaActual,
+            'proautfechaejecucion' => $fechaAnterior,
             'proauttipo'           => 'N',
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,

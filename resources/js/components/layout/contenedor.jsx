@@ -83,6 +83,8 @@ import ProcesosAutomaticos from "../admin/procesos/list";
 import InformesPdf from "../admin/informes/pdf/list";
 import InformesDescargables from "../admin/informes/descargables/list";
 
+import Auditoria from "../admin/auditoria/list";
+
 const HeaderMenu = ({open, setOpen}) =>{
     return (
         <div className={"toolbarIcon"} onClick={() => setOpen(!open)}>
@@ -247,8 +249,8 @@ const menuComponente = [
     {id:54,componente : <ProcesosAutomaticos />},
     {id:55,componente : <InformesPdf />},
     {id:56,componente : <InformesDescargables />},
-
-    {id:57,componente : <EnConstruccion />},
+    {id:57,componente : <Auditoria />},
+    
     {id:58,componente : <EnConstruccion />},
     {id:59,componente : <EnConstruccion />},
     {id:60,componente : <EnConstruccion />},

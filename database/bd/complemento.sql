@@ -350,3 +350,10 @@ INSERT INTO `cuentacontable` (`cueconid`, `cueconnombre`, `cuecondescripcion`, `
 UPDATE `migrations` SET `migration` = '2023_10_18_043518_create_tipo_solicitud' WHERE `migrations`.`id` = 105; UPDATE `migrations` SET `migration` = '2023_10_18_043519_create_solicitud' WHERE `migrations`.`id` = 106;
 
 ALTER TABLE `asociado`  ADD `asocrutacertificado` VARCHAR(500) NULL AFTER `asocnombrearchivoeditado`;
+
+
+INSERT INTO `funcionalidad` (`funcid`, `moduid`, `funcnombre`, `functitulo`, `funcruta`, `funcicono`, `funcorden`, `funcactiva`, `created_at`, `updated_at`) VALUES
+(57, 14, 'General', 'Auditoría generar en el sistema', 'admin/auditoria/general', 'verified_user_icon', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUES
+(57, 1, 57);

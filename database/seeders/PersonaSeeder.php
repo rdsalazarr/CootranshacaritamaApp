@@ -78,7 +78,7 @@ class PersonaSeeder extends Seeder
             'perssegundoapellido'  => 'CLARO',
             'persfechanacimiento'  => '1979-08-29',
             'persdireccion'        => 'Calle 4 36 49',
-            'perscorreoelectronico'  => 'luisangel330@hotmail.com',
+            'perscorreoelectronico'  => 'radasa10@hotmail.com', //luisangel330
             'persfechadexpedicion'   => '1998-04-16',
             'persnumerotelefonofijo' => '3163374329',
             'persnumerocelular'  => '3163374329',

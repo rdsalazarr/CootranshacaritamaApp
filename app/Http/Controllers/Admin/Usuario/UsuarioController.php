@@ -14,39 +14,46 @@ class UsuarioController extends Controller
 {
 	public function index()
 	{
-        $data = DB::table('usuario as u')
-                    ->select('u.usuaid','u.persid','p.tipideid','p.persdocumento','u.usuanombre','u.usuaapellidos','u.usuaalias',
-                            'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword', 'u.agenid','u.cajaid','c.cajanumero',
-                            DB::raw("CONCAT(ti.tipidesigla,'-', p.persdocumento ) as tipoDocumento"),
-                            DB::raw("if(u.usuaactivo = 1,'Sí', 'No') as estado"),
-                            DB::raw("if(u.usuabloqueado = 1,'Sí', 'No') as bloqueado"),
-                            DB::raw("if(u.usuacambiarpassword = 1,'Sí', 'No') as cambiarpassword"))
-                    ->join('persona as p', 'p.persid', '=', 'u.persid')
-					->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
-					->leftJoin('caja as c', 'c.cajaid', '=', 'u.cajaid')
-					->whereNotIn('u.usuaid', [1])
-                    ->orderBy('u.usuanombre')->orderBy('u.usuaapellidos')->get();
-
-		return response()->json(['success' => true, "data" => $data]);
+		try{
+			$data = DB::table('usuario as u')
+						->select('u.usuaid','u.persid','p.tipideid','p.persdocumento','u.usuanombre','u.usuaapellidos','u.usuaalias',
+								'u.usuanick','u.usuaemail','u.usuabloqueado','u.usuaactivo','u.usuacambiarpassword', 'u.agenid','u.cajaid','c.cajanumero',
+								DB::raw("CONCAT(ti.tipidesigla,'-', p.persdocumento ) as tipoDocumento"),
+								DB::raw("if(u.usuaactivo = 1,'Sí', 'No') as estado"),
+								DB::raw("if(u.usuabloqueado = 1,'Sí', 'No') as bloqueado"),
+								DB::raw("if(u.usuacambiarpassword = 1,'Sí', 'No') as cambiarpassword"))
+						->join('persona as p', 'p.persid', '=', 'u.persid')
+						->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'p.tipideid')
+						->leftJoin('caja as c', 'c.cajaid', '=', 'u.cajaid')
+						->whereNotIn('u.usuaid', [1])
+						->orderBy('u.usuanombre')->orderBy('u.usuaapellidos')->get();
+		
+			return response()->json(['success' => true, "data" => $data]);
+		}catch(Exception $e){
+			return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
+		}
 	}
 
 	public function datos(Request $request)
 	{
 		$this->validate(request(),['codigo' => 'required','tipo' => 'required']);
+		try{
+			$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
+			$roles                = DB::table('rol')->select('rolid','rolnombre')->orderBy('rolnombre')->get();
+			$cajas                = DB::table('caja')->select('cajaid','cajanumero')->orderBy('cajaid')->get();
+			$agencias             = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
+			$usuariosRoles        = [];
+			if($request->tipo === 'U'){
+				$usuariosRoles = DB::table('usuariorol as ur')->select('r.rolid','r.rolnombre', 'ur.usurolid')
+										->join('rol as r', 'r.rolid', '=', 'ur.usurolrolid')
+										->where('ur.usurolusuaid', $request->codigo)->get();
+			}
 
-		$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
-		$roles                = DB::table('rol')->select('rolid','rolnombre')->orderBy('rolnombre')->get();
-		$cajas                = DB::table('caja')->select('cajaid','cajanumero')->orderBy('cajaid')->get();
-		$agencias             = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
-		$usuariosRoles        = [];
-		if($request->tipo === 'U'){
-			$usuariosRoles = DB::table('usuariorol as ur')->select('r.rolid','r.rolnombre', 'ur.usurolid')
-									->join('rol as r', 'r.rolid', '=', 'ur.usurolrolid')
-									->where('ur.usurolusuaid', $request->codigo)->get();
+			return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles'    => $roles,   'cajas' => $cajas,
+														'usuariosRoles'       => $usuariosRoles,        'agencias' => $agencias ]);
+		}catch(Exception $e){
+			return response()->json(['success' => false, 'message' => 'Error al obtener la información => '.$e->getMessage()]);
 		}
-
-        return response()->json(['success' => true,'tipoIdentificaciones' => $tipoIdentificaciones, 'roles'    => $roles,   'cajas' => $cajas,
-													'usuariosRoles'       => $usuariosRoles,        'agencias' => $agencias ]);
 	}
 
 	public function consultar(Request $request)

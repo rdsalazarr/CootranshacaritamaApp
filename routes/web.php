@@ -96,6 +96,8 @@ use App\Http\Controllers\Admin\AtencionUsuario\ShowSolicitudController;
 use App\Http\Controllers\Admin\Informes\InformeDescargableController;
 use App\Http\Controllers\Admin\Informes\InformePdfController;
 
+use App\Http\Controllers\Admin\Auditoria;
+
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
@@ -142,9 +144,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
     Route::get('/admin/miPerfil', [DashboardController::class, 'index']);
     Route::middleware(['preload'])->group(function (){//para recargar la pagina con f5
-        Route::get('/admin/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/caja/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);
+        Route::get('/admin/auditoria{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/informes/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/despacho/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
@@ -586,6 +589,10 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
             Route::get('/descargable/list/tabla/liquidacion', [InformeDescargableController::class, 'index'])->middleware(['security:admin/informes/descargable','verifySource']);
         });
+
+        Route::prefix('/auditoria')->group(function(){
+            Route::get('/usuario/list', [GeneralController::class, 'index'])->middleware(['security:admin/auditoria/general','verifySource']);
+        });        
 
     });
 

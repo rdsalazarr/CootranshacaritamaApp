@@ -405,8 +405,8 @@ export default function New({data, tipo}){
                 </Grid>
 
                 <Grid item xl={2} md={2} sm={2} xs={12}>
-                    <Button type={"button"} className={'modalBtn'} 
-                        startIcon={<AddIcon />} onClick={() => {adicionarFilaRol()}}> {"Agregar"}
+                    <Button type={"button"} className={'modalBtnIcono'} 
+                        startIcon={<AddIcon className='icono' />} onClick={() => {adicionarFilaRol()}}> {"Agregar 123"}
                     </Button>
                 </Grid>
 

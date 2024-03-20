@@ -117,8 +117,8 @@ export default function List(){
                             </Grid>
 
                             <Grid item xl={2} md={2} sm={4} xs={12}>
-                                <Button type={"submit"} className={'modalBtn'}
-                                    startIcon={<PostAddIcon />}> {"Adicionar"}
+                                <Button type={"submit"} className={'modalBtnIcono'}
+                                    startIcon={<PostAddIcon className='icono' />}> {"Adicionar"}
                                 </Button>
                             </Grid>
                         </Grid>

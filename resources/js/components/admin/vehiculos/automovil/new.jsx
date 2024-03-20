@@ -58,10 +58,12 @@ export default function New({data, tipo}){
     const verificarFirmaElectronica = () =>{
         let newFormData             = {...formData};
         const asociadosFiltrados    = asociados.filter(asoc => asoc.asocid === formData.asociado);
-        newFormData.personaId       = asociadosFiltrados[0].persid;
-        newFormData.firmaElectronia = asociadosFiltrados[0].tieneFirmaElectronica;
-        setPoseeFirmaElectronica(asociadosFiltrados[0].tieneFirmaElectronica);
-        setFormData(newFormData);
+        if(asociadosFiltrados.length > 0){
+            newFormData.personaId       = asociadosFiltrados[0].persid;
+            newFormData.firmaElectronia = asociadosFiltrados[0].tieneFirmaElectronica;
+            setPoseeFirmaElectronica(asociadosFiltrados[0].tieneFirmaElectronica);
+            setFormData(newFormData);
+        }
     }
 
     const handleSubmit = () =>{
