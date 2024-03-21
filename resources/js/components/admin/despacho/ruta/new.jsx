@@ -125,15 +125,22 @@ export default function New({data, tipo}){
 
     const eliminarFilaNodo = (id) =>{
         let newRutaNodos = [];
-        let estado       = 'I';
         rutaNodos.map((res,i) =>{
-            if (i === id) {
-                estado = res.estado === 'U' ? 'D' : 'U';
-            } else {
-                estado = (res.estado === 'D' || res.estado === 'U') ? res.estado : 'I';
+            if(res.estado === 'U' && i === id){
+                newRutaNodos.push({ identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                    municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'D' }); 
+            }else if(res.estado === 'D' && i === id){
+                newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                  municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'U'});
+            }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
+                newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                   municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado:res.estado});
+            }else{
+                if(i != id){
+                    newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
+                                       municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: 'I' });
+                }
             }
-            newRutaNodos.push({identificador:res.identificador, deptoNodoId: res.deptoNodoId, nombreDepto:res.nombreDepto, 
-                municipioNodoId: res.municipioNodoId, nombreMunicipio:res.nombreMunicipio, estado: estado });
         })
         setRutaNodos(newRutaNodos);
     }

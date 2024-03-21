@@ -125,20 +125,35 @@ export default function Tiquete({data}){
     }
 
     const eliminarFilaTarifa = (id) =>{
-        let newTarifaTiquetes = [];
-        let estado            = 'I';
+        let newTarifaTiquetes = []; 
         tarifaTiquetes.map((res,i) =>{
-            if (i === id) {
-                estado = res.estado === 'U' ? 'D' : 'U';
-            } else {
-                estado = (res.estado === 'D' || res.estado === 'U') ? res.estado : 'I';
+            if(res.estado === 'U' && i === id){
+                newTarifaTiquetes.push({ identificador:res.identificador, deptoIdOrigen: res.deptoIdOrigen, municipioIdOrigen: res.municipioIdOrigen, nombreMunicipioOrigen:res.nombreMunicipioOrigen, 
+                    deptoIdDestino: res.deptoIdDestino, municipioIdDestino: res.municipioIdDestino, nombreMunicipioDestino:res.nombreMunicipioDestino,  valorTiquete: res.valorTiquete, 
+                    valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro: res.valorSeguro,valorSeguroMostrar: res.valorSeguroMostrar, valorEstampilla: res.valorEstampilla, 
+                    valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion, valorFondoRecaudo: res.valorFondoRecaudo,
+                    valorFondoRecaudoMostrar: FormatearNumero({numero: formDataTiquete.valorFondoRecaudoMostrar}), estado: 'D' }); 
+            }else if(res.estado === 'D' && i === id){
+                newTarifaTiquetes.push({identificador:res.identificador, deptoIdOrigen: res.deptoIdOrigen, municipioIdOrigen: res.municipioIdOrigen, nombreMunicipioOrigen:res.nombreMunicipioOrigen, 
+                    deptoIdDestino: res.deptoIdDestino, municipioIdDestino: res.municipioIdDestino, nombreMunicipioDestino:res.nombreMunicipioDestino,  valorTiquete: res.valorTiquete, 
+                    valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro: res.valorSeguro,valorSeguroMostrar: res.valorSeguroMostrar, valorEstampilla: res.valorEstampilla, 
+                    valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion, valorFondoRecaudo: res.valorFondoRecaudo,
+                    valorFondoRecaudoMostrar: FormatearNumero({numero: formDataTiquete.valorFondoRecaudoMostrar}), estado: 'U'});
+            }else if((res.estado === 'D' || res.estado === 'U') && i !== id){
+                newTarifaTiquetes.push({identificador:res.identificador, deptoIdOrigen: res.deptoIdOrigen, municipioIdOrigen: res.municipioIdOrigen, nombreMunicipioOrigen:res.nombreMunicipioOrigen, 
+                    deptoIdDestino: res.deptoIdDestino, municipioIdDestino: res.municipioIdDestino, nombreMunicipioDestino:res.nombreMunicipioDestino,  valorTiquete: res.valorTiquete, 
+                    valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro: res.valorSeguro,valorSeguroMostrar: res.valorSeguroMostrar, valorEstampilla: res.valorEstampilla, 
+                    valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion, valorFondoRecaudo: res.valorFondoRecaudo,
+                    valorFondoRecaudoMostrar: FormatearNumero({numero: formDataTiquete.valorFondoRecaudoMostrar}), estado:res.estado});
+            }else{
+                if(i != id){
+                    newTarifaTiquetes.push({identificador:res.identificador, deptoIdOrigen: res.deptoIdOrigen, municipioIdOrigen: res.municipioIdOrigen, nombreMunicipioOrigen:res.nombreMunicipioOrigen, 
+                        deptoIdDestino: res.deptoIdDestino, municipioIdDestino: res.municipioIdDestino, nombreMunicipioDestino:res.nombreMunicipioDestino,  valorTiquete: res.valorTiquete, 
+                        valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro: res.valorSeguro,valorSeguroMostrar: res.valorSeguroMostrar, valorEstampilla: res.valorEstampilla, 
+                        valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion, valorFondoRecaudo: res.valorFondoRecaudo,
+                        valorFondoRecaudoMostrar: FormatearNumero({numero: formDataTiquete.valorFondoRecaudoMostrar}), estado: 'I' });
+                }
             }
-
-            newTarifaTiquetes.push({ identificador:res.identificador, deptoIdOrigen: res.deptoIdOrigen, municipioIdOrigen: res.municipioIdOrigen, nombreMunicipioOrigen:res.nombreMunicipioOrigen, 
-                                    deptoIdDestino: res.deptoIdDestino, municipioIdDestino: res.municipioIdDestino, nombreMunicipioDestino:res.nombreMunicipioDestino,  valorTiquete: res.valorTiquete, 
-                                    valorTiqueteMostrar: res.valorTiqueteMostrar,valorSeguro: res.valorSeguro,valorSeguroMostrar: res.valorSeguroMostrar, valorEstampilla: res.valorEstampilla, 
-                                    valorEstampillaMostrar: res.valorEstampillaMostrar, fondoReposicion: res.fondoReposicion, valorFondoRecaudo: res.valorFondoRecaudo,
-                                    valorFondoRecaudoMostrar: FormatearNumero({numero: formDataTiquete.valorFondoRecaudoMostrar}), estado: estado }); 
         })
         setTarifaTiquetes(newTarifaTiquetes);
     }
