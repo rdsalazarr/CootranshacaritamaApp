@@ -66,23 +66,23 @@ export default function Trazabilidad({idProceso, idDocumento, ruta}){
                                     return(
                                         <TableRow key={'rowCE-' +a}>
                                             <TableCell>
-                                                <p>{i}</p>
+                                                {i}
                                             </TableCell>
   
                                             <TableCell>
-                                                <p>{cambioEstado['codpcefechahora']}</p>
+                                                {cambioEstado['codpcefechahora']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['tiesdonombre']}</p>
+                                                {cambioEstado['tiesdonombre']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['nombreUsuario']}</p>
+                                                {cambioEstado['nombreUsuario']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{cambioEstado['codpceobservacion']}</p>
+                                                {cambioEstado['codpceobservacion']}
                                             </TableCell>
                                         
                                         </TableRow> 

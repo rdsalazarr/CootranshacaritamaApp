@@ -429,7 +429,7 @@ export default function New({data, tipo}){
                             return(
                                 <TableRow key={'rowD-' +a} className={(rolUsuar['estado'] == 'D')? 'tachado': null}>
                                     <TableCell>
-                                        <p>{rolUsuar['nombreRol']}</p>
+                                        {rolUsuar['nombreRol']}
                                     </TableCell> 
 
                                     <TableCell className='cellCenter'>

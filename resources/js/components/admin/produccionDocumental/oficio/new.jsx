@@ -651,11 +651,11 @@ export default function New({id, area, tipo, ruta}){
                                                             <TableRow key={'rowA-' +a} className={(radicado.estado == 'D')? 'tachado': null}>
 
                                                                 <TableCell>
-                                                                    <p>{radicado['anioRadicado']}</p> 
+                                                                    {radicado['anioRadicado']}
                                                                 </TableCell>
 
                                                                 <TableCell>
-                                                                    <p>{radicado['consecutivoRadicado']}</p> 
+                                                                    {radicado['consecutivoRadicado']}
                                                                 </TableCell>
                                                             
                                                                 <TableCell className='cellCenter'>

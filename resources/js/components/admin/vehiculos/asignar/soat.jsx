@@ -241,15 +241,15 @@ export default function Soat({id}){
                                     return(
                                         <TableRow key={'rowD-' +a}>
                                             <TableCell>
-                                                <p>{historial['vehsoanumero']} </p>
+                                                {historial['vehsoanumero']}
                                             </TableCell>
 
                                             <TableCell> 
-                                                <p>{historial['vehsoafechainicial']} </p>
+                                                {historial['vehsoafechainicial']}
                                             </TableCell>
 
                                             <TableCell> 
-                                                <p>{historial['vehsoafechafinal']} </p>
+                                                {historial['vehsoafechafinal']}
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>

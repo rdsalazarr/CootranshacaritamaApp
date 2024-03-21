@@ -30,19 +30,19 @@ export default function Copias({data}){
                                     return(
                                         <TableRow key={'rowCop-' +a}>
                                             <TableCell>
-                                                <p>{i}</p>
+                                                {i}
                                             </TableCell>
                         
                                             <TableCell>
-                                                <p>{copia['dependencia']}</p>
+                                                {copia['dependencia']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{copia['nombreUsuario']}</p>
+                                                {copia['nombreUsuario']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{copia['fecha']}</p>
+                                                {copia['fecha']}
                                             </TableCell>
                                         
                                         </TableRow> 

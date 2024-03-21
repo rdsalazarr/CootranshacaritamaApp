@@ -247,19 +247,19 @@ export default function Polizas({id}){
                                     return(
                                         <TableRow key={'rowD-' +a}>
                                             <TableCell>
-                                                <p>{historial['vehpolnumeropolizacontractual']} </p>
+                                                {historial['vehpolnumeropolizacontractual']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['vehpolnumeropolizaextcontrac']} </p>
+                                                {historial['vehpolnumeropolizaextcontrac']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['vehpolfechainicial']} </p>
+                                                {historial['vehpolfechainicial']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['vehpolfechafinal']} </p>
+                                                {historial['vehpolfechafinal']}
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>

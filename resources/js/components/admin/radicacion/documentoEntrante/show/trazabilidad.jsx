@@ -31,23 +31,23 @@ export default function Trazabilidad({data}){
                                     return(
                                         <TableRow key={'rowCE-' +a}>
                                             <TableCell>
-                                                <p>{i}</p>
+                                                {i}
                                             </TableCell>
                         
                                             <TableCell>
-                                                <p>{cambioEstado['fecha']}</p>
+                                                {cambioEstado['fecha']}
                                             </TableCell>
                         
                                             <TableCell>
-                                                <p>{cambioEstado['estado']}</p>
+                                                {cambioEstado['estado']}
                                             </TableCell>
                         
                                             <TableCell>
-                                                <p>{cambioEstado['nombreUsuario']}</p>
+                                                {cambioEstado['nombreUsuario']}
                                             </TableCell>
                         
                                             <TableCell>
-                                                <p>{cambioEstado['observacion']}</p>
+                                                {cambioEstado['observacion']}
                                             </TableCell>
                                         
                                         </TableRow> 

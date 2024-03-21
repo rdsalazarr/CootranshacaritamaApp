@@ -14,15 +14,15 @@ export default function New({data, tipo}){
                                     } : {id:'000', codigo:'', sigla:'', nombre: '', correo: '', jefeDependencia:'', estado: '1', tipo:tipo
                                 });
     const [formDataAdicionar, setFormDataAdicionar] = useState({serie:'', subSerie: '', persona: '' });
-    const [loader, setLoader] = useState(false); 
-    const [habilitado, setHabilitado] = useState(true);
-    const [seriesDocumentales, setSeriesDocumentales] = useState([]);
-    const [subSeriesDocumentales, setSubSeriesDocumentales] = useState([]);
+    const [dependenciaSubSerieDocumental, setDependenciaSubSerieDocumental] = useState([]);
     const [listaSubSeriesDocumentales, setListaSubSeriesDocumentales] = useState([]);
+    const [subSeriesDocumentales, setSubSeriesDocumentales] = useState([]);
+    const [dependenciaPersonas, setDependenciaPersonas] = useState([]);
+    const [seriesDocumentales, setSeriesDocumentales] = useState([]);
+    const [habilitado, setHabilitado] = useState(true);
     const [listaJefes, setListaJefes] = useState([]);
     const [personas, setPersonas] = useState([]);
-    const [dependenciaPersonas, setDependenciaPersonas] = useState([]);
-    const [dependenciaSubSerieDocumental, setDependenciaSubSerieDocumental] = useState([]);
+    const [loader, setLoader] = useState(false);
 
     const handleChange = (e) =>{
        setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
@@ -34,7 +34,7 @@ export default function New({data, tipo}){
 
     const handleChangeUpperCase = (e) => {
         setFormData(prev => ({...prev, [e.target.name]: e.target.value.toUpperCase()}))
-    };
+    }
 
     const handleSubmit = () =>{
         if(dependenciaSubSerieDocumental.length === 0){
@@ -458,7 +458,7 @@ export default function New({data, tipo}){
                                             <TableRow key={'rowA-' +a} className={(pers['estado'] == 'D')? 'tachado': null}>
 
                                                 <TableCell>
-                                                    <p> {pers['nombrePersona']}</p>
+                                                    {pers['nombrePersona']}
                                                 </TableCell>
                                                 
                                                 <TableCell className='cellCenter'>

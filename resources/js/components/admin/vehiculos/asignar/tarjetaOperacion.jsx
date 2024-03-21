@@ -300,27 +300,27 @@ export default function TarjetaOperacion({id}){
                                     return(
                                         <TableRow key={'rowD-' +a}>
                                             <TableCell>
-                                                <p>{historial['vetaopnumero']} </p>
+                                                {historial['vetaopnumero']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['vetaopfechainicial']} </p>
+                                               {historial['vetaopfechainicial']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['vetaopfechafinal']} </p>
+                                                {historial['vetaopfechafinal']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['tisevenombre']} </p>
+                                                {historial['tisevenombre']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['enteAdministrativo']} </p>
+                                                {historial['enteAdministrativo']}
                                             </TableCell>
 
                                             <TableCell>
-                                                <p>{historial['radioAccion']} </p>
+                                                {historial['radioAccion']}
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>

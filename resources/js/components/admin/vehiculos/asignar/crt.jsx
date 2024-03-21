@@ -231,15 +231,15 @@ export default function Crt({id}){
                                     return(
                                         <TableRow key={'rowD-' +a}>
                                             <TableCell>
-                                                <p>{historial['vehcrtnumero']} </p>
+                                                {historial['vehcrtnumero']}
                                             </TableCell>
 
                                             <TableCell> 
-                                                <p>{historial['vehcrtfechainicial']} </p>
+                                                {historial['vehcrtfechainicial']}
                                             </TableCell>
 
                                             <TableCell> 
-                                                <p>{historial['vehcrtfechafinal']} </p>
+                                                {historial['vehcrtfechafinal']}
                                             </TableCell>
 
                                             <TableCell className='cellCenter'>

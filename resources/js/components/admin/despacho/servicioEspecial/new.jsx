@@ -631,7 +631,7 @@ export default function New({data, tipo}){
                                                 <TableRow key={'rowA-' +a} className={(vehi['estado'] == 'D')? 'tachado': null}>
 
                                                     <TableCell>
-                                                        <p> {vehi['nombreVehiculo']}</p>
+                                                        {vehi['nombreVehiculo']}
                                                     </TableCell>
                                                     
                                                     <TableCell className='cellCenter'>

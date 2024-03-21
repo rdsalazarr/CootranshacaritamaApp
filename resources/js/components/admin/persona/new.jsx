@@ -1106,19 +1106,19 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                                                 return(
                                                     <TableRow key={'rowD-' +a}>
                                                         <TableCell>
-                                                            <p>{historial['ticalinombre']}</p>
+                                                            {historial['ticalinombre']}
                                                         </TableCell>
 
                                                         <TableCell>
-                                                            <p>{historial['conlicnumero']}</p>
+                                                            {historial['conlicnumero']}
                                                         </TableCell>
 
                                                         <TableCell>
-                                                            <p>{historial['conlicfechaexpedicion']}</p>
+                                                            {historial['conlicfechaexpedicion']}
                                                         </TableCell>
 
                                                         <TableCell>
-                                                            <p>{historial['conlicfechavencimiento']}</p>
+                                                            {historial['conlicfechavencimiento']}
                                                         </TableCell>
 
                                                         <TableCell>

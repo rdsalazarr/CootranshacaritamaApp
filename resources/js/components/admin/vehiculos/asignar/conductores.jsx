@@ -143,7 +143,7 @@ export default function Conductors({id}){
                                     return(
                                         <TableRow key={'rowD-' +a} className={(asoc['estado'] == 'D')? 'tachado': null}>
                                             <TableCell>
-                                                <p>{asoc['nombreConductor']} </p>
+                                                {asoc['nombreConductor']}
                                             </TableCell>
 
                                             <TableCell className='cellCenter'> 
