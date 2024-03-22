@@ -8,6 +8,7 @@ use App\Exports\MovimientosDiariosExport;
 use App\Exports\LicenciasVencidasExport;
 use App\Exports\ArchivoHistoricoExport;
 use App\Exports\CarteraVencidaExport;
+use App\Exports\IngresoUsuarioExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Exports\TiqueteExport;
@@ -100,6 +101,18 @@ class RegistrosController extends Controller
             $nombreReporte                 = 'Reporte_tabla_liquidacion_credito_'.Carbon::now().'.xls';
             $tablaLiquidacionCreditoExport = new TablaLiquidacionCreditoExport($request);
             return Excel::download($tablaLiquidacionCreditoExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+	}
+
+    public function ingresoUsuario(Request $request){
+        $this->validate(request(),['codigo'=> 'required|numeric' ]);
+
+        try {
+            $nombreReporte        = 'Reporte_ingreso_usuario_'.Carbon::now().'.xls';
+            $ingresoUsuarioExport = new IngresoUsuarioExport($request);
+            return Excel::download($ingresoUsuarioExport, $nombreReporte);
         } catch (Exception $error){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
         }

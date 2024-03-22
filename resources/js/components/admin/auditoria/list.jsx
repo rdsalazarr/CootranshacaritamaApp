@@ -14,7 +14,7 @@ export default function List(){
 
     return (
           <Box>
-            <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Auditoria al sistema</Typography>
+            <Box><Typography component={'h2'} className={'titleGeneral'} style={{ paddingBottom: "0.5em"}}>Auditoría al sistema</Typography>
             </Box> 
             <Tabs value={value} onChange={handleChangeTab}
                 sx={{background: '#e2e2e2'}}

@@ -96,7 +96,8 @@ use App\Http\Controllers\Admin\AtencionUsuario\ShowSolicitudController;
 use App\Http\Controllers\Admin\Informes\InformeDescargableController;
 use App\Http\Controllers\Admin\Informes\InformePdfController;
 
-use App\Http\Controllers\Admin\Auditoria;
+use App\Http\Controllers\Admin\Auditoria\GeneralController;
+
 
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
@@ -133,6 +134,7 @@ Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosContro
 Route::post('/admin/exportar/datos/movimiento/diarios', [RegistrosController::class, 'exportarMovimientoDiarios']);
 Route::post('/admin/exportar/datos/documento/vencidos/vehiculos', [RegistrosController::class, 'documentosVencidos']);
 Route::post('/admin/exportar/datos/tabla/liquidacion/credito', [RegistrosController::class, 'tablaLiquidacionCreditos']);
+Route::post('/admin/exportar/datos/auditoria/usuario', [RegistrosController::class, 'ingresoUsuario']);
 
 // verifySource //verificar que se acceda desde el sistema
 Route::middleware(['revalidate','auth'])->group(function () {
@@ -147,7 +149,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
         Route::get('/admin/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/caja/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/cartera/{id}', [DashboardController::class, 'index']);
-        Route::get('/admin/auditoria{id}', [DashboardController::class, 'index']);        
+        Route::get('/admin/auditoria/{id}', [DashboardController::class, 'index']);        
         Route::get('/admin/informes/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/despacho/{id}', [DashboardController::class, 'index']);
         Route::get('/admin/gestionar/{id}', [DashboardController::class, 'index']);
@@ -592,6 +594,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
 
         Route::prefix('/auditoria')->group(function(){
             Route::get('/usuario/list', [GeneralController::class, 'index'])->middleware(['security:admin/auditoria/general','verifySource']);
+            Route::post('/usuario/show', [GeneralController::class, 'showUsuario']);
+
         });        
 
     });
