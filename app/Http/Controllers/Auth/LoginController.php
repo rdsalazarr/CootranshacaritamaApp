@@ -5,6 +5,7 @@ use App\Models\Usuario\IntentosFallidos;
 use App\Models\Usuario\IngresoSistema;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Util\generales;
 use App\Models\User;
 use Carbon\Carbon;
 use DB, Auth;
@@ -20,14 +21,15 @@ class LoginController extends Controller
     ]);
 
     //Determino la ip de donde accede
-    $clientIP  = (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+    //$clientIP  = (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 
     if (Auth::attempt(['usuanick' => $request->usuario, 'password' => $request->password, 'usuaactivo' => 1, 'usuabloqueado' => 0]))
     {
-      //registro el ingreso al sistema     
+      //registro el ingreso al sistema
+      $generales       = new generales();
       $ingresosistema  = new IngresoSistema();
       $ingresosistema->usuaid                 = Auth::id();
-      $ingresosistema->ingsisipacceso         = $clientIP;
+      $ingresosistema->ingsisipacceso         = $generales->optenerIP;
       $ingresosistema->ingsisfechahoraingreso = Carbon::now();
       $ingresosistema->save();
 
@@ -49,7 +51,7 @@ class LoginController extends Controller
     //Registro el inento fallido
     $intentosfallidos  = new IntentosFallidos();
     $intentosfallidos->intfalusurio   = $request->usuario;
-    $intentosfallidos->intfalipacceso = $clientIP;
+    $intentosfallidos->intfalipacceso = $generales->optenerIP;
     $intentosfallidos->intfalfecha    = Carbon::now();
     $intentosfallidos->save();
 

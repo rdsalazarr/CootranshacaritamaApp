@@ -46,6 +46,10 @@ class generales
 		return $arreglo;
 	}
 
+	function optenerIP(){
+		return (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+	}
+
 	//funicon que me quitas los caracteres especiales 
 	function quitarCaracteres($url){
 		$url = strtolower($url);

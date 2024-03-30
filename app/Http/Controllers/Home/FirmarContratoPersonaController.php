@@ -11,6 +11,7 @@ use App\Util\GenerarContrato;
 use Illuminate\Http\Request;
 use Exception, DB, URL;
 use App\Util\notificar;
+use App\Util\generales;
 use App\Util\encrypt;
 use Carbon\Carbon;
 
@@ -194,6 +195,7 @@ class FirmarContratoPersonaController extends Controller
 
             $token           = $request->token;
             $fechaHoraActual = Carbon::now();
+            $generales       = new generales();
             $tokenfirma      = DB::table('tokenfirmapersona')
                                     ->select('tofipetoken','tofipefechahoranotificacion','tofipefechahoramaxvalidez', 'tofipemensajecorreo','tofipemensajecelular','tofipeid',
                                             DB::raw("(SELECT COUNT(vcf1.vecofiid) FROM vehiculocontratofirma as vcf1 INNER JOIN vehiculocontrato as vc ON vc.vehconid = vcf1.vehconid WHERE vcf1.vehconid = '$contratoId') AS totalFirmas"),
@@ -213,10 +215,12 @@ class FirmarContratoPersonaController extends Controller
             $tokenfirma->save();
 
             //Marco como relizado el proceso de la firma
+           
             $vehiculocontratofirma                              = VehiculoContratoFirma::findOrFail($firmaId);
             $vehiculocontratofirma->vecofifirmado               = true;
             $vehiculocontratofirma->vecofifechahorafirmado      = $fechaHoraActual;
             $vehiculocontratofirma->vecofitoken                 = $tokenfirma->tofipetoken;
+            $vehiculocontratofirma->vecofiipacceso              = $generales->optenerIP;
             $vehiculocontratofirma->vecofifechahoranotificacion = $tokenfirma->tofipefechahoranotificacion;
             $vehiculocontratofirma->vecofifechahoramaxvalidez   = $tokenfirma->tofipefechahoramaxvalidez;
             $vehiculocontratofirma->vecofimensajecorreo         = $tokenfirma->tofipemensajecorreo;

@@ -71,37 +71,54 @@ class GenerarContrato
         $mensajeAsuntoPdf   = '';
         if($vehiculoContrato->perstienefirmaelectronica and $totalFirmas === $totalFirmasRealizadas){
             $firmasContrato    = DB::table('vehiculocontratofirma as vcf')
-                                    ->select('vcf.vecofitoken','vcf.vecofifechahorafirmado','p.persdocumento',
-                                     DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+                                    ->select('vcf.vecofitoken','vcf.vecofiipacceso','vcf.vecofifechahorafirmado','vcf.vecofifechahoranotificacion','vcf.vecofifechahoramaxvalidez',
+                                            'vcf.vecofimensajecorreo','vcf.vecofimensajecelular','p.persdocumento','p.perscorreoelectronico','p.persnumerocelular',
+                                             DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
                                     ->join('persona as p', 'p.persid', '=', 'vcf.persid')
                                     ->where('vcf.vehconid', $contratoId)
                                     ->get();
 
             foreach($firmasContrato as $firmaContrato){
-                $tokeFirma         = $firmaContrato->vecofitoken;
+                $tokenFirma        = $firmaContrato->vecofitoken;
+                $ipFirma           = $firmaContrato->vecofiipacceso;
                 $fechaFirmado      = $firmaContrato->vecofifechahorafirmado;
+                $fechaNotificacion = $firmaContrato->vecofifechahoranotificacion;
+                $medioCorreo       = $firmaContrato->vecofimensajecorreo;
+                $medioCelular      = $firmaContrato->vecofimensajecelular;
                 $nombrePersona     = $firmaContrato->nombrePersona;
-                $mensajeFirma      = 'Documento firmado electrónicamente el día '.$fechaFirmado.', mediante el token número '.$tokeFirma.' por '.$nombrePersona;
+                $correoPersona     = $firmaContrato->perscorreoelectronico;
+                $celularPersona    = $firmaContrato->persnumerocelular;
+                $mensajeFirma      = 'Documento firmado electrónicamente el día '.$fechaFirmado.', mediante el token número '.$tokenFirma.' por '.$nombrePersona;
                 $mensajeAsuntoPdf .= $mensajeFirma.', ';
                 $array = [
-                    "mensajeFirma"     => $mensajeFirma,
-                    "nombrePersona"    => $nombrePersona,
-                    "documentoPersona" => 'C.C. '.number_format($firmaContrato->persdocumento, 0, ',', '.')
+                    "mensajeFirma"      => $mensajeFirma,
+                    "nombrePersona"     => $nombrePersona,
+                    "documentoPersona"  => 'C.C. '.number_format($firmaContrato->persdocumento, 0, ',', '.'),
+                    "correoPersona"     => $correoPersona,
+                    "celularPersona"    => $celularPersona,
+                    "tokenFirma"        => $tokenFirma,
+                    "ipFirma"           => $ipFirma,
+                    "fechaFirmado"      => $fechaFirmado,
+                    "fechaNotificacion" => $fechaNotificacion,
+                    "medioCorreo"       => $medioCorreo,
+                    "medioCelular"      => $medioCelular 
                 ];
                 array_push($firmasElectronicas, $array); 
             }
         }else{//Se imprime las persona que deben firmar
             $array = [
-                "mensajeFirma"     => '',
-                "nombrePersona"    => $nombreGerente,
-                "documentoPersona" => 'C.C. '.$documentoGerente
+                "mensajeFirma"  => '', "nombrePersona"  => $nombreGerente, "documentoPersona"   => 'C.C. '.$documentoGerente,
+                "correoPersona" => '', "celularPersona" => '',              "tokenFirma"        => '',
+                "ipFirma"       => '', "fechaFirmado"   => '',              "fechaNotificacion" => '',
+                "medioCorreo"   => '', "medioCelular"   => '' 
             ];
             array_push($firmasElectronicas, $array); 
 
             $array = [
-                "mensajeFirma"     => '',
-                "nombrePersona"    => $nombrePersona,
-                "documentoPersona" => 'C.C. '.$documentoAsociado
+                "mensajeFirma"  => '', "nombrePersona"  => $nombrePersona, "documentoPersona"   => 'C.C. '.$documentoAsociado,
+                "correoPersona" => '', "celularPersona" => '',              "tokenFirma"        => '',
+                "ipFirma"       => '', "fechaFirmado"   => '',              "fechaNotificacion" => '',
+                "medioCorreo"   => '', "medioCelular"   => '' 
             ];
             array_push($firmasElectronicas, $array); 
         }

@@ -1020,6 +1020,7 @@ class generarPdf
 				$informacionFirma->appendChild($xml->createElement('fechaNotificacion',$firma->codopffechahoranotificacion));
 				$informacionFirma->appendChild($xml->createElement('fechaFirma',$firma->codopffechahorafirmado));
 				$informacionFirma->appendChild($xml->createElement('tokenFirma',$firma->codopftoken));
+				$informacionFirma->appendChild($xml->createElement('ipFirma',$firma->codopfipacceso));
 				$informacionFirma->appendChild($xml->createElement('medioCorreo',$firma->codopfmensajecorreo));
 				$informacionFirma->appendChild($xml->createElement('medioCelular',$firma->codopfmensajecelular));
 
@@ -1854,7 +1855,7 @@ EOD;
 			$posicionY      = PDF::GetY();
 			$contadorImagen = 0;
 			foreach($firmasContrato as $firmaElectronica){
-				$mensajeFirma     = $firmaElectronica['mensajeFirma'];
+				$mensajeFirma      = $firmaElectronica['mensajeFirma'];
 				if($contadorImagen == 0){
 					PDF::Image('images/logoFirmaElectronica.png', 20, $posicionY - 7,20,20);
 					PDF::SetFont('helvetica', '', 8);
@@ -1874,6 +1875,12 @@ EOD;
 			}
 		}
 
+		//Creamos el xml para adjuntarlo al documento
+		$xml              = new \DomDocument('1.0', 'UTF-8'); 
+		$raiz             = $xml->appendChild($xml->createElement('firmaDocumento'));
+		$datosPersona     = $raiz->appendChild($xml->createElement('datosPersona'));
+		$informacionFirma = $raiz->appendChild($xml->createElement('informacionFirma'));
+
 		$contadorFirma = 0;
 		foreach($firmasContrato as $firmaContrato){
 			$nombrePersona    = $firmaContrato['nombrePersona'];
@@ -1889,7 +1896,29 @@ EOD;
 			    PDF::writeHTMLCell(86, 4, 112, '', "<b>".$nombrePersona."</b><br>".$documentoPersona."<br>", 0, 0, 0, true, 'J');
 				$contadorFirma = 0;
 			}
+
+			$datosPersona->appendChild($xml->createElement('documento',$documentoPersona));
+			$datosPersona->appendChild($xml->createElement('nombre',$nombrePersona));
+			$datosPersona->appendChild($xml->createElement('correo',$firmaContrato['correoPersona']));
+			$datosPersona->appendChild($xml->createElement('celular',$firmaContrato['celularPersona']));
+
+			$informacionFirma->appendChild($xml->createElement('numeroContrato',$numeroContrato));
+			$informacionFirma->appendChild($xml->createElement('fechaNotificacion',$firmaContrato['fechaNotificacion']));
+			$informacionFirma->appendChild($xml->createElement('fechaFirma',$firmaContrato['fechaFirmado']));
+			$informacionFirma->appendChild($xml->createElement('tokenFirma',$firmaContrato['tokenFirma']));
+			$informacionFirma->appendChild($xml->createElement('ipFirma',$firmaContrato['ipFirma']));
+			$informacionFirma->appendChild($xml->createElement('medioCorreo',$firmaContrato['medioCorreo']));
+			$informacionFirma->appendChild($xml->createElement('medioCelular',$firmaContrato['medioCelular']));
 		}
+
+		$xml->preserveWhiteSpace = false;
+		$xml->formatOutput       = true;
+		$xmlString               = $xml->saveXML();
+		$titleXml                = 'FirmaContrato_'.$numeroContrato.'.xml';
+
+		Storage::disk('public')->put($titleXml, $xmlString);
+		$xmlFirma = public_path('storage/'.$titleXml);
+		PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
 
 		$tituloPdf = $titulo.'.pdf';
 		if($metodo === 'S'){

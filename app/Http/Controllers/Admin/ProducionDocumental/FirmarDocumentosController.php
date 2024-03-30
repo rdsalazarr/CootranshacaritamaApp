@@ -20,6 +20,7 @@ use App\Util\showTipoDocumental;
 use Illuminate\Http\Request;
 use Exception, Auth, DB;
 use App\Util\generarPdf;
+use App\Util\generales;
 use App\Util\notificar;
 use Carbon\Carbon;
 
@@ -182,6 +183,7 @@ class FirmarDocumentosController extends Controller
         $codoprid             = $request->id;
         $token                = $request->token;
         $codopfid             = $request->firma;
+        $generales            = new generales();
         $fechaHoraActual      = Carbon::now();
 
         try {
@@ -246,6 +248,7 @@ class FirmarDocumentosController extends Controller
 		    $codigodocumentalprocesofirma->codopffirmado               = true;
             $codigodocumentalprocesofirma->codopffechahorafirmado      = $fechaHoraActual;
             $codigodocumentalprocesofirma->codopftoken                 = $tokenfirma->tofipetoken;
+            $codigodocumentalprocesofirma->codopfipacceso              = $generales->optenerIP;
             $codigodocumentalprocesofirma->codopffechahoranotificacion = $tokenfirma->tofipefechahoranotificacion;
             $codigodocumentalprocesofirma->codopffechahoramaxvalidez   = $tokenfirma->tofipefechahoramaxvalidez;
             $codigodocumentalprocesofirma->codopfmensajecorreo         = $tokenfirma->tofipemensajecorreo;

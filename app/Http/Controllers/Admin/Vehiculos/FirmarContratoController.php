@@ -157,8 +157,9 @@ class FirmarContratoController extends Controller
             $contratoId      = $request->id;
             $token           = $request->token;
             $vecofiid        = $request->firma;
+            $generales       = new generales();
             $fechaHoraActual = Carbon::now();
-    
+
             try {
                 $idToken     = Crypt::decrypt($request->tokenId);
             } catch (DecryptException $e) {
@@ -189,6 +190,7 @@ class FirmarContratoController extends Controller
             $vehiculocontratofirma->vecofifirmado               = true;
             $vehiculocontratofirma->vecofifechahorafirmado      = $fechaHoraActual;
             $vehiculocontratofirma->vecofitoken                 = $tokenfirma->tofipetoken;
+            $vehiculocontratofirma->vecofiipacceso              = $generales->optenerIP;
             $vehiculocontratofirma->vecofifechahoranotificacion = $tokenfirma->tofipefechahoranotificacion;
             $vehiculocontratofirma->vecofifechahoramaxvalidez   = $tokenfirma->tofipefechahoramaxvalidez;
             $vehiculocontratofirma->vecofimensajecorreo         = $tokenfirma->tofipemensajecorreo;

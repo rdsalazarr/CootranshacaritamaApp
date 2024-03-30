@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->smallInteger('carlabid')->nullable()->unsigned()->comment('Identificador de la tabla cargo laboral');
             $table->string('codopftoken', 20)->nullable()->comment('Token con el cual es firmado el documento');
+            $table->string('codopfipacceso', 20)->comment('Ip de la cual accede el usuario para realizar el proceso de la firma');
             $table->datetime('codopffechahorafirmado')->nullable()->comment('Fecha y hora de la cual se firma el documento'); 
             $table->datetime('codopffechahoranotificacion')->nullable()->comment('Fecha y hora de la cual se envio la notifiación del token'); 
             $table->datetime('codopffechahoramaxvalidez')->nullable()->comment('Fecha y hora maxima de validez del token'); 
