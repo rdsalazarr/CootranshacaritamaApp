@@ -1,21 +1,22 @@
 import React, {useState, useEffect} from 'react';
-import { ModalDefaultAuto  } from '../../../layout/modal';
 import {SolicitarFirma} from '../../../layout/modalFijas';
 import TablaGeneral from '../../../layout/tablaGeneral';
+import {ModalDefaultAuto} from '../../../layout/modal';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import VisualizarPdf from '../visualizarPdf';
-import Verificar from '../verificar';
-import { Box} from '@mui/material';
+import VerificarArea from '../verificarArea';
+import {Box} from '@mui/material';
 import NewEdit from './new';
 
 export default function Producir(){
 
+    const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
+    const [areaSeleccionada, setAreaSeleccionada] = useState([]);
     const [loader, setLoader] = useState(true);
+    const [accion, setAccion] = useState('L');
     const [data, setData] = useState([]);
     const [tipo, setTipo] = useState(0);
-    const [areaSeleccionada, setAreaSeleccionada] = useState([]);
-    const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{
         setModal({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
@@ -27,7 +28,7 @@ export default function Producir(){
     }
 
     const modales = [
-                        <Verificar cerrarModal={cerrarModal} verificarArea={verificarArea} ruta={'citacion'} />,
+                        <VerificarArea cerrarModal={cerrarModal} verificarArea={verificarArea} ruta={'citacion'} />,
                         <NewEdit tipo={'I'} area={areaSeleccionada} ruta='P' />,
                         <NewEdit tipo={'U'} id={(tipo !== 0) ? modal.data.id : null} ruta='P' /> ,
                         <SolicitarFirma id={(tipo !== 0) ? modal.data.id : null} ruta={'citacion'} cerrarModal={cerrarModal} />,

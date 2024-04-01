@@ -171,6 +171,17 @@ body{
   line-height: 0.5 !important;
 }
 
+.titleProductorDocumento {
+  color: #44ac34;
+  display: inline-block;
+  font-size: 1.5em !important; 
+  text-shadow: -0.03px 0.03px #fff6e6, -1px 1px #e7dcd7;
+  font-weight: bold !important;
+  line-height: 0.5 !important;
+  padding-bottom: 0.9em;
+  text-decoration: underline;
+}
+
 .divisionFormulario {
   background-color: $verdeOscuro;
   text-align: left;

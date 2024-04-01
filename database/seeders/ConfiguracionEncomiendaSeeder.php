@@ -31,7 +31,7 @@ class ConfiguracionEncomiendaSeeder extends Seeder
         DB::table('mensajeimpresion')->insert([
             'menimpid'     => '1',
             'menimpnombre' => 'TIQUETES',
-            'menimpvalor'  => '*** FELIZ NAVIDAD Y PROSPERO AÑO 2024 ***',
+            'menimpvalor'  => '*** En este nuevo mes tenemos un mundo de oportunidades para ofrecerte ***',
             'created_at'   => $fechaHoraActual,
             'updated_at'   => $fechaHoraActual,
         ]);   

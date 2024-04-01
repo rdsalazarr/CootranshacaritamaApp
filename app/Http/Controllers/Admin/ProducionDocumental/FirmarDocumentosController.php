@@ -248,7 +248,7 @@ class FirmarDocumentosController extends Controller
 		    $codigodocumentalprocesofirma->codopffirmado               = true;
             $codigodocumentalprocesofirma->codopffechahorafirmado      = $fechaHoraActual;
             $codigodocumentalprocesofirma->codopftoken                 = $tokenfirma->tofipetoken;
-            $codigodocumentalprocesofirma->codopfipacceso              = $generales->optenerIP;
+            $codigodocumentalprocesofirma->codopfipacceso              = $generales->optenerIP();
             $codigodocumentalprocesofirma->codopffechahoranotificacion = $tokenfirma->tofipefechahoranotificacion;
             $codigodocumentalprocesofirma->codopffechahoramaxvalidez   = $tokenfirma->tofipefechahoramaxvalidez;
             $codigodocumentalprocesofirma->codopfmensajecorreo         = $tokenfirma->tofipemensajecorreo;

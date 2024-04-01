@@ -220,7 +220,7 @@ class FirmarContratoPersonaController extends Controller
             $vehiculocontratofirma->vecofifirmado               = true;
             $vehiculocontratofirma->vecofifechahorafirmado      = $fechaHoraActual;
             $vehiculocontratofirma->vecofitoken                 = $tokenfirma->tofipetoken;
-            $vehiculocontratofirma->vecofiipacceso              = $generales->optenerIP;
+            $vehiculocontratofirma->vecofiipacceso              = $generales->optenerIP();
             $vehiculocontratofirma->vecofifechahoranotificacion = $tokenfirma->tofipefechahoranotificacion;
             $vehiculocontratofirma->vecofifechahoramaxvalidez   = $tokenfirma->tofipefechahoramaxvalidez;
             $vehiculocontratofirma->vecofimensajecorreo         = $tokenfirma->tofipemensajecorreo;

@@ -625,7 +625,7 @@ class generarPdf
         $fechaHoraActual      = Carbon::now();
 		$fechaActual          = $funcion->formatearFecha($fechaHoraActual->format('Y-m-d'));
 	    $visualizar           = new showTipoDocumental();
-		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) =  $visualizar->oficio($id);
+		list($infodocumento, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
 		$empresa              = $this->consultarEmpresa();
 		$direccionEmpresa 	  = $empresa->emprdireccion;
 		$ciudadEmpresa    	  = $empresa->muninombre;
@@ -983,16 +983,19 @@ class generarPdf
 		$posicionX   = 194;
 		$totalFirmas = count($firmasDocumento);
 		foreach ($firmasDocumento as $firma)
-		{		
-			//$certificate 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.crt'));
-			//$primaryKey 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.pem'));
-			//$claveCertificado = '123456';
+		{
+			//Creamos el xml para adjuntarlo al documento
+			$xml = new \DomDocument('1.0', 'UTF-8'); 
+			$raiz = $xml->appendChild($xml->createElement('firmaDocumento'));
 
-			if($firma->codopffirmado === 1 && $firma->persrutacrt !== null){
+			if($firma->codopffirmado === 1 && $firma->persrutacrt !== null){ //Para la firma digital
 
-				$rutaCompletaCrt = $firma->rutaCrt.'/'.Crypt::decrypt($firma->persrutacrt);
-				$rutaCompletaPem = $firma->rutaPem.'/'.Crypt::decrypt($firma->persrutapem);
+				//$certificate 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.crt'));
+				//$primaryKey 	  = 'file://'.realpath(public_path('/archivos/persona/1978917/1978917.pem'));
+				//$claveCertificado = '123456';
 
+				$rutaCompletaCrt  = $firma->rutaCrt.'/'.Crypt::decrypt($firma->persrutacrt);
+				$rutaCompletaPem  = $firma->rutaPem.'/'.Crypt::decrypt($firma->persrutapem);
 				$certificate 	  = 'file://'.realpath(public_path($rutaCompletaCrt));
 				$primaryKey 	  = 'file://'.realpath(public_path($rutaCompletaPem));
 				$claveCertificado = $firma->persclavecertificado;
@@ -1000,15 +1003,16 @@ class generarPdf
 
 				//Abrimos el certificado
 				$fp = fopen(public_path($rutaCompletaCrt), "r");
-				$contenidoCertficado = '';
+				$contenidoCertificado = '';
 				while (!feof($fp)){
-					$contenidoCertficado .= fgets($fp);
+					$contenidoCertificado .= fgets($fp);
 				}
 
-				//Creamos el xml para adjuntarlo al documento
-				$xml = new \DomDocument('1.0', 'UTF-8'); 
-				$raiz = $xml->appendChild($xml->createElement('firmaDocumento'));
+				$informacioncertificado = $raiz->appendChild($xml->createElement('informacionCertificado'));
+				$informacioncertificado->appendChild($xml->createElement('certificado',$contenidoCertificado));
+			}
 
+			if($firma->codopffirmado === 1 ){
 				$datosPersona = $raiz->appendChild($xml->createElement('datosPersona'));
 				$datosPersona->appendChild($xml->createElement('documento',$firma->persdocumento));
 				$datosPersona->appendChild($xml->createElement('nombre',$firma->nombrePersona));
@@ -1024,21 +1028,15 @@ class generarPdf
 				$informacionFirma->appendChild($xml->createElement('medioCorreo',$firma->codopfmensajecorreo));
 				$informacionFirma->appendChild($xml->createElement('medioCelular',$firma->codopfmensajecelular));
 
-				$informacioncertificado = $raiz->appendChild($xml->createElement('informacionCertificado'));
-				$informacioncertificado->appendChild($xml->createElement('certificado',$contenidoCertficado));
-
 				$xml->preserveWhiteSpace = false;
 				$xml->formatOutput       = true;
 				$xmlString               = $xml->saveXML();
+				$titleXml                = 'FirmaDocumento_'.$consecutivoDocumental.'.xml';
 
-				Storage::disk('public')->put('firma.xml',$xmlString);
-				$xmlFirma = public_path('storage/firma.xml');
-				//$xmlFirma = public_path().'/archivos/xml/firma_'.$firma->persdocumento.'.xml';
-
+				Storage::disk('public')->put($titleXml, $xmlString);
+				$xmlFirma = public_path('storage/'.$titleXml);
 				PDF::Annotation(85, 27, 5, 5, 'Informacion de la firma', array('Subtype'=>'FileAttachment', 'Name' => 'PushPin', 'T' => 'Documento firmado', 'Subj' => $siglaEmpresa, 'FS' => $xmlFirma));
-			}
 
-			if($firma->codopffirmado === 1 ){
 				PDF::Ln(8);
 				PDF::SetFont('helvetica', '', 6);
 				if($totalFirmas <= 4){

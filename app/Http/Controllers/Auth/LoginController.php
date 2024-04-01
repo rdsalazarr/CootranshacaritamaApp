@@ -20,16 +20,13 @@ class LoginController extends Controller
       'password' => 'required|string|min:6'
     ]);
 
-    //Determino la ip de donde accede
-    //$clientIP  = (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
-
     if (Auth::attempt(['usuanick' => $request->usuario, 'password' => $request->password, 'usuaactivo' => 1, 'usuabloqueado' => 0]))
     {
       //registro el ingreso al sistema
       $generales       = new generales();
       $ingresosistema  = new IngresoSistema();
       $ingresosistema->usuaid                 = Auth::id();
-      $ingresosistema->ingsisipacceso         = $generales->optenerIP;
+      $ingresosistema->ingsisipacceso         = $generales->optenerIP();
       $ingresosistema->ingsisfechahoraingreso = Carbon::now();
       $ingresosistema->save();
 
@@ -49,9 +46,9 @@ class LoginController extends Controller
     }
 
     //Registro el inento fallido
-    $intentosfallidos  = new IntentosFallidos();
+    $intentosfallidos                 = new IntentosFallidos();
     $intentosfallidos->intfalusurio   = $request->usuario;
-    $intentosfallidos->intfalipacceso = $generales->optenerIP;
+    $intentosfallidos->intfalipacceso = $generales->optenerIP();
     $intentosfallidos->intfalfecha    = Carbon::now();
     $intentosfallidos->save();
 
@@ -67,7 +64,7 @@ class LoginController extends Controller
 
     if($intentosfallidosUser){
       if ($intentosfallidosUser->numeroIntentos > 3){
-        $usuario = User::findOrFail($intentosfallidosUser->usuaid);
+        $usuario                = User::findOrFail($intentosfallidosUser->usuaid);
         $usuario->usuabloqueado = true;
         $usuario->save();
       }
@@ -91,7 +88,7 @@ class LoginController extends Controller
                             ->orderBy('ingsisid', 'DESC')->first();
 
     if($usuario){
-      $ingresosistema = IngresoSistema::findOrFail($usuario->ingsisid);
+      $ingresosistema                        = IngresoSistema::findOrFail($usuario->ingsisid);
       $ingresosistema->ingsisfechahorasalida = Carbon::now();
       $ingresosistema->save();
     }
