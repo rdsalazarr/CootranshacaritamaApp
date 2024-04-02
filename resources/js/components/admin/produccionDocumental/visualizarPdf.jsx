@@ -22,7 +22,7 @@ export default function VisualizarPdf({id, ruta}){
 
     return (
         <Grid item xl={12} md={12} sm={12} xs={12}>
-            <iframe style={{width: '100%', height: '22em', border: 'none'}} 
+            <iframe style={{width: '100%', height: '40em', border: 'none'}} 
             src={pdf} />
         </Grid>
      );

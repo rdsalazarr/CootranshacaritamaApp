@@ -724,6 +724,11 @@ class manejadorDocumentos {
 			$codigodocumentalprocesooficio->codoporesponderadicado  = $request->responderRadicado;
 		   	$codigodocumentalprocesooficio->save();
 
+			if($request->tipo === 'I'){
+				$codigodocumentalprocesooficioMaxConsecutio = CodigoDocumentalProcesoOficio::latest('codopoid')->first();
+				$codopoid                   				= $codigodocumentalprocesooficioMaxConsecutio->codopoid;
+			}
+
 			if($request->responderRadicado === '1'){
 				foreach($request->documentosRadicados as $documentoRadicado){
 					$identificadorCDPRDE = $documentoRadicado['identificador'];
@@ -819,7 +824,7 @@ class manejadorDocumentos {
 			}
 
 			DB::commit();
-			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);
+			return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito', "idDocumento" => $codopoid]);
 		} catch (Exception $error){
 			DB::rollback();
 			return response()->json(['success' => false, 'message'=> 'Ocurrio un error en el registro => '.$error->getMessage()]);

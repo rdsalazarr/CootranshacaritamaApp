@@ -286,13 +286,14 @@ class FirmarDocumentosController extends Controller
 	{
 		$this->validate(request(),['id' => 'required','tipoDocumental' => 'required']);
 	
-		$id                = $request->id;
-		$tipoDocumental    = $request->tipoDocumental;
-        $visualizar        = new showTipoDocumental();
-        $data              = '';
-		$firmasDocumento   = [] ;
-		$copiaDependencias = [] ;
-		$anexosDocumento   = [] ;
+		$id                 = $request->id;
+		$tipoDocumental     = $request->tipoDocumental;
+        $visualizar         = new showTipoDocumental();
+        $data               = '';
+		$firmasDocumento    = [];
+		$copiaDependencias  = [];
+		$anexosDocumento    = [];
+        $radicadosDocumento = [];
 
         if($tipoDocumental === 'A'){
             list($data, $firmasDocumento) = $visualizar->acta($id);
@@ -305,7 +306,7 @@ class FirmarDocumentosController extends Controller
         }else if($tipoDocumental === 'T'){
             list($data, $firmasDocumento) = $visualizar->constancia($id);
         }else{
-            list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento) = $visualizar->oficio($id);
+            list($data, $firmasDocumento, $copiaDependencias, $anexosDocumento, $radicadosDocumento) = $visualizar->oficio($id);
         }
         $depeid      = $data->depeid;
 
@@ -313,11 +314,11 @@ class FirmarDocumentosController extends Controller
 		list($fechaActual, $tipoDestinos, $tipoMedios, $tipoSaludos, $tipoDespedidas, $dependencias,
 		     $personas, $cargoLaborales, $tipoActas, $tipoPersonaDocumentales) = $manejadorDocumentos->consultarInformacionMaestra($tipoDocumental, $depeid);
 
-        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"            => $tipoDestinos,            "tipoMedios"      => $tipoMedios,
-                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"          => $tipoDespedidas,         "dependencias"    => $dependencias,
-								"personas"        => $personas,        "cargoLaborales"          => $cargoLaborales,         "data"            => $data,
-								"firmasDocumento" => $firmasDocumento, "copiaDependencias"       => $copiaDependencias,      "anexosDocumento" => $anexosDocumento,
-                                "tipoActas"       => $tipoActas,       "tipoPersonaDocumentales" => $tipoPersonaDocumentales ]);
+        return response()->json(["fechaActual"    => $fechaActual,    "tipoDestinos"            => $tipoDestinos,             "tipoMedios"         => $tipoMedios,
+                                "tipoSaludos"     => $tipoSaludos,     "tipoDespedidas"          => $tipoDespedidas,          "dependencias"       => $dependencias,
+								"personas"        => $personas,        "cargoLaborales"          => $cargoLaborales,          "data"               => $data,
+								"firmasDocumento" => $firmasDocumento, "copiaDependencias"       => $copiaDependencias,       "anexosDocumento"    => $anexosDocumento,
+                                "tipoActas"       => $tipoActas,       "tipoPersonaDocumentales" => $tipoPersonaDocumentales, "radicadosDocumento" => $radicadosDocumento]);
 	}
 
     public function salvarActa(ActaRequests $request){

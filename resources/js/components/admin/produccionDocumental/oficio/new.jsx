@@ -12,6 +12,7 @@ import {LoaderModal} from "../../../layout/loader";
 import SaveIcon from '@mui/icons-material/Save';
 import instance from '../../../layout/instance';
 import { Editor } from '@tinymce/tinymce-react';
+import VisualizarPdf from '../visualizarPdf';
 import Files from "react-files";
 import Anexos from '../anexos';
 
@@ -50,12 +51,14 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
     const [anexosDocumento, setAnexosDocumento] = useState([]);
     const [tipoDespedidas, setTipoDespedidas] = useState([]);
     const [cargoLaborales, setCargoLaborales] = useState([]);
-    const [fechaMinima, setFechaMinima] = useState(dayjs());
+    const [fechaMinima, setFechaMinima] = useState(dayjs());    
+    const [idDocumento, setIdDocumento] = useState(null);
     const [tipoDestinos, setTipoDestinos] = useState([]);
     const [dependencias, setDependencias] = useState([]);
+    const [abrirModal, setAbrirModal] = useState(false);
     const [fechaActual, setFechaActual] = useState('');
     const [tipoSaludos, setTipoSaludos] = useState([]);
-    const [tipoMedios, setTipoMedios] = useState([]);
+    const [tipoMedios, setTipoMedios] = useState([]);    
     const [personas, setPersonas] = useState([]);
     const [loader, setLoader] = useState(false);
 
@@ -146,9 +149,7 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                                                     nombreCopia: '',       saludo: '',         despedida: '',             tituloPersona: '',  ciudad: '', 
                                                                     cargoDestinatario: '', empresa: '',        direccionDestinatario: '', telefono: '',       responderRadicado: '0',
                                                                     tipo:tipo}) : null;
-            
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
-
             if(formData.tipo === 'I' && res.success){
                 let newFormDataDependencia = [];
                 formDataDependencia.forEach(function(dep){
@@ -158,8 +159,8 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                 });
                 setDependenciaMarcada(newFormDataDependencia);
             }
-
-           setLoader(false);
+            (res.success && ruta === 'P') ? (setIdDocumento(res.idDocumento), setAbrirModal(true) ) : null;
+            setLoader(false);
         })
     }
 
@@ -356,620 +357,631 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
     }
 
     return (
-        <ValidatorForm onSubmit={handleSubmit} >
-            <Box>
-                <Typography component={'h1'} className={'titleProductorDocumento'}>{mensaje}</Typography>
-            </Box>
-            <Card style={{padding:'5px',marginTop: '5px'}}>                
+        <Box>
+            <ValidatorForm onSubmit={handleSubmit} >
+                <Box>
+                    <Typography component={'h1'} className={'titleProductorDocumento'}>{mensaje}</Typography>
+                </Box>
+                <Card style={{padding:'5px',marginTop: '5px'}}>                
 
-                <Grid container spacing={2} style={{display: 'flex', justifyContent: 'space-between'}}>
-
-                <Grid item xl={4} md={4} sm={6} xs={12}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={esLocale} >
-                            <DatePicker 
-                                label="Fecha del documento"
-                                defaultValue={dayjs(fechaActual)}
-                                views={['year', 'month', 'day']} 
-                                minDate={fechaMinima}
-                                className={'inputGeneral'} 
-                                onChange={handleChangeDate}
-                            />
-                        </LocalizationProvider>
-                    </Grid>
-
-                    <Grid item xl={2} md={2} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'tipoDestino'}
-                            value={formData.tipoDestino}
-                            label={'Tipo destino'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {tipoDestinos.map(res=>{
-                                return <MenuItem value={res.tipdetid} key={res.tipdetid} >{res.tipdetnombre}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid> 
-
-                    <Grid item xl={2} md={2} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'tipoMedio'}
-                            value={formData.tipoMedio}
-                            label={'Tipo de medio'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {tipoMedios.map(res=>{
-                                return <MenuItem value={res.tipmedid} key={res.tipmedid} >{res.tipmednombre}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid>
+                    <Grid container spacing={2} style={{display: 'flex', justifyContent: 'space-between'}}>
 
                     <Grid item xl={4} md={4} sm={6} xs={12}>
-                        <TextValidator
-                            multiline
-                            maxRows={3}
-                            name={'correo'}
-                            value={formData.correo}
-                            label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off', maxLength: 1000}}
-                            onChange={handleChange}
-                            onBlur={() => {
-                                if (formData.correo && !validateCorreos(formData.correo)) {
-                                    showSimpleSnackbar("El campo de correo electrónico contiene uno o más correos que no tienen una estructura válida", 'error');
-                                }
-                            }}
-                            disabled={(formData.tipoMedio === 1) ? true : false}
-                        />
-                    </Grid>
-                </Grid>
-
-                <Grid container spacing={2} style={{marginTop:'1px'}}>
-
-                    <Grid item xl={4} md={4} sm={6} xs={12}>
-                        <TextValidator 
-                            name={'tituloPersona'}
-                            value={formData.tituloPersona}
-                            label={'Título'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off', maxLength: 80}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-
-                    <Grid item xl={4} md={4} sm={6} xs={12}>
-                        <TextValidator 
-                            multiline
-                            maxRows={3}
-                            name={'nombreDirigido'}
-                            value={formData.nombreDirigido}
-                            label={'Nombre de la persona que va dirigido'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off', maxLength: 4000}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-
-                    <Grid item xl={4} md={4} sm={6} xs={12}>
-                        <TextValidator 
-                            name={'cargoDirigido'}
-                            value={formData.cargoDirigido}
-                            label={'Cargo'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off', maxLength: 1000}}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-
-                    {(formData.tipoDestino !== 1) ? 
-                        <Fragment>
-
-                            <Grid item xl={4} md={4} sm={6} xs={12}>
-                                <TextValidator 
-                                    name={'empresa'}
-                                    value={formData.empresa}
-                                    label={'Nomre de la empresa'}
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={esLocale} >
+                                <DatePicker 
+                                    label="Fecha del documento"
+                                    defaultValue={dayjs(fechaActual)}
+                                    views={['year', 'month', 'day']} 
+                                    minDate={fechaMinima}
                                     className={'inputGeneral'} 
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off', maxLength: 80}}
-                                    onChange={handleChange}
+                                    onChange={handleChangeDate}
                                 />
-                            </Grid>
-
-                            <Grid item xl={4} md={4} sm={6} xs={12}>
-                                <TextValidator 
-                                    name={'direccionDestinatario'}
-                                    value={formData.direccionDestinatario}
-                                    label={'Direccion de la emprsa o destinatario'}
-                                    className={'inputGeneral'} 
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off', maxLength: 80}}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-
-                            <Grid item xl={4} md={4} sm={6} xs={12}>
-                                <TextValidator 
-                                    name={'telefono'}
-                                    value={formData.telefono}
-                                    label={'Teléfono de la empresa o destinatario'}
-                                    className={'inputGeneral'} 
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off', maxLength: 20}}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-
-                        </Fragment>
-                    : null}                  
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <TextValidator 
-                            name={'ciudad'}
-                            value={formData.ciudad}
-                            label={'Ciudad'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off', maxLength: 80}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-
-                    <Grid item xl={4} md={4} sm={6} xs={12}>
-                        <TextValidator 
-                            multiline
-                            maxRows={2}
-                            name={'asunto'}
-                            value={formData.asunto}
-                            label={'Asunto'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off', maxLength: 200}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'saludo'}
-                            value={formData.saludo}
-                            label={'Saludo'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {tipoSaludos.map(res=>{
-                                return <MenuItem value={res.tipsalid} key={res.tipsalid} >{res.tipsalnombre}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid>
-
-                    <Grid item xl={2} md={2} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'responderRadicado'}
-                            value={formData.responderRadicado}
-                            label={'Responder radicado'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            <MenuItem value={"1"} >Sí</MenuItem>
-                            <MenuItem value={"0"}>No</MenuItem>
-                        </SelectValidator>
-                    </Grid>
-
-                    {(formData.responderRadicado.toString() === '1') ?
-                        <Fragment>
-                            <Grid item md={12} xl={12} sm={12} xs={12}>
-                                <Box  style={{width: '50%', margin: 'auto'}}>
-
-                                    <Card style={{padding: '0.5em 1em 1em 1em'}}>
-                                        <Grid container spacing={2}>
-
-                                            <Grid item md={12} xl={12} sm={12} xs={12}>
-                                                <Box className='frmDivision'>
-                                                    Adicionar radicados al tipo documental
-                                                </Box>
-                                            </Grid>
-
-                                            <Grid item xl={5} md={5} sm={6} xs={12}>
-                                                <TextValidator
-                                                    name={'anioRadicado'}
-                                                    value={formDataRadicado.anioRadicado}
-                                                    label={'Año del radicado'}
-                                                    className={'inputGeneral'} 
-                                                    variant={"standard"} 
-                                                    inputProps={{autoComplete: 'off'}}
-                                                    validators={["maxNumber:9999"]}
-                                                    errorMessages={["Número máximo permitido es el 9999"]}
-                                                    type={"number"}
-                                                    onChange={handleChangeRadicado}
-                                                />
-                                            </Grid>
-
-                                            <Grid item xl={5} md={5} sm={6} xs={12}>
-                                                <TextValidator
-                                                    name={'consecutivoRadicado'}
-                                                    value={formDataRadicado.consecutivoRadicado}
-                                                    label={'Número de radicado'}
-                                                    className={'inputGeneral'} 
-                                                    variant={"standard"} 
-                                                    inputProps={{autoComplete: 'off'}}
-                                                    validators={["maxNumber:9999"]}
-                                                    errorMessages={["Número máximo permitido es el 9999"]}
-                                                    onChange={handleChangeRadicado}
-                                                />
-                                            </Grid>
-
-                                            <Grid item xl={2} md={2} sm={4} xs={12}>
-                                                <Button type={"button"} className={'modalBtn'}  onClick={() => {adicionarFilaRadicado();}}
-                                                    startIcon={<PostAddIcon />}> {"Adicionar"}
-                                                </Button>
-                                            </Grid>
-
-                                            {(documentosRadicados.length > 0) ?
-                                                <Grid item xl={12} md={12} sm={12} xs={12}>
-                                                    <Table key={'tableRadicadoDocumento'}  className={'tableAdicional'} style={{marginTop: '1px'}} >
-                                                        <TableHead>
-                                                            <TableRow>
-                                                                <TableCell>Año del radicado</TableCell>
-                                                                <TableCell>Número del radicado</TableCell>
-                                                                <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
-                                                            </TableRow>
-                                                        </TableHead>
-                                                        <TableBody>
-                                                        { documentosRadicados.map((radicado, a) => {
-                                                            return(
-                                                                <TableRow key={'rowA-' +a} className={(radicado.estado == 'D')? 'tachado': null}>
-
-                                                                    <TableCell>
-                                                                        {radicado['anioRadicado']}
-                                                                    </TableCell>
-
-                                                                    <TableCell>
-                                                                        {radicado['consecutivoRadicado']}
-                                                                    </TableCell>
-                                                                
-                                                                    <TableCell className='cellCenter'>
-                                                                        <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                                            onClick={() => {eliminarFirmaRadicado(a);}} title={'Eliminar'}
-                                                                        >clear</Icon>
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                                );
-                                                            })
-                                                        }
-                                                        </TableBody>
-                                                    </Table>
-                                                </Grid>
-                                            : null}
-
-                                            <Grid item md={12} xl={12} sm={12} xs={12}>
-                                                <p style={{fontSize:'0.8em', color: '#7c7777', textAlign: 'justify'}}> 
-                                                    <b>Nota:</b> Solo se permiten radicados que hayan sido aceptados, 
-                                                    marcados como que se requiere una respuesta y que no hayan
-                                                    sido respondidos por un tipo documental.
-                                                </p>
-                                            </Grid>
-
-                                        </Grid>
-                                    </Card>
-                                </Box> 
-                            </Grid>
-
-                        </Fragment>
-
-                    : null}
-
-                    <Grid item xl={12} md={12} sm={12} xs={12}>
-                        <label className={'labelEditor'}> Contenido </label>
-                        <Editor 
-                            onInit={(evt, editor) => editorTexto.current = editor}
-                            initialValue = {formData.contenido}
-                            init={{
-                                language: 'es',
-                                height: 400,
-                                object_resizing : true,
-                                browser_spellcheck: true,
-                                spellchecker_language: 'es',
-                                spellchecker_wordchar_pattern: /[^\s,\.]+/g ,
-                                menubar: 'file edit view insert format tools table',
-                                plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table wordcount',
-                                toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | link',
-                                menu:{
-                                    file: {title: 'File', items: 'newdocument'},
-                                    edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall searchreplace'},
-                                    view: {title: 'View', items: 'visualaid  | fullscreen'},
-                                    insert: {title: 'Insert', items: 'link  | hr | inserttable'},
-                                    format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript'},
-                                    tools: {title: 'tools', items: 'wordcount'},
-                                    table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'}
-                                },
-                            }}
-                        />
-                    </Grid>
-
-                    <Grid item xl={6} md={6} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'despedida'}
-                            value={formData.despedida}
-                            label={'Despedida'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            {tipoDespedidas.map(res=>{
-                                return <MenuItem value={res.tipdesid} key={res.tipdesid} >{res.tipdesnombre}</MenuItem>
-                            })}
-                        </SelectValidator>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'tieneAnexo'}
-                            value={formData.tieneAnexo}
-                            label={'Anexar anexos'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            <MenuItem value={"1"} >Sí</MenuItem>
-                            <MenuItem value={"0"}>No</MenuItem>
-                        </SelectValidator>
-                    </Grid>
-
-                    <Grid item xl={3} md={3} sm={6} xs={12}>
-                        <SelectValidator
-                            name={'tieneCopia'}
-                            value={formData.tieneCopia}
-                            label={'Anexar copia'}
-                            className={'inputGeneral'} 
-                            variant={"standard"} 
-                            inputProps={{autoComplete: 'off'}}
-                            validators={["required"]}
-                            errorMessages={["Campo obligatorio"]}
-                            onChange={handleChange} 
-                        >
-                            <MenuItem value={""}>Seleccione</MenuItem>
-                            <MenuItem value={"1"} >Sí</MenuItem>
-                            <MenuItem value={"0"}>No</MenuItem>
-                        </SelectValidator>
-                    </Grid>
-
-                    { (totalAdjuntoSubido > 0) ?
-                        <Grid item md={12} xl={12} sm={12} xs={12} >
-                            <Anexos data={anexosDocumento} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
+                            </LocalizationProvider>
                         </Grid>
-                    : null }
 
-                    {(formData.tieneAnexo === '1') ?
-                        <Fragment>
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tipoDestino'}
+                                value={formData.tipoDestino}
+                                label={'Tipo destino'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoDestinos.map(res=>{
+                                    return <MenuItem value={res.tipdetid} key={res.tipdetid} >{res.tipdetnombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid> 
 
-                            <Grid item md={12} xl={12} sm={12} xs={12}>
-                                <Box className='frmDivision'>
-                                    Anexar documentos al tipo documental si se prosentan 
-                                </Box>
-                            </Grid>
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tipoMedio'}
+                                value={formData.tipoMedio}
+                                label={'Tipo de medio'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoMedios.map(res=>{
+                                    return <MenuItem value={res.tipmedid} key={res.tipmedid} >{res.tipmednombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
 
-                            <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <TextValidator 
-                                    multiline
-                                    maxRows={2}
-                                    name={'nombreAnexo'}
-                                    value={formData.nombreAnexo}
-                                    label={'Nombre del anexo'}
-                                    className={'inputGeneral'} 
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off', maxLength: 300}}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator
+                                multiline
+                                maxRows={3}
+                                name={'correo'}
+                                value={formData.correo}
+                                label={'Correo (Si desea enviar varios correos sepárelos con una coma ",")'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 1000}}
+                                onChange={handleChange}
+                                onBlur={() => {
+                                    if (formData.correo && !validateCorreos(formData.correo)) {
+                                        showSimpleSnackbar("El campo de correo electrónico contiene uno o más correos que no tienen una estructura válida", 'error');
+                                    }
+                                }}
+                                disabled={(formData.tipoMedio === 1) ? true : false}
+                            />
+                        </Grid>
+                    </Grid>
 
-                            {(totalAdjunto > totalAdjuntoSubido) ?
-                                <Grid item md={5} xl={5} sm={12} xs={12}>
-                                    <Files
-                                        className='files-dropzone'
-                                        onChange={(file ) =>{onFilesChange(file, 'archivos') }}
-                                        onError={onFilesError}
-                                        accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf','.ppt', '.pptx', '.xls', '.xlsx', '.xlsm', '.zip', '.rar']} 
-                                        multiple
-                                        maxFiles={totalAdjunto - totalAdjuntoSubido}
-                                        maxFileSize={1000000}
-                                        clickable
-                                        dropActiveClassName={"files-dropzone-active"}
-                                    >
-                                    <ButtonFileImg title={"Adicionar anexos"} />
-                                    </Files>
+                    <Grid container spacing={2} style={{marginTop:'1px'}}>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                name={'tituloPersona'}
+                                value={formData.tituloPersona}
+                                label={'Título'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 80}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                multiline
+                                maxRows={3}
+                                name={'nombreDirigido'}
+                                value={formData.nombreDirigido}
+                                label={'Nombre de la persona que va dirigido'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 4000}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                name={'cargoDirigido'}
+                                value={formData.cargoDirigido}
+                                label={'Cargo'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 1000}}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        {(formData.tipoDestino !== 1) ? 
+                            <Fragment>
+
+                                <Grid item xl={4} md={4} sm={6} xs={12}>
+                                    <TextValidator 
+                                        name={'empresa'}
+                                        value={formData.empresa}
+                                        label={'Nomre de la empresa'}
+                                        className={'inputGeneral'} 
+                                        variant={"standard"} 
+                                        inputProps={{autoComplete: 'off', maxLength: 80}}
+                                        onChange={handleChange}
+                                    />
                                 </Grid>
-                            : null }
 
-                            <Grid item md={6} xl={6} sm={12} xs={12}>
-                                <Box style={{display: 'flex', flexWrap: 'wrap'}}>
-                                    {formDataFile.archivos.map((file, a) =>{
-                                        return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
-                                    })}
-                                </Box>
-                            </Grid> 
+                                <Grid item xl={4} md={4} sm={6} xs={12}>
+                                    <TextValidator 
+                                        name={'direccionDestinatario'}
+                                        value={formData.direccionDestinatario}
+                                        label={'Direccion de la emprsa o destinatario'}
+                                        className={'inputGeneral'} 
+                                        variant={"standard"} 
+                                        inputProps={{autoComplete: 'off', maxLength: 80}}
+                                        onChange={handleChange}
+                                    />
+                                </Grid>
 
-                            <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <Box className={'msgAlert'}>
-                                    <Avatar className={'avatar'}> <WarningIcon /></Avatar> 
-                                    <p>Nota: Recuerde que puede subir como máximo ({totalAdjunto}) archivos, actualmente ha subido ({totalAdjuntoSubido}) archivos. Los formatos permitidos son .PDF, .DOCX, .DOC, .PPT, .PPTX, .XLS, XLSX, .ZIP, .RAR, .JPG y .PNG</p>
-                                </Box>
+                                <Grid item xl={4} md={4} sm={6} xs={12}>
+                                    <TextValidator 
+                                        name={'telefono'}
+                                        value={formData.telefono}
+                                        label={'Teléfono de la empresa o destinatario'}
+                                        className={'inputGeneral'} 
+                                        variant={"standard"} 
+                                        inputProps={{autoComplete: 'off', maxLength: 20}}
+                                        onChange={handleChange}
+                                    />
+                                </Grid>
+
+                            </Fragment>
+                        : null}                  
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <TextValidator 
+                                name={'ciudad'}
+                                value={formData.ciudad}
+                                label={'Ciudad'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 80}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={4} md={4} sm={6} xs={12}>
+                            <TextValidator 
+                                multiline
+                                maxRows={2}
+                                name={'asunto'}
+                                value={formData.asunto}
+                                label={'Asunto'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off', maxLength: 200}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'saludo'}
+                                value={formData.saludo}
+                                label={'Saludo'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoSaludos.map(res=>{
+                                    return <MenuItem value={res.tipsalid} key={res.tipsalid} >{res.tipsalnombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item xl={2} md={2} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'responderRadicado'}
+                                value={formData.responderRadicado}
+                                label={'Responder radicado'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange}
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"} >Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+
+                        {(formData.responderRadicado.toString() === '1') ?
+                            <Fragment>
+                                <Grid item md={12} xl={12} sm={12} xs={12}>
+                                    <Box  style={{width: '50%', margin: 'auto'}}>
+
+                                        <Card style={{padding: '0.5em 1em 1em 1em'}}>
+                                            <Grid container spacing={2}>
+
+                                                <Grid item md={12} xl={12} sm={12} xs={12}>
+                                                    <Box className='frmDivision'>
+                                                        Adicionar radicados al tipo documental
+                                                    </Box>
+                                                </Grid>
+
+                                                <Grid item xl={5} md={5} sm={6} xs={12}>
+                                                    <TextValidator
+                                                        name={'anioRadicado'}
+                                                        value={formDataRadicado.anioRadicado}
+                                                        label={'Año del radicado'}
+                                                        className={'inputGeneral'} 
+                                                        variant={"standard"} 
+                                                        inputProps={{autoComplete: 'off'}}
+                                                        validators={["maxNumber:9999"]}
+                                                        errorMessages={["Número máximo permitido es el 9999"]}
+                                                        type={"number"}
+                                                        onChange={handleChangeRadicado}
+                                                    />
+                                                </Grid>
+
+                                                <Grid item xl={5} md={5} sm={6} xs={12}>
+                                                    <TextValidator
+                                                        name={'consecutivoRadicado'}
+                                                        value={formDataRadicado.consecutivoRadicado}
+                                                        label={'Número de radicado'}
+                                                        className={'inputGeneral'} 
+                                                        variant={"standard"} 
+                                                        inputProps={{autoComplete: 'off'}}
+                                                        validators={["maxNumber:9999"]}
+                                                        errorMessages={["Número máximo permitido es el 9999"]}
+                                                        onChange={handleChangeRadicado}
+                                                    />
+                                                </Grid>
+
+                                                <Grid item xl={2} md={2} sm={4} xs={12}>
+                                                    <Button type={"button"} className={'modalBtn'}  onClick={() => {adicionarFilaRadicado();}}
+                                                        startIcon={<PostAddIcon />}> {"Adicionar"}
+                                                    </Button>
+                                                </Grid>
+
+                                                {(documentosRadicados.length > 0) ?
+                                                    <Grid item xl={12} md={12} sm={12} xs={12}>
+                                                        <Table key={'tableRadicadoDocumento'}  className={'tableAdicional'} style={{marginTop: '1px'}} >
+                                                            <TableHead>
+                                                                <TableRow>
+                                                                    <TableCell>Año del radicado</TableCell>
+                                                                    <TableCell>Número del radicado</TableCell>
+                                                                    <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                            { documentosRadicados.map((radicado, a) => {
+                                                                return(
+                                                                    <TableRow key={'rowA-' +a} className={(radicado.estado == 'D')? 'tachado': null}>
+
+                                                                        <TableCell>
+                                                                            {radicado['anioRadicado']}
+                                                                        </TableCell>
+
+                                                                        <TableCell>
+                                                                            {radicado['consecutivoRadicado']}
+                                                                        </TableCell>
+                                                                    
+                                                                        <TableCell className='cellCenter'>
+                                                                            <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                                                onClick={() => {eliminarFirmaRadicado(a);}} title={'Eliminar'}
+                                                                            >clear</Icon>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                    );
+                                                                })
+                                                            }
+                                                            </TableBody>
+                                                        </Table>
+                                                    </Grid>
+                                                : null}
+
+                                                <Grid item md={12} xl={12} sm={12} xs={12}>
+                                                    <p style={{fontSize:'0.8em', color: '#7c7777', textAlign: 'justify'}}> 
+                                                        <b>Nota:</b> Solo se permiten radicados que hayan sido aceptados, 
+                                                        marcados como que se requiere una respuesta y que no hayan
+                                                        sido respondidos por un tipo documental.
+                                                    </p>
+                                                </Grid>
+
+                                            </Grid>
+                                        </Card>
+                                    </Box> 
+                                </Grid>
+
+                            </Fragment>
+
+                        : null}
+
+                        <Grid item xl={12} md={12} sm={12} xs={12}>
+                            <label className={'labelEditor'}> Contenido </label>
+                            <Editor 
+                                onInit={(evt, editor) => editorTexto.current = editor}
+                                initialValue = {formData.contenido}
+                                init={{
+                                    language: 'es',
+                                    height: 400,
+                                    object_resizing : true,
+                                    browser_spellcheck: true,
+                                    spellchecker_language: 'es',
+                                    spellchecker_wordchar_pattern: /[^\s,\.]+/g ,
+                                    menubar: 'file edit view insert format tools table',
+                                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table wordcount',
+                                    toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | link',
+                                    menu:{
+                                        file: {title: 'File', items: 'newdocument'},
+                                        edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall searchreplace'},
+                                        view: {title: 'View', items: 'visualaid  | fullscreen'},
+                                        insert: {title: 'Insert', items: 'link  | hr | inserttable'},
+                                        format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript'},
+                                        tools: {title: 'tools', items: 'wordcount'},
+                                        table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'}
+                                    },
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xl={6} md={6} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'despedida'}
+                                value={formData.despedida}
+                                label={'Despedida'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                {tipoDespedidas.map(res=>{
+                                    return <MenuItem value={res.tipdesid} key={res.tipdesid} >{res.tipdesnombre}</MenuItem>
+                                })}
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tieneAnexo'}
+                                value={formData.tieneAnexo}
+                                label={'Anexar anexos'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"} >Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+
+                        <Grid item xl={3} md={3} sm={6} xs={12}>
+                            <SelectValidator
+                                name={'tieneCopia'}
+                                value={formData.tieneCopia}
+                                label={'Anexar copia'}
+                                className={'inputGeneral'} 
+                                variant={"standard"} 
+                                inputProps={{autoComplete: 'off'}}
+                                validators={["required"]}
+                                errorMessages={["Campo obligatorio"]}
+                                onChange={handleChange} 
+                            >
+                                <MenuItem value={""}>Seleccione</MenuItem>
+                                <MenuItem value={"1"} >Sí</MenuItem>
+                                <MenuItem value={"0"}>No</MenuItem>
+                            </SelectValidator>
+                        </Grid>
+
+                        { (totalAdjuntoSubido > 0) ?
+                            <Grid item md={12} xl={12} sm={12} xs={12} >
+                                <Anexos data={anexosDocumento} eliminar={'false'} cantidadAdjunto={cantidadAdjunto}/>
                             </Grid>
-                        </Fragment>
-                    : null}
+                        : null }
 
-                    {(formData.tieneCopia === '1') ?
-                        <Fragment>
+                        {(formData.tieneAnexo === '1') ?
+                            <Fragment>
 
-                            <Grid item md={12} xl={12} sm={12} xs={12}>
-                                <Box className='frmDivision'>
-                                    Anexar copias al tipo documental si se prosentan 
-                                </Box>
-                            </Grid>
+                                <Grid item md={12} xl={12} sm={12} xs={12}>
+                                    <Box className='frmDivision'>
+                                        Anexar documentos al tipo documental si se prosentan 
+                                    </Box>
+                                </Grid>
 
-                            <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <TextValidator 
-                                    multiline
-                                    maxRows={2}
-                                    name={'nombreCopia'}
-                                    value={formData.nombreCopia}
-                                    label={'Nombre de la copia'}
-                                    className={'inputGeneral'} 
-                                    variant={"standard"} 
-                                    inputProps={{autoComplete: 'off', maxLength: 300}}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
+                                <Grid item xl={12} md={12} sm={12} xs={12}>
+                                    <TextValidator 
+                                        multiline
+                                        maxRows={2}
+                                        name={'nombreAnexo'}
+                                        value={formData.nombreAnexo}
+                                        label={'Nombre del anexo'}
+                                        className={'inputGeneral'} 
+                                        variant={"standard"} 
+                                        inputProps={{autoComplete: 'off', maxLength: 300}}
+                                        onChange={handleChange}
+                                    />
+                                </Grid>
 
-                            <Grid item xl={12} md={12} sm={12} xs={12}>
-                                <FormLabel component="legend">Listado de dependencia para asignar copias al tipo documental</FormLabel>
-                                <FormGroup row name={"dependencias"} 
-                                    value={formDataDependencia.depeid}
-                                    onChange={handleChangeDependencia}
-                                    >
-                                    {dependencias.map(res=>{
-                                        const marcado  = dependenciaMarcada.find(resul => resul.depeid === res.depeid);
-                                        const checkbox = (marcado !== undefined) ? <Checkbox color="secondary" defaultChecked /> : <Checkbox color="secondary"  />;  
-                                    
-                                        const frmCheckbox = <Grid item xl={4} md={4} sm={6} xs={12} key={res.depenombre} >
-                                                                <FormControlLabel value={res.depeid} label={res.depenombre} control={checkbox} />
-                                                            </Grid>
-                                        return frmCheckbox;
-                                    })}
-                                </FormGroup>
-                            </Grid>
-                        </Fragment>
-                    : null}
+                                {(totalAdjunto > totalAdjuntoSubido) ?
+                                    <Grid item md={5} xl={5} sm={12} xs={12}>
+                                        <Files
+                                            className='files-dropzone'
+                                            onChange={(file ) =>{onFilesChange(file, 'archivos') }}
+                                            onError={onFilesError}
+                                            accepts={['.jpg', '.png', '.jpeg', '.doc', '.docx', '.pdf','.ppt', '.pptx', '.xls', '.xlsx', '.xlsm', '.zip', '.rar']} 
+                                            multiple
+                                            maxFiles={totalAdjunto - totalAdjuntoSubido}
+                                            maxFileSize={1000000}
+                                            clickable
+                                            dropActiveClassName={"files-dropzone-active"}
+                                        >
+                                        <ButtonFileImg title={"Adicionar anexos"} />
+                                        </Files>
+                                    </Grid>
+                                : null }
 
-                    <Grid item xl={12} md={12} sm={12} xs={12}> 
-                        <Box className='frmDivision'>Adicionar personas que firma el tipo documental</Box>
-                        <Table key={'tableFirmaPersona'}  className={'tableAdicional'} style={{marginTop: '5px'}} >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell style={{width: '50%'}}>Nombre de la persona</TableCell>
-                                    <TableCell style={{width: '40%'}}>Cargo </TableCell> 
-                                    <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
+                                <Grid item md={6} xl={6} sm={12} xs={12}>
+                                    <Box style={{display: 'flex', flexWrap: 'wrap'}}>
+                                        {formDataFile.archivos.map((file, a) =>{
+                                            return <ContentFile file={file} name={file.name} remove={removeFIle} key={'ContentFile-' +a}/>
+                                        })}
+                                    </Box>
+                                </Grid> 
 
-                            { firmaPersona.map((frmPers, a) => { 
+                                <Grid item xl={12} md={12} sm={12} xs={12}>
+                                    <Box className={'msgAlert'}>
+                                        <Avatar className={'avatar'}> <WarningIcon /></Avatar> 
+                                        <p>Nota: Recuerde que puede subir como máximo ({totalAdjunto}) archivos, actualmente ha subido ({totalAdjuntoSubido}) archivos. Los formatos permitidos son .PDF, .DOCX, .DOC, .PPT, .PPTX, .XLS, XLSX, .ZIP, .RAR, .JPG y .PNG</p>
+                                    </Box>
+                                </Grid>
+                            </Fragment>
+                        : null}
 
-                                return(
-                                    <TableRow key={'rowA-' +a} className={(frmPers.estado == 'D')? 'tachado': null}>
-                                        <TableCell>
-                                            <SelectValidator
-                                                name={'persona'}
-                                                value={frmPers['persona']}
-                                                label={'Nombre de la persona'}
-                                                className={'inputGeneral'} 
-                                                variant={"standard"} 
-                                                inputProps={{autoComplete: 'off'}}
-                                                validators={["required"]}
-                                                errorMessages={["Campo obligatorio"]}
-                                                onChange={(e) => {handleChangeFirmaPersona(e, a)}}
-                                            >
-                                            <MenuItem value={""}>Seleccione</MenuItem>
-                                            {personas.map(res=>{
-                                                return <MenuItem value={res.persid} key={res.persid} >{res.nombrePersona}</MenuItem>
-                                            })}
-                                            </SelectValidator>
-                                        </TableCell>
+                        {(formData.tieneCopia === '1') ?
+                            <Fragment>
 
-                                        <TableCell>
-                                            <SelectValidator
-                                                name={'cargo'}
-                                                value={frmPers['cargo']}
-                                                label={'Cargo laboral'}
-                                                className={'inputGeneral'} 
-                                                variant={"standard"} 
-                                                inputProps={{autoComplete: 'off'}}
-                                                validators={["required"]}
-                                                errorMessages={["Campo obligatorio"]}
-                                                onChange={(e) => {handleChangeFirmaPersona(e, a)}}
-                                            >
-                                            <MenuItem value={""}>Seleccione</MenuItem>
-                                            {cargoLaborales.map((res, i) =>{
-                                                return <MenuItem value={res.carlabid} key={res.carlabid} >{res.carlabnombre}</MenuItem>
-                                            })}
-                                            </SelectValidator>
-                                        </TableCell>
+                                <Grid item md={12} xl={12} sm={12} xs={12}>
+                                    <Box className='frmDivision'>
+                                        Anexar copias al tipo documental si se prosentan 
+                                    </Box>
+                                </Grid>
 
-                                        <TableCell className='cellCenter'>
-                                            {(a !== 0)?
-                                            <Icon key={'iconDelete'+a} className={'icon top red'}
-                                                    onClick={() => {eliminarFirmaPersona(a);}} title={'Eliminar registro'}
-                                                >clear</Icon>
-                                                : <Icon key={'iconAdd'} className={'icon top green'} title={'Adicionar firma'}
-                                                    onClick={() => {adicionarFilaFirmaPersona()}}
-                                                >add</Icon>
-                                            }
-                                        </TableCell>
+                                <Grid item xl={12} md={12} sm={12} xs={12}>
+                                    <TextValidator 
+                                        multiline
+                                        maxRows={2}
+                                        name={'nombreCopia'}
+                                        value={formData.nombreCopia}
+                                        label={'Nombre de la copia'}
+                                        className={'inputGeneral'} 
+                                        variant={"standard"} 
+                                        inputProps={{autoComplete: 'off', maxLength: 300}}
+                                        onChange={handleChange}
+                                    />
+                                </Grid>
+
+                                <Grid item xl={12} md={12} sm={12} xs={12}>
+                                    <FormLabel component="legend">Listado de dependencia para asignar copias al tipo documental</FormLabel>
+                                    <FormGroup row name={"dependencias"} 
+                                        value={formDataDependencia.depeid}
+                                        onChange={handleChangeDependencia}
+                                        >
+                                        {dependencias.map(res=>{
+                                            const marcado  = dependenciaMarcada.find(resul => resul.depeid === res.depeid);
+                                            const checkbox = (marcado !== undefined) ? <Checkbox color="secondary" defaultChecked /> : <Checkbox color="secondary"  />;  
+                                        
+                                            const frmCheckbox = <Grid item xl={4} md={4} sm={6} xs={12} key={res.depenombre} >
+                                                                    <FormControlLabel value={res.depeid} label={res.depenombre} control={checkbox} />
+                                                                </Grid>
+                                            return frmCheckbox;
+                                        })}
+                                    </FormGroup>
+                                </Grid>
+                            </Fragment>
+                        : null}
+
+                        <Grid item xl={12} md={12} sm={12} xs={12}> 
+                            <Box className='frmDivision'>Adicionar personas que firma el tipo documental</Box>
+                            <Table key={'tableFirmaPersona'}  className={'tableAdicional'} style={{marginTop: '5px'}} >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell style={{width: '50%'}}>Nombre de la persona</TableCell>
+                                        <TableCell style={{width: '40%'}}>Cargo </TableCell> 
+                                        <TableCell style={{width: '10%'}} className='cellCenter'>Acción </TableCell>
                                     </TableRow>
-                                    );
-                                })
-                            }
+                                </TableHead>
+                                <TableBody>
 
-                            </TableBody>
-                        </Table>
+                                { firmaPersona.map((frmPers, a) => { 
+
+                                    return(
+                                        <TableRow key={'rowA-' +a} className={(frmPers.estado == 'D')? 'tachado': null}>
+                                            <TableCell>
+                                                <SelectValidator
+                                                    name={'persona'}
+                                                    value={frmPers['persona']}
+                                                    label={'Nombre de la persona'}
+                                                    className={'inputGeneral'} 
+                                                    variant={"standard"} 
+                                                    inputProps={{autoComplete: 'off'}}
+                                                    validators={["required"]}
+                                                    errorMessages={["Campo obligatorio"]}
+                                                    onChange={(e) => {handleChangeFirmaPersona(e, a)}}
+                                                >
+                                                <MenuItem value={""}>Seleccione</MenuItem>
+                                                {personas.map(res=>{
+                                                    return <MenuItem value={res.persid} key={res.persid} >{res.nombrePersona}</MenuItem>
+                                                })}
+                                                </SelectValidator>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <SelectValidator
+                                                    name={'cargo'}
+                                                    value={frmPers['cargo']}
+                                                    label={'Cargo laboral'}
+                                                    className={'inputGeneral'} 
+                                                    variant={"standard"} 
+                                                    inputProps={{autoComplete: 'off'}}
+                                                    validators={["required"]}
+                                                    errorMessages={["Campo obligatorio"]}
+                                                    onChange={(e) => {handleChangeFirmaPersona(e, a)}}
+                                                >
+                                                <MenuItem value={""}>Seleccione</MenuItem>
+                                                {cargoLaborales.map((res, i) =>{
+                                                    return <MenuItem value={res.carlabid} key={res.carlabid} >{res.carlabnombre}</MenuItem>
+                                                })}
+                                                </SelectValidator>
+                                            </TableCell>
+
+                                            <TableCell className='cellCenter'>
+                                                {(a !== 0)?
+                                                <Icon key={'iconDelete'+a} className={'icon top red'}
+                                                        onClick={() => {eliminarFirmaPersona(a);}} title={'Eliminar registro'}
+                                                    >clear</Icon>
+                                                    : <Icon key={'iconAdd'} className={'icon top green'} title={'Adicionar firma'}
+                                                        onClick={() => {adicionarFilaFirmaPersona()}}
+                                                    >add</Icon>
+                                                }
+                                            </TableCell>
+                                        </TableRow>
+                                        );
+                                    })
+                                }
+
+                                </TableBody>
+                            </Table>
+                        </Grid>
+
                     </Grid>
 
-                </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item xl={3} md={3} sm={4} xs={12}>
+                            <Button type={"button"} className={'modalBtn'} onClick={() => {volver()}}
+                                startIcon={<ArrowBackIcon />}> Volver
+                            </Button>
+                        </Grid>
+                        <Grid item xl={9} md={9} sm={8} xs={12} style={{textAlign:'right'}}>
+                            <Button type={"submit"} className={'modalBtn'}
+                                startIcon={<SaveIcon />}> {(tipo=== 'I') ? "Guardar" : "Actualizar"}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Card>
+            </ValidatorForm>
 
-                <Grid container spacing={2}>
-                    <Grid item xl={3} md={3} sm={4} xs={12}>
-                        <Button type={"button"} className={'modalBtn'} onClick={() => {volver()}}
-                            startIcon={<ArrowBackIcon />}> Volver
-                        </Button>
-                    </Grid>
-                    <Grid item xl={9} md={9} sm={8} xs={12} style={{textAlign:'right'}}>
-                        <Button type={"submit"} className={'modalBtn'}
-                            startIcon={<SaveIcon />}> {(tipo=== 'I') ? "Guardar" : "Actualizar"}
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Card>
-        </ValidatorForm>
+            <ModalDefaultAuto
+                title   = {'Visualizar el tipo documental en formato PDF'}
+                content = {<VisualizarPdf id={idDocumento} ruta={'oficio'} />}
+                close   = {() =>{setAbrirModal(false);}} 
+                tam     = 'mediumFlot' 
+                abrir   = {abrirModal}
+            />
+
+        </Box>
     );
 }
