@@ -11,8 +11,8 @@ class Persona extends Model
 
     protected $table      = 'persona';
     protected $primaryKey = 'persid';
-    protected $fillable   = ['carlabid','tipideid','tipperid','persdepaidnacimiento','persmuniidnacimiento','persdepaidexpedicion','persmuniidexpedicion',
-                            'persdocumento','persprimernombre','perssegundonombre','persprimerapellido','perssegundoapellido','persfechanacimiento',
+    protected $fillable   = ['carlabid','tipideid','tipperid','persdepaidnacimiento','persmuniidnacimiento','persdepaidexpedicion','persultimafechaactualizacion',
+                            'persmuniidexpedicion','persdocumento','persprimernombre','perssegundonombre','persprimerapellido','perssegundoapellido','persfechanacimiento',
                             'persdireccion','perscorreoelectronico','persfechadexpedicion','persnumerotelefonofijo','persnumerocelular','persgenero',
                             'persrutafoto','persrutafirma','perstienefirmaelectronica','perstienefirmadigital','persrutacrt','persrutapem','persactiva'];
 }

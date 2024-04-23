@@ -70,12 +70,12 @@ export default function New({data, tipo}){
             let depenSSDocumental   = res.dependenciasubseriedocumentales
             let listaJefes          = [];
             personas.map(res=>{
-                if(res.carlabid === 1 || res.carlabid === 4){
+                //if(res.carlabid === 1 || res.carlabid === 4){
                     listaJefes.push({
                         persid: res.persid,
                         nombrePersona: res.nombrePersona 
                     });
-                }
+                //}
             })
 
             let newDependenciaSubSerieDocumental = [];

@@ -703,12 +703,13 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                     language: 'es',
                                     height: 400,
                                     object_resizing : true,
-                                    browser_spellcheck: true,
+                                    browser_spellcheck: true,                                    
                                     spellchecker_language: 'es',
+                                    
                                     spellchecker_wordchar_pattern: /[^\s,\.]+/g ,
                                     menubar: 'file edit view insert format tools table',
-                                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table wordcount',
-                                    toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | link',
+                                    plugins: 'advlist autolink lists  image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table wordcount',
+                                    toolbar: 'undo redo | fontsize fontsizeselect | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor link',
                                     menu:{
                                         file: {title: 'File', items: 'newdocument'},
                                         edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall searchreplace'},
@@ -718,6 +719,8 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                         tools: {title: 'tools', items: 'wordcount'},
                                         table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'}
                                     },
+
+                                    fontsize_formats: '8pt 9pt 10pt 11pt 12pt',
                                 }}
                             />
                         </Grid>

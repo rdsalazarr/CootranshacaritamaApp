@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('persdireccion',100)->comment('Determina el genero de la persona');
             $table->string('perscorreoelectronico', 80)->nullable()->comment('Correo electrónico de la persona');
             $table->date('persfechadexpedicion')->nullable()->comment('Fecha de nacimiento de la persona');
+            $table->date('persultimafechaactualizacion')->nullable()->comment('Fecha de la ultima actualización de datos de la persona');
             $table->string('persnumerotelefonofijo', 20)->nullable()->comment('Número de teléfono fijo de la persona');
             $table->string('persnumerocelular', 20)->nullable()->comment('Número de teléfono celular de la persona');
             $table->string('persgenero', 1)->comment('Determina el genero de la persona');
@@ -38,7 +39,7 @@ return new class extends Migration
             $table->boolean('perstienefirmadigital')->default(false)->comment('Determina si la persona tiene firma digital');
             $table->string('persclavecertificado', 20)->nullable()->comment('Clave del certificado digital');
             $table->string('persrutacrt', 500)->nullable()->comment('Ruta de certificado digital con extensión crt');
-            $table->string('persrutapem', 500)->nullable()->comment('Ruta de certificado digital con extensión pem');
+            $table->string('persrutapem', 500)->nullable()->comment('Ruta de certificado digital con extensión pem');     
             $table->boolean('persactiva')->default(true)->comment('Determina si la persona se encuentra activa');
             $table->timestamps();
             $table->unique(['tipideid','persdocumento'],'uk_personatipoidentificacion');

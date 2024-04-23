@@ -21,7 +21,7 @@ class AgenciaSeeder extends Seeder
             'persidresponsable'   => '3',
             'agendepaid'          => '18',
             'agenmuniid'          => '804',
-            'agennombre'          => 'PRINCIPAL',
+            'agennombre'          => 'AGENCIA PRINCIPAL',
             'agendireccion'       => 'Calle 7 a 56 211 la ondina vía a rio de oro',
             'agencorreo'          => 'cootranshacaritama@hotmail.com',
             'agentelefonocelular' => '3146034311',
