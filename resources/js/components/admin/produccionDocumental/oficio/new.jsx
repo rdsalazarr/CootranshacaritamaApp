@@ -501,7 +501,7 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                     <TextValidator 
                                         name={'direccionDestinatario'}
                                         value={formData.direccionDestinatario}
-                                        label={'Direccion de la emprsa o destinatario'}
+                                        label={'Dirección de la empresa o destinatario'}
                                         className={'inputGeneral'} 
                                         variant={"standard"} 
                                         inputProps={{autoComplete: 'off', maxLength: 80}}

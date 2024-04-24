@@ -190,5 +190,25 @@ class TipoReferenciaVehiculoSeeder extends Seeder
             'created_at'   => $fechaHoraActual,
             'updated_at'   => $fechaHoraActual,
         ]);
+        
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tireveid'     => '26',
+            'tirevenombre' => 'BT-50',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tireveid'     => '27',
+            'tirevenombre' => '4700',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        
+
+
+
+        
     }
 }

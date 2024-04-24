@@ -482,3 +482,18 @@ VALUES
  insert into asociado (persid, tiesasid,asocfechaingreso,created_at,updated_at ) VALUES ((SELECT persid FROM Persona WHERE persdocumento = '37328892'), 'A','2021-08-30', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
  insert into asociado (persid, tiesasid,asocfechaingreso,created_at,updated_at ) VALUES ((SELECT persid FROM Persona WHERE persdocumento = '1091657343'), 'A','2007-06-12', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
  
+
+
+ --Vehiculos
+SELECT asocid FROM persona INNER JOIN asociado using(persid) WHERE persdocumento = '88279397'
+SELECT tipvehid FROM tipovehiculo WHERE tipvehnombre
+SELECT tireveid FROM select tireveid from tiporeferenciavehiculo where tirevenombre   WHERE tirevenombre  
+SELECT timaveid FROM tipomarcavehiculo WHERE timavenombre 
+SELECT ticaveid FROM tipocarroceriavehiculo WHERE ticavenombre 
+SELECT ticoveid FROM tipocolorvehiculo WHERE ticovenombre 
+SELECT ticovhid FROM tipocombustiblevehiculo WHERE ticovhnombre 
+SELECT timoveid FROM tipomodalidadvehiculo WHERE timovenombre  
+
+
+INSERT INTO vehiculo (asocid,tipvehid,tireveid,timaveid,ticoveid,timoveid,ticaveid,ticovhid, agenid,tiesveid,vehifechaingreso,vehinumerointerno,vehiplaca,vehimodelo,vehicilindraje,vehinumerochasis,vehinumeroserie,vehinumeroejes) 
+VALUES
