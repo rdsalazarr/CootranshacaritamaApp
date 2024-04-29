@@ -30,11 +30,11 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
 
     const [formData, setFormData] = useState( 
                                 {idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',       subSerie: '6',      tipoMedio: '',     tipoTramite: '1', 
-                                        tipoDestino: '',       fecha: '',      nombreDirigido: '',         cargoDirigido: '',  asunto: '',  
-                                        correo: '',            contenido: '',  tieneAnexo: '',             nombreAnexo: '',    tieneCopia: '', 
-                                        nombreCopia: '',       saludo: '',     despedida: '',              tituloPersona: '',  ciudad: '',    
-                                        cargoDestinatario: '', empresa: '',     direccionDestinatario: '', telefono: '',       responderRadicado: '0',
+                                        dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',       subSerie: '6',         tipoMedio: '',     tipoTramite: '1', 
+                                        tipoDestino: '',            fecha: '',      nombreDirigido: '',    cargoDirigido: '',      asunto: '',  
+                                        correo: '',                 contenido: '',  tieneAnexo: '',        nombreAnexo: '',        tieneCopia: '', 
+                                        nombreCopia: '',            saludo: '',     despedida: '',         tituloPersona: '',      ciudad: '',    
+                                        direccionDestinatario: '',  empresa: '',    telefono: '',          responderRadicado: '0',
                                         tipo:tipo
                                 }); 
 
@@ -143,11 +143,11 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
             let icono = (res.success) ? 'success' : 'error';
             showSimpleSnackbar(res.message, icono);
             (formData.tipo === 'I' && res.success) ? setFormData({idCD: (tipo !== 'I') ? id :'000', idCDP:'000', idCDPO:'000',
-                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',      subSerie: '6',      tipoMedio: '',   tipoTramite: '1', 
-                                                                    tipoDestino: '',       fecha: fechaActual, nombreDirigido: '',        cargoDirigido: '',  asunto: '',  
-                                                                    correo: '',            contenido: '',      tieneAnexo: '',            nombreAnexo: '',    tieneCopia: '',
-                                                                    nombreCopia: '',       saludo: '',         despedida: '',             tituloPersona: '',  ciudad: '', 
-                                                                    cargoDestinatario: '', empresa: '',        direccionDestinatario: '', telefono: '',       responderRadicado: '0',
+                                                                    dependencia: (tipo === 'I') ? area.depeid: '',   serie: '6',       subSerie: '6',         tipoMedio: '',     tipoTramite: '1', 
+                                                                    tipoDestino: '',            fecha: '',      nombreDirigido: '',    cargoDirigido: '',      asunto: '',  
+                                                                    correo: '',                 contenido: '',  tieneAnexo: '',        nombreAnexo: '',        tieneCopia: '', 
+                                                                    nombreCopia: '',            saludo: '',     despedida: '',         tituloPersona: '',      ciudad: '',    
+                                                                    direccionDestinatario: '',  empresa: '',    telefono: '',          responderRadicado: '0',
                                                                     tipo:tipo}) : null;
             (formData.tipo === 'I' && res.success) ? setFirmaPersona([{identificador:'', persona:'',  cargo: '', estado: 'I'}]) : null;
             if(formData.tipo === 'I' && res.success){
@@ -218,15 +218,15 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
         })
         setDocumentosRadicados(newDatosRadicado);
     }
-    
+
     const adicionarFilaFirmaPersona = () =>{
         let newFirmaPersona = [...firmaPersona];
         newFirmaPersona.push({identificador:'', persona:'',  cargo: '',  estado: 'I'});
         setFirmaPersona(newFirmaPersona);
-    }  
+    }
 
     const eliminarFirmaPersona = (id) =>{
-        let newDatosFirmaPersona = []; 
+        let newDatosFirmaPersona = [];
         firmaPersona.map((res,i) =>{
             if(res.estado === 'U' && i === id){
                 newDatosFirmaPersona.push({ identificador:res.identificador, persona: res.persona, cargo:res.cargo, estado: 'D' }); 
@@ -301,8 +301,7 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                 newFormData.saludo                = tpDocumental.tipsalid;
                 newFormData.despedida             = tpDocumental.tipdesid;
                 newFormData.tituloPersona         = tpDocumental.codopotitulo;
-                newFormData.ciudad                = tpDocumental.codopociudad;
-                newFormData.cargoDestinatario     = tpDocumental.codopocargodestinatario;
+                newFormData.ciudad                = tpDocumental.codopociudad;           
                 newFormData.empresa               = (tpDocumental.codopoempresa !== null) ? tpDocumental.codopoempresa : '';
                 newFormData.direccionDestinatario = tpDocumental.codopodireccion;
                 newFormData.telefono              = (tpDocumental.codopotelefono !== null) ? tpDocumental.codopotelefono : '';
@@ -489,7 +488,7 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                     <TextValidator 
                                         name={'empresa'}
                                         value={formData.empresa}
-                                        label={'Nomre de la empresa'}
+                                        label={'Nombre de la empresa'}
                                         className={'inputGeneral'} 
                                         variant={"standard"} 
                                         inputProps={{autoComplete: 'off', maxLength: 80}}
@@ -532,8 +531,6 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                 className={'inputGeneral'} 
                                 variant={"standard"} 
                                 inputProps={{autoComplete: 'off', maxLength: 80}}
-                                validators={["required"]}
-                                errorMessages={["Campo obligatorio"]}
                                 onChange={handleChange}
                             />
                         </Grid>
@@ -691,7 +688,6 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                 </Grid>
 
                             </Fragment>
-
                         : null}
 
                         <Grid item xl={12} md={12} sm={12} xs={12}>
@@ -900,7 +896,6 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                 <TableBody>
 
                                 { firmaPersona.map((frmPers, a) => { 
-
                                     return(
                                         <TableRow key={'rowA-' +a} className={(frmPers.estado == 'D')? 'tachado': null}>
                                             <TableCell>
@@ -955,7 +950,6 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                         );
                                     })
                                 }
-
                                 </TableBody>
                             </Table>
                         </Grid>

@@ -46,7 +46,7 @@ class OficioRequests extends FormRequest
             'saludo'                => 'required|numeric',
             'despedida'             => 'required|numeric',
             'tituloPersona'         => 'nullable|string|min:4|max:80',
-            'ciudad'                => 'required|string|min:4|max:80',
+            'ciudad'                => 'nullable|string|min:4|max:80',
             'cargoDestinatario'     => 'nullable|string|min:4|max:80',
             'empresa'               => 'nullable|string|min:4|max:80',
             'direccionDestinatario' => 'nullable|string|min:4|max:80',
