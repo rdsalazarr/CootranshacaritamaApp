@@ -653,6 +653,7 @@ class generarPdf
 		$titulo               = $infodocumento->codopotitulo;
 		$nombreDirigido       = $infodocumento->codoprnombredirigido;
 		$cargoDirigido        = $infodocumento->codoprcargonombredirigido;
+		
 		$ciudad               = $infodocumento->codopociudad;
 		$asunto               = $infodocumento->codoprasunto;
 		$saludo               = $infodocumento->tipsalnombre;
@@ -695,7 +696,7 @@ class generarPdf
 	    PDF::Cell(80, 4, $fechaDocumento, 0, 0, '');
 	    PDF::Ln(20);
 
-	    if($titulo!=''){
+	    if($titulo !=''){
 		    PDF::Cell(80, 4, $titulo, 0, 0, '');
 		    PDF::Ln(5);
 	    }
