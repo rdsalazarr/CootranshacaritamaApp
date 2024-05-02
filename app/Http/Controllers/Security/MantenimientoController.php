@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Security;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Util\notificar;
-use DB, PDF, Auth, URL, Artisan;
+use DB, PDF, Auth, URL, Artisan, TCPDF;
 use Carbon\Carbon;
 
 use App\Util\generarPdf;
@@ -99,6 +99,144 @@ class MantenimientoController extends Controller
     
     public function Pdf()
     {
+
+        $titulo = 'Prueba';
+        $siglaEmpresa = 'Prueba';
+
+
+        //$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false, true);
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false, true);
+
+        // set document information
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Nicola Asuni');
+        $pdf->SetTitle('TCPDF Example 065');
+        $pdf->SetSubject('TCPDF Tutorial');
+        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+        // set default header data
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 065', PDF_HEADER_STRING);
+
+        // set header and footer fonts
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+            require_once(dirname(__FILE__).'/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+        // ---------------------------------------------------------
+
+        // set default font subsetting mode
+        $pdf->setFontSubsetting(true);
+
+        // Set font
+        $pdf->SetFont('helvetica', '', 14, '', true);
+
+        // Add a page
+        // This method has several options, check the source code documentation for more information.
+        $pdf->AddPage();
+
+        // Set some content to print
+        $html = <<<EOD
+        <h1>Example of <a href="http://www.tcpdf.org" style="text-decoration:none;background-color:#CC0000;color:black;">&nbsp;<span style="color:black;">TC</span><span style="color:white;">PDF</span>&nbsp;</a> document in <span style="background-color:#99ccff;color:black;"> PDF/A-1b </span> mode.</h1>
+        <i>This document conforms to the standard <b>PDF/A-1b (ISO 19005-1:2005)</b>.</i>
+        <p>Please check the source code documentation and other examples for further information (<a href="http://www.tcpdf.org">http://www.tcpdf.org</a>).</p>
+        <p style="color:#CC0000;">TO IMPROVE AND EXPAND TCPDF I NEED YOUR SUPPORT, PLEASE <a href="http://sourceforge.net/donate/index.php?group_id=128076">MAKE A DONATION!</a></p>
+        EOD;
+
+        // Print text using writeHTMLCell()
+        $pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+        // ---------------------------------------------------------
+
+        // Close and output PDF document
+        // This method has several options, check the source code documentation for more information.
+        $pdf->Output('example_065.pdf', 'I');
+
+/*
+
+        $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false, true);
+
+
+        $pdf->SetAuthor('IMPLESOFT');
+		$pdf->SetCreator('ERP '.$siglaEmpresa);
+		$pdf->SetSubject($titulo);
+		$pdf->SetKeywords('Solicitud, Queja, Reclamo, Sugerencia, Felicitación, Formato, '.$siglaEmpresa);
+        $pdf->SetTitle($titulo);
+    
+
+       // set default header data
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 065', PDF_HEADER_STRING);
+
+        // set header and footer fonts
+        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+        // set default monospaced font
+        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+// set default font subsetting mode
+$pdf->setFontSubsetting(true);
+
+// Set font
+$pdf->SetFont('helvetica', '', 14, '', true);
+
+// Add a page
+// This method has several options, check the source code documentation for more information.
+$pdf->AddPage();
+
+
+        $pdf->SetPrintHeader(false);
+		$pdf->SetPrintFooter(false);
+        $pdf->SetMargins(12, 30 , 12);
+		//$pdf->AddPage('P', 'Letter');
+		$pdf->SetAutoPageBreak(true, 30);
+		$pdf->SetY(32); 
+
+        $mensajeFormato = 'Con el fin de mejorar cada dia en la prestacion de nuestros servicios y/o Producto suministrado, ';
+        $mensajeFormato .= 'solicitamos diligenciar este formato con la finalidad de conocer, tramitar y dar solucion a las ';
+        $mensajeFormato .= 'peticiones, quejas, reclamos, sugerencias y/o felicitaciones presentadas por usted(s).';
+
+        $pdf->SetTextColor(179,179,180);
+        $pdf->SetFont('helvetica','I',9);
+        $pdf->MultiCell(0,3,$mensajeFormato."\n",0,'J',0);     
+        $pdf->SetTextColor(0);
+
+        $pdf->Ln(4);
+        $pdf->SetFillColor(232, 231, 231);
+        $pdf->SetFont('helvetica','B',11);
+        $pdf->Cell(188,4,'INFORMACIÓN DEL USUARIO',1,0,'',true);
+        $pdf->Ln(8); 
+        $pdf->Output('example_065.pdf', 'I');
+
+
 
         //'pr.plarutdespachada'
 
