@@ -189,7 +189,6 @@ class TipoColorVehiculoSeeder extends Seeder
             'ticovenombre' => 'ROJO VERDE BLANCO',
             'created_at'   => $fechaHoraActual,
             'updated_at'   => $fechaHoraActual,
-        ]);
-
+        ]);       
     }
 }

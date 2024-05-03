@@ -16,7 +16,7 @@ class TipoReferenciaVehiculoSeeder extends Seeder
     {
         $fechaHoraActual = Carbon::now();
 
-        DB::table('tiporeferenciavehiculo')->insert([
+        /*DB::table('tiporeferenciavehiculo')->insert([
             'tireveid'     => '1',
             'tirevenombre' => 'URVAN',
             'created_at'   => $fechaHoraActual,
@@ -189,26 +189,450 @@ class TipoReferenciaVehiculoSeeder extends Seeder
             'tirevenombre' => 'LOGAN DYNAMIQUE',
             'created_at'   => $fechaHoraActual,
             'updated_at'   => $fechaHoraActual,
-        ]);
-        
-        DB::table('tiporeferenciavehiculo')->insert([
-            'tireveid'     => '26',
+        ]);*/
+
+        /*
+        DB::table('tiporeferenciavehiculo')->insert([   
             'tirevenombre' => 'BT-50',
             'created_at'   => $fechaHoraActual,
             'updated_at'   => $fechaHoraActual,
         ]);
 
         DB::table('tiporeferenciavehiculo')->insert([
-            'tireveid'     => '27',
             'tirevenombre' => '4700',
             'created_at'   => $fechaHoraActual,
             'updated_at'   => $fechaHoraActual,
         ]);
 
+        DB::table('tiporeferenciavehiculo')->insert([   
+            'tirevenombre' => '7600SBA',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'ACCENT GL',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([   
+            'tirevenombre' => 'APV',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'ATOS RPIME',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([   
+            'tirevenombre' => 'ATOS RPIME GL',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'B-60 218',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+        DB::table('tiporeferenciavehiculo')->insert([   
+            'tirevenombre' => 'B-60',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'B-70',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'BJ',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'BT-50',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'C-60',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CANTER',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CBX 1047',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CE',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CERRADA',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CHEVY TAXI PREMIUM',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
         
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CHEVYTAXI',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
 
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CIELO BX',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
 
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CIELO BXA',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
 
-        
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CJ-5',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CLIO EXPREES',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'COBALT',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'CRAFTER 50',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'D-600',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'D-600 221',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'D-608',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'E-350',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'EQ6450PF1 1.4',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'EQ6450PF1 1.5',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'F-600',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'FB4J',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'FB4JJ',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => 'GRA',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);
+
+        DB::table('tiporeferenciavehiculo')->insert([
+            'tirevenombre' => '',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
+        ]);*/          
     }
 }

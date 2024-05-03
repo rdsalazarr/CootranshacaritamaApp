@@ -35,9 +35,9 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoCarpetaUbicacionSeeder::class);
         $this->call(InformacionConfiguracionCorreoSeeder::class);
         $this->call(TipoVehiculoSeeder::class);
-        $this->call(TipoReferenciaVehiculoSeeder::class);
-        $this->call(TipoMarcaVehiculoSeeder::class);
-        $this->call(TipoColorVehiculoSeeder::class);
+        //$this->call(TipoReferenciaVehiculoSeeder::class);
+        //$this->call(TipoMarcaVehiculoSeeder::class);
+        //$this->call(TipoColorVehiculoSeeder::class);
         $this->call(TipoModalidadVehiculoSeeder::class);
         $this->call(TipoCarroceriaVehiculoSeeder::class);
         $this->call(TipoCombustibleVehiculoSeeder::class);

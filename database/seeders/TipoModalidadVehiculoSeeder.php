@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 use DB;
 
 class TipoModalidadVehiculoSeeder extends Seeder
@@ -13,13 +14,17 @@ class TipoModalidadVehiculoSeeder extends Seeder
      */
     public function run(): void
     { 
+        $fechaHoraActual = Carbon::now();
+
         DB::table('tipomodalidadvehiculo')->insert([
             'timoveid'                      => 'E',
             'timovenombre'                  => 'ESPECIAL',
             'timovecuotasostenimiento'      => '105000',
             'timovedescuentopagoanticipado' => '5',
             'timoverecargomora'             => '5',
-            'timovetienedespacho'           => '1'
+            'timovetienedespacho'           => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual
         ]);
         
         DB::table('tipomodalidadvehiculo')->insert([
@@ -28,7 +33,9 @@ class TipoModalidadVehiculoSeeder extends Seeder
             'timovecuotasostenimiento'      => '105000',
             'timovedescuentopagoanticipado' => '5',
             'timoverecargomora'             => '5',
-            'timovetienedespacho'           => '1'
+            'timovetienedespacho'           => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual
         ]);
 
         DB::table('tipomodalidadvehiculo')->insert([
@@ -37,7 +44,9 @@ class TipoModalidadVehiculoSeeder extends Seeder
             'timovecuotasostenimiento'      => '105000',
             'timovedescuentopagoanticipado' => '5',
             'timoverecargomora'             => '5',
-            'timovetienedespacho'           => '1'
+            'timovetienedespacho'           => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual
         ]);
 
         DB::table('tipomodalidadvehiculo')->insert([
@@ -46,7 +55,20 @@ class TipoModalidadVehiculoSeeder extends Seeder
             'timovecuotasostenimiento'      => '105000',
             'timovedescuentopagoanticipado' => '5',
             'timoverecargomora'             => '5',
-            'timovetienedespacho'           => '1'
+            'timovetienedespacho'           => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual
+        ]);
+
+        DB::table('tipomodalidadvehiculo')->insert([
+            'timoveid'                      => 'U',
+            'timovenombre'                  => 'URBANO',
+            'timovecuotasostenimiento'      => '105000',
+            'timovedescuentopagoanticipado' => '5',
+            'timoverecargomora'             => '5',
+            'timovetienedespacho'           => '1',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual
         ]);
     }
 }
