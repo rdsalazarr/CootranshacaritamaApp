@@ -17,6 +17,7 @@ class RutaController extends Controller
                     ->select('r.rutaid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino','r.rutaactiva','r.rutatienenodos',
                     'do.depanombre as nombreDeptoOrigen', 'mo.muninombre as nombreMunicipioOrigen',
                     'de.depanombre as nombreDeptoDestino', 'md.muninombre as nombreMunicipioDestino',
+                    DB::raw("if(r.rutatienenodos = 1 ,'Sí', 'No') as tieneNodos"),
                     DB::raw("if(r.rutaactiva = 1 ,'Sí', 'No') as estado"))
                     ->join('departamento as do', 'do.depaid', '=', 'r.rutadepaidorigen')
                     ->join('municipio as mo', function($join)
@@ -30,7 +31,8 @@ class RutaController extends Controller
                         $join->on('md.munidepaid', '=', 'r.rutadepaiddestino');
                         $join->on('md.muniid', '=', 'r.rutamuniiddestino'); 
                     })
-                    ->orderBy('r.rutaid', 'Desc')->get();
+                    ->orderBy('do.depanombre')->orderBy('mo.muninombre')
+                    ->orderBy('de.depanombre')->orderBy('md.muninombre')->get();
 
         return response()->json(["data" => $data]);
     }

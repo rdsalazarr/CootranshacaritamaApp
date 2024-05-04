@@ -47,7 +47,7 @@ export default function New({data, tipo}){
             showSimpleSnackbar(res.message, icono);
             (formData.tipo === 'I' && res.success) ? setRutaNodos([]) : null; 
             (formData.tipo !== 'I' && res.success) ? setHabilitado(false) : null;
-            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:'', municipioOrigen: '', departamentoDestino: '', municipioDestino:'', tieneNodos:'', estado:'1',  tipo:tipo}) : null;
+            (formData.tipo === 'I' && res.success) ? setFormData({codigo:'000', departamentoOrigen:formData.departamentoOrigen, municipioOrigen: '', departamentoDestino: formData.departamentoDestino, municipioDestino:'', tieneNodos:formData.tieneNodos, estado:'1',  tipo:tipo}) : null;
             setLoader(false);
         })
     }
@@ -119,7 +119,7 @@ export default function New({data, tipo}){
         const resultadoNombreMunicipio = municipios.filter((mun) => mun.muniid == formDataAdicionarNodo.municipioNodoId);
         newRutaNodos.push({identificador:'', deptoNodoId:formDataAdicionarNodo.deptoNodoId, nombreDepto: resultadoNombreDepto[0].depanombre, 
                              municipioNodoId:formDataAdicionarNodo.municipioNodoId, nombreMunicipio: resultadoNombreMunicipio[0].muninombre, estado: 'I'});
-        setFormDataAdicionarNodo({deptoNodoId:'', nombreDepto: '', municipioNodoId:'', nombreMunicipio: '' });
+        setFormDataAdicionarNodo({deptoNodoId:formDataAdicionarNodo.deptoNodoId, nombreDepto: '', municipioNodoId:'', nombreMunicipio: '' });
         setRutaNodos(newRutaNodos);
     }
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 use DB;
 
 class UsuarioSeeder extends Seeder
@@ -15,6 +16,8 @@ class UsuarioSeeder extends Seeder
      */
     public function run()
     {
+        $fechaHoraActual = Carbon::now();
+
         DB::table('usuario')->insert([
             'persid'        => '1',
             'agenid'        => '101',
@@ -26,6 +29,8 @@ class UsuarioSeeder extends Seeder
         	'password'      => bcrypt('Sistemas2023.'),
             'usuaactivo'          => '0',
             'usuacambiarpassword' => '0',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]); 
 
         DB::table('usuario')->insert([
@@ -39,6 +44,8 @@ class UsuarioSeeder extends Seeder
         	'password'      => bcrypt('123456'),
             'usuaactivo'          => '1',
             'usuacambiarpassword' => '0',
+            'created_at'   => $fechaHoraActual,
+            'updated_at'   => $fechaHoraActual,
         ]); 
     }
 }

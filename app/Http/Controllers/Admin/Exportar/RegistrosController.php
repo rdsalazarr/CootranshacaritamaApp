@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Exports\TiqueteExport;
 use App\Exports\PersonaExport;
 use Illuminate\Http\Request;
+use App\Exports\RutasExport;
 use Carbon\Carbon;
 use Exception;
 
@@ -89,6 +90,16 @@ class RegistrosController extends Controller
             $nombreReporte            = 'Reporte_licencias_vencidas_'.Carbon::now().'.xls';
             $licenciasVencidasExport = new LicenciasVencidasExport($request);
             return Excel::download($licenciasVencidasExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+    }
+
+    public function exportarRutas(Request $request){
+        try {
+            $nombreReporte = 'Reporte_rutas_'.Carbon::now().'.xls';
+            $rutasExport   = new RutasExport($request);
+            return Excel::download($rutasExport, $nombreReporte);
         } catch (Exception $error){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
         }

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import instanceFile from '../..//layout/instanceFile';
 import { ModalDefaultAuto } from '../../layout/modal';
 import TablaGeneral from '../../layout/tablaGeneral';
+import instanceFile from '../../layout/instanceFile';
 import {LoaderModal} from "../../layout/loader";
 import { Box, Typography} from '@mui/material';
 import Eliminar from '../../layout/modalFijas';

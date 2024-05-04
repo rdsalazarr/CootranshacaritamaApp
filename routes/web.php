@@ -126,6 +126,7 @@ Route::post('/admin/eliminar/certificado/conductor', [EliminarAchivosController:
 Route::post('/admin/eliminar/archivo/digitalizados', [EliminarAchivosController::class, 'digitalizados']);
 Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosController::class, 'radicadoEntrante']);
 
+Route::post('/admin/exportar/datos/rutas', [RegistrosController::class, 'exportarRutas']);
 Route::post('/admin/exportar/datos/persona', [RegistrosController::class, 'exportarPersona']);
 Route::post('/admin/exportar/datos/tiquete', [RegistrosController::class, 'exportarTiquete']);
 Route::post('/admin/exportar/datos/licencia/vencidas', [RegistrosController::class, 'exportarLicencias']);

@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import { Box, Typography, Card} from '@mui/material';
-import TablaGeneral from '../../../layout/tablaGeneral';
 import { ModalDefaultAuto } from '../../../layout/modal';
+import TablaGeneral from '../../../layout/tablaGeneral';
+import instanceFile from '../../../layout/instanceFile';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
+import { Box, Typography} from '@mui/material';
 import Tiquete from './tiquete';
 import NewEdit from './new';
 
@@ -33,6 +34,13 @@ export default function List(){
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 3 ) ? 'smallFlot' : 'mediumFlot'});
     }
 
+    const descargarFile = () =>{
+        setLoader(true);
+        instanceFile.post('/admin/exportar/datos/rutas').then(res=>{
+            setLoader(false);
+        })
+    } 
+
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/despacho/ruta/list').then(res=>{
@@ -54,13 +62,14 @@ export default function List(){
             <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
                 <TablaGeneral
                     datos={data}
-                    titulo={['Departamento origen','Municipio origen','Departamento destino', 'Municipio destino','Activa','Actualizar','Tiquete','Eliminar']}
-                    ver={["nombreDeptoOrigen","nombreMunicipioOrigen","nombreDeptoDestino","nombreMunicipioDestino","estado"]}
+                    titulo={['Departamento origen','Municipio origen','Departamento destino', 'Municipio destino','Tiene nodos','Activa','Actualizar','Tiquete','Eliminar']}
+                    ver={["nombreDeptoOrigen","nombreMunicipioOrigen","nombreDeptoDestino","nombreMunicipioDestino","tieneNodos", "estado"]}
                     accion={[
                         {tipo: 'T', icono : 'add',                    color: 'green',  funcion : (data)=>{edit(data,0)} },
                         {tipo: 'B', icono : 'edit',                   color: 'orange', funcion : (data)=>{edit(data,1)} },
                         {tipo: 'B', icono : 'currency_exchange_icon', color: 'green',  funcion : (data)=>{edit(data,2)} },
                         {tipo: 'B', icono : 'delete',                 color: 'red',    funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'D', icono : 'file_download_icon',     color: 'orange', funcion : (data)=>{descargarFile()} },
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />
