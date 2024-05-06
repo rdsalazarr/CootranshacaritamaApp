@@ -129,6 +129,9 @@ Route::post('/admin/eliminar/archivo/radicado/entrante', [EliminarAchivosControl
 Route::post('/admin/exportar/datos/rutas', [RegistrosController::class, 'exportarRutas']);
 Route::post('/admin/exportar/datos/persona', [RegistrosController::class, 'exportarPersona']);
 Route::post('/admin/exportar/datos/tiquete', [RegistrosController::class, 'exportarTiquete']);
+Route::post('/admin/exportar/datos/vehiculos', [RegistrosController::class, 'exportarVehiculos']);
+Route::post('/admin/exportar/datos/asociados', [RegistrosController::class, 'exportarAsociados']);
+Route::post('/admin/exportar/datos/conductores', [RegistrosController::class, 'exportarConductores']);
 Route::post('/admin/exportar/datos/licencia/vencidas', [RegistrosController::class, 'exportarLicencias']);
 Route::post('/admin/exportar/datos/cartera/vencida', [RegistrosController::class, 'exportarCarteraVencida']);
 Route::post('/admin/exportar/datos/consulta/archivo/historico', [RegistrosController::class, 'exportarConsultaAH']);

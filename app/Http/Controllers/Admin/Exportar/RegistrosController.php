@@ -11,6 +11,9 @@ use App\Exports\CarteraVencidaExport;
 use App\Exports\IngresoUsuarioExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
+use App\Exports\ConductoresExport;
+use App\Exports\VehiculosExport;
+use App\Exports\AsociadosExport;
 use App\Exports\TiqueteExport;
 use App\Exports\PersonaExport;
 use Illuminate\Http\Request;
@@ -100,6 +103,36 @@ class RegistrosController extends Controller
             $nombreReporte = 'Reporte_rutas_'.Carbon::now().'.xls';
             $rutasExport   = new RutasExport($request);
             return Excel::download($rutasExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+    }
+
+    public function exportarAsociados(Request $request){
+        try {
+            $nombreReporte   = 'Reporte_asociados_'.Carbon::now().'.xls';
+            $asociadosExport = new AsociadosExport($request);
+            return Excel::download($asociadosExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+    }
+
+    public function exportarConductores(Request $request){
+        try {
+            $nombreReporte     = 'Reporte_conductores_'.Carbon::now().'.xls';
+            $conductoresExport = new ConductoresExport($request);
+            return Excel::download($conductoresExport, $nombreReporte);
+        } catch (Exception $error){
+            return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
+        }
+    }
+
+    public function exportarVehiculos(Request $request){
+        try {
+            $nombreReporte   = 'Reporte_vehiculos_'.Carbon::now().'.xls';
+            $vehiculosExport = new VehiculosExport($request);
+            return Excel::download($vehiculosExport, $nombreReporte);
         } catch (Exception $error){
             return response()->json(['success' => false, 'message'=> 'Ocurrio un error al generar el reporte => '.$error->getMessage()]);
         }

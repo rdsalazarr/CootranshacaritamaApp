@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Eliminar, {SuspenderConductor} from '../../../layout/modalFijas';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
+import instanceFile from '../../../layout/instanceFile';
 import {LoaderModal} from "../../../layout/loader";
 import instance from '../../../layout/instance';
 import Show from '../../persona/show';
@@ -34,6 +35,13 @@ export default function Activos(){
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 || tipo === 4 ) ? 'smallFlot' :  'bigFlot'});
     }
 
+    const descargarFile = () =>{
+        setLoader(true);
+        instanceFile.post('/admin/exportar/datos/conductores').then(res=>{
+            setLoader(false);
+        })
+    } 
+
     const inicio = () =>{
         setLoader(true);
         instance.post('/admin/direccion/transporte/conductor/list', {tipo: 'ACTIVO'}).then(res=>{
@@ -57,11 +65,12 @@ export default function Activos(){
                     titulo={['Tipo documento','Documento','Nombre','Dirección', 'Correo','Activo','Actualizar','Eliminar','Ver', 'Suspender']}
                     ver={["tipoIdentificacion","persdocumento","nombrePersona","persdireccion", "perscorreoelectronico","estado"]}
                     accion={[
-                        {tipo: 'T', icono : 'add',               color: 'green',  funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',              color: 'orange', funcion : (data)=>{edit(data,1)} },
-                        {tipo: 'B', icono : 'delete',            color: 'red',    funcion : (data)=>{edit(data,2)} },
-                        {tipo: 'B', icono : 'visibility',        color: 'green',  funcion : (data)=>{edit(data,3)} },
-                        {tipo: 'B', icono : 'do_not_touch_icon', color: 'red',    funcion : (data)=>{edit(data,4)} },
+                        {tipo: 'T', icono : 'add',                color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',               color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',             color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility',         color: 'green',  funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'B', icono : 'do_not_touch_icon',  color: 'red',    funcion : (data)=>{edit(data,4)} },
+                        {tipo: 'D', icono : 'file_download_icon', color: 'orange', funcion : (data)=>{descargarFile()} },
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />

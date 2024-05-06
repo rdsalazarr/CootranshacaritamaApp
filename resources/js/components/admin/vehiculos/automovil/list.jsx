@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { ModalDefaultAuto } from '../../../layout/modal';
 import TablaGeneral from '../../../layout/tablaGeneral';
+import instanceFile from '../../../layout/instanceFile';
 import {LoaderModal} from "../../../layout/loader";
 import Eliminar from '../../../layout/modalFijas';
 import instance from '../../../layout/instance';
@@ -33,6 +34,13 @@ export default function List(){
         setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'bigFlot'});
     }
 
+    const descargarFile = () =>{
+        setLoader(true);
+        instanceFile.post('/admin/exportar/datos/vehiculos').then(res=>{
+            setLoader(false);
+        })
+    }
+
     const inicio = () =>{
         setLoader(true);
         instance.get('/admin/direccion/transporte/vehiculo/list').then(res=>{
@@ -57,10 +65,11 @@ export default function List(){
                     titulo={['Tipo vehículo','Fecha ingreso','Número interno','Placa', 'Modelo', 'Cilindraje', 'Número de ejes', 'Estado', 'Actualizar','Eliminar', 'Visualizar']}
                     ver={["tipvehnombre","vehifechaingreso","vehinumerointerno","vehiplaca","vehimodelo","vehicilindraje","vehinumeroejes", "estado"]}
                     accion={[
-                        {tipo: 'T', icono : 'add',    color: 'green',   funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data,1)} },
-                        {tipo: 'B', icono : 'delete', color: 'red',    funcion : (data)=>{edit(data,2)} },
-                        {tipo: 'B', icono : 'visibility',        color: 'green',  funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'T', icono : 'add',                color: 'green',  funcion : (data)=>{edit(data,0)} },
+                        {tipo: 'B', icono : 'edit',               color: 'orange', funcion : (data)=>{edit(data,1)} },
+                        {tipo: 'B', icono : 'delete',             color: 'red',    funcion : (data)=>{edit(data,2)} },
+                        {tipo: 'B', icono : 'visibility',         color: 'green',  funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'D', icono : 'file_download_icon', color: 'orange', funcion : (data)=>{descargarFile()} },
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />
