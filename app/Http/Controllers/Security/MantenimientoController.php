@@ -7,19 +7,13 @@ use Illuminate\Http\Request;
 use App\Util\notificar;
 use DB, PDF, Auth, URL, Artisan, TCPDF;
 use Carbon\Carbon;
-
 use App\Util\generarPdf;
 use App\Util\generales;
 use App\Util\GenerarContrato;
-
 use App\Util\convertirNumeroALetras;
-
-
 use App\Models\Caja\ComprobanteContableDetalle;
 use App\Models\Caja\ComprobanteContable;
 use App\Models\Caja\MovimientoCaja;
-
-
 
 class MantenimientoController extends Controller
 {
@@ -93,14 +87,12 @@ class MantenimientoController extends Controller
         $mensajeCorreo = ', '.$notificar->correo([$email], $asunto, $msg, [], $emailEmpresa, $enviarcopia, $enviarpiepagina);
 
        dd($mensajeCorreo);      
-    }
-
-    
+    }    
     
     public function Pdf()
     {
 
-        $titulo = 'Prueba';
+        /*$titulo = 'Prueba';
         $siglaEmpresa = 'Prueba';
 
 
@@ -244,7 +236,7 @@ $pdf->AddPage();
                             'tiquanio','tiquconsecutivo','tiqufechahoraregistro','tiqucantidad','tiquvalortiquete','tiquvalordescuento', 
                             'tiquvalorseguro','tiquvalorestampilla','tiquvalorfondoreposicion','tiquvalortotal','tiqucontabilizado'*/
 
-
+/*
                             $fechaHoraActual = Carbon::now();
                             $fechaActual     = $fechaHoraActual->format('Y-m-d');
                             $fechaSuperiror  = Carbon::now()->addDays(30)->toDateString();
@@ -597,7 +589,6 @@ dd($consulta);
         PDF::SetFont('helvetica','B',12);
         PDF::Cell(90,4,'FIRMA DE QUIEN PRESENTA LA QUEJA ','T',0,'L');
 
-
         PDF::Output();*/
        
 	}
@@ -797,7 +788,6 @@ dd($consulta);
         return $nuevaFecha;
     }
 
-
     function obtenerFechaPagoCuota1($fecha) {
         $fechaActual   = Carbon::parse($fecha);
         $nuevaFecha    = Carbon::parse($fecha);
@@ -838,7 +828,6 @@ dd($consulta);
     
         return $fechaSiguiente;
     }
-
 
     function obtenerFechaPagoCuotaMia($fecha) {
 		$fechaActual  = Carbon::parse($fecha);
