@@ -82,7 +82,7 @@ class BandejaRadicadoDocumentoEntranteController extends Controller
             $coddocumprocesocopia->radoedfechahorarecibido = $fechaHoraActual;
             $coddocumprocesocopia->save();
 
-            $docentcambioestado 					 = new DocumentoEntranteCambioEstado();
+            $docentcambioestado 				   = new DocumentoEntranteCambioEstado();
             $docentcambioestado->radoenid          = $codigo;
             $docentcambioestado->tierdeid          = $estado;
             $docentcambioestado->radeceusuaid      = Auth::id();
