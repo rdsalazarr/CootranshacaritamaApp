@@ -403,7 +403,7 @@ class TiqueteController extends Controller
                 $notificar          = new notificar();
                 $informacioncorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionConfirmacionTiquete')->first(); 
                 $email              = $request->correo;
-                $nombreFeje         = mb_strtoupper($nombreCliente,'UTF-8');
+                $nombreCliente      = mb_strtoupper($nombreCliente,'UTF-8');
                 $buscar             = Array('nombreCliente');
                 $remplazo           = Array($nombreCliente); 
                 $asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);

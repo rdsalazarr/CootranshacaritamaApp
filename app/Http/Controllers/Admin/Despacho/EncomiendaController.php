@@ -347,7 +347,7 @@ class EncomiendaController extends Controller
                 $notificar          = new notificar();
                 $informacioncorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionConfirmacionEncomienda')->first();
                 $email              = $request->correoRemitente;
-                $nombreFeje         = mb_strtoupper($nombreCliente,'UTF-8');
+                $nombreCliente      = mb_strtoupper($nombreCliente,'UTF-8');
                 $buscar             = Array('nombreCliente');
                 $remplazo           = Array($nombreCliente);
                 $asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);

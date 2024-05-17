@@ -151,9 +151,9 @@ class CircularController extends Controller
 			foreach($firmaDocumentos as $firmaDocumento){
 				$email              = $firmaDocumento->perscorreoelectronico;
 				$correoNotificados .= $email.', ';
-				$nombreFeje         = $firmaDocumento->nombreJefe;
-				$buscar             = Array('numeroDocumental', 'nombreFeje', 'tipoDocumental', 'fechaDocumento','nombreUsuario','cargoUsuario','observacionAnulacionFirma');
-				$remplazo           = Array($numeroDocumental, $nombreFeje,  $tipoDocumental, $fechaDocumento, $nombreUsuario, $cargoUsuario, $request->observacionCambio); 
+				$nombreJefe         = $firmaDocumento->nombreJefe;
+				$buscar             = Array('numeroDocumental', 'nombreJefe', 'tipoDocumental', 'fechaDocumento','nombreUsuario','cargoUsuario','observacionAnulacionFirma');
+				$remplazo           = Array($numeroDocumental, $nombreJefe,  $tipoDocumental, $fechaDocumento, $nombreUsuario, $cargoUsuario, $request->observacionCambio); 
 				$asunto             = str_replace($buscar,$remplazo,$informacioncorreo->innocoasunto);
 				$msg                = str_replace($buscar,$remplazo,$informacioncorreo->innococontenido);
 				$enviarcopia        = $informacioncorreo->innocoenviarcopia;
