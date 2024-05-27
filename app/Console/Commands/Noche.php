@@ -142,7 +142,7 @@ class Noche
                         $vehiculocambioestado 					 = new VehiculoCambioEstado();
                         $vehiculocambioestado->vehiid            = $request->vehiculoId;
                         $vehiculocambioestado->tiesveid          = 'A';
-                        $vehiculocambioestado->vecaesusuaid      = Auth::id();
+                        $vehiculocambioestado->vecaesusuaid      = 1;
                         $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
                         $vehiculocambioestado->vecaesobservacion = 'Se realiza el pago de la mensualidad con el saldo acomulado levantando la sanción';
                         $vehiculocambioestado->save();

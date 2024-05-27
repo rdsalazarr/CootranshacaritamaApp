@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('vehconid')->unsigned()->comment('Identificador de la tabla vehiculo contrato');
             $table->integer('persid')->unsigned()->comment('Identificador de la tabla persona');
             $table->string('vecofitoken', 20)->nullable()->comment('Token con el cual es firmado el contrato');
-            $table->string('vecofiipacceso', 20)->comment('Ip de la cual accede el usuario para realizar el proceso de la firma');
+            $table->string('vecofiipacceso', 20)->nullable()->comment('Ip de la cual accede el usuario para realizar el proceso de la firma');
             $table->datetime('vecofifechahorafirmado')->nullable()->comment('Fecha y hora de la cual se firma el contrato');
             $table->datetime('vecofifechahoranotificacion')->nullable()->comment('Fecha y hora de la cual se envio la notifiación del token');
             $table->datetime('vecofifechahoramaxvalidez')->nullable()->comment('Fecha y hora maxima de validez del token'); 

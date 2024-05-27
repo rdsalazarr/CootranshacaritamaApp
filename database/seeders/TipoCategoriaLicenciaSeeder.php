@@ -47,5 +47,10 @@ class TipoCategoriaLicenciaSeeder extends Seeder
             'ticaliid'     => 'C3',
             'ticalinombre' => 'C3'
         ]); 
+
+        DB::table('tipocategorialicencia')->insert([
+            'ticaliid'     => 'C4',
+            'ticalinombre' => 'C4'
+        ]); 
     }
 }

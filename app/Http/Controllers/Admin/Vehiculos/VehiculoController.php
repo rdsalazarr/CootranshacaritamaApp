@@ -183,17 +183,18 @@ class VehiculoController extends Controller
                                                 ->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
                                                 ->where('emprid', '1')->first();
 
-                $correoEmpresa                = $representante->emprcorreo;
-                $nombreGerente                = $representante->nombreGerente;
-                $correoGerente                = $representante->perscorreoelectronico;
-                $fechaHoraActual              = Carbon::now();
-                $anioActual                   = $fechaHoraActual->year;
-                $fechaInicialContrato         = Carbon::parse($request->fechaInicialContrato);
-                $fechaInicialContratoAdiciona = $fechaInicialContrato->endOfYear();
-                $fechaFinalContrato           = $fechaInicialContratoAdiciona->toDateString();	
-                $vehiculoMaxConsecutio        = Vehiculo::latest('vehiid')->first();
-                $vehiid                       = $vehiculoMaxConsecutio->vehiid;
-                $numeroContrato               = $this->obtenerConsecutivoContrato($anioActual);
+                $correoEmpresa                 = $representante->emprcorreo;
+                $nombreGerente                 = $representante->nombreGerente;
+                $correoGerente                 = $representante->perscorreoelectronico;
+                $fechaHoraActual               = Carbon::now();
+                $anioActual                    = $fechaHoraActual->year;
+                $fechaInicialContrato          = Carbon::parse($request->fechaInicialContrato);
+                //$fechaInicialContratoAdicional = $fechaInicialContrato->endOfYear();
+                //$fechaFinalContrato            = $fechaInicialContratoAdicional->toDateString();
+                $fechaFinalContrato            = $fechaInicialContrato->copy()->addYear()->startOfYear()->addDays(4)->toDateString();
+                $vehiculoMaxConsecutio         = Vehiculo::latest('vehiid')->first();
+                $vehiid                        = $vehiculoMaxConsecutio->vehiid;
+                $numeroContrato                = VehiculoContrato::obtenerConsecutivoContrato($anioActual);
 
                 $vehiculocambioestado 					 = new VehiculoCambioEstado();
                 $vehiculocambioestado->vehiid            = $vehiid;
@@ -420,14 +421,4 @@ class VehiculoController extends Controller
 			}
 		}
 	}
-
-    public function obtenerConsecutivoContrato($anioActual)
-	{
-        $consecutivoContrato = DB::table('vehiculocontrato')->select('vehconnumero as consecutivo')
-								->where('vehconanio', $anioActual)->orderBy('vehconid', 'desc')->first();
-
-        $consecutivo = ($consecutivoContrato === null) ? 1 : $consecutivoContrato->consecutivo + 1;
-
-        return str_pad($consecutivo,  4, "0", STR_PAD_LEFT);
-    }
 }
