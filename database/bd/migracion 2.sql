@@ -1643,7 +1643,6 @@ VALUES
 
 
 
-
 INSERT INTO tarifatiquete (tartiqid, rutaid, tartiqdepaidorigen, tartiqmuniidorigen, tartiqdepaiddestino, tartiqmuniiddestino, tartiqvalor, tartiqvalorseguro, tartiqvalorestampilla, tartiqfondoreposicion, tartiqvalorfondorecaudo, created_at, updated_at) VALUES
 (1, 17, 9, 405, 18, 792, 25000, 0, 0, 1.00, 200,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (2, 17, 18, 792, 9, 405, 25000, 0, 0, 1.00, 200,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
