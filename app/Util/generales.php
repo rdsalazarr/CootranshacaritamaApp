@@ -397,7 +397,7 @@ class generales
         return $nuevaFecha;
     }
 
-	function obtenerFechasCompromisoVehiculo($fecha)
+	function obtenerFechasCompromisoVehiculo1($fecha)
     {
 		$fechaInicial = Carbon::parse($fecha);
 		$fechaInicial = ($fechaInicial->day >= 5) ? $fechaInicial->addMonth() : $fechaInicial;
@@ -409,6 +409,21 @@ class generales
 
         return $fechas;
     }
+
+	function obtenerFechasCompromisoVehiculo($fecha)
+	{
+		$fechaInicial = Carbon::parse($fecha);
+		$fechaInicial = ($fechaInicial->day >= 5) ? $fechaInicial->addMonth() : $fechaInicial;
+		$fechas       = [];
+		$fechaFinal   = $fechaInicial->copy()->addYear()->month(1)->day(5); // 5 de enero del próximo año
+
+		while ($fechaInicial->lessThanOrEqualTo($fechaFinal)) {
+			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d'); // Añadir el 5 de cada mes
+			$fechaInicial->addMonth();
+		}
+
+		return $fechas;
+	}
 
 	function obtenerPrimerValorMensualidad($fechaContrato, $valorCompromiso)
     {

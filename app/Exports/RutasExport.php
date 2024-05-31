@@ -54,7 +54,7 @@ class RutasExport implements FromCollection, WithHeadings,WithProperties,WithTit
     { 
         return ['Departamento origen', 'Municipio origen','Departamento destino','Municipio destino','Ruta activa','Tiene nodos','Municipio origen del nodo',
                 'Municipio destino del nodo', 'Departamento origen del tiquete', 'Municipio origen del tiquete','Departamento destino del tiquete',
-                'Municipio destinodel tiquete','Valor tiquete', 'Valor seguro', 'Valor estampilla', 'Fondo de reposición', 'Fondo de recaudo'];
+                'Municipio destino del tiquete','Valor tiquete', 'Valor seguro', 'Valor estampilla', 'Fondo de reposición', 'Fondo de recaudo'];
     }
 
     public function collection()
@@ -92,7 +92,7 @@ class RutasExport implements FromCollection, WithHeadings,WithProperties,WithTit
         $rutaNodosArray = $rutaNodos->toArray();
 
         $tarifaTiquetes = DB::table('tarifatiquete as tt')
-                                ->select('tt.tartiqid', 
+                                ->select('tt.tartiqid', 'tt.rutaid',
                                 'do.depanombre as nombreDeptoOrigen', 'mo.muninombre as nombreMunicipioOrigen',
                                 'de.depanombre as nombreDeptoDestino', 'md.muninombre as nombreMunicipioDestino',
                                 DB::raw("CONCAT(FORMAT(tt.tartiqvalor, 0)) as valorTiquete"),
@@ -172,7 +172,11 @@ class RutasExport implements FromCollection, WithHeadings,WithProperties,WithTit
                 array_push($consulta, $array);
             }
 
-            foreach($tarifaTiquetesArray as $tarifaTiquete){
+            $tarifaTiquetesFiltrados = array_filter($tarifaTiquetesArray, function($item) use ($rutaid) { 
+                return $item->rutaid === $rutaid;
+            });
+
+            foreach($tarifaTiquetesFiltrados as $tarifaTiquete){
                 $array = [
                     "deptoOrigen"              => '',
                     "municipioOrigen"          => '',
@@ -188,7 +192,7 @@ class RutasExport implements FromCollection, WithHeadings,WithProperties,WithTit
                     "municipioDestiinoTiquete" => $tarifaTiquete->nombreMunicipioDestino,
                     "valorTiquete"             => $tarifaTiquete->valorTiquete,
                     "valorSeguro"              => $tarifaTiquete->valorSeguro,
-                    "valorEstampilla"          => $tarifaTiquete->nombreMunicipioOrigen,
+                    "valorEstampilla"          => $tarifaTiquete->valorEstampilla,
                     "valorFondoReposicion"     => $tarifaTiquete->valorFondoReposicion,
                     "valorFonfoRecaudo"        => $tarifaTiquete->valorFondoRecaudo
                 ];

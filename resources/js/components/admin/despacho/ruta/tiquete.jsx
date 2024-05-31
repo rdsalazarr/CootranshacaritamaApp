@@ -26,7 +26,7 @@ export default function Tiquete({data}){
 
     const [formDataTiquete, setFormDataTiquete] = useState({deptoIdOrigen:'',       municipioIdOrigen:'',      nombreMunicipioOrigen:'',   deptoIdDestino:'',
                                                             municipioIdDestino:'',  nombreMunicipioDestino:'', valorTiquete: '',           valorTiqueteMostrar: '',
-                                                            valorSeguro:'',         valorSeguroMostrar:'',     valorEstampilla:'0',        valorEstampillaMostrar:'',
+                                                            valorSeguro:'0',        valorSeguroMostrar:'',     valorEstampilla:'0',        valorEstampillaMostrar:'',
                                                             fondoReposicion:'1.00', valorFondoRecaudo:'200',   valorFondoRecaudoMostrar:'' });
     const [formData, setFormData]               = useState({codigo:data.rutaid});
     const [municipiosDestino, setMunicipiosDestino] = useState([]);
@@ -119,7 +119,7 @@ export default function Tiquete({data}){
 
         setFormDataTiquete({deptoIdOrigen:'',       municipioIdOrigen:'',      nombreMunicipioOrigen:'',   deptoIdDestino:'',
                             municipioIdDestino:'',  nombreMunicipioDestino:'', valorTiquete: '',           valorTiqueteMostrar: '',
-                            valorSeguro:'',         valorSeguroMostrar:'',     valorEstampilla:'0',        valorEstampillaMostrar:'',
+                            valorSeguro:'0',        valorSeguroMostrar:'',     valorEstampilla:'0',        valorEstampillaMostrar:'',
                             fondoReposicion:'1.00', valorFondoRecaudo:'200',   valorFondoRecaudoMostrar:'' });
         setTipoProceso('I');
     }
