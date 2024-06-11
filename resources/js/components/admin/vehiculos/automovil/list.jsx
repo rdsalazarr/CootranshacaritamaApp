@@ -78,7 +78,7 @@ export default function List(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), inicio();}}
+                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

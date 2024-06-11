@@ -397,7 +397,19 @@ class generales
         return $nuevaFecha;
     }
 
-	function obtenerFechasCompromisoVehiculo1($fecha)
+	function obtenerFechasCompromisoVehiculo($fecha) {
+		$fechaInicial = Carbon::parse($fecha)->addMonth()->startOfMonth(); // Primer día del mes siguiente
+		$fechaMaxima  = Carbon::now()->addYear()->startOfYear()->addDays(4);
+		$fechas       = [];
+		while ($fechaInicial <= $fechaMaxima) {
+			$fechas[] = $fechaInicial->format('Y-m-d');
+			$fechaInicial->addMonth();
+		}
+
+		return $fechas;
+	}
+
+	function obtenerFechasCompromisoVehiculoOld($fecha)
     {
 		$fechaInicial = Carbon::parse($fecha);
 		$fechaInicial = ($fechaInicial->day >= 5) ? $fechaInicial->addMonth() : $fechaInicial;
@@ -410,21 +422,6 @@ class generales
         return $fechas;
     }
 
-	function obtenerFechasCompromisoVehiculo($fecha)
-	{
-		$fechaInicial = Carbon::parse($fecha);
-		$fechaInicial = ($fechaInicial->day >= 5) ? $fechaInicial->addMonth() : $fechaInicial;
-		$fechas       = [];
-		$fechaFinal   = $fechaInicial->copy()->addYear()->month(1)->day(5); // 5 de enero del próximo año
-
-		while ($fechaInicial->lessThanOrEqualTo($fechaFinal)) {
-			$fechas[] = $fechaInicial->copy()->day(5)->format('Y-m-d'); // Añadir el 5 de cada mes
-			$fechaInicial->addMonth();
-		}
-
-		return $fechas;
-	}
-
 	function obtenerPrimerValorMensualidad($fechaContrato, $valorCompromiso)
     {
 		$fechaInicial = Carbon::parse($fechaContrato);
@@ -432,7 +429,7 @@ class generales
 		$totalDias    = $fechaInicial->diffInDays($fechaFinal);
 		$primerPago   = ($valorCompromiso / 30) * $totalDias;
 
-		return $this->redondearCienMasCercano($primerPago);		
+		return $this->redondearCienMasCercano($primerPago);
     }
 
 	function definirRangoNotificacion()

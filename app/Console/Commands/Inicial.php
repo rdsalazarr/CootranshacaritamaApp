@@ -55,13 +55,12 @@ class Inicial
             $anioActual                   = $fechaHoraActual->year;
             $fechaActual                  = $fechaHoraActual->format('Y-m-d');
             $fechaInicialContrato         = Carbon::parse($fechaActual);
-            $fechaFinalContrato           = $fechaInicialContrato->copy()->addYear()->startOfYear()->addDays(4)->toDateString();
-            $numeroContrato               = VehiculoContrato::obtenerConsecutivoContrato($anioActual);
+            $fechaFinalContrato           = $fechaInicialContrato->copy()->addYear()->startOfYear()->addDays(4)->toDateString();           
             $estado                       = 'A';
             $vehiculos                    = DB::table('vehiculo as v')->select('v.vehiid','v.asocid','v.timoveid','a.persid')
                                                 ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                                 ->where('v.tiesveid', 'A')
-                                                ->where('v.vehiid', '1')
+                                                //->where('v.vehiid', '1')
                                                 ->get();
 
             foreach($vehiculos as $vehiculo){
@@ -79,7 +78,7 @@ class Inicial
                 $vehiculocontrato->vehiid             = $vehiid;
                 $vehiculocontrato->persidgerente      = $representante->persid;
                 $vehiculocontrato->vehconanio         = $anioActual;
-                $vehiculocontrato->vehconnumero       = $numeroContrato;
+                $vehiculocontrato->vehconnumero       = VehiculoContrato::obtenerConsecutivoContrato($anioActual);
                 $vehiculocontrato->vehconfechainicial = $fechaInicialContrato;
                 $vehiculocontrato->vehconfechafinal   = $fechaFinalContrato;
                 $vehiculocontrato->vehconobservacion  = 'Se ha generado el contrato del vehículo por primera vez';

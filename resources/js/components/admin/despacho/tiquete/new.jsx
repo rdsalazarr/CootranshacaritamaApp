@@ -27,7 +27,7 @@ export default function New({data, tipo}){
                                               valorTotalSeguro:'',      valorTiqueteEditar:'',          valorSeguroEditar:'',     fondoReposicionEditar:'',
                                               valorEstampillaEditar:'', valorFondoRecaudoEditar:'',     totalPuntosAcomulados:'', enviarTiquete:'', 
                                               redimirPuntos:'',         valorPuntosAcomulados:'',        tipo:tipo});
-    
+
     const [claseDistribucionPuesto, setClaseDistribucionPuesto] = useState('distribucionPuestoGeneral' + 'Venta');
     const [mostrarRedencionPuntos, setMostrarRedencionPuntos] = useState(false);
     const [tiqueteContabilizado, setTiqueteContabilizado] = useState(false);
@@ -49,8 +49,8 @@ export default function New({data, tipo}){
     const [esEmpresa, setEsEmpresa] = useState(false);
     const [municipios, setMunicipios] = useState([]);
     const [idTiquete , setIdTiquete] = useState(0);
-    const [loader, setLoader] = useState(false);  
-    
+    const [loader, setLoader] = useState(false);
+
     const handleChange = (e) =>{
         setFormData(prev => ({...prev, [e.target.name]: e.target.value}))
     }
@@ -247,6 +247,8 @@ export default function New({data, tipo}){
         let muniIdOrigen              = planillaRutasFiltradas[0].rutamuniidorigen;
         let depaIdDestino             = planillaRutasFiltradas[0].rutadepaiddestino;
         let muniIdDestino             = planillaRutasFiltradas[0].rutamuniiddestino;
+        let municipioOrigen           = planillaRutasFiltradas[0].municipioOrigen;
+        let municipioDestino          = planillaRutasFiltradas[0].municipioDestino;
 
         const tarifaTiquetesFiltradas = tarifaTiquetes.filter(tt => tt.rutaid === rutaId && tt.tartiqdepaidorigen === depaIdOrigen && tt.tartiqmuniidorigen === muniIdOrigen 
                                                                     && tt.tartiqdepaiddestino === depaIdDestino && tt.tartiqmuniiddestino === muniIdDestino);
@@ -262,7 +264,13 @@ export default function New({data, tipo}){
         setLoader(true);
         instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {planillaId: e.target.value}).then(res=>{
             const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
-            distribucionVehiculo(distribucionVehiculosFiltrados, res.data);
+      
+            if(distribucionVehiculosFiltrados.length === 0){
+                showSimpleSnackbar("No hay un vehículo asignado disponible para esta ruta", 'error');
+                return;
+            }
+
+            asignacionVehiculo(distribucionVehiculosFiltrados, res.data);
 
             newFormData.planillaId                  = e.target.value;
             newFormData.departamentoOrigen          = depaIdOrigen;
@@ -421,7 +429,7 @@ export default function New({data, tipo}){
         setFormData(newFormData);
     }
 
-    const distribucionVehiculo = (distribucionVehiculo, puestosVendidos, puestosVendidosGeneral = []) => {
+    const asignacionVehiculo = (distribucionVehiculo, puestosVendidos, puestosVendidosGeneral = []) => {
         let totalFilas = distribucionVehiculo[0].totalFilas;
         let dataFilas  = [];
         let idColumna  = 0;
@@ -441,8 +449,8 @@ export default function New({data, tipo}){
             });
             dataFilas.push(dataColumnas);
         }
-       setDataPuestos(dataFilas);
-       setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss + 'Venta');
+        setDataPuestos(dataFilas);
+        setClaseDistribucionPuesto(distribucionVehiculo[0].tipvehclasecss + 'Venta');
     }
 
     const calcularValorTotalDescuento = (e) =>{
@@ -559,7 +567,7 @@ export default function New({data, tipo}){
                 //Dibujamos el vehiculo
                 const distribucionVehiculos          = res.distribucionVehiculos;
                 const distribucionVehiculosFiltrados = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === tiquete.vehiid);
-                distribucionVehiculo(distribucionVehiculosFiltrados, res.tiquetePuestos, res.tiquetePuestosPlanilla);
+                asignacionVehiculo(distribucionVehiculosFiltrados, res.tiquetePuestos, res.tiquetePuestosPlanilla);
             }
 
             setFormData(newFormData);
@@ -646,7 +654,7 @@ export default function New({data, tipo}){
                             color="secondary" checked={(tomarSeguro) ? true : false}/>} 
                             label="Tomar seguro"
                         />
-                    </Grid>              
+                    </Grid>
 
                 </Grid>
 
@@ -704,7 +712,7 @@ export default function New({data, tipo}){
                                     <label>Cantidad de puestos: </label>
                                     <span className='textoRojo'>{'\u00A0'+ formData.cantidadPuesto}</span>
                                 </Box>
-                            </Grid>                        
+                            </Grid>
 
                             <Grid item xl={12} md={12} sm={12} xs={12}>
                                 <Box className='frmTextoColor'>
@@ -942,9 +950,9 @@ export default function New({data, tipo}){
             </ValidatorForm>
 
             <ModalDefaultAuto
-                title   = {'Visualizar factura en PDF del tiquete'} 
+                title   = {'Visualizar factura en PDF del tiquete'}
                 content = {<VisualizarPdf id={idTiquete} />} 
-                close   = {() =>{setAbrirModal(false);}} 
+                close   = {() =>{setAbrirModal(false);}}
                 tam     = 'smallFlot'
                 abrir   = {abrirModal}
             />

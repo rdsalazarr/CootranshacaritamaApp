@@ -99,6 +99,7 @@ class TiqueteController extends Controller
 
             $planillaRutas        = DB::table('planillaruta as pr')
                                         ->select('pr.rutaid','pr.vehiid','pr.plarutid','r.rutadepaidorigen','r.rutamuniidorigen','r.rutadepaiddestino','r.rutamuniiddestino',
+                                        'mo.muninombre as municipioOrigen','md.muninombre as municipioDestino',
                                         DB::raw("CONCAT(pr.agenid,pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre, ' - ', pr.plarutfechahorasalida) as nombreRuta"))
                                         ->join('ruta as r', 'r.rutaid', '=', 'pr.rutaid')
                                         ->join('municipio as mo', function($join)
@@ -117,18 +118,19 @@ class TiqueteController extends Controller
             $distribucionVehiculos = DB::table('tipovehiculodistribucion as tvd')
                                         ->select('tvd.tivediid','tvd.tipvehid','tvd.tivedicolumna', 'tvd.tivedifila', 'tvd.tivedipuesto','tv.tipvehclasecss','v.vehiid',
                                         DB::raw('(SELECT COUNT(DISTINCT(tvd1.tivedifila)) FROM tipovehiculodistribucion as tvd1 WHERE tvd1.tipvehid = tvd.tipvehid) AS totalFilas'))
-                                        ->join('vehiculo as v', 'v.tipvehid', '=', 'tvd.tipvehid')
-                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                                        ->orderBy('tvd.tivediid')->get();
+                                        ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'tvd.tipvehid')
+                                        ->join('vehiculo as v', 'v.tipvehid', '=', 'tv.tipvehid')
+                                        ->orderBy('tvd.tivediid')
+                                        ->get();
 
             $tiquete                = [];
             $tiquetePuestos         = [];
             $tiquetePuestosPlanilla = [];
             if($request->tipo === 'U'){
                 $tiquete  = DB::table('tiquete as t')
-                                    ->select('t.tiquid','t.plarutid','t.perserid','t.tiqudepaidorigen','t.tiqumuniidorigen','t.tiqudepaiddestino','t.tiqumuniiddestino', 
+                                    ->select('t.tiquid','t.plarutid','t.perserid','t.tiqudepaidorigen','t.tiqumuniidorigen','t.tiqudepaiddestino','t.tiqumuniiddestino',
                                     't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondorecaudo','t.tiquvalorseguro','t.tiquvalorestampilla',
-                                    't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad', DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),                                    
+                                    't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad', DB::raw("if(t.tiqucontabilizado = 1 ,'SI', 'NO') as contabilizado"),
                                     'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido','ps.perserpermitenotificacion',
                                     'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'pr.vehiid','pr.rutaid')
                                     ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
