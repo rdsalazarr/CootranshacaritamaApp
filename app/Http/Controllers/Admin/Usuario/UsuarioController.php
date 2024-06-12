@@ -39,7 +39,7 @@ class UsuarioController extends Controller
 		$this->validate(request(),['codigo' => 'required','tipo' => 'required']);
 		try{
 			$tipoIdentificaciones = DB::table('tipoidentificacion')->select('tipideid','tipidenombre')->get();
-			$roles                = DB::table('rol')->select('rolid','rolnombre')->orderBy('rolnombre')->get();
+			$roles                = DB::table('rol')->select('rolid','rolnombre')->where('rolid', '<>', 1)->orderBy('rolnombre')->get();
 			$cajas                = DB::table('caja')->select('cajaid','cajanumero')->orderBy('cajaid')->get();
 			$agencias             = DB::table('agencia')->select('agenid','agennombre')->where('agenactiva', true)->orderBy('agennombre')->get();
 			$usuariosRoles        = [];

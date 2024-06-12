@@ -162,7 +162,9 @@ export default function Tiquete({data}){
         const resultadoTarifaTiquetes         = tarifaTiquetes.filter((tarifa) => tarifa.identificador == id);
         let newFormDataTiquete                = {...formDataTiquete}
         newFormDataTiquete.identificador      = resultadoTarifaTiquetes[0].identificador;
+        newFormDataTiquete.deptoIdOrigen      = resultadoTarifaTiquetes[0].deptoIdOrigen;
         newFormDataTiquete.municipioIdOrigen  = resultadoTarifaTiquetes[0].municipioIdOrigen;
+        newFormDataTiquete.deptoIdDestino     = resultadoTarifaTiquetes[0].deptoIdDestino;
         newFormDataTiquete.municipioIdDestino = resultadoTarifaTiquetes[0].municipioIdDestino;
         newFormDataTiquete.valorTiquete       = resultadoTarifaTiquetes[0].valorTiquete;
         newFormDataTiquete.valorSeguro        = resultadoTarifaTiquetes[0].valorSeguro;
@@ -186,7 +188,7 @@ export default function Tiquete({data}){
 
             let newValorTiquetes = [];
             tarifaTiquetes.forEach(function(tiq){
-                const municipioOrigenEncontrado = municipioRutas.find(mun => mun.muniid === tiq.tartiqmuniidorigen);
+                const municipioOrigenEncontrado  = municipioRutas.find(mun => mun.muniid === tiq.tartiqmuniidorigen);
                 const municipioDestinoEncontrado = municipioRutas.find(mun => mun.muniid === tiq.tartiqmuniiddestino);
                 if(municipioOrigenEncontrado){
                     newValorTiquetes.push({
@@ -361,8 +363,8 @@ export default function Tiquete({data}){
                                             <TableCell>Valor estampilla</TableCell>
                                             <TableCell>Fondo de reposición</TableCell>
                                             <TableCell>Fondo de recaudo</TableCell>
-                                            <TableCell style={{width: '10%'}} className='cellCenter'>Editar </TableCell>
-                                            <TableCell style={{width: '10%'}} className='cellCenter'>Eliminar </TableCell>
+                                            <TableCell style={{width: '7%'}} className='cellCenter'>Editar </TableCell>
+                                            <TableCell style={{width: '7%'}} className='cellCenter'>Eliminar </TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>

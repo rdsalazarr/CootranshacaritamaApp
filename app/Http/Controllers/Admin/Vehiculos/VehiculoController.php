@@ -284,8 +284,8 @@ class VehiculoController extends Controller
         $this->validate(request(),['vehiculoId' => 'required']);
         try{
             $url      = URL::to('/');
-            $vehiculo = DB::table('vehiculo as v')
-                            ->select('tv.tipvehnombre as tipoVehiculo', 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
+            $vehiculo = DB::table('vehiculo as v')            
+                            ->select(DB::raw("CONCAT(tv.tipvehnombre,' ', tv.tipvehreferencia) as tipoVehiculo"), 'trv.tirevenombre as tipoReferencia','tmv.timavenombre as tipoMarca',
                                     'tcv.ticovenombre as tipoColor','tmvh.timovenombre as tipoModalidad','tcrh.ticavenombre as tipoCarroceria',
                                     'tcvh.ticovhnombre as tipoCombustible','a.agennombre as agencia','v.vehiobservacion',
                                     'v.tiesveid','v.vehifechaingreso','v.vehinumerointerno','v.vehiplaca','v.vehimodelo','v.vehicilindraje',
@@ -295,7 +295,7 @@ class VehiculoController extends Controller
                                     DB::raw("if(v.vehiesserieregrabado = 1 ,'Sí', 'No') as serieRegrabado"),
                                     DB::raw("CONCAT('$url/archivos/vehiculo/', v.vehiplaca, '/', v.vehirutafoto ) as rutaFotografia"),
                                     DB::raw('(SELECT COUNT(vecaesid) AS vecaesid FROM vehiculocambioestado WHERE vehiid = v.vehiid ) AS totalCambioEstadoVehiculo'),
-                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"),                                                    
+                                    DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombreAsociado"), 
                                     DB::raw('(SELECT COUNT(soliid) AS soliid FROM solicitud WHERE vehiid = v.vehiid ) AS totalSolicitudVehiculo'))
                             ->join('asociado as aso', 'aso.asocid', '=', 'v.asocid')
                             ->join('persona as p', 'p.persid', '=', 'aso.persid')

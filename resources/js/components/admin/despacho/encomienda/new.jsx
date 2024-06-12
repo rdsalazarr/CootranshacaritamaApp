@@ -180,8 +180,8 @@ export default function New({data, tipo}){
         let muniIdOrigen                = planillaRutasFiltradas[0].rutamuniidorigen;
         let depaIdDestino               = planillaRutasFiltradas[0].rutadepaiddestino;
         let muniIdDestino               = planillaRutasFiltradas[0].rutamuniiddestino;
-        let rutaId                      = e.target.value;
-        newFormData.ruta                = rutaId;
+        let rutaId                      = planillaRutasFiltradas[0].rutaid; 
+        newFormData.ruta                = e.target.value;
         newFormData.municipioOrigen     = muniIdOrigen;
         newFormData.departamentoOrigen  = depaIdOrigen;
         newFormData.departamentoDestino = depaIdDestino;

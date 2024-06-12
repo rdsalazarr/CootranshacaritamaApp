@@ -65,8 +65,8 @@ export default function New({data, tipo}){
 
     const handleChangeTomarSeguro = (e) => {
         setTomarSeguro(e.target.checked);
-        let valorTiquete               = Number(formData.valorTiquete);
-        let valorSeguro                = Number(formData.valorSeguro);
+        let valorTiquete = (tipo === 'U') ? formData.valorTiqueteEditar : formData.valorTiquete;
+        let valorSeguro  = (tipo === 'U') ? formData.valorSeguroEditar : formData.valorSeguro;
         let valorDescuento             = Number(formData.valorDescuento)
         let cantidadPuesto             = formData.cantidadPuesto;
         let valorSeguroPuesto          = valorSeguro * cantidadPuesto;
@@ -143,7 +143,7 @@ export default function New({data, tipo}){
         newFormData.enviarTiquete   = (enviarTiquete) ? 'SI' : 'NO'; 
         newFormData.redimirPuntos   = (redimirPuntos) ? 'SI' : 'NO'; 
         newFormData.puestosVendidos = formDataPuesto;
-        
+
         if(formDataPuesto.length === 0){
             showSimpleSnackbar('Por favor, seleccione al menos un puesto del vehículo', 'error');
             return;
@@ -264,9 +264,10 @@ export default function New({data, tipo}){
         setLoader(true);
         instance.post('/admin/despacho/tiquete/consultar/ventas/realizadas', {planillaId: e.target.value}).then(res=>{
             const distribucionVehiculosFiltrados  = distribucionVehiculos.filter(vehiculo => vehiculo.vehiid === vehiculoId);
-      
+
             if(distribucionVehiculosFiltrados.length === 0){
-                showSimpleSnackbar("No hay un vehículo asignado disponible para esta ruta", 'error');
+                showSimpleSnackbar("No hay un vehículo disponible asignado a esta ruta o aún no se ha establecido una distribución", 'error');
+                setLoader(false);
                 return;
             }
 
@@ -496,24 +497,24 @@ export default function New({data, tipo}){
                 newFormData.direccion                   = tiquete.perserdireccion;
                 newFormData.correo                      = (tiquete.persercorreoelectronico !== null) ? tiquete.persercorreoelectronico : '';
                 newFormData.telefonoCelular             = tiquete.persernumerocelular;
-                newFormData.departamentoOrigen          = tiquete.tartiqdepaidorigen;
+                newFormData.departamentoOrigen          = tiquete.tiqudepaidorigen;
                 newFormData.municipioOrigen             = tiquete.tiqumuniidorigen;
-                newFormData.departamentoDestino         = tiquete.tartiqdepaiddestino;
+                newFormData.departamentoDestino         = tiquete.tiqudepaiddestino;
                 newFormData.municipioDestino            = tiquete.tiqumuniiddestino;
                 newFormData.rutaId                      = tiquete.rutaid;
                 newFormData.planillaId                  = tiquete.plarutid;
                 newFormData.cantidadPuesto              = tiquete.tiqucantidad;
                 newFormData.valorTiquete                = tiquete.tiquvalortiquete;
-                newFormData.valorDescuento              = tiquete.tiquvalordescuento;
-                newFormData.valorFondoReposicion        = tiquete.tiquvalorfondoreposicion;
-                newFormData.valorTotal                  = tiquete.tiquvalortotal;
-                newFormData.valorEstampilla             = tiquete.tiquvalorestampilla;
-                newFormData.valorTiqueteMostrar         = FormatearNumero({numero: tiquvalortiquete});
-                newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: tiquvalorfondoreposicion});
-                newFormData.valorTotalTiquete           = FormatearNumero({numero: tiquvalortotal});
-                newFormData.valorFondoRecaudoTotal      = tiquete.tiquvalorfondorecaudo;
-                newFormData.valorSeguroMostrar          = tiquete.tiquvalorseguro;
-                newFormData.valorEstampilla             = tiquete.tiquvalorestampilla;
+                newFormData.valorDescuento              = (tiquete.tiquvalordescuento !== null) ? tiquete.tiquvalordescuento : '';
+                newFormData.valorFondoReposicion        = Number(tiquete.tiquvalorfondoreposicion);
+                newFormData.valorTotal                  = Number(tiquete.tiquvalortotal);
+                newFormData.valorEstampilla             = Number(tiquete.tiquvalorestampilla);
+                newFormData.valorTotalEstampilla        = Number(tiquete.tiquvalorestampilla) * tiquete.tiqucantidad;
+                newFormData.valorTiqueteMostrar         = FormatearNumero({numero: tiquete.tiquvalortiquete});
+                newFormData.valorFondoReposicionMostrar = FormatearNumero({numero: tiquete.tiquvalorfondoreposicion});
+                newFormData.valorTotalTiquete           = FormatearNumero({numero: tiquete.tiquvalortotal});
+                newFormData.valorFondoRecaudoTotal      = Number(tiquete.tiquvalorfondorecaudo);
+                newFormData.valorSeguroMostrar          = Number(tiquete.tiquvalorseguro);
 
                 const tarifaTiquetesFiltradas           = res.tarifaTiquetes.filter(tt => tt.rutaid === tiquete.rutaid  && tt.tartiqdepaidorigen === tiquete.tiqudepaidorigen && tt.tartiqmuniidorigen === tiquete.tiqumuniidorigen  &&
                                                                                     tt.tartiqdepaiddestino === tiquete.tiqudepaiddestino && tt.tartiqmuniiddestino === tiquete.tiqumuniiddestino);

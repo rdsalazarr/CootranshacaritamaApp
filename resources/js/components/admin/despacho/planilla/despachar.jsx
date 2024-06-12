@@ -11,9 +11,10 @@ import VisualizarPdf from './visualizarPdf';
 export default function Despachar({data}){
 
     const [formData, setFormData] = useState({codigo:data.plarutid, numeroPlanilla:'', fechaRegistro:'', fechaSalida:'', ruta:'', vehiculo:'', conductor: ''});
+    const [resumenPlanilla, setResumenPlanilla] = useState([]);
     const [abrirModal, setAbrirModal] = useState(false);
     const [habilitado, setHabilitado] = useState(true);
-    const [encomiendas, setEncomiendas] = useState([]);
+    const [encomiendas, setEncomiendas] = useState([]);    
     const [tiquetes, setTiquetes] = useState([]);
     const [loader, setLoader] = useState(false);
     
@@ -42,6 +43,7 @@ export default function Despachar({data}){
             newFormData.totalEncomiendas = planillaRuta.totalEncomiendas;
             newFormData.totalTiquete     = planillaRuta.totalTiquete;
 
+            setResumenPlanilla(res.resumenPlanilla);
             setEncomiendas(res.encomiendas);
             setTiquetes(res.tiquetes);
             setFormData(newFormData);
@@ -260,7 +262,50 @@ export default function Despachar({data}){
                             </Grid>
                         </Fragment>
                     : null}
-          
+
+                    <Grid item xl={5} md={5} sm={4} xs={2}></Grid>
+                    <Grid item xl={7} md={7} sm={8} xs={10}>
+                        <Box className='divisionFormulario'>
+                            Resumen de la información para ser entregados al conductor
+                        </Box>
+                        <Table key={'tablePersona'} className={'tableAdicional'} sx={{width: '98%', margin:'auto'}} sm={{maxHeight: '99%', margin:'auto'}}>                                                       
+                            <TableBody> 
+                                <TableCell>
+                                    Valor pasajes
+                                </TableCell>
+                                <TableCell>
+                                    {resumenPlanilla.valorTiquete}
+                                </TableCell>
+                            </TableBody>
+                            {(resumenPlanilla.valorEncomiendaVehiculo > 0) ?
+                                <TableBody> 
+                                    <TableCell>
+                                        Comisión encomienda
+                                    </TableCell>
+                                    <TableCell>
+                                        {resumenPlanilla.valorEncomiendaVehiculo}
+                                    </TableCell>
+                                </TableBody>
+                            : null}
+                            <TableBody> 
+                                <TableCell>
+                                    Descuento fondo recaudo
+                                </TableCell>
+                                <TableCell>
+                                    {resumenPlanilla.valorFondoRecaudo}
+                                </TableCell>
+                            </TableBody>
+
+                            <TableBody> 
+                                <TableCell>
+                                    Total a entregar
+                                </TableCell>
+                                <TableCell>
+                                    {resumenPlanilla.valorEntregar}
+                                </TableCell>
+                            </TableBody>
+                        </Table> 
+                    </Grid>          
                 </Grid>
 
                 <Grid container direction="row"  justifyContent="right">

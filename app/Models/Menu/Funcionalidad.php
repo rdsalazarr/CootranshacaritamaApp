@@ -25,7 +25,7 @@ class Funcionalidad extends Model
                     ->join('usuariorol as ur','ur.usurolrolid','=','rf.rolfunrolid')
                     ->where('ur.usurolusuaid', Auth::id());
 
-                if(Auth::id() != 1)
+                if(Auth::id() != 2)
                     $consultaModulos = $consultaModulos->where('m.moduactivo', 1);
                 
                 $modulos =  $consultaModulos->orderby('m.moduorden')->orderBy('m.modunombre')->get();
@@ -40,7 +40,7 @@ class Funcionalidad extends Model
                     ->join('usuariorol as ur','ur.usurolrolid','=','rf.rolfunrolid')  
                     ->where('ur.usurolusuaid', Auth::id());
 
-                if(Auth::id() != 1)
+                if(Auth::id() != 2)
                     $consultaMenu = $consultaMenu->where('f.funcactiva', 1);
 
                 $menus = $consultaMenu->orderby('f.funcorden')->orderBy('f.funcnombre')->get();

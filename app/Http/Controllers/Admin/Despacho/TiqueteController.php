@@ -33,7 +33,7 @@ class TiqueteController extends Controller
                             ->select('t.tiquid','pr.rutaid', 't.tiqufechahoraregistro as fechaHoraRegistro','pr.plarutfechahorasalida as fechaSalida',
                             'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino','t.plarutid',
                             DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                            DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            DB::raw("CONCAT(t.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                             DB::raw("CONCAT(ps.perserprimernombre,' ',IFNULL(ps.persersegundonombre,''),' ',ps.perserprimerapellido,' ',IFNULL(ps.persersegundoapellido,'')) as nombreCliente"))
                             ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
                             ->join('municipio as mo', function($join)
@@ -49,7 +49,10 @@ class TiqueteController extends Controller
                             ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                             ->join('vehiculo as v', 'v.vehiid', '=', 'pr.vehiid')
                             ->join('tipovehiculo as tv', 'tv.tipvehid', '=', 'v.tipvehid')
-                            ->where('pr.agenid', auth()->user()->agenid)
+                            ->where(function ($query) {
+                                $query->where('pr.agenid', auth()->user()->agenid)
+                                      ->orWhere('t.usuaid', Auth::id());
+                            })
                             ->where('pr.plarutdespachada', $rutaDespachada);
 
                             if($rutaDespachada)
@@ -161,8 +164,7 @@ class TiqueteController extends Controller
         try{
             $data  = DB::table('tiquete as t')
                         ->select('tp.tiqpueid','tp.tiqpuenumeropuesto')
-                        ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 'tp.tiquid')
-                        ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
+                        ->join('tiquetepuesto as tp', 'tp.tiquid', '=', 't.tiquid')
                         ->where('t.plarutid', $request->planillaId)->get();
 
             return response()->json(['success' => (count($data) > 0) ? true : false, 'data' => $data]);
@@ -276,7 +278,7 @@ class TiqueteController extends Controller
             $tiquete->tiquvalorfondoreposicion = $valorFondoReposicion;
             $tiquete->tiquvalorfondorecaudo    = $valorFondoRecaudo;
             $tiquete->tiquvalorpuntosredimido  = $valorPuntosRedimidos;
-            $tiquete->tiquvalortotal           = $valorContabilizar - $valorPuntosRedimidos;
+            $tiquete->tiquvalortotal           = $valorContabilizar - $valorPuntosRedimidos ;//- $valorFondoRecaudo
             $tiquete->tiqucontabilizado        = ($valorPuntosRedimidos > 0 ) ? 1 : 0; 
 			$tiquete->save();
 
@@ -347,7 +349,7 @@ class TiqueteController extends Controller
                         $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
                         $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
                         $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
-                        $comprobantecontabledetalle->save();  
+                        $comprobantecontabledetalle->save();
                     }
 
                     if($valorSeguro > 0){
@@ -432,7 +434,8 @@ class TiqueteController extends Controller
                         ->select('t.tiquid', 't.tiquvalortiquete','t.tiquvalordescuento', 't.tiquvalorfondoreposicion','t.tiquvalortotal','t.tiqucantidad','t.tiquvalorseguro','t.tiquvalorestampilla',
                         DB::raw("CONCAT(pr.agenid, '-', pr.plarutconsecutivo,' - ', mo.muninombre,' - ', md.muninombre) as nombreRuta"), 't.plarutid', 'pr.vehiid','tt.tartiqvalorseguro',
                         'dd.depanombre as deptoDestino', 'mde.muninombre as municipioDestino', 'ps.tipideid','ps.perserdocumento','ps.perserprimernombre','ps.persersegundonombre','ps.perserprimerapellido',
-                        'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'ti.tipidenombre as tipoIdentificacion')
+                        'ps.persersegundoapellido','ps.perserdireccion', 'ps.persercorreoelectronico','ps.persernumerocelular', 'ti.tipidenombre as tipoIdentificacion',
+                        't.tiqudepaidorigen', 't.tiqumuniidorigen',  't.tiqudepaiddestino','t.tiqumuniiddestino')
                         ->join('personaservicio as ps', 'ps.perserid', '=', 't.perserid')
                         ->join('tipoidentificacion as ti', 'ti.tipideid', '=', 'ps.tipideid')
                         ->join('planillaruta as pr', 'pr.plarutid', '=', 't.plarutid')
@@ -489,7 +492,7 @@ class TiqueteController extends Controller
 
     public function generarFacturaPdf($tiquid, $metodo = 'S'){
         $tiquete  = DB::table('tiquete as t')
-                            ->select('t.tiqufechahoraregistro', DB::raw("CONCAT(pr.agenid,t.tiquanio,'',t.tiquconsecutivo) as numeroTiquete"),
+                            ->select('t.tiqufechahoraregistro', DB::raw("CONCAT(t.agenid,t.tiquanio,'',t.tiquconsecutivo) as numeroTiquete"),
                             't.tiquvalortiquete', 't.tiquvalordescuento','t.tiquvalortotal','t.tiquvalorseguro','t.tiquvalorestampilla',
                             DB::raw("CONCAT(mo.muninombre,' - ', md.muninombre) as nombreRuta"),
                            'mor.muninombre as municipioOrigen',  'mde.muninombre as municipioDestino',

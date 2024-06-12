@@ -66,7 +66,7 @@ class TiqueteExport implements FromCollection, WithHeadings,WithProperties,WithT
                             ->select('t.tiqufechahoraregistro','pr.plarutfechahorasalida',
                             'mo.muninombre as municipioOrigen', 'md.muninombre as municipioDestino',
                             DB::raw("CONCAT(tv.tipvehnombre,' ',v.vehiplaca,' ',v.vehinumerointerno) as nombreVehiculo"),
-                            DB::raw("CONCAT(pr.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
+                            DB::raw("CONCAT(t.agenid, t.tiquanio, t.tiquconsecutivo) as numeroTiquete"),
                             DB::raw("CONCAT(ps.perserprimernombre,' ',IFNULL(ps.persersegundonombre,''),' ',ps.perserprimerapellido,' ',IFNULL(ps.persersegundoapellido,'')) as nombreCliente"),
                             't.tiquvalortiquete','t.tiquvalordescuento','t.tiquvalorseguro','t.tiquvalorestampilla','t.tiquvalorfondoreposicion','t.tiquvalortotal',
                             DB::raw("if(t.tiqucontabilizado = 1 ,'Sí', 'No') as contabilizado"),'ag.agennombre')
