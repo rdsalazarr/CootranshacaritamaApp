@@ -1,5 +1,6 @@
 import React, {useState, useEffect, Fragment} from 'react';
 import { Box, Grid, Card, Typography, Button, ButtonGroup} from '@mui/material';
+import {CerrarCaja, ContabilizarTiquete} from '../../../layout/modalFijas';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import showSimpleSnackbar from '../../../layout/snackBar';
@@ -8,8 +9,7 @@ import TablaGeneral from '../../../layout/tablaGeneral';
 import instanceFile from '../../../layout/instanceFile';
 import VisualizarPdf from '../movimiento/visualizarPdf';
 import {FormatearNumero} from "../../../layout/general";
-import LocalAtmIcon from '@mui/icons-material/LocalAtm'
-import {CerrarCaja} from '../../../layout/modalFijas';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import {LoaderModal} from "../../../layout/loader";
 import CloseIcon from '@mui/icons-material/Close';
 import instance from '../../../layout/instance';
@@ -32,29 +32,25 @@ export default function Closed(){
         edit(dataFactura, 1);
     }
 
+    const ejecutarInicio = () =>{
+        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+        inicio();
+    }
+
     const modales     = [<CerrarCaja saldoCerrar={modal.data} cerrarModal={cerrarModal} mostrarComprobante={mostrarComprobante} />, 
-                        <VisualizarPdf dataFactura={modal.data} />  ];
+                        <VisualizarPdf dataFactura={modal.data} />,
+                        <ContabilizarTiquete cerrarModal={cerrarModal} ejecutarInicio={ejecutarInicio} /> ];
 
     const tituloModal = ['Cerrar caja para el día de hoy',
                         'Visualizar comprobante contable en PDF'];
 
     const edit = (data, tipo) =>{
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0) ? 'smallFlot' : 'mediumFlot'});
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 || tipo === 2 ) ? 'smallFlot' : 'mediumFlot'});
     }
 
     const descargarFile = () =>{
         setLoader(true);
         instanceFile.post('/admin/exportar/datos/movimiento/diarios').then(res=>{
-            setLoader(false);
-        })
-    }
-
-    const contabilizarTiquete = () =>{
-        setLoader(true);
-        instance.post('/admin/caja/contabilizar/tiquetes').then(res=>{
-            let icono = (res.success) ? 'success' : 'error';
-            showSimpleSnackbar(res.message, icono);
-            (res.success) ? inicio() : null;
             setLoader(false);
         })
     }
@@ -164,7 +160,7 @@ export default function Closed(){
                                         </Grid>
 
                                         <Grid item xl={3} md={3} sm={6} xs={12}>
-                                            <Button key="1" startIcon={<LocalAtmIcon />} onClick={() => {contabilizarTiquete()}}>Contabilizar tiquete</Button>,
+                                            <Button key="1" startIcon={<LocalAtmIcon />} onClick={() => {edit('', 2)}} >Contabilizar tiquete</Button>,
                                         </Grid>
                                     </Fragment>
                                 : null }
@@ -178,7 +174,7 @@ export default function Closed(){
                             >
                                 {buttons}
                             </ButtonGroup>
-                        </Grid>                       
+                        </Grid>
 
                     </Grid>
 

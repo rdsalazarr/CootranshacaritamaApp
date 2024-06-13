@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Usuario;
 
+use App\Models\Usuario\IntentosFallidos;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario\UsuarioRol;
 use Exception, Auth, DB, URL;
@@ -65,8 +66,7 @@ class UsuarioController extends Controller
 
 		$personas = DB::table('persona')->select('persid', DB::raw("CONCAT(persprimernombre,' ',if(perssegundonombre is null ,'', perssegundonombre)) as nombres"),
 															DB::raw("CONCAT(persprimerapellido,' ',if(perssegundoapellido is null ,'', perssegundoapellido)) as apellidos"),
-															'perscorreoelectronico','persgenero','persprimernombre','persprimerapellido'
-															)
+															'perscorreoelectronico','persgenero','persprimernombre','persprimerapellido')
 														->where('tipideid', $request->tipoIdentificacion)
 														->where('persdocumento', $request->documento)->first();
 		$array = ($personas !== null) ? ['success' => true,'personas' => $personas] : ['success' => false,'message' => 'No se encontró la persona. Por favor adicione la persona primero'];
@@ -111,7 +111,7 @@ class UsuarioController extends Controller
 			$usuario->usuabloqueado       = $request->bloqueado;
 			$usuario->cajaid              = ($request->caja !== '99') ? $request->caja : null;
 			$usuario->usuaactivo          = $request->estado;
-            ($request->tipo  === 'I' ) ? $usuario->password = bcrypt($request->documento): '';
+            ($request->tipo  === 'I' or $request->cambiarPassword) ? $usuario->password = bcrypt($request->documento): '';
             $usuario->save();
 
 			if($request->tipo  === 'I'){
@@ -136,25 +136,34 @@ class UsuarioController extends Controller
 				}
 			}
 
+			if($request->cambiarPassword){
+				$intentosfallidos = DB::table('intentosfallidos')->select('intfalid')->where('intfalusurio', $nickUsuario)->get();
+				if($intentosfallidos){
+					foreach($intentosfallidos as $intentofallido){
+						$intentosfallidosUser = IntentosFallidos::findOrFail($intentofallido->intfalid);
+						$intentosfallidosUser->delete();
+					}
+				}
+			}
+
 			$mensajeCorreo      = '';
 			if ($request->tipo  === 'I' ){
 				$notificar         = new notificar();
 				$nombreUsuario     = $nombre.' '. $apellido;
 
 				$empresa           = DB::table('empresa as e')
-										->select('e.emprnombre','e.emprsigla','e.emprcorreo',
-												DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
-												 p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombrePersona"))
-										->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
-										->where('e.emprid', 1)->first();
+									->select('e.emprnombre','e.emprsigla','e.emprcorreo',
+										DB::raw("CONCAT(p.persprimernombre,' ',IFNULL(p.perssegundonombre,''),' ',p.persprimerapellido,' ',IFNULL(p.perssegundoapellido,'')) as nombrePersona"))
+									->join('persona as p', 'p.persid', '=', 'e.persidrepresentantelegal')
+									->where('e.emprid', 1)->first();
 
+				$email             = $request->correo;
 				$siglaCooperativa  = $empresa->emprsigla;
 				$nombreEmpresa     = $empresa->emprnombre;
-				$contrasenaSistema = $request->documento; 
-				$email             = $request->correo; 
-				$urlSistema        =  URL::to('/');
+				$contrasenaSistema = $request->documento;
 				$emailEmpresa      = $empresa->emprcorreo;
 				$nombreGerente     = $empresa->nombrePersona;
+				$urlSistema        =  URL::to('/');
 
 				$informacioncorreo = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'registroUsuario')->first();
 				$buscar            = Array('siglaCooperativa', 'nombreUsuario', 'usuarioSistema', 'nombreEmpresa','contrasenaSistema','urlSistema','nombreGerente');

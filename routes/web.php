@@ -611,4 +611,3 @@ Route::get('/Mantenimiento', [MantenimientoController::class, 'down']);
 Route::get('/Up/Mantenimiento', [MantenimientoController::class, 'up']);
 Route::get('/Correo', [MantenimientoController::class, 'email']);
 Route::get('/Generar/Pdf', [MantenimientoController::class, 'Pdf']);
-

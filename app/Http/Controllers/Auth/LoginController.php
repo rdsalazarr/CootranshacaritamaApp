@@ -20,10 +20,11 @@ class LoginController extends Controller
       'password' => 'required|string|min:6'
     ]);
 
+    $generales   = new generales();
+
     if (Auth::attempt(['usuanick' => $request->usuario, 'password' => $request->password, 'usuaactivo' => 1, 'usuabloqueado' => 0]))
     {
       //registro el ingreso al sistema
-      $generales       = new generales();
       $ingresosistema  = new IngresoSistema();
       $ingresosistema->usuaid                 = Auth::id();
       $ingresosistema->ingsisipacceso         = $generales->optenerIP();

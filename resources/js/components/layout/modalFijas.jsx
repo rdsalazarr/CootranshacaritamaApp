@@ -1300,3 +1300,51 @@ export function CerrarCaja({saldoCerrar, cerrarModal, mostrarComprobante}){
         </Grid>
     )
 }
+
+export function ContabilizarTiquete({cerrarModal, ejecutarInicio}){
+    const [habilitado, setHabilitado] = useState(true);
+    const [loader, setLoader] = useState(false);
+
+    const continuar = () =>{
+        setLoader(true);   
+        instance.post('/admin/caja/contabilizar/tiquetes').then(res=>{
+            let icono = (res.success) ? 'success' : 'error';
+            showSimpleSnackbar(res.message, icono);
+            (res.success) ? (ejecutarInicio(), setHabilitado(false)) : null;
+            setLoader(false);
+        })
+    }
+
+    if(loader){
+        return <LoaderModal />
+    }
+
+    return ( 
+        <Grid container spacing={2}>
+
+            <Grid item xl={2} md={2} sm={2} xs={2}>
+                <Box className='animate__animated animate__rotateIn'>
+                    <Avatar style={{marginTop: '0.8em', width:'60px', height:'60px', backgroundColor: '#fdfdfd', border: 'solid 3px #d3cccc'}}> <img src={cerrarCaja} style={{width: '80%', height: '80%', objectFit: 'cover', padding: '5px 5px 10px 10px'}} /> </Avatar>  
+                </Box>
+            </Grid>
+
+            <Grid item xl={10} md={10} sm={10} xs={10}>
+                <p style={{color: 'rgb(149 149 149)',  fontWeight: 'bold', fontSize: '1.2em', textAlign: 'center'}}>
+                    ¿Está seguro de que desea contabilizar los tiquetes pendientes?
+                </p>
+            </Grid>
+
+            <Grid item xl={6} md={6} sm={6} xs={6}>
+                <Button onClick={cerrarModal} className='modalBtnRojo floatBtnRojo' disabled={(habilitado) ? false : true}
+                    startIcon={<ClearIcon />}> Cancelar
+                </Button>
+            </Grid>
+
+            <Grid item xl={6} md={6} sm={6} xs={6}>
+                <Button onClick={continuar} className='modalBtn' disabled={(habilitado) ? false : true}
+                    startIcon={<SaveIcon />}> Continuar
+                </Button>
+            </Grid>
+        </Grid>
+    )
+}

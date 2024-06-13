@@ -170,7 +170,7 @@ class CerrarMovimientoController extends Controller
                 $valorContabilizarEstampilla            += $tiqueteEstado->tiquvalorestampilla;
                 $valorContabilizarSeguro                += $tiqueteEstado->tiquvalorseguro;
                 $valorContabilizarFondoRecaudo          += $tiqueteEstado->tiquvalorfondorecaudo;
-                $tiqueteContabilizado                   = Tiquete::findOrFail($tiqueteEstado->tiquid); 
+                $tiqueteContabilizado                    = Tiquete::findOrFail($tiqueteEstado->tiquid); 
                 $tiqueteContabilizado->tiqucontabilizado = true;
                 $tiqueteContabilizado->save();
             }

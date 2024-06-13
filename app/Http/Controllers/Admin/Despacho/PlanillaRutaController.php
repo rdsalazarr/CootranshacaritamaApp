@@ -230,34 +230,34 @@ class PlanillaRutaController extends Controller
 
         DB::beginTransaction();
         try {
-            //Verifico que no existan tiquete sin contabilizar de otra agencia
-            
-
-
-            $tiquete = DB::table('tiquete')
-                            ->select('plarutid', DB::raw('SUM(tiquvalortotal) as valorContabilizar'),
-                            DB::raw('SUM(tiquvalorfondoreposicion) as valorContabilizarFondoReposicion'),
-                            DB::raw('SUM(tiquvalorestampilla) as valorContabilizarEstampilla'),
-                            DB::raw('SUM(tiquvalorseguro) as valorContabilizarSeguro'),
-                            DB::raw('SUM(tiquvalorfondorecaudo) as valorContabilizarFondoRecaudo'))
-                        ->where('plarutid', $request->codigo)
-                        ->where('tiqucontabilizado', 0)
-                        ->groupBy('plarutid')
-                        ->first();
-
             $generales            = new generales();
             $fechaHoraActual      = Carbon::now();
             $fechaActual          = $fechaHoraActual->format('Y-m-d');
-            $cajaAbierta          = MovimientoCaja::verificarCajaAbierta();
-            $valorContabilizar    = $generales->redondearCienMasCercano($tiquete->valorContabilizar);
-            $valorFondoReposicion = $generales->redondearCienMasCercano($tiquete->valorContabilizarFondoReposicion);
-            $valorEstampilla      = $generales->redondearCienMasCercano($tiquete->valorContabilizarEstampilla);
-            $valorSeguro          = $generales->redondearCienMasCercano($tiquete->valorContabilizarSeguro);
-            $valorFondoRecaudo    = $generales->redondearCienMasCercano($tiquete->valorContabilizarFondoRecaudo);
-            $valorTiquete         = $generales->redondearCienMasCercano($valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro - $valorFondoRecaudo);
 
-            if($tiquete and !$cajaAbierta){
-                return response()->json(['success' => false, 'message'=> 'Lo sentimos, no es posible despachar un vehículo sin antes haber abierto la caja para el día de hoy']);
+            //Verifico que no existan tiquete sin contabilizar de otra agencia
+            $tiquetesAgencias = DB::table('tiquete as t')->distinct()
+                                ->select('t.agenid', 't.usuaid', 'u.cajaid', 'a.agennombre',
+                                        DB::raw("CONCAT(u.usuanombre,' ',u.usuaapellidos) as nombreUsuario"),
+                                        DB::raw("IFNULL(mc.movcajfechahoraapertura, 'NO') as cajaAbierta"))
+                                ->join('usuario as u', 'u.usuaid', '=', 't.usuaid')
+                                ->join('agencia as a', 'a.agenid', '=', 'u.agenid')
+                                ->leftJoin('movimientocaja as mc', function ($join) use ($fechaActual) {
+                                    $join->on('mc.usuaid', '=', 'u.usuaid')
+                                        ->on('mc.cajaid', '=', 'u.cajaid')
+                                        ->whereDate('mc.movcajfechahoraapertura', $fechaActual)
+                                        ->whereNull('mc.movcajsaldofinal');
+                                })
+                                ->where('t.tiqucontabilizado', 0)
+                                ->where('t.plarutid', $request->codigo)
+                                ->whereNull('mc.movcajfechahoraapertura')
+                                ->get();
+            foreach ($tiquetesAgencias as $tiqueteAgencia) {
+                $nombreUsuario = $tiqueteAgencia->nombreUsuario;
+                $nombreAgencia = $tiqueteAgencia->agennombre;
+
+                if ($tiqueteAgencia->cajaAbierta === 'NO') {
+                    return response()->json(['success' => false, 'message'=> 'No es posible proceder con la salida del vehículo. Hemos observado que el usuario '.$nombreUsuario.', perteneciente a la '.$nombreAgencia.', no tiene su caja activa para el día de hoy']);  
+                }
             }
 
             //Verifico que el conductor y el vehiculo no este suspendido
@@ -270,14 +270,15 @@ class PlanillaRutaController extends Controller
             if(!$vehiculo){
                 return response()->json(['success' => false, 'message'=> 'Ocurrio un error al procesar la petición, el vehículo no se encuentra activo']);
             }
-            
+
+            //Realizo el proceso indicado
             $planillaruta                   = PlanillaRuta::findOrFail($request->codigo);
             $planillaruta->usuaiddespacha   = Auth::id();
             $planillaruta->plarutdespachada = true;
            	$planillaruta->save();
 
             $encomiendas      = DB::table('encomienda')->select('encoid')->where('plarutid', $request->codigo)->get();
-            foreach($encomiendas as $encomienda){
+            /*foreach($encomiendas as $encomienda){
 
                 $encomienda           = Encomienda::findOrFail($encomienda->encoid);
                 $encomienda->tiesenid = 'T';
@@ -290,73 +291,99 @@ class PlanillaRutaController extends Controller
                 $encomiendacambioestado->encaesfechahora   = $fechaHoraActual;
                 $encomiendacambioestado->encaesobservacion = 'En transporte hacia el terminal destino. Proceso realizado por '.auth()->user()->usuanombre.' en la fecha '.$fechaHoraActual;
                 $encomiendacambioestado->save();
-            }
+            }*/
 
-            if($tiquete){
+            //Consulto para contabilizar los tiquete
+            $tiquetesContabilizar = DB::table('tiquete as t')
+                                    ->select('t.plarutid','t.agenid','t.usuaid', 'u.cajaid', DB::raw('SUM(t.tiquvalortotal) as valorContabilizar'),
+                                    DB::raw('SUM(t.tiquvalorfondoreposicion) as valorContabilizarFondoReposicion'),
+                                    DB::raw('SUM(t.tiquvalorestampilla) as valorContabilizarEstampilla'),
+                                    DB::raw('SUM(t.tiquvalorseguro) as valorContabilizarSeguro'),
+                                    DB::raw('SUM(t.tiquvalorfondorecaudo) as valorContabilizarFondoRecaudo'))
+                                ->join('usuario as u', 'u.usuaid', '=', 't.usuaid')
+                                ->where('t.plarutid', $request->codigo)
+                                ->where('t.tiqucontabilizado', 0)
+                                ->groupBy('t.plarutid')
+                                ->groupBy('t.agenid')
+                                ->groupBy('t.usuaid')
+                                ->groupBy('u.cajaid')
+                                ->get();
+
+            if(count($tiquetesContabilizar) > 0){
                 $tiquetes = DB::table('tiquete')->select('tiquid')->where('tiqucontabilizado', 0)->where('plarutid', $request->codigo)->get();
-
                 foreach($tiquetes as $tiqueteEstado){
                     $tiqueteContabilizado                    = Tiquete::findOrFail($tiqueteEstado->tiquid); 
                     $tiqueteContabilizado->tiqucontabilizado = true;
                     $tiqueteContabilizado->save();
                 }
 
-                //Se realiza la contabilizacion
-                $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
-                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
-                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
-                $comprobantecontabledetalle->save();
+                foreach($tiquetesContabilizar as $tiqueteContabilizar){
+                    $valorContabilizar    = $generales->redondearCienMasCercano($tiqueteContabilizar->valorContabilizar);
+                    $valorFondoReposicion = $generales->redondearCienMasCercano($tiqueteContabilizar->valorContabilizarFondoReposicion);
+                    $valorEstampilla      = $generales->redondearCienMasCercano($tiqueteContabilizar->valorContabilizarEstampilla);
+                    $valorSeguro          = $generales->redondearCienMasCercano($tiqueteContabilizar->valorContabilizarSeguro);
+                    $valorFondoRecaudo    = $generales->redondearCienMasCercano($tiqueteContabilizar->valorContabilizarFondoRecaudo);
+                    $valorTiquete         = $generales->redondearCienMasCercano($valorContabilizar - $valorFondoReposicion - $valorEstampilla -  $valorSeguro - $valorFondoRecaudo);
+                    $usuarioId            = $tiqueteContabilizar->usuaid;
+                    $cajaId               = $tiqueteContabilizar->cajaid;
+                    $agenciaId            = $tiqueteContabilizar->agenid;
 
-                $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-                $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoTiquete');
-                $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                $comprobantecontabledetalle->cocodemonto     = $valorTiquete;
-                $comprobantecontabledetalle->save();
-
-                if($valorFondoReposicion > 0){
+                    //Se realiza la contabilizacion
+                    $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual, $cajaId, $agenciaId, $usuarioId);
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('fondoReposicion');
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('caja');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
+                    $comprobantecontabledetalle->cocodemonto     = $valorContabilizar;
                     $comprobantecontabledetalle->save();
-                }
 
-                if($valorEstampilla > 0){
                     $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
                     $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
+                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoTiquete');
                     $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
-                    $comprobantecontabledetalle->save();  
-                }
-
-                if($valorSeguro > 0){
-                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoSeguro');
-                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
+                    $comprobantecontabledetalle->cocodemonto     = $valorTiquete;
                     $comprobantecontabledetalle->save();
-                }
 
-                if($valorFondoRecaudo > 0){
-                    $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
-                    $comprobantecontabledetalle->comconid        = $comprobanteContableId;
-                    $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorFondoRecaudo');
-                    $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
-                    $comprobantecontabledetalle->cocodemonto     = $valorFondoRecaudo;
-                    $comprobantecontabledetalle->save();
+                    if($valorFondoReposicion > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('fondoReposicion');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorFondoReposicion;
+                        $comprobantecontabledetalle->save();
+                    }
+
+                    if($valorEstampilla > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoEstampilla');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorEstampilla;
+                        $comprobantecontabledetalle->save();
+                    }
+
+                    if($valorSeguro > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('pagoSeguro');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorSeguro;
+                        $comprobantecontabledetalle->save();
+                    }
+
+                    if($valorFondoRecaudo > 0){
+                        $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
+                        $comprobantecontabledetalle->comconid        = $comprobanteContableId;
+                        $comprobantecontabledetalle->cueconid        = CuentaContable::consultarId('valorFondoRecaudo');
+                        $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
+                        $comprobantecontabledetalle->cocodemonto     = $valorFondoRecaudo;
+                        $comprobantecontabledetalle->save();
+                    }
                 }
             }
 
-            $resumenPlanilla = $this->obtenerResumenPlanilla($request->codigo);
-
             //Se realiza la contabilizacion final
+            $resumenPlanilla                             = $this->obtenerResumenPlanilla($request->codigo);
             $comprobanteContableId                       = ComprobanteContable::obtenerId($fechaActual);
             $comprobantecontabledetalle                  = new ComprobanteContableDetalle();
             $comprobantecontabledetalle->comconid        = $comprobanteContableId;
@@ -371,9 +398,6 @@ class PlanillaRutaController extends Controller
             $comprobantecontabledetalle->cocodefechahora = $fechaHoraActual;
             $comprobantecontabledetalle->cocodemonto     = -$resumenPlanilla->valorEntregar;//Lo ingresamos con movimiento crédito colocando un signo -
             $comprobantecontabledetalle->save();
-
-            //Contabilizo tiquetes de otras agencias
-
 
             DB::commit();
         	return response()->json(['success' => true, 'message' => 'Registro almacenado con éxito']);

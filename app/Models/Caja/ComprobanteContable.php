@@ -24,14 +24,18 @@ class ComprobanteContable extends Model
         $consecutivo = ($consecutivoComprobanteContable === null) ? 1 : $consecutivoComprobanteContable->consecutivo + 1;
         return str_pad($consecutivo,  5, "0", STR_PAD_LEFT);
     }
-
-    public static function obtenerId($fechaActual)
+    
+    public static function obtenerId($fechaActual, $cajaId = '', $agenciaId = '', $usuarioId = '')
     {
+        $caja    = ($cajaId    !== '' ) ? $cajaId    : auth()->user()->cajaid;
+        $agencia = ($agenciaId !== '' ) ? $agenciaId : auth()->user()->agenid;
+        $usuario = ($usuarioId !== '' ) ? $usuarioId : Auth::id();
+
         $comprobantecontable = DB::table('comprobantecontable')->select('comconid')
                                             ->whereDate('comconfechahora', $fechaActual)
-                                            ->where('cajaid', auth()->user()->cajaid)
-                                            ->where('agenid', auth()->user()->agenid)
-                                            ->where('usuaid', Auth::id())
+                                            ->where('cajaid', $caja)
+                                            ->where('agenid',  $agencia)
+                                            ->where('usuaid', $usuario)
                                             ->where('comconestado', 'A')
                                             ->orderBy('comconid', 'Desc')
                                             ->first();
