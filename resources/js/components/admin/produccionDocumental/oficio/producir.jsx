@@ -31,7 +31,7 @@ export default function Producir(){
 
     const verificarArea = (area) =>{
         setAreaSeleccionada(area);
-        setMensajeTipoDocumental('Registrar nuevo tipo documental oficio del área '+area.depenombre.toLowerCase());      
+        setMensajeTipoDocumental('Registrar nuevo tipo documental oficio del área '+area.depenombre.toLowerCase()); 
         setAccion('N');
     }
 
@@ -41,7 +41,7 @@ export default function Producir(){
                         <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} ruta={'oficio'} />
                     ];
 
-    const tituloModal = ['Selecionar área de producción documental',                         
+    const tituloModal = ['Selecionar área de producción documental',
                         'Solicitar firma del tipo documental',
                         'Visualizar el tipo documental en formato PDF'];  
 
@@ -94,11 +94,11 @@ export default function Producir(){
             }
 
             <ModalDefaultAuto
-                title={modal.titulo}
-                content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), (modal.vista === 1) ? inicio() : null;}}
-                tam = {modal.tamano}
-                abrir ={modal.open}
+                  title   = {modal.titulo}
+                  content = {modales[modal.vista]}
+                  close   = {() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista === 1 || modal.vista === 2 || modal.vista === 3) ? inicio() : null;}}
+                  tam     = {modal.tamano}
+                  abrir   = {modal.open}
             />
         </Box>
     )

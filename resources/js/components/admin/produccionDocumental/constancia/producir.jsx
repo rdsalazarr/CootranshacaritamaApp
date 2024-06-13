@@ -11,8 +11,10 @@ import NewEdit from './new';
 
 export default function Producir(){
 
-    const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
+    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    const [mensajeTipoDocumental, setMensajeTipoDocumental] = useState('');
     const [areaSeleccionada, setAreaSeleccionada] = useState([]);
+    const [idDocumento, setIdDocumento] = useState(null);
     const [loader, setLoader] = useState(true);
     const [accion, setAccion] = useState('L');
     const [data, setData] = useState([]);
@@ -22,28 +24,30 @@ export default function Producir(){
         setModal({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
     }
 
+    const verificarAccion = (data) =>{
+        setIdDocumento(data.id);
+        setAccion('U');
+    }
+
     const verificarArea = (area) =>{
         setAreaSeleccionada(area);
-        setModal({open: true, vista: 1, data:data, titulo: 'Registrar nuevo tipo documental constancia del área '+area.depenombre.toLowerCase(), tamano: 'bigFlot'});
+        setMensajeTipoDocumental('Registrar nuevo tipo documental constancia del área '+area.depenombre.toLowerCase());
+        setAccion('N');
     }
 
     const modales = [
                         <VerificarArea cerrarModal={cerrarModal} verificarArea={verificarArea} ruta={'constancia'} />,
-                        <NewEdit tipo={'I'} area={areaSeleccionada} ruta='P' />,
-                        <NewEdit tipo={'U'} id={(tipo !== 0) ? modal.data.id : null} ruta='P' /> ,
                         <SolicitarFirma id={(tipo !== 0) ? modal.data.id : null} ruta={'constancia'} cerrarModal={cerrarModal} />,
                         <VisualizarPdf id={(tipo !== 0) ? modal.data.id : null} ruta={'constancia'} />
                     ];
 
     const tituloModal = ['Selecionar área de producción documental', 
-                        'Registrar nuevo tipo documental ',
-                        'Editar tipo documental constancia',
                         'Solicitar firma del tipo documental',
                         'Visualizar el tipo documental en formato PDF'];
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 || tipo === 3) ? 'smallFlot' : ((tipo === 4) ? 'mediumFlot' :'bigFlot')});
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 0 || tipo === 1) ? 'smallFlot' : 'mediumFlot'});
     }
 
     const inicio = () =>{
@@ -51,7 +55,8 @@ export default function Producir(){
         instance.post('/admin/producion/documental/constancia/list', {tipo:'PRODUCIR'}).then(res=>{
             setData(res.data);
             setLoader(false);
-        }) 
+        })
+        setAccion('L');
     }
 
     useEffect(()=>{inicio();}, []);
@@ -62,27 +67,38 @@ export default function Producir(){
 
     return (
         <Box>
-            <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
-                <TablaGeneral
-                    datos={data}
-                    titulo={['Consecutivo', 'Dependencia','Fecha','Título','Dirigido','Estado','Editar','Solicitar','PDF']}
-                    ver={["consecutivo", "dependencia","fecha", "asunto","nombredirigido", "estado"]}
-                    accion={[
-                        {tipo: 'T', icono : 'add',                 color: 'green',  funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',                color: 'orange', funcion : (data)=>{edit(data,2)} },
-                        {tipo: 'B', icono : 'signal_cellular_alt', color: 'red',    funcion : (data)=>{edit(data,3)} },
-                        {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data,4)} },
-                    ]}
-                    funciones={{orderBy: false, search: false, pagination:true}}
-                />
-            </Box>
+            {(accion === 'L') ?
+                <Box sx={{maxHeight: '35em', overflow:'auto'}} sm={{maxHeight: '35em', overflow:'auto'}}>
+                    <TablaGeneral
+                        datos={data}
+                        titulo={['Consecutivo', 'Dependencia','Fecha','Título','Dirigido','Estado','Editar','Solicitar','PDF']}
+                        ver={["consecutivo", "dependencia","fecha", "asunto","nombredirigido", "estado"]}
+                        accion={[
+                            {tipo: 'T', icono : 'add',                 color: 'green',  funcion : (data)=>{edit(data, 0)} },
+                            {tipo: 'B', icono : 'edit',                color: 'orange', funcion : (data)=>{verificarAccion(data)} },
+                            {tipo: 'B', icono : 'signal_cellular_alt', color: 'red',    funcion : (data)=>{edit(data, 1)} },
+                            {tipo: 'B', icono : 'picture_as_pdf',      color: 'orange', funcion : (data)=>{edit(data, 2)} },
+                        ]}
+                        funciones={{orderBy: false, search: false, pagination:true}}
+                    />
+                </Box>
+            : ((accion === 'N') ?
+                <Box>
+                    <NewEdit tipo={'I'} area={areaSeleccionada} ruta='P' volver={inicio} mensaje={mensajeTipoDocumental} />
+                </Box>
+                :  
+                <Box>
+                    <NewEdit tipo={'U'} id={idDocumento} ruta='P' volver={inicio}  mensaje={'Editar tipo documental constancia'} />
+                </Box>
+                )
+            }
 
             <ModalDefaultAuto
-                title={modal.titulo}
-                content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista === 1 || modal.vista === 2 || modal.vista === 3) ? inicio() : null;}}
-                tam = {modal.tamano}
-                abrir ={modal.open}
+                title   = {modal.titulo}
+                content = {modales[modal.vista]}
+                close   = {() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista === 1 || modal.vista === 2 || modal.vista === 3) ? inicio() : null;}}
+                tam     = {modal.tamano}
+                abrir   = {modal.open}
             />
         </Box>
     )

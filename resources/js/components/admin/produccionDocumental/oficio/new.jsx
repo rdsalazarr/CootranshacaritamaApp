@@ -22,7 +22,6 @@ import { DatePicker } from '@mui/x-date-pickers';
 import "/resources/scss/fechaDatePicker.scss";
 import esLocale from 'dayjs/locale/es';
 import dayjs from 'dayjs';
-import 'dayjs/locale/es';
 
 export default function New({id, area, tipo, ruta, volver, mensaje}){ 
     const editorTexto = useRef(null);
@@ -958,9 +957,11 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
 
                     <Grid container spacing={2}>
                         <Grid item xl={3} md={3} sm={4} xs={12}>
-                            <Button type={"button"} className={'modalBtn'} onClick={() => {volver()}}
-                                startIcon={<ArrowBackIcon />}> Volver
-                            </Button>
+                            {(ruta === 'P') ? 
+                                <Button type={"button"} className={'modalBtn'} onClick={() => {volver()}}
+                                    startIcon={<ArrowBackIcon />}> Volver
+                                </Button>
+                            : null }
                         </Grid>
                         <Grid item xl={9} md={9} sm={8} xs={12} style={{textAlign:'right'}}>
                             <Button type={"submit"} className={'modalBtn'}
