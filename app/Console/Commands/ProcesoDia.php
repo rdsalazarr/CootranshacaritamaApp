@@ -44,6 +44,7 @@ class ProcesoDia extends Command
         $mensaje .= Dia::suspenderVehiculosCRT();
         $mensaje .= Dia::suspenderVehiculosPolizas();
         $mensaje .= Dia::suspenderVehiculosTarjetaOperacion();
+        $mensaje .= Dia::suspenderVehiculosProgramados();
         $mensaje .= Dia::levantarSancionVehiculo();
         $mensaje .= Notificacion::iniciar();
         $mensaje .= Notificacion::vencimientoLicencias();
@@ -51,7 +52,7 @@ class ProcesoDia extends Command
         $mensaje .= Notificacion::vencimientoCRT();
         $mensaje .= Notificacion::vencimientoPolizas();
         $mensaje .= Notificacion::vencimientoTarjetaOperacion(); 
-        $mensaje .= Notificacion::cuotasCreditos(); 
+        $mensaje .= Notificacion::cuotasCreditos();
                     Dia::finalizar($mensaje);
     }
 }

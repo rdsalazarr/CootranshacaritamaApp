@@ -98,7 +98,6 @@ use App\Http\Controllers\Admin\Informes\InformePdfController;
 
 use App\Http\Controllers\Admin\Auditoria\GeneralController;
 
-
 Route::get('/', [FrondController::class, 'index']);
 Route::get('/login', [FrondController::class, 'index']);
 Route::post('/login',[LoginController::class, 'login'])->name('login');
@@ -445,7 +444,8 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/vehiculo/show', [VehiculoController::class, 'show']);
             Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
 
-            Route::get('/suspender/vehiculo/datos', [SuspenderController::class, 'index'])->middleware(['security:admin/direccion/transporte/suspenderVehiculo','verifySource']);
+            Route::post('/suspender/vehiculo/list', [SuspenderController::class, 'index'])->middleware(['security:admin/direccion/transporte/suspenderVehiculo','verifySource']);
+            Route::post('/suspender/vehiculo/consultar/datos', [SuspenderController::class, 'datos']);
             Route::post('/suspender/vehiculo/salve', [SuspenderController::class, 'salve']);
 
             Route::post('/conductor/list', [ConductorController::class, 'index'])->middleware('security:admin/direccion/transporte/conductores');

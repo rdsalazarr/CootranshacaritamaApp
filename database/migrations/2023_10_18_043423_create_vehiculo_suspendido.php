@@ -17,7 +17,7 @@ return new class extends Migration
             $table->smallInteger('usuaid')->unsigned()->comment('Identificador del usuario que suspende el vehículo');
             $table->dateTime('vehsusfechahora')->comment('Fecha y hora en la cual se crea el registro de la suspención del vehículo');
             $table->date('vehsusfechainicialsuspencion')->comment('Fecha inicial de la suspención del vehículo');
-            $table->date('vehsusfechafinalsuspencion')->comment('Fecha inicial de la suspención del vehículo');
+            $table->date('vehsusfechafinalsuspencion')->nullable()->comment('Fecha inicial de la suspención del vehículo');
             $table->string('vehsusmotivo', 500)->comment('Motivo de la suspención del vehículo');
             $table->boolean('vehsusprocesada')->default(false)->comment('Determina si la supención del vehículo ha sido procesada'); 
             $table->timestamps();

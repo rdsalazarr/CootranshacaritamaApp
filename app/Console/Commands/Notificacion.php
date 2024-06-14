@@ -283,7 +283,7 @@ class Notificacion
         return $esEjecucionManual ? ['success' => $success, 'message' => $mensaje] : $mensajeCorreo.'<br>';
     }
 
-    public static function VencimientoTarjetaOperacion($esEjecucionManual = false)
+    public static function vencimientoTarjetaOperacion($esEjecucionManual = false)
     {
         $generales          = new generales();
         $notificar          = new notificar();

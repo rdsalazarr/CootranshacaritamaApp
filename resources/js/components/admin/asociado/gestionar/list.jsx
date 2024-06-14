@@ -14,10 +14,10 @@ export default function List(){
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
     const [tipo, setTipo] = useState(0);
-    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+    const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{
-        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+        setModal({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
     }
 
     const modales = [
@@ -78,7 +78,7 @@ export default function List(){
             <ModalDefaultAuto
                 title={modal.titulo}
                 content={modales[modal.vista]}
-                close={() =>{setModal({open : false, vista:3, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
+                close={() =>{setModal({open : false, vista:5, data:{}, titulo:'', tamano: ''}), (modal.vista !== 3) ? inicio() : null;}}
                 tam = {modal.tamano}
                 abrir ={modal.open}
             />

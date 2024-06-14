@@ -9,10 +9,10 @@ import NewEdit from './new';
 
 export default function List(){
 
+    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
     const [loader, setLoader] = useState(true);
     const [data, setData] = useState([]);
     const [tipo, setTipo] = useState(0);
-    const [modal, setModal] = useState({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{
         setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
@@ -28,7 +28,7 @@ export default function List(){
 
     const edit = (data, tipo) =>{
         setTipo(tipo);
-        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 3 ) ? 'smallFlot' :  'mediumFlot'});
+        setModal({open: true, vista: tipo, data:data, titulo: tituloModal[tipo], tamano: (tipo === 2 ) ? 'smallFlot' :  'mediumFlot'});
     }
 
     const inicio = () =>{
@@ -53,9 +53,9 @@ export default function List(){
                     titulo={['Nombre','Referencia','Capacidad pasajeros', 'Número de filas', 'Número de columna','Activo','Actualizar','Eliminar']}
                     ver={["tipvehnombre","tipvehreferencia","tipvehcapacidad","tipvehnumerofilas","tipvehnumerocolumnas","estado"]}
                     accion={[
-                        {tipo: 'T', icono : 'add',                  color: 'green',  funcion : (data)=>{edit(data,0)} },
-                        {tipo: 'B', icono : 'edit',                 color: 'orange', funcion : (data)=>{edit(data,1)} },
-                        {tipo: 'B', icono : 'delete',               color: 'red',    funcion : (data)=>{edit(data,3)} },
+                        {tipo: 'T', icono : 'add',    color: 'green',  funcion : (data)=>{edit(data, 0)} },
+                        {tipo: 'B', icono : 'edit',   color: 'orange', funcion : (data)=>{edit(data, 1)} },
+                        {tipo: 'B', icono : 'delete', color: 'red',    funcion : (data)=>{edit(data, 2)} },
                     ]}
                     funciones={{orderBy: true,search: true, pagination:true}}
                 />

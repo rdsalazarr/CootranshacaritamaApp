@@ -1140,14 +1140,12 @@ export default function New({data, tipo, frm, url, tpRelacion}){
                             </Fragment>
                         :null}
 
-                      
-
                         {(totalCertificado > totalCertificadoSubido) ?
                             <Fragment>
 
                                 <Grid item md={12} xl={12} sm={12} xs={12}>
                                     <Box className='frmDivision'>
-                                        Información de los certificados del conductor totalCertificado
+                                        Información de los certificados del conductor
                                     </Box>
                                 </Grid>
 

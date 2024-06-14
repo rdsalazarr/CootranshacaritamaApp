@@ -53,7 +53,7 @@ import TiposVehiculos from "../admin/vehiculos/tipos/list";
 import Vehiculo from "../admin/vehiculos/automovil/list";
 import Conductor from "../admin/vehiculos/conductor/list";
 import AsignarVehiculo from "../admin/vehiculos/asignar/search";
-import SuspenderVehiculo from "../admin/vehiculos/suspender/search";
+import SuspenderVehiculo from "../admin/vehiculos/suspender/list";
 import DistribucionVehiculo from "../admin/vehiculos/tipos/vehiculo/distribucion";
 import FirmarContrato from "../admin/vehiculos/contrato/list";
 

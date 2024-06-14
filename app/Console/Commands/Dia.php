@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Conductor\ConductorCambioEstado;
 use App\Models\Vehiculos\VehiculoCambioEstado;
+use App\Models\Vehiculos\VehiculoSuspendido;
 use App\Models\Procesos\ProcesosAutomaticos;
 use App\Console\Commands\FuncionesGenerales;
 use App\Models\Conductor\Conductor;
@@ -476,12 +477,11 @@ class Dia
         return $esEjecucionManual ? ['success' => $success, 'message' => $mensaje] : $mensajeCorreo.'<br>';
     }
 
-    public static function levantarSancionVehiculo($esEjecucionManual = false)
+    public static function suspenderVehiculosProgramados($esEjecucionManual = false)
     {
         $notificar          = new notificar();
         $fechaHoraActual    = Carbon::now();
-        $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
-        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("LevantarSancionVehiculo") : $fechaHoraActual->format('Y-m-d');
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("SuspenderVehiculosProgramado") : $fechaHoraActual->format('Y-m-d');
         $estado             = 'S';
         $mensaje            = '';
         $mensajeCorreo      = '';
@@ -489,7 +489,7 @@ class Dia
         DB::beginTransaction();
 		try {
 
-            $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionLevantamientoSuspension')->first();
+            $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificarSuspencionVehiculoUsuario')->first();
             $empresa            = FuncionesGenerales::consultarInfoEmpresa();
             $correoEmpresa      = $empresa->emprcorreo;
             $nombreGerente      = $empresa->nombreGerente;
@@ -502,7 +502,93 @@ class Dia
                                         ->join('vehiculo as v', 'v.vehiid', '=', 'vs.vehiid')
                                         ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
                                         ->join('persona as p', 'p.persid', '=', 'a.persid')
-                                        ->whereDate('vs.vehsusfechafinalsuspencion', '<', $fechaSuspencion)
+                                        ->whereDate('vs.vehsusfechainicialsuspencion', $fechaActual)
+                                        ->whereDate('vs.vehsusprocesada', false)
+                                        ->where('v.tiesveid', 'A')
+                                        ->get();
+
+            $mensaje        = (count($vehiculosNotificados) === 0) ? "No existen vehiculos programados para suspender en la fecha ".$fechaActual."\r\n" : '';
+            $mensajeCorreo .= ($mensaje !== '') ? $mensaje.'<br>' : '';
+            foreach($vehiculosNotificados as $vehiculoNotificado){
+                $estado             = 'S';
+                $vehiid             = $vehiculoNotificado->vehiid;
+                $placaVehiculo      = $vehiculoNotificado->vehiplaca;
+                $nombreAsociado     = $vehiculoNotificado->nombreAsociado;
+                $numeroInterno      = $vehiculoNotificado->vehinumerointerno;
+                $correoUsuario      = $vehiculoNotificado->perscorreoelectronico;
+                $motivosSuspencion  = $vehiculoNotificado->vehsusmotivo;
+                $fechaInicial       = $vehiculoNotificado->vehsusfechainicialsuspencion;
+                $fechaFinal         = ($vehiculoNotificado->vehsusfechafinalsuspencion !== '') ? $vehiculoNotificado->vehsusfechafinalsuspencion : 'No definida';
+
+                $vehiculo           = Vehiculo::findOrFail($vehiid);
+                $vehiculo->tiesveid = $estado;
+                $vehiculo->save();
+
+                $vehiculocambioestado 					 = new VehiculoCambioEstado();
+                $vehiculocambioestado->vehiid            = $vehiid;
+                $vehiculocambioestado->tiesveid          = $estado;
+                $vehiculocambioestado->vecaesusuaid      = 1;
+                $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
+                $vehiculocambioestado->vecaesobservacion = $motivosSuspencion;
+                $vehiculocambioestado->save();
+
+                $buscar           = Array('fechaActual', 'nombreAsociado', 'placaVehiculo', 'numeroInterno', 'motivosSuspencion', 'fechaInicial', 'fechaFinal', 'nombreGerente');
+                $remplazo         = Array($fechaActual, $nombreAsociado, $placaVehiculo, $numeroInterno, $motivosSuspencion, $fechaInicial, $fechaFinal, $nombreGerente); 
+                $innocoasunto     = $informacionCorreo->innocoasunto;
+                $innococontenido  = $informacionCorreo->innococontenido;
+                $enviarcopia      = $informacionCorreo->innocoenviarcopia;
+                $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
+                $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
+                $msg              = str_replace($buscar, $remplazo, $innococontenido);
+                ($correoUsuario !== '') ? $notificar->correo([$correoUsuario], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
+
+                $mensaje       .= "Proceso de suspensión del vehiculo con numero interno ".$numeroInterno.", con placa ".$placaVehiculo."  programados en la fecha ".$fechaActual."\r\n";
+                $mensajeCorreo .= $mensaje.'<br>';
+            }
+
+            $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(18);
+            $procesoAutomatico->proautfechaejecucion = $fechaActual;
+            $procesoAutomatico->save();
+
+            $success = true;
+            DB::commit();
+        } catch (Exception $error){
+            DB::rollback();
+            $mensaje       = "Ocurrio un error al realizar el proceso de suspender vehiculos programados en la fecha ".$fechaActual."\r\n";
+            $mensajeCorreo = $mensaje.'<br>';
+        }
+
+        echo $esEjecucionManual ? '' : $mensaje;
+        return $esEjecucionManual ? ['success' => $success, 'message' => $mensaje] : $mensajeCorreo.'<br>';
+    }
+
+    public static function levantarSancionVehiculo($esEjecucionManual = false)
+    {
+        $notificar          = new notificar();
+        $fechaHoraActual    = Carbon::now();
+        $fechaSuspencion    = Carbon::now()->addDays(1)->toDateString();
+        $fechaActual        = ($esEjecucionManual) ? FuncionesGenerales::consultarFechaProceso("LevantarSancionVehiculo") : $fechaHoraActual->format('Y-m-d');
+        $estado             = 'A';
+        $mensaje            = '';
+        $mensajeCorreo      = '';
+        $success            = false;
+        DB::beginTransaction();
+		try {
+
+            $informacionCorreo  = DB::table('informacionnotificacioncorreo')->where('innoconombre', 'notificacionLevantamientoSuspension')->first();
+            $empresa            = FuncionesGenerales::consultarInfoEmpresa();
+            $correoEmpresa      = $empresa->emprcorreo;
+            $nombreGerente      = $empresa->nombreGerente;
+
+            $vehiculosNotificados = DB::table('vehiculosuspendido as vs')
+                                        ->select('vs.vehsusid','v.vehiid','vs.vehsusfechafinalsuspencion', 'vs.vehsusfechainicialsuspencion','vs.vehsusmotivo', 
+                                            'v.vehinumerointerno','v.vehiplaca','p.perscorreoelectronico',
+                                            DB::raw("CONCAT(p.persprimernombre,' ',if(p.perssegundonombre is null ,'', p.perssegundonombre),' ',
+                                                p.persprimerapellido,' ',if(p.perssegundoapellido is null ,' ', p.perssegundoapellido)) as nombreAsociado"))
+                                        ->join('vehiculo as v', 'v.vehiid', '=', 'vs.vehiid')
+                                        ->join('asociado as a', 'a.asocid', '=', 'v.asocid')
+                                        ->join('persona as p', 'p.persid', '=', 'a.persid')
+                                        ->whereDate('vs.vehsusfechafinalsuspencion', '<', $fechaActual)
                                         ->whereDate('vs.vehsusprocesada', false)
                                         ->where('v.tiesveid', 'S')
                                         ->get();
@@ -520,8 +606,8 @@ class Dia
                 $fechaFinalSupencion   = $vehiculoNotificado->vehsusfechafinalsuspencion;
                 $fechaInicialSupencion = $vehiculoNotificado->vehsusfechainicialsuspencion;
 
-                $vehiculo           = Vehiculo::findOrFail($vehiid);
-                $vehiculo->tiesveid = $estado;
+                $vehiculo              = Vehiculo::findOrFail($vehiid);
+                $vehiculo->tiesveid    = $estado;
                 $vehiculo->save();
 
                 $vehiculocambioestado 					 = new VehiculoCambioEstado();
@@ -531,6 +617,10 @@ class Dia
                 $vehiculocambioestado->vecaesfechahora   = $fechaHoraActual;
                 $vehiculocambioestado->vecaesobservacion = "La suspensión del vehículo ha sido levantada al cumplirse el plazo establecido";
                 $vehiculocambioestado->save();
+
+                $vehiculosuspendido                  = VehiculoSuspendido::findOrFail($vehiculoNotificado->vehsusid);
+                $vehiculosuspendido->vehsusprocesada = true;
+                $vehiculosuspendido->save();
 
                 $buscar           = Array('nombreAsociado', 'placaVehiculo', 'numeroInterno', 'nombreGerente', 'fechaInicialSupencion', 'fechaFinalSupencion', 'motivoSuspencion');
                 $remplazo         = Array($nombreAsociado,  $placaVehiculo, $numeroInterno, $nombreGerente, $fechaInicialSupencion, $fechaFinalSupencion, $motivoSuspencion);

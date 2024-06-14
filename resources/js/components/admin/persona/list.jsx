@@ -18,7 +18,7 @@ export default function List(){
     const [modal, setModal] = useState({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
 
     const cerrarModal = () =>{
-        setModal({open : false, vista:3, data:{}, titulo:'', tamano:'bigFlot'});
+        setModal({open : false, vista:5, data:{}, titulo:'', tamano:'bigFlot'});
     }
 
     const modales = [

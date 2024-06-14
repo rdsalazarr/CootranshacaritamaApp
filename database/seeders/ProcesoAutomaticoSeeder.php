@@ -204,6 +204,16 @@ class ProcesoAutomaticoSeeder extends Seeder
             'created_at'           => $fechaHoraActual,
             'updated_at'           => $fechaHoraActual,
         ]);
-      
+
+        DB::table('procesoautomatico')->insert([
+            'proautid'             => '18',
+            'proautnombre'         => 'SuspenderVehiculosProgramado',
+            'proautmetodo'         => 'suspenderVehiculosProgramados',
+            'proautclasephp'       => 'Dia',
+            'proautfechaejecucion' => $fechaActual,
+            'proauttipo'           => 'D',
+            'created_at'           => $fechaHoraActual,
+            'updated_at'           => $fechaHoraActual,
+        ]);      
     }
 }
