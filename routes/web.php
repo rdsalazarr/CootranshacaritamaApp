@@ -444,7 +444,7 @@ Route::middleware(['revalidate','auth'])->group(function () {
             Route::post('/vehiculo/show', [VehiculoController::class, 'show']);
             Route::post('/vehiculo/destroy', [VehiculoController::class, 'destroy']);
 
-            Route::post('/suspender/vehiculo/list', [SuspenderController::class, 'index'])->middleware(['security:admin/direccion/transporte/suspenderVehiculo','verifySource']);
+            Route::post('/suspender/vehiculo/list', [SuspenderController::class, 'index'])->middleware(['security:admin/direccion/transporte/suspenderVehiculo']);
             Route::post('/suspender/vehiculo/consultar/datos', [SuspenderController::class, 'datos']);
             Route::post('/suspender/vehiculo/salve', [SuspenderController::class, 'salve']);
 
