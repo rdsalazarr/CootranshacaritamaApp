@@ -21,7 +21,7 @@ use App\Util\generarPdf;
 use App\Util\generales;
 use App\Util\notificar;
 use Carbon\Carbon;
-use DB;
+use DB, Artisan;
 
 class Noche
 {
@@ -306,7 +306,7 @@ class Noche
                                     ->whereNull('plarutfechallegadaaldestino')
                                     ->where('plarutdespachada', true)->get();
 
-            $mensaje        = (count($planillaRutas) === 0) ? "No existen planillas por marcar en la fecha ".$fechaActual."\r\n" : '';
+            $mensaje        = (count($planillaRutas) === 0) ? "No existen planillas por marcar en la fecha ".$fechaProceso."\r\n" : '';
             foreach($planillaRutas as $dataPlanillaRuta){ 
                 $planillaruta                              = PlanillaRuta::findOrFail($dataPlanillaRuta->plarutid);
                 $planillaruta->plarutfechallegadaaldestino = $fechaHoraActual;
@@ -384,7 +384,7 @@ class Noche
                                     ->where('psf.pesefiredimido', false)
                                     ->get();
 
-            $mensaje        = (count($personasFidelizaciones) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaActual."\r\n" : '';
+            $mensaje        = (count($personasFidelizaciones) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaProceso."\r\n" : '';
             foreach($personasFidelizaciones as $personaFidelizacion){
 
                 $correoPersona = $personaFidelizacion->persercorreoelectronico;
@@ -449,11 +449,10 @@ class Noche
 
         DB::beginTransaction();
 		try {
-            $mensaje1  = "La copia de seguridad se realizó correctamente \r\n";
-            $mensaje2  = "Se produjo un error durante la copia de seguridad. Codigo de salida: ".$resultado."\r\n";
-
+ 
             $resultado = Artisan::call('backup:run');
-            $mensaje  .= ($resultado === 0) ? $mensaje1 : $mensaje2;
+            $mensaje  .= ($resultado === 0) ? "La copia de seguridad se realizó correctamente \r\n"
+                                             : "Se produjo un error durante la copia de seguridad. Codigo de salida: ".$resultado."\r\n";
 
             $procesoAutomatico                       = ProcesosAutomaticos::findOrFail(17);
             $procesoAutomatico->proautfechaejecucion = $fechaProceso;
