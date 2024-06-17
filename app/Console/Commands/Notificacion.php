@@ -46,6 +46,8 @@ class Notificacion
                                         ->whereNotNull('p.perscorreoelectronico')
                                         ->get();
 
+                                        dd($conductorNotificados);
+
             $mensaje        = (count($conductorNotificados) === 0) ? "No existen vencimiento de licencias para notificar en la fecha ".$fechaActual."\r\n" : '';
             $mensajeCorreo .= ($mensaje !== '') ? $mensaje.'<br>' : '';
             foreach($conductorNotificados as $conductorNotificado){
