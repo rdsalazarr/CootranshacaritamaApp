@@ -39,7 +39,7 @@ class ProcesoDia extends Command
     public function handle()
     {
         $mensaje  = Dia::iniciar();
-       // $mensaje .= Dia::suspenderConductor();
+        $mensaje .= Dia::suspenderConductor();
         $mensaje .= Dia::suspenderVehiculosSoat();
         $mensaje .= Dia::suspenderVehiculosCRT();
         $mensaje .= Dia::suspenderVehiculosPolizas();

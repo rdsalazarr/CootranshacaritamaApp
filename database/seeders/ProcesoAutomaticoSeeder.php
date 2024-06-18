@@ -131,7 +131,7 @@ class ProcesoAutomaticoSeeder extends Seeder
         DB::table('procesoautomatico')->insert([
             'proautid'             => '11',
             'proautnombre'         => 'NotificarVencimientoVehiculosTarjetaOperacion',
-            'proautmetodo'         => 'suspenderConductor',
+            'proautmetodo'         => 'vencimientoTarjetaOperacion',
             'proautclasephp'       => 'Notificacion',
             'proautfechaejecucion' => $fechaActual,
             'proauttipo'           => 'D',

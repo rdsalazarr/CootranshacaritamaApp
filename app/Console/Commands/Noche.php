@@ -68,7 +68,8 @@ class Noche
                                 ->where('vereppprocesado', 0)
                                 ->groupBy('vehiid')
                                 ->get();
-            $mensaje        .= (count($pagosParciales) === 0) ? "No existe pagos de mensualidad por procesar en la fecha ".$fechaProceso."\r\n" : '';                      
+            $mensaje        .= (count($pagosParciales) === 0) ? "No existe pagos de mensualidad por procesar en la fecha ".$fechaProceso."\r\n" : '';
+            $mensajeCorreo .= ($mensaje !== '') ? $mensaje.'<br>' : '';                   
             foreach($pagosParciales as $pagoParcial){
                 $vehiculoId  = $pagoParcial->vehiid;
                 $valorPagado = $pagoParcial->valorPagado;
@@ -200,7 +201,8 @@ class Noche
             $nombreGerente      = $empresa->nombreGerente;
 
             $searcComprobanteContables = DB::table('comprobantecontable')->select('comconid', 'usuaid','agenid','cajaid')->where('comconestado',  'A')->get();
-            $mensaje                   .= (count($searcComprobanteContables) === 0) ? "No existe pagos de comprobantes abierto en la fecha ".$fechaProceso."\r\n" : '';    
+            $mensaje                   .= (count($searcComprobanteContables) === 0) ? "No existe pagos de comprobantes abierto en la fecha ".$fechaProceso."\r\n" : '';
+            $mensajeCorreo             .= ($mensaje !== '') ? $mensaje.'<br>' : '';
             foreach($searcComprobanteContables as $searcComprobanteContable){
                 $comconid  = $searcComprobanteContable->comconid;
                 $idUsuario = $searcComprobanteContable->usuaid;
@@ -308,6 +310,7 @@ class Noche
                                     ->where('plarutdespachada', true)->get();
 
             $mensaje        .= (count($planillaRutas) === 0) ? "No existen planillas por marcar en la fecha ".$fechaProceso."\r\n" : '';
+            $mensajeCorreo .= ($mensaje !== '') ? $mensaje.'<br>' : '';
             foreach($planillaRutas as $dataPlanillaRuta){ 
                 $planillaruta                              = PlanillaRuta::findOrFail($dataPlanillaRuta->plarutid);
                 $planillaruta->plarutfechallegadaaldestino = $fechaHoraActual;
@@ -385,7 +388,8 @@ class Noche
                                     ->where('psf.pesefiredimido', false)
                                     ->get();
 
-            $mensaje        .= (count($personasFidelizaciones) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaProceso."\r\n" : '';
+            $mensaje       .= (count($personasFidelizaciones) === 0) ? "No existen redención de puntos por marcar en la fecha ".$fechaProceso."\r\n" : '';
+            $mensajeCorreo .= ($mensaje !== '') ? $mensaje.'<br>' : '';
             foreach($personasFidelizaciones as $personaFidelizacion){
 
                 $correoPersona = $personaFidelizacion->persercorreoelectronico;
@@ -459,9 +463,9 @@ class Noche
             $procesoAutomatico->proautfechaejecucion = $fechaProceso;
             $procesoAutomatico->save();
 
-            $success        = true;
-            $mensajeVista   = "Proceso de notificación de generar backup realizado con éxito";
-            $mensajeCorreo .= $mensaje.'<br>';
+            $success       = true;
+            $mensajeVista  = "Proceso de notificación de generar backup realizado con éxito";
+            $mensajeCorreo = '<br>'.$mensaje.'<br>';
             DB::commit();
         } catch (Exception $error){
             DB::rollback();

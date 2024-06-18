@@ -100,7 +100,7 @@ class Dia
                 $enviarpiepagina  = $informacionCorreo->innocoenviarpiepagina;
                 $asunto           = str_replace($buscar, $remplazo, $innocoasunto);
                 $msg              = str_replace($buscar, $remplazo, $innococontenido);
-                ($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
+                //($correoPersona !== '') ? $notificar->correo([$correoPersona], $asunto, $msg, [], $correoEmpresa, $enviarcopia, $enviarpiepagina) : null;
 
                 $mensaje       .= "Proceso de suspender el conductor ".$nombreConductor." en la fecha ".$fechaActual."\r\n";
                 $mensajeCorreo .= $mensaje.'<br>';

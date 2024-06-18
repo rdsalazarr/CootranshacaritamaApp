@@ -3058,3 +3058,5 @@ INSERT INTO `rolfuncionalidad` (`rolfunid`, `rolfunrolid`, `rolfunfuncid`) VALUE
 (162, 10, 43),
 (163, 10, 45),
 (164, 11, 48);
+
+UPDATE persona SET perscorreoelectronico = NULL WHERE perscorreoelectronico = '';
