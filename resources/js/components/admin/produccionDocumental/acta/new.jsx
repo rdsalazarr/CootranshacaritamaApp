@@ -63,6 +63,21 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
             return
         }
 
+        if (formData.horaInicial && !validateHora(formData.horaInicial)) {
+            showSimpleSnackbar("El formato de la hora inicio no es permitido", 'error');
+            return;
+        }
+
+        if (formData.horaFinal && !validateHora(formData.horaFinal)) {
+            showSimpleSnackbar("El formato de la hora final no es permitido", 'error');
+            return;
+        }
+
+        if (formData.convocatoriaHora && !validateHora(formData.convocatoriaHora)) {
+            showSimpleSnackbar("El formato de la hora convocatoria no es permitido", 'error');
+            return;
+        }
+
         if(editorTexto.current.getContent() === ''){
             showSimpleSnackbar("Debe ingresar el contenido del documento", 'error');
             return
@@ -315,7 +330,7 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                 errorMessages={["Campo obligatorio"]}
                                 onChange={handleChange}
                                 onBlur={() => {
-                                    if (formData.horaInicial && !validateHora(formData.horaInicial)) {
+                                    if (formData.horaFinal && !validateHora(formData.horaFinal)) {
                                         showSimpleSnackbar("El formato de la hora final no es permitido", 'error');
                                     }
                                 }}
@@ -504,7 +519,7 @@ export default function New({id, area, tipo, ruta, volver, mensaje}){
                                         errorMessages={["Campo obligatorio"]}
                                         onChange={handleChange}
                                         onBlur={() => {
-                                            if (formData.horaInicial && !validateHora(formData.horaInicial)) {
+                                            if (formData.convocatoriaHora && !validateHora(formData.convocatoriaHora)) {
                                                 showSimpleSnackbar("El formato de la hora convocatoria no es permitido", 'error');
                                             }
                                         }}
