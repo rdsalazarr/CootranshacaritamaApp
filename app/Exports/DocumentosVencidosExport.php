@@ -63,14 +63,15 @@ class DocumentosVencidosExport implements FromCollection, WithHeadings,WithPrope
     {
         $request         = $this->request;
         $tipoReporte     = $request->tipoReporte;
-        $fechaSuperiror  = Carbon::now()->addDays(30)->toDateString();
+        $fechaInicial    = $request->fechaInicial;
+        $fechaFinal      = $request->fechaFinal;
+        /*$fechaSuperiror  = Carbon::now()->addDays(30)->toDateString();
         $fechaSuperiror  = Carbon::parse($fechaSuperiror);
-        $fechaFinal      = $fechaSuperiror->format('Y-m-d');
-
-        return ($tipoReporte === 'SOAT') ? $this->soat($fechaFinal) : (($tipoReporte === 'CRT') ? $this->CRT($fechaFinal) : $this->tarjetaOperacion($fechaFinal));
+        $fechaFinal      = $fechaSuperiror->format('Y-m-d');*/
+        return ($tipoReporte === 'SOAT') ? $this->soat($fechaInicial, $fechaFinal) : (($tipoReporte === 'CRT') ? $this->CRT($fechaInicial, $fechaFinal) : $this->tarjetaOperacion($fechaInicial, $fechaFinal));
     }
 
-    public function soat($fechaFinal){
+    public function soat($fechaInicial, $fechaFinal){
         return DB::table('vehiculosoat as vs')
                 ->select('tv.tipvehnombre','v.vehinumerointerno','v.vehiplaca','tmv.timovenombre','vs.vehsoanumero',
                     'vs.vehsoafechafinal',DB::raw('(CASE WHEN vs.vehsoafechafinal < CURDATE() THEN "Vencido" ELSE "Vigente" END) AS estado'))
@@ -81,13 +82,14 @@ class DocumentosVencidosExport implements FromCollection, WithHeadings,WithPrope
                     $query->select(DB::raw('MAX(vehsoaid)'))
                         ->from('vehiculosoat')
                         ->groupBy('vehiid');
-                })
+                })            
+                ->whereDate('vs.vehsoafechainicial', '>=', $fechaInicial)
                 ->whereDate('vs.vehsoafechafinal', '<=', $fechaFinal)
                 ->orderBy('v.vehinumerointerno')
                 ->get();
     }
 
-    public function CRT($fechaFinal){
+    public function CRT($fechaInicial, $fechaFinal){
         return DB::table('vehiculocrt as vcrt')
                 ->select('tv.tipvehnombre','v.vehinumerointerno','v.vehiplaca','tmv.timovenombre','vcrt.vehcrtnumero',
                     'vcrt.vehcrtfechafinal',DB::raw('(CASE WHEN vcrt.vehcrtfechafinal < CURDATE() THEN "Vencido" ELSE "Vigente" END) AS estado'))
@@ -98,13 +100,14 @@ class DocumentosVencidosExport implements FromCollection, WithHeadings,WithPrope
                     $query->select(DB::raw('MAX(vehcrtid)'))
                         ->from('vehiculocrt')
                         ->groupBy('vehiid');
-                })
+                })    
+                ->whereDate('vcrt.vehcrtfechainicial', '>=', $fechaInicial)
                 ->whereDate('vcrt.vehcrtfechafinal', '<=', $fechaFinal)
                 ->orderBy('v.vehinumerointerno')
                 ->get();
     }
 
-    public function tarjetaOperacion($fechaFinal){
+    public function tarjetaOperacion($fechaInicial, $fechaFinal){
         return DB::table('vehiculotarjetaoperacion as vto')
                 ->select('tv.tipvehnombre','v.vehinumerointerno','v.vehiplaca','tmv.timovenombre','vto.vetaopnumero',
                     'vto.vetaopfechafinal',DB::raw('(CASE WHEN vto.vetaopfechafinal < CURDATE() THEN "Vencida" ELSE "Vigente" END) AS estado'))
@@ -116,6 +119,7 @@ class DocumentosVencidosExport implements FromCollection, WithHeadings,WithPrope
                         ->from('vehiculocrt')
                         ->groupBy('vehiid');
                 })
+                ->whereDate('vto.vetaopfechainicial', '>=', $fechaInicial)
                 ->whereDate('vto.vetaopfechafinal', '<=', $fechaFinal)
                 ->orderBy('v.vehinumerointerno')
                 ->get();

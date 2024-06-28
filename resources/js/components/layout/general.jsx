@@ -58,9 +58,9 @@ export function HeaderAdmon(){
     return (
         <Box className={"headerAdmon"}>
             <Grid container spacing={2}>
-                <Grid item md={3} xl={3} sm={2} xs={1}>
+                <Grid item md={2} xl={2} sm={2} xs={1}>
                 </Grid>
-                <Grid item md={5} xl={5} sm={5} xs={6}>
+                <Grid item md={6} xl={6} sm={5} xs={6}>
                     <h2>Cooperativa de transportadores HACARITAMA</h2>
                 </Grid>
                 <Grid item md={4} xl={4} sm={5} xs={5}>
